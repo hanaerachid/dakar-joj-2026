@@ -354,13 +354,6 @@ export class MapManager {
     this.validateCoord("origin", origin);
     this.validateCoord("destination", to);
 
-    const distKm = this.haversineKm(origin, to);
-    if (distKm > 1200) {
-      throw new Error(
-        `Route too far for directions (${distKm.toFixed(0)} km).`,
-      );
-    }
-
     const details = await drawRoute(this.map, origin, to);
     this.lastRouteDetails = details;
     this.lastRouteSummary = {
