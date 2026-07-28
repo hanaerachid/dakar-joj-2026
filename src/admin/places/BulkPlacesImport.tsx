@@ -11,10 +11,10 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { auth, authReady, db } from "../../auth/firebase";
-import { Section } from "../../componenets/common/Section";
-import { Button } from "../../componenets/common/Button";
+import { Section } from "../../components/common/Section";
+import { Button } from "../../components/common/Button";
 import { DEFAULT_COMP_ZONES } from "./AddPlaceFull";
-import { CATEGORIES } from "../../componenets/place-list/place-list-utils";
+import { CATEGORIES } from "../../components/place-list/place-list-utils";
 
 // ---- Types ----
 type Zone = { id: string; name: string; color: string; categoryId: string };

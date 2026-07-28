@@ -1,7 +1,7 @@
 // src/App.tsx
 import { Routes, Route, Navigate, Outlet, Link } from "react-router-dom";
 import MapPage from "./pages/map/MapPage";
-import AdminRoute from "./componenets/auth/AdminRoute";
+import AdminRoute from "./components/auth/AdminRoute";
 import AddPlaceFull from "./admin/places/AddPlaceFull";
 import { PlacesListPage } from "./admin/places/PlacesList";
 import { PlaceDetailsPage } from "./admin/places/PlacesDetails";

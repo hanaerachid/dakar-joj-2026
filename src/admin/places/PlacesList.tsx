@@ -15,7 +15,7 @@ import {
 import { db } from "../../auth/firebase";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { DEFAULT_COMP_ZONES } from "./AddPlaceFull";
-import { CATEGORIES } from "../../componenets/place-list/place-list-utils";
+import { CATEGORIES } from "../../components/place-list/place-list-utils";
 
 /* ---------- Small UI helpers (soft, modern) ---------- */
 function Section({

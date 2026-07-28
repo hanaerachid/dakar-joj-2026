@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { MapManager } from "./MapManager";
-import { Modal } from "../componenets/common/Modal";
+import { Modal } from "../components/common/Modal";
 import { useTranslation } from "react-i18next";
 
 type BasemapId =

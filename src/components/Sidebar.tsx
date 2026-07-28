@@ -1,4 +1,4 @@
-// src/componenets/Sidebar.tsx
+// src/components/Sidebar.tsx
 import { useState } from "react";
 import { AnimatedButton } from "./buttons/AnimatedButton";
 import { PlacesList } from "./place-list/PlacesList";
@@ -8,6 +8,7 @@ import { ZoomPill } from "../core/ZoomPill";
 import { LocateMeButton } from "../core/LocateMeButton";
 import { toast } from "sonner";
 import { CATEGORIES } from "./place-list/place-list-utils";
+import { Map, MapPinHouse, RouteOff, Search, Share2 } from "lucide-react";
 
 type SidebarProps = {
   longitude: number;
@@ -72,24 +73,18 @@ export function Sidebar({
       <div
         className="
         pointer-events-auto
-        flex flex-col items-center gap-2
-        p-2 md:p-2.5
-        rounded-2xl
-        backdrop-blur-xl
-        bg-white/55
-        shadow-[0_8px_30px_rgba(0,0,0,0.12)]
-        ring-1 ring-black/5
+        flex flex-col items-center gap-1
       "
       >
         {/* Top group */}
         <AnimatedButton
-          icon="f7:search-circle"
+          icon={Search}
           title="Search Places"
           tooltip="Search"
           onClick={() => setSearchOpen(true)}
         />
         <AnimatedButton
-          icon="mdi:layers-triple-outline"
+          icon={Map}
           title="Map Layers"
           tooltip="Layers"
           onClick={() => setLayersOpen(true)}
@@ -105,19 +100,19 @@ export function Sidebar({
         <div className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
         {/* Bottom group */}
         <AnimatedButton
-          icon="mdi:home-circle-outline"
+          icon={MapPinHouse}
           title="Reset View"
           tooltip="Reset View"
           onClick={onReset}
         />
         <AnimatedButton
-          icon="material-symbols-light:conversion-path-off-rounded"
+          icon={RouteOff}
           title="Reset View"
           tooltip="Reset View"
           onClick={onClearRoute}
         />
         <AnimatedButton
-          icon="mdi:share-variant"
+          icon={Share2}
           title="Share Map"
           tooltip="Share"
           onClick={handleShare}

@@ -14,14 +14,14 @@ import {
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { auth, authReady, db, storage } from "../../auth/firebase";
 import { SITES_META, type VenueSport } from "../../data/sitesMeta";
-import PlacePreview from "../../componenets/admin/places/PlacePreview";
-import BrandingFields from "../../componenets/admin/places/BrandingFields";
-import VisualsFields from "../../componenets/admin/places/VisualsFields";
-import { Section } from "../../componenets/common/Section";
-import { Button } from "../../componenets/common/Button";
-import BasicDetailsFields from "../../componenets/admin/places/BasicDetailsFields";
-import CategoryZoneFields from "../../componenets/admin/places/CategoryZoneFields";
-import { CATEGORIES } from "../../componenets/place-list/place-list-utils";
+import PlacePreview from "../../components/admin/places/PlacePreview";
+import BrandingFields from "../../components/admin/places/BrandingFields";
+import VisualsFields from "../../components/admin/places/VisualsFields";
+import { Section } from "../../components/common/Section";
+import { Button } from "../../components/common/Button";
+import BasicDetailsFields from "../../components/admin/places/BasicDetailsFields";
+import CategoryZoneFields from "../../components/admin/places/CategoryZoneFields";
+import { CATEGORIES } from "../../components/place-list/place-list-utils";
 import { ALL_SPORT_OPTIONS } from "../../data/sports";
 
 /* ---------------------------------------------

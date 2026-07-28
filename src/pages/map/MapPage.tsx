@@ -2,8 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapManager } from "../../core/MapManager";
-import { Sidebar } from "../../componenets/Sidebar";
-import { HeaderBar } from "../../componenets/header/HeaderBar";
+import { Sidebar } from "../../components/Sidebar";
+import { HeaderBar } from "../../components/header/HeaderBar";
 import { getInitialZoom } from "../../utils/mapConfig";
 
 export default function MapPage() {
@@ -39,7 +39,7 @@ export default function MapPage() {
 
   return (
     <div className="relative w-full h-[100dvh]">
-      <HeaderBar title="DAKAR JOJ 2026 MAP" onReset={handleReset} />
+      <HeaderBar title="Dakar Jeux Olympiques de la Jeunesse 2026" onReset={handleReset} />
       {/* Top-left: Admin link (only if admin) */}
 
       {/* Sidebar (original) */}

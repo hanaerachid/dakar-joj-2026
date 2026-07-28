@@ -1,7 +1,8 @@
 import { useRef } from "react";
 import mapboxgl from "mapbox-gl";
 import { MapManager } from "./MapManager";
-import { AnimatedButton } from "../componenets/buttons/AnimatedButton";
+import { AnimatedButton } from "../components/buttons/AnimatedButton";
+import { Locate } from "lucide-react";
 
 export function LocateMeButton({ className = "" }: { className?: string }) {
   const mgr = MapManager.getInstance();
@@ -49,7 +50,7 @@ export function LocateMeButton({ className = "" }: { className?: string }) {
   return (
     <>
       <AnimatedButton
-        icon="mdi:crosshairs-gps"
+        icon={Locate}
         title="Locate Me"
         onClick={handleClick}
         className={className}

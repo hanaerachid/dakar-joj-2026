@@ -1,4 +1,4 @@
-// src/componenets/popup/CategoryVenueCard.tsx
+// src/components/popup/CategoryVenueCard.tsx
 import React, { useId, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import type { RouteDetails } from "../../core/map/types";

@@ -1,7 +1,7 @@
 // src/core/layers/categoryPoints.ts
 import mapboxgl, { Map } from "mapbox-gl";
 import { addOrSetSource } from "../map/utils";
-import { destroyPopup, renderVenuePopup } from "../../componenets/popupRenderer";
+import { destroyPopup, renderVenuePopup } from "../../components/popupRenderer";
 import { keepPopupInView } from "./popupUtils";
 import {
   collection,

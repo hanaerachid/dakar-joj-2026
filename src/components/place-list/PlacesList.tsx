@@ -1,4 +1,4 @@
-// src/componenets/PlacesList.tsx
+// src/components/PlacesList.tsx
 import { useEffect, useMemo, useState } from "react";
 import { MapManager } from "../../core/MapManager";
 import type { Feature, Point, GeoJsonProperties } from "geojson";

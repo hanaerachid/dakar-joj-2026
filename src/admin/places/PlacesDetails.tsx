@@ -15,7 +15,7 @@ import { db, storage } from "../../auth/firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { SITES_META, type VenueSport } from "../../data/sitesMeta";
 import { Icon } from "@iconify/react";
-import PlacePreview from "../../componenets/admin/places/PlacePreview";
+import PlacePreview from "../../components/admin/places/PlacePreview";
 import { ALL_SPORT_OPTIONS } from "../../data/sports";
 
 /* ---------- Small UI helpers ---------- */

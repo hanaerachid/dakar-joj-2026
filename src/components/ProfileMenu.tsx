@@ -4,6 +4,14 @@ import { Icon } from "@iconify/react";
 import { AuthModal } from "./auth/AuthModal";
 import { auth } from "../auth/firebase";
 import { getIdToken } from "../auth/authService";
+import {
+  Avatar,
+  AvatarBadge,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+  AvatarImage,
+} from "@/components/ui/avatar"
 
 export function ProfileMenu() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -28,14 +36,13 @@ export function ProfileMenu() {
   return (
     <div className="relative flex gap-2">
       {/* Profile Button -> opens AUTH modal */}
-      <button
+      <Avatar  
         onClick={handleProfileClick}
-        className="h-8 w-8 bg-gray-100 flex justify-center items-center rounded-full hover:bg-gray-200 transition p-1 sm:h-10 sm:w-10"
+        className="h-8 w-8 bg-gray-100 hover:bg-gray-200 transition p-1 sm:h-10 sm:w-10"
         title="Profile"
       >
-        <Icon icon="mdi:account-circle" className="h-full w-full" />
-      </button>
-
+        <AvatarFallback>CN</AvatarFallback>
+      </Avatar>
       {/* AUTH MODAL */}
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
     </div>

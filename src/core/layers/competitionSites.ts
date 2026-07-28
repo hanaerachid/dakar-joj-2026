@@ -1,7 +1,7 @@
 // src/core/layers/competitionSites.ts
 import mapboxgl, { Map as MapboxMap } from "mapbox-gl";
 import { addOrSetSource } from "../map/utils";
-import { destroyPopup, renderVenuePopup } from "../../componenets/popupRenderer";
+import { destroyPopup, renderVenuePopup } from "../../components/popupRenderer";
 import {
   getZonesForCategory,
   getZoneFeatureCollection,

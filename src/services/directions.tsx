@@ -12,8 +12,8 @@ import {
   addOrSetSource,
 } from "../core/map/utils";
 import { LAYER_IDS } from "../config/map.constants";
-import { renderStepPopup } from "../componenets/renderers/renderStepPopup";
-import { StepPin } from "../componenets/markers/StepPin";
+import { renderStepPopup } from "../components/renderers/renderStepPopup";
+import { StepPin } from "../components/markers/StepPin";
 import { createRoot } from "react-dom/client";
 
 /** Keep per-map step markers so we can clear them between calls */

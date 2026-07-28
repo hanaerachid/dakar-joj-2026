@@ -1,15 +1,17 @@
-// src/componenets/buttons/AnimatedButton.tsx
+// src/components/buttons/AnimatedButton.tsx
 import { motion } from "framer-motion";
 import { Icon } from "@iconify/react";
+import type { LucideIcon } from "lucide-react";
+type IconType = string | LucideIcon;
 
 interface AnimatedButtonProps {
   isOpen?: boolean;
   onClick: () => void;
   openTitle?: string;
   closeTitle?: string;
-  openIcon?: string;
-  closeIcon?: string;
-  icon?: string;
+  openIcon?: IconType;
+  closeIcon?: IconType;
+  icon?: IconType;
   title?: string;
   className?: string;
   iconClassName?: string;
@@ -29,7 +31,7 @@ export function AnimatedButton({
   iconClassName,
   tooltip,
 }: Readonly<AnimatedButtonProps>) {
-  const resolvedIcon = icon || (isOpen ? openIcon : closeIcon);
+  const ResolvedIcon = icon || (isOpen ? openIcon : closeIcon);
   const resolvedTitle = title || (isOpen ? openTitle : closeTitle);
   const tip = tooltip || resolvedTitle;
 
@@ -41,10 +43,11 @@ export function AnimatedButton({
         transition={{ type: "spring", stiffness: 500, damping: 18, mass: 0.9 }}
         className={`
           inline-flex items-center justify-center leading-none
-          rounded-2xl
-          h-12 w-12
-          bg-white/90 hover:bg-white
-          shadow-md shadow-black/10
+          rounded-xl
+          h-10 w-10
+          backdrop-blur-xl
+          bg-white/55 hover:bg-white
+          shadow-lg shadow-black/10
           ring-1 ring-black/5
           outline-none
           focus-visible:ring-2 focus-visible:ring-blue-400/40
@@ -55,10 +58,11 @@ export function AnimatedButton({
         aria-label={resolvedTitle}
         type="button"
       >
-        <Icon
-          icon={resolvedIcon}
-          className={iconClassName || "block h-6 w-6 md:h-6.5 md:w-6.5"}
-        />
+        {typeof ResolvedIcon === "string" ? (
+          <Icon icon={ResolvedIcon} className={iconClassName || "block h-5 w-5 md:h-5.5 md:w-5.5"} />
+        ) : (
+          <ResolvedIcon className={iconClassName} />
+        )}
       </motion.button>
 
       {/* Tooltip (desktop only) */}
