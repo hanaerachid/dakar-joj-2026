@@ -92,10 +92,10 @@ export function Sidebar({
         {/* thin divider */}
         <div className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
         {/* Utility group */}
-        <LocateMeButton className="!bg-white/90" />
+        <LocateMeButton />
         <PlacesList /> {/* keeps its own popover; button fits the dock */}
         {/* Zoom */}
-        <ZoomPill className="rounded-2xl ring-1 ring-black/5" />
+        <ZoomPill />
         {/* thin divider */}
         <div className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
         {/* Bottom group */}

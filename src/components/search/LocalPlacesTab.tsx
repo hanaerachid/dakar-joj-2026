@@ -13,6 +13,15 @@ import {
   getZonesForCategory,
 } from "../../data/firestore/firestorePlaces";
 import { useTranslation } from "react-i18next";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
+import { Field } from "@/components/ui/field";
+// import { Kbd } from "@/components/ui/kbd"
+import { SearchIcon } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 
 // —— types & helpers ——
 type VenueFeature = Feature<Point, GeoJsonProperties>;
@@ -252,25 +261,33 @@ export function LocalPlacesTab({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Search input */}
-      <div className="relative">
-        <input
-          value={query}
-          onChange={(e) => onQueryChange(e.target.value)}
-          placeholder={t("local.search.placeholder")}
-          className="w-full rounded-xl border border-black/10 bg-white px-4 py-3 pr-10 outline-none focus:ring-2 focus:ring-blue-500/30"
-        />
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-          ⌘K
-        </span>
-      </div>
+      <Field className="py-2">
+        <InputGroup className="flex items-center gap-2">
+          <InputGroupAddon>
+            <SearchIcon className="w-4 h-4 text-gray-400" />
+          </InputGroupAddon>
+          <InputGroupInput
+            value={query}
+            onChange={(e) => onQueryChange(e.target.value)}
+            placeholder={t("local.search.placeholder")}
+            className="w-full bg-transparent outline-none text-sm placeholder:text-gray-400"
+            autoFocus
+          />
+          {/* 
+          <InputGroupAddon align="inline-end">
+            <Kbd>⌘K</Kbd>
+          </InputGroupAddon>
+          */}
+        </InputGroup>
+      </Field>
 
       {/* Results */}
       {loading ? (
         <div className="grid place-items-center py-10">
-          <div className="flex items-center gap-3 text-gray-600">
-            <span className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-700" />
+          <div className="flex items-center gap-3 text-foreground">
+            <Spinner />
             <span>{t("local.loading")}</span>
           </div>
         </div>

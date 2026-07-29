@@ -3,6 +3,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { MapManager } from "../../core/MapManager";
 import { MAPBOX_ACCESS_TOKEN } from "../../utils/mapConfig";
 import { useTranslation } from "react-i18next";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group"
+import { Field } from "@/components/ui/field";
+import { X, SearchIcon } from "lucide-react";
 
 type MbFeature = {
   id: string;
@@ -103,21 +111,12 @@ export function GlobalPlacesTab({
   return (
     <div className="space-y-3">
       {/* Input */}
-      <div className="rounded-xl ring-1 ring-black/10 bg-white/90 backdrop-blur px-1 sm:px-3 py-2">
-        <div className="flex items-center gap-2">
-          <svg
-            className="h-5 w-5 text-gray-400 shrink-0"
-            viewBox="0 0 24 24"
-            fill="none"
-          >
-            <path
-              d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-            />
-          </svg>
-          <input
+      <Field className="py-2">
+        <InputGroup className="flex items-center gap-2">
+          <InputGroupAddon>
+            <SearchIcon className="w-4 h-4 text-gray-400" />
+          </InputGroupAddon>
+          <InputGroupInput
             value={query}
             onChange={(e) => onQueryChange(e.currentTarget.value)}
             placeholder={placeholder}
@@ -125,19 +124,21 @@ export function GlobalPlacesTab({
             autoFocus
           />
           {!!query && (
-            <button
+            <InputGroupButton
+              variant="ghost"
+              size="icon-sm"
               onClick={() => onQueryChange("")}
               aria-label="Clear"
-              className="rounded-md px-1.5 py-1 hover:bg-black/5"
+              className="rounded-full"
             >
-              ✕
-            </button>
+              <X />
+            </InputGroupButton>
           )}
-        </div>
-      </div>
+        </InputGroup>
+      </Field>
 
       {/* Results (inside modal) */}
-      <div className="rounded-xl ring-1 ring-black/10 bg-white/85 backdrop-blur">
+      <div className="rounded-xl ring-1 ring-black/10 bg-background/85 backdrop-blur">
         <div className="max-h-72 overflow-auto divide-y divide-black/5">
           {/* States */}
           {!query && <div className="p-4 text-sm text-gray-500">{tipText}</div>}
@@ -162,7 +163,7 @@ export function GlobalPlacesTab({
                 <span className="text-lg">📍</span>
               </div>
               <div className="min-w-0">
-                <div className="text-sm font-medium text-gray-900  truncate">
+                <div className="text-sm font-medium text-gray-600  truncate">
                   {f.text}
                 </div>
                 <div className="text-xs text-gray-600  line-clamp-2">

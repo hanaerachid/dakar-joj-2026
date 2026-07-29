@@ -2,6 +2,18 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { signUp } from "../../auth/authService";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import { Checkbox } from "@/components/ui/checkbox"
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { AlertCircleIcon } from "lucide-react";
 
 export function RegisterForm({
   onLogin,
@@ -35,79 +47,110 @@ export function RegisterForm({
   };
 
   return (
-    <form onSubmit={submit} className="flex h-full flex-col">
-      <div className="flex-1 space-y-4 overflow-y-auto">
-        <div>
-          <label className="text-sm font-medium">
+    <form onSubmit={submit} className="flex h-full flex-col gap-4">
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircleIcon />
+          <AlertDescription className="text-sm">
+            {error}
+          </AlertDescription>
+        </Alert>
+      )}
+      <FieldGroup className="flex-1 overflow-y-auto">
+        <Field>
+          <FieldLabel
+            htmlFor="name"
+            className="text-sm font-medium"
+          >
             {t("auth.common.nameLabel")}
-          </label>
-          <input
-            className="mt-1 w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10"
+          </FieldLabel>
+          <Input
+            className="w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-foreground/10"
+            id="name"
+            type="text"
+            required
             value={name}
+            autoComplete="on"
             onChange={(e) => setName(e.currentTarget.value)}
             placeholder={t("auth.common.namePlaceholder")}
-            required
           />
-        </div>
-        <div>
-          <label className="text-sm font-medium">
+        </Field>
+
+        <Field>
+          <FieldLabel
+            htmlFor="emailRegister"
+            className="text-sm font-medium"
+          >
             {t("auth.common.emailLabel")}
-          </label>
-          <input
-            className="mt-1 w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10"
+          </FieldLabel>
+          <Input
+            className="w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-foreground/10"
+            id="emailRegister"
             type="email"
             value={email}
+            required
+            autoComplete="on"
             onChange={(e) => setEmail(e.currentTarget.value)}
             placeholder={t("auth.common.emailPlaceholder")}
-            required
           />
-        </div>
-        <div>
-          <label className="text-sm font-medium">
+        </Field>
+
+        <Field>
+          <FieldLabel
+            htmlFor="newPassword"
+            className="text-sm font-medium"
+          >
             {t("auth.common.passwordLabel")}
-          </label>
-          <input
-            className="mt-1 w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10"
+          </FieldLabel>
+          <FieldDescription>
+            {t("auth.register.passwordPlaceholder")}
+          </FieldDescription>
+          <Input
+            className="w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-foreground/10"
+            id="newPassword"
             type="password"
+            required
+            autoComplete="on"
             value={pw}
             onChange={(e) => setPw(e.currentTarget.value)}
-            placeholder={t("auth.register.passwordPlaceholder")}
-            required
+            placeholder="********"
           />
-        </div>
+        </Field>
 
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
+        <Field orientation="horizontal">
+          <Checkbox
+            id="agree"
             checked={agree}
-            onChange={(e) => setAgree(e.currentTarget.checked)}
-            className="h-4 w-4 rounded border-gray-300"
+            onCheckedChange={(checked) => setAgree(!!checked)}
           />
-          {t("auth.common.terms")}
-        </label>
-      </div>
+          <FieldLabel
+            htmlFor="agree"
+            className="flex items-center gap-2 text-sm"
+          >
+            {t("auth.common.terms")}
+          </FieldLabel>
+        </Field>
+      </FieldGroup>
 
-      {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-          {error}
-        </div>
-      )}
-
-      <div className="mt-6 flex flex-col gap-3">
-        <button
-          type="submit"
-          disabled={!agree || loading}
-          className="w-full rounded-lg bg-black text-white py-2.5 font-medium hover:bg-black/90 active:scale-[.99] transition disabled:opacity-60"
-        >
-          {loading ? t("auth.register.submitting") : t("auth.register.submit")}
-        </button>
-        <button
-          type="button"
-          onClick={onLogin}
-          className="w-full rounded-lg border py-2.5 font-medium hover:bg-gray-50 active:scale-[.99] transition"
-        >
-          {t("auth.common.backToSignIn")}
-        </button>
+      <div className="mt-4">
+        <ButtonGroup orientation="vertical" className="w-full">
+          <Button
+            type="submit"
+            variant="default"
+            disabled={!agree || loading}
+            className="w-full rounded-lg py-2.5 active:scale-[.99] transition"
+          >
+            {loading ? t("auth.register.submitting") : t("auth.register.submit")}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onLogin}
+            className="w-full rounded-lg py-2.5 active:scale-[.99] transition"
+          >
+            {t("auth.common.backToSignIn")}
+          </Button>
+        </ButtonGroup>
       </div>
     </form>
   );

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Icon } from "@iconify/react";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 
 type ModalSize = "sm" | "md" | "lg";
 
@@ -59,7 +60,7 @@ export function Modal({
         if (e.target === overlayRef.current) onClose();
       }}
       className="fixed inset-0 z-50 grid place-items-center p-2 sm:p-6
-                 bg-black/40 backdrop-blur-[3px] animate-[fadeIn_.18s_ease]"
+                 bg-background/40 backdrop-blur-[3px] animate-[fadeIn_.18s_ease]"
     >
       <div
         role="dialog"
@@ -67,34 +68,36 @@ export function Modal({
         className={[
           "relative w-full",
           SIZE_MAP[size],
-          "rounded-2xl bg-white/80 backdrop-blur-xl shadow-2xl ring-1 ring-black/10",
+          "rounded-2xl bg-background/80 backdrop-blur-xl shadow-2xl ring-1 ring-black/10",
           "animate-[popIn_.18s_ease]",
           panelClassName,
         ].join(" ")}
         onMouseDown={(e) => e.stopPropagation()}
       >
         {(title || showClose) && (
-          <div className="flex items-center justify-between gap-3 px-5 py-4">
-            <div className="text-base sm:text-lg font-semibold text-gray-900">
+          <div className="flex items-center justify-between gap-3 px-5 py-2">
+            <h2 className="text-base sm:text-lg font-semibold text-foreground/90">
               {title}
-            </div>
+            </h2>
             {showClose && (
-              <button
+              <Button
                 onClick={onClose}
-                className="p-2 rounded-full hover:bg-black/5 active:scale-95 transition"
+                variant="ghost"
+                size="icon"
+                className="rounded-full active:scale-95 transition"
                 aria-label="Close"
                 title="Close"
               >
-                <Icon icon="mdi:close" className="text-2xl" />
-              </button>
+                <X />
+              </Button>
             )}
           </div>
         )}
-        {(title || showClose) && <div className="h-px bg-black/5" />}
+        {(title || showClose) && <div className="h-px bg-background/5" />}
 
         <div
           className={[
-            "px-5 py-4 max-h-[70vh] sm:max-h-[75vh] overflow-y-auto",
+            "px-3 py-2 max-h-[70vh] sm:max-h-[75vh] overflow-y-auto",
             contentClassName,
           ].join(" ")}
         >
@@ -103,8 +106,8 @@ export function Modal({
 
         {footer && (
           <>
-            <div className="h-px bg-black/5" />
-            <div className="px-5 py-4">{footer}</div>
+            <div className="h-px bg-background/50" />
+            <div className="px-5 py-2">{footer}</div>
           </>
         )}
       </div>

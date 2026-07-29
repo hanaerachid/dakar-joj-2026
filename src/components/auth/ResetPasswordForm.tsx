@@ -2,6 +2,22 @@
 import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { resetPassword } from "../../auth/authService";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import {
+  Field,
+  FieldContent,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+  FieldTitle,
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { AlertCircleIcon } from "lucide-react";
 
 export function ResetPasswordForm({ onLogin }: { onLogin: () => void }) {
   const [email, setEmail] = useState("");
@@ -26,62 +42,78 @@ export function ResetPasswordForm({ onLogin }: { onLogin: () => void }) {
 
   return (
     <form onSubmit={submit} className="flex h-full flex-col">
-      <div className="flex-1 space-y-4 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto">
         {!sent ? (
-          <>
-            <p className="text-sm text-gray-600">
+          <FieldSet>
+            <FieldLegend variant="label" className="text-sm">
               {t("auth.reset.intro")}
-            </p>
-
-            <div>
-              <label className="text-sm font-medium">
-                {t("auth.common.emailLabel")}
-              </label>
-              <input
-                className="mt-1 w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.currentTarget.value)}
-                placeholder={t("auth.common.emailPlaceholder")}
-              />
-            </div>
+            </FieldLegend>
+            <FieldGroup>
+              <Field>
+                <FieldLabel
+                  className="text-sm font-medium"
+                  htmlFor="emailReset"
+                >
+                  {t("auth.common.emailLabel")}
+                </FieldLabel>
+                <Input
+                  className="w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-foreground/10"
+                  id="emailReset"
+                  type="email"
+                  required
+                  autoComplete="on"
+                  value={email}
+                  onChange={(e) => setEmail(e.currentTarget.value)}
+                  placeholder={t("auth.common.emailPlaceholder")}
+                />
+              </Field>
+            </FieldGroup>
 
             {error && (
-              <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                {error}
-              </div>
+              <Alert variant="destructive">
+                <AlertCircleIcon />
+                <AlertDescription className="text-sm">
+                  {error}
+                </AlertDescription>
+              </Alert>
             )}
-          </>
+          </FieldSet>
         ) : (
-          <div className="rounded-lg bg-green-50 border border-green-200 p-3 text-sm">
-            <Trans
-              i18nKey="auth.reset.sentDescription"
-              values={{ email }}
-              components={{ strong: <b /> }}
-            />
-          </div>
+          <Alert
+            variant="default"
+            className="p-3 text-sm"
+          >
+            <AlertDescription>
+              <Trans
+                i18nKey="auth.reset.sentDescription"
+                values={{ email }}
+                components={{ strong: <b /> }}
+              />
+            </AlertDescription>
+          </Alert>
         )}
       </div>
-
-      <div className="mt-6 flex flex-col gap-3">
-        {!sent ? (
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-black text-white py-2.5 font-medium hover:bg-black/90 active:scale-[.99] transition disabled:opacity-60"
-          >
-            {loading ? t("auth.reset.submitting") : t("auth.reset.submit")}
-          </button>
-        ) : (
-          <button
+      <div className="mt-4">
+        <ButtonGroup orientation="vertical" className="w-full">
+          {!sent && (
+            <Button
+              type="submit"
+              variant="default"
+              disabled={loading}
+              className="w-full rounded-lg py-2.5 active:scale-[.99] transition"
+            >
+              {loading ? t("auth.reset.submitting") : t("auth.reset.submit")}
+            </Button>
+          )}
+          <Button
             type="button"
+            variant="ghost"
             onClick={onLogin}
-            className="w-full rounded-lg bg-black text-white py-2.5 font-medium hover:bg-black/90 active:scale-[.99] transition"
+            className="w-full rounded-lg py-2.5 active:scale-[.99] transition"
           >
             {t("auth.reset.backToLogin")}
-          </button>
-        )}
+          </Button>
+        </ButtonGroup>
       </div>
     </form>
   );

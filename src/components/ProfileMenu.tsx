@@ -1,6 +1,5 @@
 // ProfileMenu.tsx
 import { useState } from "react";
-import { Icon } from "@iconify/react";
 import { AuthModal } from "./auth/AuthModal";
 import { auth } from "../auth/firebase";
 import { getIdToken } from "../auth/authService";
@@ -38,10 +37,10 @@ export function ProfileMenu() {
       {/* Profile Button -> opens AUTH modal */}
       <Avatar  
         onClick={handleProfileClick}
-        className="h-8 w-8 bg-gray-100 hover:bg-gray-200 transition p-1 sm:h-10 sm:w-10"
+        className="h-8 w-8 bg-foreground-100 hover:bg-foreground-200 transition p-1 sm:h-10 sm:w-10"
         title="Profile"
       >
-        <AvatarFallback>CN</AvatarFallback>
+        <AvatarFallback>U</AvatarFallback>
       </Avatar>
       {/* AUTH MODAL */}
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />

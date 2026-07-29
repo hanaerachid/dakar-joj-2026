@@ -7,6 +7,7 @@ import { ProfileView } from "./ProfileView";
 import { useAuthUser } from "../../auth/hooks/useAuthUser";
 import { Modal } from "../common/Modal";
 import { useTranslation } from "react-i18next";
+import { Spinner } from "@/components/ui/spinner";
 
 type AuthView = "login" | "register" | "reset" | "profile";
 
@@ -61,9 +62,8 @@ export function AuthModal({
     >
       {loading ? (
         <div className="grid place-items-center h-full">
-          <div className="flex items-center gap-3 text-gray-600">
-            <span className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-700" />
-            <span>{t("auth.modal.loading")}</span>
+          <div className="flex items-center gap-3 text-foreground/90">
+            <Spinner /><span>{t("auth.modal.loading")}</span>
           </div>
         </div>
       ) : (
@@ -74,7 +74,7 @@ export function AuthModal({
             <img
               src="/logo.jpeg"
               alt="Brand"
-              className="h-20 sm:h-40 object-contain"
+              className="h-12 sm:h-20 object-contain"
             />
           </div>
 

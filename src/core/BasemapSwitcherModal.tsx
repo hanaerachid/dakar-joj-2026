@@ -23,63 +23,63 @@ const OPTIONS: {
   labelFallback: string;
   descFallback: string;
 }[] = [
-  {
-    id: "mapbox-streets",
-    icon: "mdi:map-outline",
-    labelKey: "basemap.option.mapbox_streets.label",
-    descKey: "basemap.option.mapbox_streets.desc",
-    labelFallback: "Mapbox Streets",
-    descFallback: "Default road map with labels.",
-  },
-  {
-    id: "mapbox-outdoors",
-    icon: "mdi:terrain",
-    labelKey: "basemap.option.mapbox_outdoors.label",
-    descKey: "basemap.option.mapbox_outdoors.desc",
-    labelFallback: "Outdoors (Mapbox)",
-    descFallback: "Terrain-focused map with trails and contours.",
-  },
-  {
-    id: "mapbox-light",
-    icon: "mdi:white-balance-sunny",
-    labelKey: "basemap.option.mapbox_light.label",
-    descKey: "basemap.option.mapbox_light.desc",
-    labelFallback: "Light (Mapbox)",
-    descFallback: "Clean, light basemap for data overlays.",
-  },
-  {
-    id: "mapbox-dark",
-    icon: "mdi:weather-night",
-    labelKey: "basemap.option.mapbox_dark.label",
-    descKey: "basemap.option.mapbox_dark.desc",
-    labelFallback: "Dark (Mapbox)",
-    descFallback: "Dark basemap that makes markers pop.",
-  },
-  {
-    id: "mapbox-satellite",
-    icon: "mdi:satellite-variant",
-    labelKey: "basemap.option.mapbox_satellite.label",
-    descKey: "basemap.option.mapbox_satellite.desc",
-    labelFallback: "Satellite (Mapbox)",
-    descFallback: "Satellite imagery with road overlay.",
-  },
-  {
-    id: "mapbox-navigation-day",
-    icon: "mdi:car",
-    labelKey: "basemap.option.mapbox_nav_day.label",
-    descKey: "basemap.option.mapbox_nav_day.desc",
-    labelFallback: "Navigation Day (Mapbox)",
-    descFallback: "High-contrast day style optimized for driving.",
-  },
-  {
-    id: "mapbox-navigation-night",
-    icon: "mdi:car-shift-pattern",
-    labelKey: "basemap.option.mapbox_nav_night.label",
-    descKey: "basemap.option.mapbox_nav_night.desc",
-    labelFallback: "Navigation Night (Mapbox)",
-    descFallback: "Night style designed for in-car use.",
-  },
-];
+    {
+      id: "mapbox-streets",
+      icon: "mdi:map-outline",
+      labelKey: "basemap.option.mapbox_streets.label",
+      descKey: "basemap.option.mapbox_streets.desc",
+      labelFallback: "Mapbox Streets",
+      descFallback: "Default road map with labels.",
+    },
+    {
+      id: "mapbox-outdoors",
+      icon: "mdi:terrain",
+      labelKey: "basemap.option.mapbox_outdoors.label",
+      descKey: "basemap.option.mapbox_outdoors.desc",
+      labelFallback: "Outdoors (Mapbox)",
+      descFallback: "Terrain-focused map with trails and contours.",
+    },
+    {
+      id: "mapbox-light",
+      icon: "mdi:white-balance-sunny",
+      labelKey: "basemap.option.mapbox_light.label",
+      descKey: "basemap.option.mapbox_light.desc",
+      labelFallback: "Light (Mapbox)",
+      descFallback: "Clean, light basemap for data overlays.",
+    },
+    {
+      id: "mapbox-dark",
+      icon: "mdi:weather-night",
+      labelKey: "basemap.option.mapbox_dark.label",
+      descKey: "basemap.option.mapbox_dark.desc",
+      labelFallback: "Dark (Mapbox)",
+      descFallback: "Dark basemap that makes markers pop.",
+    },
+    {
+      id: "mapbox-satellite",
+      icon: "mdi:satellite-variant",
+      labelKey: "basemap.option.mapbox_satellite.label",
+      descKey: "basemap.option.mapbox_satellite.desc",
+      labelFallback: "Satellite (Mapbox)",
+      descFallback: "Satellite imagery with road overlay.",
+    },
+    {
+      id: "mapbox-navigation-day",
+      icon: "mdi:car",
+      labelKey: "basemap.option.mapbox_nav_day.label",
+      descKey: "basemap.option.mapbox_nav_day.desc",
+      labelFallback: "Navigation Day (Mapbox)",
+      descFallback: "High-contrast day style optimized for driving.",
+    },
+    {
+      id: "mapbox-navigation-night",
+      icon: "mdi:car-shift-pattern",
+      labelKey: "basemap.option.mapbox_nav_night.label",
+      descKey: "basemap.option.mapbox_nav_night.desc",
+      labelFallback: "Navigation Night (Mapbox)",
+      descFallback: "Night style designed for in-car use.",
+    },
+  ];
 
 export function BasemapSwitcherModal({
   isOpen,
@@ -114,6 +114,14 @@ export function BasemapSwitcherModal({
       title={tr("basemap.modal.title", "Map Layers")}
       size="md"
       contentClassName="px-0 py-0"
+      footer={
+        <div className="px-4 pb-4 text-xs text-foreground/50">
+          {tr(
+            "basemap.tip",
+            "Tip: you can change the basemap at any time. Your custom layers will reload automatically.",
+          )}
+        </div>
+      }
     >
       <ul className="p-2">
         {OPTIONS.map((opt) => {
@@ -124,9 +132,9 @@ export function BasemapSwitcherModal({
                 type="button"
                 onClick={() => apply(opt.id)}
                 className={[
-                  "w-full text-left px-4 py-3 rounded-xl transition flex items-center gap-3",
+                  "w-full text-start px-4 py-3 rounded-xl transition flex items-center gap-3",
                   selected
-                    ? "bg-white shadow ring-1 ring-black/5"
+                    ? "bg-accent shadow ring-1 ring-foreground/5"
                     : "hover:bg-black/5",
                 ].join(" ")}
                 aria-pressed={selected}
@@ -153,13 +161,6 @@ export function BasemapSwitcherModal({
           );
         })}
       </ul>
-
-      <div className="px-4 pb-4 text-xs text-gray-500">
-        {tr(
-          "basemap.tip",
-          "Tip: you can change the basemap at any time. Your custom layers will reload automatically.",
-        )}
-      </div>
     </Modal>
   );
 }
