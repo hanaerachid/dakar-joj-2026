@@ -350,25 +350,9 @@ export const VenuePopup: React.FC<VenuePopupProps> = ({
     );
   })();
 
-  const handleToggleInfoLang = () => {
-    setInfoOverride((prev) => {
-      if (prev === "fr") return "en";
-      if (prev === "en") return "fr";
-      return langCode === "fr" ? "en" : "fr";
-    });
-  };
-
   return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={handleToggleInfoLang}
-        className="absolute left-3 top-3 z-[60] rounded-full bg-black/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white shadow hover:bg-black/80 focus:outline-none focus:ring-2 focus:ring-white/60"
-        aria-label="Toggle info language"
-      >
-        Info: {activeInfoLang === "fr" ? "FR" : "EN"}
-      </button>
+    <>
       {card}
-    </div>
+    </>
   );
 };

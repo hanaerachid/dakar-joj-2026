@@ -5,11 +5,7 @@ import { auth } from "../auth/firebase";
 import { getIdToken } from "../auth/authService";
 import {
   Avatar,
-  AvatarBadge,
   AvatarFallback,
-  AvatarGroup,
-  AvatarGroupCount,
-  AvatarImage,
 } from "@/components/ui/avatar"
 
 export function ProfileMenu() {

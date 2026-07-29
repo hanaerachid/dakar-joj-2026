@@ -24,8 +24,6 @@ export function AnimatedButton({
   onClick,
   openTitle = "Close Panel",
   closeTitle = "Open Panel",
-  openIcon = "streamline-kameleon-color:map",
-  closeIcon = "streamline-kameleon-color:map-pin",
   icon,
   title,
   className = "",
