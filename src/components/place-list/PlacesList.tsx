@@ -20,6 +20,7 @@ import { CATEGORIES } from "./place-list-utils";
 import { Modal } from "../common/Modal";
 import { useTranslation } from "react-i18next";
 import { withTranslatedCategoryLabels } from "./categoryTranslations";
+import { ChevronDown, ChevronRight, Layers2 } from "lucide-react";
 
 type VenueFeature = Feature<Point, GeoJsonProperties>;
 const DEFAULT_VISIBLE_CATS = new Set<string>(["competition"]);
@@ -292,16 +293,16 @@ export function PlacesList() {
   }
 
   function handleCategoryCheck(
-    e: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
     catId: string,
   ) {
-    const next = e.target.checked;
+    setCategoryVisibility(catId, checked);
+    applyCategoryEmphasis(catId, checked);
 
-    setCategoryVisibility(catId, next); // 👈 show/hide clusters + symbols
-    applyCategoryEmphasis(catId, next); // optional size emphasis
-
-    setCheckedCats((prev) => ({ ...prev, [catId]: next }));
-    e.stopPropagation();
+    setCheckedCats((prev) => ({
+      ...prev,
+      [catId]: checked,
+    }));
   }
 
   // Hit-test near [lng,lat] on the category's symbol layers and pull a usable id
@@ -424,23 +425,22 @@ export function PlacesList() {
   }, [openCatId]);
 
   const Chevron = ({ open }: { open: boolean }) => (
-    <svg
-      className={`w-4 h-4 transition-transform ${open ? "rotate-90" : ""}`}
-      viewBox="0 0 20 20"
-      fill="currentColor"
-    >
-      <path
-        fillRule="evenodd"
-        d="M7.23 14.77a.75.75 0 01-1.06-1.06l4-4-4-4a.75.75 0 111.06-1.06l4.53 4.53a.75.75 0 010 1.06l-4.53 4.53z"
-        clipRule="evenodd"
-      />
-    </svg>
+    <>
+      {
+        open ? (
+          <ChevronDown className="h-4 w-4" />
+        ) : (
+          <ChevronRight className="h-4 w-4" />
+        )
+      }
+    </>
   );
 
   return (
     <>
       <div className="relative inline-block z-40">
         <AnimatedButton
+          icon={Layers2}
           isOpen={panelOpen}
           onClick={() => setPanelOpen(!panelOpen)}
         />
@@ -487,9 +487,9 @@ export function PlacesList() {
                 animate={{ scale: 1, opacity: 1, x: 0 }}
                 exit={{ scale: 0.95, opacity: 0, x: 8 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="absolute top-0 right-full mr-3
+                className="absolute top-0 right-full me-3
                        bg-white/70 backdrop-blur-md shadow-lg
-                       rounded-xl sm:rounded p-4 text-sm
+                       rounded-xl sm:rounded-xl p-4 sm:p-2 text-sm
                        w-[90vw] sm:w-72 max-h-[50dvh] overflow-y-auto"
               >
                 <PlacesCategoryList

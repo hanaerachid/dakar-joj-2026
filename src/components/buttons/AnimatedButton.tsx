@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { Icon } from "@iconify/react";
 import type { LucideIcon } from "lucide-react";
+import { cn } from "@/utils/utils";
 type IconType = string | LucideIcon;
 
 interface AnimatedButtonProps {
@@ -31,7 +32,7 @@ export function AnimatedButton({
   iconClassName,
   tooltip,
 }: Readonly<AnimatedButtonProps>) {
-  const ResolvedIcon = icon || (isOpen ? openIcon : closeIcon);
+  const ResolvedIcon = icon || "";
   const resolvedTitle = title || (isOpen ? openTitle : closeTitle);
   const tip = tooltip || resolvedTitle;
 
@@ -41,7 +42,7 @@ export function AnimatedButton({
         whileTap={{ scale: 0.9, rotate: -6 }}
         whileHover={{ y: -1 }}
         transition={{ type: "spring", stiffness: 500, damping: 18, mass: 0.9 }}
-        className={`
+        className={cn(`
           inline-flex items-center justify-center leading-none
           rounded-xl
           h-10 w-10
@@ -51,8 +52,8 @@ export function AnimatedButton({
           ring-1 ring-black/5
           outline-none
           focus-visible:ring-2 focus-visible:ring-blue-400/40
-          ${className}
-        `}
+        `, isOpen && "bg-blue-500/80 hover:bg-blue-500 text-white",
+        className)}
         onClick={onClick}
         title={resolvedTitle}
         aria-label={resolvedTitle}

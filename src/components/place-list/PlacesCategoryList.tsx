@@ -1,5 +1,10 @@
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Spinner } from "@/components/ui/spinner";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircleIcon } from "lucide-react";
 
 type Props = {
   CATEGORIES: any[];
@@ -9,7 +14,7 @@ type Props = {
 
   checkedCats: Record<string, boolean>;
   handleCategoryCheck: (
-    e: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
     catId: string,
   ) => void;
 
@@ -85,24 +90,22 @@ export function PlacesCategoryList({
               }}
             >
               {/* Checkbox + label */}
-              <label
+              <Checkbox
+                checked={!!checkedCats[cat.id]}
+                onCheckedChange={(checked) => {
+                  handleCategoryCheck(checked === true, cat.id);
+                }}
+                onClick={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
+                onKeyDownCapture={(e) => e.stopPropagation()}
+                aria-label={`Toggle ${cat.label}`}
+                id={cat.id}
+              />
+              <Label
                 className="flex items-center gap-2.5"
                 onClick={(e) => e.stopPropagation()}
-              >
-                <input
-                  type="checkbox"
-                  className="accent-blue-600 h-4 w-4 rounded"
-                  checked={!!checkedCats[cat.id]}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    handleCategoryCheck(e, cat.id);
-                  }}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onKeyDownCapture={(e) => e.stopPropagation()}
-                  aria-label={`Toggle ${cat.label}`}
-                />
-                <span className="font-medium text-slate-800">{cat.label}</span>
-              </label>
+                htmlFor={cat.id}
+              ><span className="font-medium text-slate-800">{cat.label}</span></Label>
 
               {/* Count pill when active */}
               {isActive && (
@@ -131,16 +134,19 @@ export function PlacesCategoryList({
                     {/* Loading */}
                     {loading && (
                       <div className="py-4 flex items-center gap-2 text-slate-600">
-                        <span className="inline-block w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
+                        <Spinner />
                         <span className="text-sm">Loading…</span>
                       </div>
                     )}
 
                     {/* Error */}
                     {loadError && (
-                      <div className="py-3 text-sm text-red-600">
-                        {loadError}
-                      </div>
+                      <Alert variant="destructive" className="py-3 text-sm max-w-md">
+                        <AlertCircleIcon />
+                        <AlertDescription>
+                          {loadError}
+                        </AlertDescription>
+                      </Alert>
                     )}
 
                     {/* Empty */}
@@ -175,9 +181,6 @@ export function PlacesCategoryList({
                                 }
                               >
                                 <div className="flex items-center gap-2.5">
-                                  <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-600">
-                                    <Chevron open={zoneOpen} />
-                                  </div>
                                   <span
                                     className="inline-block h-2.5 w-2.5 rounded-full ring-2 ring-white"
                                     style={{ backgroundColor: color }}
@@ -189,6 +192,9 @@ export function PlacesCategoryList({
                                 <span className="ml-auto inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
                                   {list.length}
                                 </span>
+                                  <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-600">
+                                    <Chevron open={zoneOpen} />
+                                  </div>
                               </button>
 
                               {/* Places */}
