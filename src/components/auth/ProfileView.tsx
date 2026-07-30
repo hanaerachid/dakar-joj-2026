@@ -8,10 +8,10 @@ import { useTranslation } from "react-i18next";
 
 export function ProfileView({
   user,
-  onClose,
+  // onClose,
 }: {
   user: User | null;
-  onClose: () => void;
+  // onClose: () => void;
 }) {
   const { role, loading } = useRole();
   const displayName = user?.displayName ?? "";
@@ -21,7 +21,7 @@ export function ProfileView({
 
   async function handleLogout() {
     await signOut();
-    onClose();
+    // onClose();
   }
 
   return (
@@ -69,7 +69,7 @@ export function ProfileView({
           {t("auth.profile.logout")}
         </button>
         <button
-          onClick={onClose}
+          // onClick={onClose}
           className="w-full rounded-lg border py-2.5 font-medium hover:bg-gray-50 active:scale-[.99] transition"
         >
           {t("auth.profile.close")}

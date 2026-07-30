@@ -1,65 +1,34 @@
 // src/auth/AuthModal.tsx
+// no React hooks needed here
 import { useEffect, useState } from "react";
 import { LoginForm } from "./LoginForm";
 import { RegisterForm } from "./RegisterForm";
 import { ResetPasswordForm } from "./ResetPasswordForm";
 import { ProfileView } from "./ProfileView";
 import { useAuthUser } from "../../auth/hooks/useAuthUser";
-import { Modal } from "../common/Modal";
 import { useTranslation } from "react-i18next";
 import { Spinner } from "@/components/ui/spinner";
 
 type AuthView = "login" | "register" | "reset" | "profile";
 
-const TITLE_BY_VIEW: Record<AuthView, string> = {
-  login: "auth.modal.title.login",
-  register: "auth.modal.title.register",
-  reset: "auth.modal.title.reset",
-  profile: "auth.modal.title.profile",
-};
-
 export function AuthModal({
-  isOpen,
-  onClose,
+  // view = "login",
+  // setView,
   initialView = "login",
 }: {
-  isOpen: boolean;
-  onClose: () => void;
-  initialView?: Exclude<AuthView, "profile">;
+  // view: AuthView;
+  // setView: (view: AuthView) => void;
+  initialView?: AuthView;
 }) {
   const { user, loading } = useAuthUser();
-  const [view, setView] = useState<AuthView>(initialView);
-  const [mounted, setMounted] = useState(false);
   const { t } = useTranslation();
+  const [view, setView] = useState<AuthView>(initialView);
 
-  useEffect(() => setMounted(true), []);
   useEffect(() => {
-    if (!isOpen) return;
     setView(user ? "profile" : initialView);
-  }, [isOpen, user, initialView]);
-
-  // ESC to close
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [isOpen, onClose]);
-
-  if (!mounted || !isOpen) return null;
-
-  const headerTitle = t(TITLE_BY_VIEW[view]);
-
+  }, [user, initialView]);
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={headerTitle}
-      size="sm"
-      panelClassName="sm:max-w-md"
-      // let the inner panes manage scrolling; keep container stable
-      contentClassName="relative h-[80vh] sm:h-[680px] px-0 py-0"
-    >
+    <div className="relative h-full" >
       {loading ? (
         <div className="grid place-items-center h-full">
           <div className="flex items-center gap-3 text-foreground/90">
@@ -70,7 +39,7 @@ export function AuthModal({
         // NEW: column layout — logo in normal flow, panes fill the rest
         <div className="flex h-full flex-col">
           {/* Top logo (in flow, not absolute) */}
-          <div className="flex justify-center p-4 sm:p-5 shrink-0">
+          <div className="flex justify-center shrink-0 py-4 sm:py-5">
             <img
               src="/logo.jpeg"
               alt="Brand"
@@ -79,10 +48,10 @@ export function AuthModal({
           </div>
 
           {/* Panes area fills remaining height; slide between absolute panels */}
-          <div className="relative flex-1 overflow-hidden overscroll-contain">
+          <div className="relative flex-1 overflow-x-hidden overflow-y-auto overscroll-contain">
             {/* LOGIN */}
             <div
-              className={`absolute inset-0 p-6 transition-transform duration-300 ease-out ${
+              className={`absolute inset-0 transition-transform duration-300 ease-out ${
                 view === "login"
                   ? "translate-x-0 opacity-100"
                   : view === "register"
@@ -99,7 +68,7 @@ export function AuthModal({
 
             {/* REGISTER */}
             <div
-              className={`absolute inset-0 p-6 transition-transform duration-300 ease-out ${
+              className={`absolute inset-0 transition-transform duration-300 ease-out ${
                 view === "register"
                   ? "translate-x-0 opacity-100"
                   : view === "reset"
@@ -115,7 +84,7 @@ export function AuthModal({
 
             {/* RESET */}
             <div
-              className={`absolute inset-0 p-6 transition-transform duration-300 ease-out ${
+              className={`absolute inset-0 transition-transform duration-300 ease-out ${
                 view === "reset"
                   ? "translate-x-0 opacity-100"
                   : view === "login"
@@ -128,17 +97,17 @@ export function AuthModal({
 
             {/* PROFILE */}
             <div
-              className={`absolute inset-0 p-6 transition-transform duration-300 ease-out ${
+              className={`absolute inset-0 transition-transform duration-300 ease-out ${
                 view === "profile"
                   ? "translate-x-0 opacity-100"
                   : "-translate-x-full opacity-0"
               }`}
             >
-              <ProfileView user={user} onClose={onClose} />
+              <ProfileView user={user} />
             </div>
           </div>
         </div>
       )}
-    </Modal>
+    </div>
   );
 }

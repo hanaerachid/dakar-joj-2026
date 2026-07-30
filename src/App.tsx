@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { initAuth } from "./auth/nitAuth";
 import BulkPlacesImport from "./admin/places/BulkPlacesImport";
 import { ThemeProvider } from "@/components/theme-provider"
+import { ModalProvider } from "./components/modal-provider";
 
 function AdminShell() {
   return (
@@ -61,6 +62,7 @@ export default function App() {
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <ModalProvider>
     <Routes>
       <Route path="/" element={<MapPage />} />
 
@@ -83,6 +85,7 @@ export default function App() {
       {/* catch-all */}
       <Route path="*" element={<MapPage />} />
     </Routes>
+    </ModalProvider>
     </ThemeProvider>
   );
 }
