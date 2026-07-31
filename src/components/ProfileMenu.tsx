@@ -6,10 +6,12 @@ import { getIdToken } from "../auth/authService";
 import {
   Avatar,
   AvatarFallback,
+  AvatarImage,
 } from "@/components/ui/avatar"
 import { useModalContext } from "@/components/modal-provider";
 import { useTranslation } from "react-i18next";
 import { useAuthUser } from "../auth/hooks/useAuthUser";
+import { UserIcon } from "lucide-react";
 
 type AuthView = "login" | "register" | "reset" | "profile";
 
@@ -29,9 +31,12 @@ export function ProfileMenu() {
   const { user } = useAuthUser();
   const [view, setView] = useState<AuthView>(initialView);
 
+  const photoURL = user?.photoURL ?? "";
+
   useEffect(() => {
     setView(user ? "profile" : initialView);
   }, [user, initialView]);
+
   const headerTitle = t(TITLE_BY_VIEW[view]);
 
   {/* AUTH MODAL */ }
@@ -49,6 +54,7 @@ export function ProfileMenu() {
         <AuthModal
           // view={view}
           // setView={setView}
+          onClose={() => setIsOpen(false)}
           initialView={view}
         />
       ),
@@ -74,10 +80,16 @@ export function ProfileMenu() {
       {/* Profile Button -> opens AUTH modal */}
       <Avatar
         onClick={handleProfileClick}
-        className="h-8 w-8 bg-foreground-100 hover:bg-foreground-200 transition p-1 sm:h-10 sm:w-10"
+        className="h-8 w-8 bg-foreground-100 transition sm:h-10 sm:w-10"
         title="Profile"
       >
-        <AvatarFallback>U</AvatarFallback>
+        {photoURL ? (
+          <AvatarImage src={photoURL} alt="avatar" />
+        ) : (
+          <AvatarFallback>
+            <UserIcon />
+          </AvatarFallback>
+        )}
       </Avatar>
     </div>
   );

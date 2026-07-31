@@ -14,10 +14,12 @@ type AuthView = "login" | "register" | "reset" | "profile";
 export function AuthModal({
   // view = "login",
   // setView,
+  onClose,
   initialView = "login",
 }: {
   // view: AuthView;
   // setView: (view: AuthView) => void;
+  onClose: () => void;
   initialView?: AuthView;
 }) {
   const { user, loading } = useAuthUser();
@@ -103,7 +105,10 @@ export function AuthModal({
                   : "-translate-x-full opacity-0"
               }`}
             >
-              <ProfileView user={user} />
+              <ProfileView
+                user={user}
+                onClose={onClose}
+              />
             </div>
           </div>
         </div>
