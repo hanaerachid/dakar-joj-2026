@@ -8,28 +8,14 @@ import { Icon } from "@iconify/react";
 import PlacePreview from "../../components/admin/places/PlacePreview";
 import { ALL_SPORT_OPTIONS } from "../../data/sports";
 import { Field as FieldUI, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Section } from "@/components/common/Section";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
+import { Spinner } from "@/components/ui/spinner";
 
 /* ---------- Small UI helpers ---------- */
-function Section({
-  title,
-  desc,
-  children,
-}: {
-  title: string;
-  desc?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="rounded-2xl border border-gray-200/70 bg-white/70 backdrop-blur p-5 shadow-sm">
-      <header className="mb-4">
-        <h3 className="text-base font-semibold text-gray-900">{title}</h3>
-        {desc ? <p className="mt-1 text-sm text-gray-500">{desc}</p> : null}
-      </header>
-      <div className="space-y-4">{children}</div>
-    </section>
-  );
-}
-
 function Field({
   id,
   label,
@@ -59,7 +45,7 @@ function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       className={[
-        "h-10 w-full rounded-2xl border border-gray-200 bg-white/80 px-3 text-sm shadow-sm outline-none transition",
+        "h-10 w-full rounded-2xl border border-border bg-background/80 px-3 text-sm shadow-sm outline-none transition",
         "focus:border-blue-300 focus:ring-4 focus:ring-blue-100",
         "disabled:opacity-60 disabled:cursor-not-allowed",
         props.className || "",
@@ -73,41 +59,12 @@ function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
     <textarea
       {...props}
       className={[
-        "min-h-[92px] w-full rounded-2xl border border-gray-200 bg-white/80 px-3 py-2 text-sm shadow-sm outline-none transition",
+        "min-h-[92px] w-full rounded-2xl border border-border bg-background/80 px-3 py-2 text-sm shadow-sm outline-none transition",
         "focus:border-blue-300 focus:ring-4 focus:ring-blue-100",
         "disabled:opacity-60 disabled:cursor-not-allowed",
         props.className || "",
       ].join(" ")}
     />
-  );
-}
-
-function Button({
-  children,
-  variant = "primary",
-  className = "",
-  ...rest
-}: any) {
-  const base =
-    "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm transition focus:outline-none focus:ring-2 focus:ring-black/10";
-  const styles =
-    variant === "primary"
-      ? "bg-black text-white hover:bg-zinc-900 disabled:bg-zinc-400"
-      : variant === "ghost"
-      ? "hover:bg-black/5"
-      : "border bg-white hover:bg-black/5";
-  return (
-    <button className={[base, styles, className].join(" ")} {...rest}>
-      {children}
-    </button>
-  );
-}
-
-function Chip({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center rounded-full border border-gray-200 bg-white/80 px-2 py-0.5 text-xs text-gray-700">
-      {children}
-    </span>
   );
 }
 
@@ -323,9 +280,9 @@ export function PlaceDetailsPage() {
     try {
       const newImage = file
         ? await uploadImage(
-            zoneIdInDoc || (isRoot(zoneParam) ? null : zoneParam!),
-            name,
-          )
+          zoneIdInDoc || (isRoot(zoneParam) ? null : zoneParam!),
+          name,
+        )
         : null;
 
       await updatePlace(placeId, {
@@ -397,7 +354,8 @@ export function PlaceDetailsPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-5xl p-6 text-sm text-gray-500">
+      <div className="flex items-center justify-center gap-2 mx-auto max-w-5xl p-6 text-sm text-foreground/70">
+        <Spinner />
         Loading…
       </div>
     );
@@ -423,7 +381,7 @@ export function PlaceDetailsPage() {
           <Button variant="ghost" onClick={duplicate}>
             Duplicate
           </Button>
-          <Button variant="ghost" onClick={onDelete}>
+          <Button variant="destructive" onClick={onDelete}>
             Delete
           </Button>
           <Button onClick={onSave} disabled={!canSave}>
@@ -433,15 +391,14 @@ export function PlaceDetailsPage() {
       </div>
 
       {toast && (
-        <div
-          className={`mb-4 rounded-xl border px-4 py-3 text-sm shadow-sm ${
-            toast.kind === "success"
-              ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-              : "border-rose-200 bg-rose-50 text-rose-900"
-          }`}
+        <Alert
+          className="mb-4"
+          variant={toast?.kind === "success" ? "default" : "destructive"}
         >
-          {toast.msg}
-        </div>
+          <AlertDescription>
+            {toast?.msg}
+          </AlertDescription>
+        </Alert>
       )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -591,7 +548,7 @@ export function PlaceDetailsPage() {
             {tagList.length > 0 && (
               <div className="flex flex-wrap gap-2 pt-1">
                 {tagList.map((t, i) => (
-                  <Chip key={i}>{t}</Chip>
+                  <Badge key={i}>{t}</Badge>
                 ))}
               </div>
             )}
@@ -604,9 +561,13 @@ export function PlaceDetailsPage() {
               desc="Select all sports hosted at this venue."
             >
               {ALL_SPORT_OPTIONS.length === 0 ? (
-                <p className="text-sm text-gray-600">
-                  No sport options found in site meta.
-                </p>
+                <Empty>
+                  <EmptyContent>
+                    <EmptyDescription>
+                      No sport options found in site meta.
+                    </EmptyDescription>
+                  </EmptyContent>
+                </Empty>
               ) : (
                 <div className="grid gap-2 sm:grid-cols-2">
                   {ALL_SPORT_OPTIONS.map((s) => {
@@ -614,7 +575,7 @@ export function PlaceDetailsPage() {
                     return (
                       <label
                         key={s.key}
-                        className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white/80 px-3 py-2 text-sm"
+                        className="flex items-center gap-3 rounded-xl border border-border bg-background px-3 py-2 text-sm"
                       >
                         <input
                           type="checkbox"
@@ -766,16 +727,10 @@ export function PlaceDetailsPage() {
         </div>
 
         <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-20 self-start">
-          <section className="">
-            <header className="mb-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                Live preview
-              </h3>
-
-              <p className="mt-1 text-sm text-gray-500">
-                How this card might look in the app.
-              </p>
-            </header>
+          <Section
+            title="Live Preview"
+            desc="How this card might look in the app."
+          >
             <div className="space-y-4">
               <PlacePreview
                 gradientFrom={gradientFrom}
@@ -797,7 +752,7 @@ export function PlaceDetailsPage() {
                 socialHandle={socialHandle}
               />
             </div>
-          </section>
+          </Section>
         </div>
       </div>
     </div>

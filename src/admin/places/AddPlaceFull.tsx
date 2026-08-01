@@ -308,9 +308,9 @@ export default function AddPlaceFull() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Form column - left */}
-        <div className="lg:col-span-8 space-y-1 pr-8 border-r border-gray-200">
+        <div className="lg:col-span-8 space-y-6">
           {/* Category & Zone */}
           <Section
             title="Location & Zone"

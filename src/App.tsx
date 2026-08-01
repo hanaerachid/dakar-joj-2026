@@ -15,7 +15,11 @@ import { ModalProvider } from "./components/modal-provider";
 function AdminShell() {
   return (
     <div className="w-full h-[100dvh] bg-background overflow-auto">
-      <div className="sticky top-0 z-20 bg-background backdrop-blur supports-[backdrop-filter]:bg-background/70 shadow-sm p-2">
+      <div
+        className="sticky top-0 z-20 w-full mx-auto gap-2 sm:gap-4
+          bg-background backdrop-blur-sm supports-[backdrop-filter]:bg-background/70
+          px-2 sm:px-4 py-1.5 sm:py-2 shadow-md"
+      >
         <div className="flex items-center gap-2">
           <Link
             to="/"

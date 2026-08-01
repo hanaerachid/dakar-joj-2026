@@ -8,7 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Section } from "@/components/common/Section";
-import { Field } from "@/components/common/Field";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+} from "@/components/ui/empty"
+import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /* ---------------- Types ---------------- */
 export type Zone = {
@@ -188,7 +195,8 @@ export function PlacesListPage() {
       {/* Filters */}
       <Section title="Filters">
         <div className="grid gap-4 md:grid-cols-4">
-          <Field id="category" label="Category" required>
+          <Field>
+            <FieldLabel htmlFor="category">Category</FieldLabel>
             <select
               id="category"
               value={categoryId}
@@ -203,17 +211,8 @@ export function PlacesListPage() {
             </select>
           </Field>
 
-          <Field
-            id="zone"
-            label="Zone"
-            hint={
-              zonesLoading
-                ? "Loading zones…"
-                : zones.length === 0
-                  ? "No zones for this category — showing root collection."
-                  : undefined
-            }
-          >
+          <Field>
+            <FieldLabel htmlFor="zone">Zone</FieldLabel>
             <select
               id="zone"
               disabled={zonesLoading || zones.length === 0}
@@ -232,9 +231,19 @@ export function PlacesListPage() {
               ))}
               {/* Root-only fallback when there are no zones (disabled select anyway) */}
             </select>
+            <FieldDescription>
+              {
+                zonesLoading
+                  ? "Loading zones…"
+                  : zones.length === 0
+                    ? "No zones for this category — showing root collection."
+                    : undefined
+              }
+            </FieldDescription>
           </Field>
 
-          <Field id="search" label="Search">
+          <Field>
+            <FieldLabel htmlFor="search">Search</FieldLabel>
             <Input
               id="search"
               placeholder="Name, address, tag…"
@@ -243,7 +252,8 @@ export function PlacesListPage() {
             />
           </Field>
 
-          <Field id="sort" label="Sort by">
+          <Field>
+            <FieldLabel htmlFor="sort">Sort by</FieldLabel>
             <select
               id="sort"
               value={sort}
@@ -262,26 +272,30 @@ export function PlacesListPage() {
         {loading && (
           <div className="col-span-full grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {[...Array(6)].map((_, i) => (
-              <div
+              <Skeleton
                 key={i}
-                className="overflow-hidden rounded-3xl border border-foreground/30/60 bg-background/60 backdrop-blur-md shadow-sm"
+                className="overflow-hidden rounded-3xl"
               >
-                <div className="h-2 w-full bg-foreground/30" />
-                <div className="h-44 w-full animate-pulse bg-foreground/20" />
-                <div className="p-4 space-y-3">
-                  <div className="h-4 w-1/2 animate-pulse rounded bg-foreground/20" />
-                  <div className="h-3 w-2/3 animate-pulse rounded bg-foreground/20" />
-                  <div className="h-8 w-full animate-pulse rounded bg-foreground/20" />
-                </div>
-              </div>
+                <Skeleton className="h-2 w-full bg-foreground/30" />
+                <Skeleton className="h-44 w-full bg-foreground/20" />
+                <Skeleton className="p-4 space-y-3">
+                  <Skeleton className="h-4 w-1/2 rounded bg-foreground/20" />
+                  <Skeleton className="h-3 w-2/3 rounded bg-foreground/20" />
+                  <Skeleton className="h-8 w-full rounded bg-foreground/20" />
+                </Skeleton>
+              </Skeleton>
             ))}
           </div>
         )}
 
         {!loading && filtered.length === 0 && (
-          <div className="col-span-full rounded-3xl border border-foreground/30/60 bg-background/70 p-8 text-center text-sm text-foreground/50 shadow-sm">
-            No places found.
-          </div>
+          <Empty className="col-span-full rounded-3xl border border-foreground/30 p-8 text-foreground/50 shadow-sm">
+            <EmptyHeader>
+              <EmptyDescription className="text-center text-sm text-foreground/50">
+                No places found
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         )}
 
         {!loading &&
@@ -290,45 +304,44 @@ export function PlacesListPage() {
               (p.zoneId ?? null) ||
               (zoneId && zoneId !== ALL_ZONES ? zoneId : null);
             return (
-              <div
+              <Card
                 key={p.id}
-                className="overflow-hidden rounded-3xl border border-foreground/30/60 bg-background/70 backdrop-blur-md shadow-sm transition hover:shadow-lg"
+                size="sm"
+                className="rounded-3xl relative mx-auto w-full max-w-sm pt-0"
+                style={{
+                  background: `linear-gradient(90deg, ${p.gradientFrom || "#e5e7eb"
+                    }, ${p.gradientTo || "#d1d5db"})`,
+                }}
               >
-                {/* thin gradient strip */}
-                <div
-                  className="h-2 w-full"
-                  style={{
-                    background: `linear-gradient(90deg, ${p.gradientFrom || "#e5e7eb"
-                      }, ${p.gradientTo || "#d1d5db"})`,
-                  }}
-                />
 
                 {/* image */}
+                <div className="absolute inset-0 z-30 aspect-video bg-black/35" />
                 {p.imageUrl ? (
                   <img
                     src={p.imageUrl}
                     alt={p.name}
-                    className="h-44 w-full object-cover"
+                    className="relative z-20 aspect-video w-full object-cover"
                     loading="lazy"
                   />
                 ) : (
-                  <div className="flex h-44 w-full items-center justify-center bg-background/50 text-foreground/30">
+                  <div className="flex items-center z-20 aspect-video w-full justify-center bg-background/50 text-foreground/30">
                     No image
                   </div>
                 )}
 
                 {/* body */}
-                <div className="p-4">
-                  <div className="mb-1 flex items-center gap-2">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
                     <span
                       className="inline-block h-2.5 w-2.5 rounded-full border border-foreground/30"
                       style={{ background: p.pointColor || "#9ca3af" }}
                     />
-                    <h4 className="font-semibold leading-tight text-foreground/90">
+                    <CardTitle className="font-semibold leading-tight text-foreground/90">
                       {p.name}
-                    </h4>
+                    </CardTitle>
                   </div>
-
+                </CardHeader>
+                <CardContent>
                   {p.location && (
                     <p className="text-xs text-foreground/50">
                       {p.location.latitude?.toFixed?.(5)} •{" "}
@@ -343,30 +356,29 @@ export function PlacesListPage() {
                       ))}
                     </div>
                   )}
-
-                  <div className="mt-4 flex items-center justify-between">
-                    <div className="text-xs text-foreground/50">
-                      {p.updatedAt?.toDate
-                        ? new Date(p.updatedAt.toDate()).toLocaleString()
-                        : ""}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Link
-                        to={`/admin/places/${linkZone ?? "root"}/${p.id}`}
-                        className="text-sm font-medium text-foreground/90 underline-offset-2 hover:underline"
-                      >
-                        View / Edit
-                      </Link>
-                      <Button
-                        variant="destructive"
-                        onClick={() => handleDeleteForPlace(p)}
-                      >
-                        Delete
-                      </Button>
-                    </div>
+                </CardContent>
+                <CardFooter className="flex items-center justify-between">
+                  <div className="text-xs text-foreground/50">
+                    {p.updatedAt?.toDate
+                      ? new Date(p.updatedAt.toDate()).toLocaleString()
+                      : ""}
                   </div>
-                </div>
-              </div>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to={`/admin/places/${linkZone ?? "root"}/${p.id}`}
+                      className="text-sm font-medium text-foreground/90 underline-offset-2 hover:underline"
+                    >
+                      View / Edit
+                    </Link>
+                    <Button
+                      variant="destructive"
+                      onClick={() => handleDeleteForPlace(p)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </CardFooter>
+              </Card>
             );
           })}
       </div>
