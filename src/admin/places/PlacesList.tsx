@@ -4,95 +4,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { deletePlace, listPlaces, listZones } from "../../lib/api/places";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { CATEGORIES } from "../../components/place-list/place-list-utils";
-
-/* ---------- Small UI helpers (soft, modern) ---------- */
-function Section({
-  title,
-  desc,
-  children,
-}: {
-  title: string;
-  desc?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="rounded-3xl border border-gray-200/60 bg-white/70 backdrop-blur-md p-5 shadow-sm ring-1 ring-black/5">
-      <header className="mb-4">
-        <h3 className="text-base font-semibold text-gray-900">{title}</h3>
-        {desc ? <p className="mt-1 text-sm text-gray-500">{desc}</p> : null}
-      </header>
-      <div className="space-y-4">{children}</div>
-    </section>
-  );
-}
-
-function Field({
-  id,
-  label,
-  hint,
-  required,
-  children,
-}: {
-  id: string;
-  label: string;
-  hint?: string;
-  required?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="grid gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium text-gray-800">
-        {label} {required ? <span className="text-rose-500">*</span> : null}
-      </label>
-      {children}
-      {hint ? <p className="text-xs text-gray-500">{hint}</p> : null}
-    </div>
-  );
-}
-
-function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <input
-      {...props}
-      className={[
-        "h-10 w-full rounded-2xl border border-gray-200 bg-white/80 px-3 text-sm shadow-sm outline-none transition",
-        "placeholder:text-gray-400",
-        "focus:border-blue-300 focus:ring-4 focus:ring-blue-100",
-        "disabled:opacity-60 disabled:cursor-not-allowed",
-        props.className || "",
-      ].join(" ")}
-    />
-  );
-}
-
-function Button({
-  children,
-  variant = "primary",
-  className = "",
-  ...rest
-}: any) {
-  const base =
-    "inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2 text-sm transition focus:outline-none focus:ring-4 focus:ring-blue-100";
-  const styles =
-    variant === "primary"
-      ? "bg-gray-900 text-white hover:bg-gray-800 disabled:bg-gray-400"
-      : variant === "ghost"
-      ? "hover:bg-black/5"
-      : "border border-gray-200 bg-white hover:bg-gray-50";
-  return (
-    <button className={[base, styles, className].join(" ")} {...rest}>
-      {children}
-    </button>
-  );
-}
-
-function Chip({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center rounded-full border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">
-      {children}
-    </span>
-  );
-}
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Section } from "@/components/common/Section";
+import { Field } from "@/components/common/Field";
 
 /* ---------------- Types ---------------- */
 export type Zone = {
@@ -232,18 +148,18 @@ export function PlacesListPage() {
   return (
     <div className="mx-auto max-w-7xl p-4 md:p-6">
       {/* Top bar */}
-      <div className="mb-6 rounded-2xl border border-black/5 bg-white/70 backdrop-blur p-4 md:p-5 shadow-sm">
+      <div className="mb-6 rounded-2xl border border-black/5 bg-background/70 backdrop-blur p-4 md:p-5 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3 md:gap-4">
           {/* Title + subtitle */}
           <div className="min-w-0">
-            <h2 className="flex items-center gap-2 text-lg md:text-xl font-semibold tracking-tight text-gray-900">
+            <h2 className="flex items-center gap-2 text-lg md:text-xl font-semibold tracking-tight text-foreground/90">
               <Icon
                 icon="mdi:map-marker-radius-outline"
                 className="h-5 w-5 text-blue-600"
               />
               <span className="truncate">Places</span>
             </h2>
-            <p className="mt-0.5 text-sm text-gray-600 truncate">
+            <p className="mt-0.5 text-sm text-foreground/70 truncate">
               Browse and manage places within a zone or across all zones.
             </p>
           </div>
@@ -252,7 +168,7 @@ export function PlacesListPage() {
           <div className="flex items-center gap-2">
             <Button
               onClick={() => navigate("/admin/places/import")}
-              className="h-10 rounded-xl bg-blue-600 text-white shadow-md hover:bg-blue-700 inline-flex items-center gap-2"
+              className="h-10 rounded-xl bg-primary shadow-md inline-flex items-center gap-2"
             >
               <Icon icon="mdi:file-upload-outline" className="h-5 w-5" />
               <span>Import places</span>
@@ -260,7 +176,7 @@ export function PlacesListPage() {
 
             <Button
               onClick={() => navigate("/admin/places/new")}
-              className="h-10 rounded-xl bg-blue-600 text-white shadow-md hover:bg-blue-700 inline-flex items-center gap-2"
+              className="h-10 rounded-xl bg-primary shadow-md inline-flex items-center gap-2"
             >
               <Icon icon="mdi:plus" className="h-5 w-5" />
               <span>New place</span>
@@ -277,7 +193,7 @@ export function PlacesListPage() {
               id="category"
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="h-10 w-full rounded-2xl border border-gray-200 bg-white/80 px-3 text-sm shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+              className="h-10 w-full rounded-2xl border border-foreground/30 bg-background/80 px-3 text-sm shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
             >
               {CATEGORIES.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -294,8 +210,8 @@ export function PlacesListPage() {
               zonesLoading
                 ? "Loading zones…"
                 : zones.length === 0
-                ? "No zones for this category — showing root collection."
-                : undefined
+                  ? "No zones for this category — showing root collection."
+                  : undefined
             }
           >
             <select
@@ -303,7 +219,7 @@ export function PlacesListPage() {
               disabled={zonesLoading || zones.length === 0}
               value={zoneId}
               onChange={(e) => setZoneId(e.target.value)}
-              className="h-10 w-full rounded-2xl border border-gray-200 bg-white/80 px-3 text-sm shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100 disabled:opacity-60"
+              className="h-10 w-full rounded-2xl border border-foreground/30 bg-background/80 px-3 text-sm shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100 disabled:opacity-60"
             >
               {/* All zones option when zones exist */}
               {zones.length > 0 && (
@@ -319,7 +235,7 @@ export function PlacesListPage() {
           </Field>
 
           <Field id="search" label="Search">
-            <TextInput
+            <Input
               id="search"
               placeholder="Name, address, tag…"
               value={search}
@@ -332,7 +248,7 @@ export function PlacesListPage() {
               id="sort"
               value={sort}
               onChange={(e) => setSort(e.target.value as any)}
-              className="h-10 w-full rounded-2xl border border-gray-200 bg-white/80 px-3 text-sm shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+              className="h-10 w-full rounded-2xl border border-foreground/30 bg-background/80 px-3 text-sm shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
             >
               <option value="updated">Last updated</option>
               <option value="name">Name (A→Z)</option>
@@ -348,14 +264,14 @@ export function PlacesListPage() {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="overflow-hidden rounded-3xl border border-gray-200/60 bg-white/60 backdrop-blur-md shadow-sm"
+                className="overflow-hidden rounded-3xl border border-foreground/30/60 bg-background/60 backdrop-blur-md shadow-sm"
               >
-                <div className="h-2 w-full bg-gray-200/70" />
-                <div className="h-44 w-full animate-pulse bg-gray-100" />
+                <div className="h-2 w-full bg-foreground/30" />
+                <div className="h-44 w-full animate-pulse bg-foreground/20" />
                 <div className="p-4 space-y-3">
-                  <div className="h-4 w-1/2 animate-pulse rounded bg-gray-100" />
-                  <div className="h-3 w-2/3 animate-pulse rounded bg-gray-100" />
-                  <div className="h-8 w-full animate-pulse rounded bg-gray-100" />
+                  <div className="h-4 w-1/2 animate-pulse rounded bg-foreground/20" />
+                  <div className="h-3 w-2/3 animate-pulse rounded bg-foreground/20" />
+                  <div className="h-8 w-full animate-pulse rounded bg-foreground/20" />
                 </div>
               </div>
             ))}
@@ -363,7 +279,7 @@ export function PlacesListPage() {
         )}
 
         {!loading && filtered.length === 0 && (
-          <div className="col-span-full rounded-3xl border border-gray-200/60 bg-white/70 p-8 text-center text-sm text-gray-600 shadow-sm">
+          <div className="col-span-full rounded-3xl border border-foreground/30/60 bg-background/70 p-8 text-center text-sm text-foreground/50 shadow-sm">
             No places found.
           </div>
         )}
@@ -376,15 +292,14 @@ export function PlacesListPage() {
             return (
               <div
                 key={p.id}
-                className="overflow-hidden rounded-3xl border border-gray-200/60 bg-white/70 backdrop-blur-md shadow-sm transition hover:shadow-lg"
+                className="overflow-hidden rounded-3xl border border-foreground/30/60 bg-background/70 backdrop-blur-md shadow-sm transition hover:shadow-lg"
               >
                 {/* thin gradient strip */}
                 <div
                   className="h-2 w-full"
                   style={{
-                    background: `linear-gradient(90deg, ${
-                      p.gradientFrom || "#e5e7eb"
-                    }, ${p.gradientTo || "#d1d5db"})`,
+                    background: `linear-gradient(90deg, ${p.gradientFrom || "#e5e7eb"
+                      }, ${p.gradientTo || "#d1d5db"})`,
                   }}
                 />
 
@@ -397,7 +312,7 @@ export function PlacesListPage() {
                     loading="lazy"
                   />
                 ) : (
-                  <div className="flex h-44 w-full items-center justify-center bg-gray-50 text-gray-400">
+                  <div className="flex h-44 w-full items-center justify-center bg-background/50 text-foreground/30">
                     No image
                   </div>
                 )}
@@ -406,16 +321,16 @@ export function PlacesListPage() {
                 <div className="p-4">
                   <div className="mb-1 flex items-center gap-2">
                     <span
-                      className="inline-block h-2.5 w-2.5 rounded-full border border-gray-300"
+                      className="inline-block h-2.5 w-2.5 rounded-full border border-foreground/30"
                       style={{ background: p.pointColor || "#9ca3af" }}
                     />
-                    <h4 className="font-semibold leading-tight text-gray-900">
+                    <h4 className="font-semibold leading-tight text-foreground/90">
                       {p.name}
                     </h4>
                   </div>
 
                   {p.location && (
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-foreground/50">
                       {p.location.latitude?.toFixed?.(5)} •{" "}
                       {p.location.longitude?.toFixed?.(5)}
                     </p>
@@ -424,13 +339,13 @@ export function PlacesListPage() {
                   {p.tags && p.tags.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {p.tags.map((t, i) => (
-                        <Chip key={i}>{t}</Chip>
+                        <Badge key={i}>{t}</Badge>
                       ))}
                     </div>
                   )}
 
                   <div className="mt-4 flex items-center justify-between">
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-foreground/50">
                       {p.updatedAt?.toDate
                         ? new Date(p.updatedAt.toDate()).toLocaleString()
                         : ""}
@@ -438,13 +353,12 @@ export function PlacesListPage() {
                     <div className="flex items-center gap-2">
                       <Link
                         to={`/admin/places/${linkZone ?? "root"}/${p.id}`}
-                        className="text-sm font-medium text-gray-900 underline-offset-2 hover:underline"
+                        className="text-sm font-medium text-foreground/90 underline-offset-2 hover:underline"
                       >
                         View / Edit
                       </Link>
                       <Button
-                        variant="ghost"
-                        className="text-rose-600 hover:bg-rose-50"
+                        variant="destructive"
                         onClick={() => handleDeleteForPlace(p)}
                       >
                         Delete
