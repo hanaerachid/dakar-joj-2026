@@ -1,3 +1,5 @@
+import { Field, FieldLabel } from "@/components/ui/field";
+
 type Props = {
   gradientFrom: string;
   setGradientFrom: (v: string) => void;
@@ -33,13 +35,12 @@ export default function VisualsFields({
       {/* Gradient pickers */}
       <div className="grid gap-4 sm:grid-cols-2">
         {/* Field: Gradient from */}
-        <div className="grid gap-1.5">
-          <label
+        <Field className="grid gap-1.5">
+          <FieldLabel
             htmlFor="gradFrom"
-            className="text-sm font-medium text-gray-800"
           >
             Gradient from
-          </label>
+          </FieldLabel>
           <div className="flex items-center gap-2">
             <input
               id="gradFrom"
@@ -59,13 +60,13 @@ export default function VisualsFields({
               ].join(" ")}
             />
           </div>
-        </div>
+        </Field>
 
         {/* Field: Gradient to */}
-        <div className="grid gap-1.5">
-          <label htmlFor="gradTo" className="text-sm font-medium text-gray-800">
+        <Field className="grid gap-1.5">
+          <FieldLabel htmlFor="gradTo">
             Gradient to
-          </label>
+          </FieldLabel>
           <div className="flex items-center gap-2">
             <input
               id="gradTo"
@@ -85,7 +86,7 @@ export default function VisualsFields({
               ].join(" ")}
             />
           </div>
-        </div>
+        </Field>
       </div>
 
       {/* Live gradient preview */}
@@ -95,14 +96,14 @@ export default function VisualsFields({
           style={gradientStyle}
           aria-label="Gradient preview"
         />
-        <span className="text-xs text-gray-600">Live gradient preview</span>
+        <span className="text-xs text-foreground/70">Live gradient preview</span>
       </div>
 
       {/* Cover image */}
-      <div className="grid gap-1.5">
-        <label htmlFor="image" className="text-sm font-medium text-gray-800">
+      <Field className="grid gap-1.5">
+        <FieldLabel htmlFor="image">
           Cover image
-        </label>
+        </FieldLabel>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <input
             id="image"
@@ -125,7 +126,7 @@ export default function VisualsFields({
             className="mt-2 max-h-44 w-auto rounded-xl border shadow-sm"
           />
         )}
-      </div>
+      </Field>
     </>
   );
 }

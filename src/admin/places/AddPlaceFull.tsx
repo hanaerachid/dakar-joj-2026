@@ -3,15 +3,16 @@ import { useEffect, useMemo, useState } from "react";
 import { listZones, createPlace } from "../../lib/api/places";
 import { uploadImage as uploadImageRequest } from "../../lib/api/uploads";
 import { SITES_META, type VenueSport } from "../../data/sitesMeta";
-import PlacePreview from "../../components/admin/places/PlacePreview";
-import BrandingFields from "../../components/admin/places/BrandingFields";
-import VisualsFields from "../../components/admin/places/VisualsFields";
-import { Section } from "../../components/common/Section";
-import { Button } from "../../components/common/Button";
-import BasicDetailsFields from "../../components/admin/places/BasicDetailsFields";
-import CategoryZoneFields from "../../components/admin/places/CategoryZoneFields";
-import { CATEGORIES } from "../../components/place-list/place-list-utils";
+import PlacePreview from "@/components/admin/places/PlacePreview";
+import BrandingFields from "@/components/admin/places/BrandingFields";
+import VisualsFields from "@/components/admin/places/VisualsFields";
+import { Section } from "@/components/common/Section";
+import { Button } from "@/components/ui/button";
+import BasicDetailsFields from "@/components/admin/places/BasicDetailsFields";
+import CategoryZoneFields from "@/components/admin/places/CategoryZoneFields";
+import { CATEGORIES } from "@/components/place-list/place-list-utils";
 import { ALL_SPORT_OPTIONS } from "../../data/sports";
+import { ButtonGroup } from "@/components/ui/button-group";
 
 /* ---------------------------------------------
    Types & constants
@@ -288,7 +289,7 @@ export default function AddPlaceFull() {
       <div className="mb-5 flex items-start justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold tracking-tight">Add a Place</h2>
-          <p className="mt-1 text-sm text-gray-600">
+          <p className="mt-1 text-sm text-foreground/70">
             Create a new venue with coordinates, visuals, and branding. All
             fields are stored as Firestore fields.
           </p>
@@ -298,11 +299,10 @@ export default function AddPlaceFull() {
       {/* Toast */}
       {toast && (
         <div
-          className={`mb-4 rounded-xl border px-4 py-3 text-sm shadow-sm ${
-            toast.kind === "success"
+          className={`mb-4 rounded-xl border px-4 py-3 text-sm shadow-sm ${toast.kind === "success"
               ? "border-emerald-200 bg-emerald-50 text-emerald-900"
               : "border-rose-200 bg-rose-50 text-rose-900"
-          }`}
+            }`}
         >
           {toast.msg}
         </div>
@@ -397,8 +397,10 @@ export default function AddPlaceFull() {
           </Section>
 
           {/* Actions */}
-          <div className="flex items-center gap-3 pt-2">
-            <Button onClick={onSave} disabled={!canSave}>
+          <ButtonGroup className="flex items-center gap-3 pt-2">
+            <Button
+              variant="default"
+              onClick={onSave} disabled={!canSave}>
               {saving ? "Saving…" : "Create place"}
             </Button>
             <Button
@@ -431,21 +433,15 @@ export default function AddPlaceFull() {
             >
               Reset
             </Button>
-          </div>
+          </ButtonGroup>
         </div>
 
         {/* Live preview column - right */}
         <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-20 self-start">
-          <section className="">
-            <header className="mb-4">
-              <h3 className="text-base font-semibold text-gray-900">
-                Live preview
-              </h3>
-
-              <p className="mt-1 text-sm text-gray-500">
-                How this card might look in the app.
-              </p>
-            </header>
+          <Section
+            title="Live Preview"
+            desc="How this card might look in the app."
+          >
             <div className="space-y-4">
               <PlacePreview
                 gradientFrom={gradientFrom}
@@ -467,7 +463,7 @@ export default function AddPlaceFull() {
                 socialHandle={socialHandle}
               />
             </div>
-          </section>
+          </Section>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import { Field } from "../../common/Field";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { TextInput } from "../../common/TextInput";
 import { TextArea } from "../../common/TextArea";
 import { ColorInput } from "../../common/ColorInput";
@@ -81,7 +81,10 @@ export default function BasicDetailsFields(props: Props) {
       <Section title="Basic details">
         {/* Row 1: name */}
         <div className="grid gap-4 sm:grid-cols-1">
-          <Field id="name" label="Place name" required>
+          <Field>
+            <FieldLabel htmlFor="name">
+              Place name
+            </FieldLabel>
             <TextInput
               id="name"
               placeholder="e.g. Iba Mar Diop Stadium"
@@ -91,7 +94,10 @@ export default function BasicDetailsFields(props: Props) {
           </Field>
         </div>
         <div className="grid gap-4 sm:grid-cols-1">
-          <Field id="nameFr" label="Place name (French)">
+          <Field>
+            <FieldLabel htmlFor="nameFr">
+              Place name (French)
+            </FieldLabel>
             <TextInput
               id="nameFr"
               placeholder="Nom en français…"
@@ -101,22 +107,28 @@ export default function BasicDetailsFields(props: Props) {
           </Field>
         </div>
         {/* Row 1.1:  lat, lng + map picker */}
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field id="lat" label="Latitude" required>
-            <TextInput
-              id="lat"
-              type="number"
-              step="any"
-              placeholder="14.6928"
-              value={lat as any}
-              onChange={(e) =>
-                setLat(e.target.value === "" ? "" : parseFloat(e.target.value))
-              }
-            />
-          </Field>
+        <div className="flex items-center gap-3">
+          <div className="flex-1 grid gap-4 sm:grid-cols-2">
+            <Field>
+              <FieldLabel htmlFor="lat">
+                Latitude
+              </FieldLabel>
+              <TextInput
+                id="lat"
+                type="number"
+                step="any"
+                placeholder="14.6928"
+                value={lat as any}
+                onChange={(e) =>
+                  setLat(e.target.value === "" ? "" : parseFloat(e.target.value))
+                }
+              />
+            </Field>
 
-          <Field id="lng" label="Longitude" required>
-            <div className="flex items-center gap-3">
+            <Field>
+              <FieldLabel htmlFor="lng">
+                Longitude
+              </FieldLabel>
               <TextInput
                 id="lng"
                 type="number"
@@ -130,12 +142,15 @@ export default function BasicDetailsFields(props: Props) {
                 }
                 className="flex-1"
               />
-              <LocationPickerButton onClick={() => setMapOpen(true)} />
-            </div>
-          </Field>
+            </Field>
+          </div>
+          <LocationPickerButton onClick={() => setMapOpen(true)} />
         </div>
 
-        <Field id="address" label="Address">
+        <Field>
+          <FieldLabel htmlFor="address">
+            Address
+          </FieldLabel>
           <TextInput
             id="address"
             placeholder="Street, City"
@@ -144,33 +159,36 @@ export default function BasicDetailsFields(props: Props) {
           />
         </Field>
 
-        <Field
-          id="info"
-          label="About / Info"
-          hint="Short description shown in the card/popup."
-        >
+        <Field>
+          <FieldLabel htmlFor="info">
+            About / Info
+          </FieldLabel>
           <TextArea
             id="info"
             placeholder="Historic multi-use stadium in Dakar."
             value={info}
             onChange={(e) => setInfo(e.target.value)}
           />
+          <FieldDescription>Short description shown in the card/popup.</FieldDescription>
         </Field>
-        <Field
-          id="infoFr"
-          label="About / Info (French)"
-          hint="French description shown when the app is in FR."
-        >
+        <Field>
+          <FieldLabel htmlFor="infoFr">
+            About / Info (French)
+          </FieldLabel>
           <TextArea
             id="infoFr"
             placeholder="Description en français…"
             value={infoFr}
             onChange={(e) => setInfoFr(e.target.value)}
-          />
+            />
+            <FieldDescription>French description shown when the app is in FR.</FieldDescription>
         </Field>
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <Field id="rating" label="Rating (0–5)">
+          <Field>
+            <FieldLabel htmlFor="rating">
+              Rating (0–5)
+            </FieldLabel>
             <TextInput
               id="rating"
               type="number"
@@ -186,20 +204,24 @@ export default function BasicDetailsFields(props: Props) {
               }
             />
           </Field>
-          <Field id="tags" label="Tags" hint="Comma separated. Shown as chips.">
+          <Field>
+            <FieldLabel htmlFor="tags">
+              Tags
+            </FieldLabel>
             <TextInput
               id="tags"
               placeholder="Stadium, Sports, Events"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
-            />
+              />
+              <FieldDescription>Comma separated. Shown as chips.</FieldDescription>
           </Field>
-          <Field
-            id="pointColor"
-            label="Point color"
-            hint="Marker color on the map."
-          >
+          <Field>
+            <FieldLabel htmlFor="pointColor">
+              Point color
+            </FieldLabel>
             <ColorInput value={pointColor} onChange={setPointColor} />
+            <FieldDescription>Marker color on the map.</FieldDescription>
           </Field>
         </div>
 
@@ -218,7 +240,7 @@ export default function BasicDetailsFields(props: Props) {
           desc="Select all sports hosted at this venue. Defaults come from the site meta when available."
         >
           {ALL_SPORT_OPTIONS.length === 0 ? (
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-foreground/70">
               No sport options found in site meta.
             </p>
           ) : (
@@ -228,7 +250,7 @@ export default function BasicDetailsFields(props: Props) {
                 return (
                   <label
                     key={s.key}
-                    className="flex items-center gap-3 rounded-xl border bg-white/70 px-3 py-2 text-sm"
+                    className="flex items-center gap-3 rounded-xl border bg-background/70 px-3 py-2 text-sm"
                   >
                     <input
                       type="checkbox"
@@ -259,7 +281,7 @@ export default function BasicDetailsFields(props: Props) {
               {sports.map((s) => (
                 <span
                   key={s.key}
-                  className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs bg-white/70"
+                  className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs bg-background/70"
                 >
                   {s.icon ? (
                     <Icon icon={s.icon} width={14} height={14} />

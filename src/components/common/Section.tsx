@@ -1,3 +1,5 @@
+import { Separator } from "@/components/ui/separator";
+
 export function Section({
   title,
   desc,
@@ -8,12 +10,13 @@ export function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="px-2 py-10 border-b border-gray-200">
-      <header className="mb-4">
-        <h3 className="text-base font-semibold text-gray-900">{title}</h3>
-        {desc ? <p className="mt-1 text-sm text-gray-500">{desc}</p> : null}
+    <section className="space-y-10 px-2">
+      <header className="space-y-2 mb-4">
+        <h3 className="text-base font-semibold text-foreground/90">{title}</h3>
+        {desc ? <p className="text-sm text-foreground/70">{desc}</p> : null}
       </header>
       <div className="space-y-4">{children}</div>
+      <Separator />
     </section>
   );
 }

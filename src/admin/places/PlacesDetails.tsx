@@ -7,6 +7,7 @@ import { SITES_META, type VenueSport } from "../../data/sitesMeta";
 import { Icon } from "@iconify/react";
 import PlacePreview from "../../components/admin/places/PlacePreview";
 import { ALL_SPORT_OPTIONS } from "../../data/sports";
+import { Field as FieldUI, FieldDescription, FieldLabel } from "@/components/ui/field";
 
 /* ---------- Small UI helpers ---------- */
 function Section({
@@ -43,13 +44,13 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div className="grid gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium text-gray-800">
-        {label} {required ? <span className="text-red-500">*</span> : null}
-      </label>
+    <FieldUI>
+      <FieldLabel htmlFor={id}>
+        {label} {required ? <span className="text-destructive">*</span> : null}
+      </FieldLabel>
       {children}
-      {hint ? <p className="text-xs text-gray-500">{hint}</p> : null}
-    </div>
+      {hint ? <FieldDescription>{hint}</FieldDescription> : null}
+    </FieldUI>
   );
 }
 

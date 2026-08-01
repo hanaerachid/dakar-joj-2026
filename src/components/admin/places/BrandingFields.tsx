@@ -1,3 +1,5 @@
+import { Field, FieldLabel } from "@/components/ui/field";
+
 type Props = {
   brandTitle: string;
   setBrandTitle: (v: string) => void;
@@ -34,13 +36,10 @@ export default function BrandingFields({
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       {/* Brand title */}
-      <div className="grid gap-1.5">
-        <label
-          htmlFor="brandTitle"
-          className="text-sm font-medium text-gray-800"
-        >
+      <Field className="grid gap-1.5">
+        <FieldLabel htmlFor="brandTitle">
           Brand title
-        </label>
+        </FieldLabel>
         <input
           id="brandTitle"
           placeholder="DAKAR 2026"
@@ -52,16 +51,13 @@ export default function BrandingFields({
             "disabled:opacity-60 disabled:cursor-not-allowed",
           ].join(" ")}
         />
-      </div>
+      </Field>
 
       {/* Brand subtitle */}
-      <div className="grid gap-1.5">
-        <label
-          htmlFor="brandSubtitle"
-          className="text-sm font-medium text-gray-800"
-        >
+      <Field className="grid gap-1.5">
+        <FieldLabel htmlFor="brandSubtitle">
           Brand subtitle
-        </label>
+        </FieldLabel>
         <input
           id="brandSubtitle"
           placeholder="YOUTH OLYMPIC GAMES"
@@ -73,16 +69,13 @@ export default function BrandingFields({
             "disabled:opacity-60 disabled:cursor-not-allowed",
           ].join(" ")}
         />
-      </div>
+      </Field>
 
       {/* Location label */}
-      <div className="grid gap-1.5">
-        <label
-          htmlFor="locationLabel"
-          className="text-sm font-medium text-gray-800"
-        >
+      <Field className="grid gap-1.5">
+        <FieldLabel htmlFor="locationLabel">
           Location label
-        </label>
+        </FieldLabel>
         <input
           id="locationLabel"
           placeholder="Diamniadio"
@@ -94,16 +87,13 @@ export default function BrandingFields({
             "disabled:opacity-60 disabled:cursor-not-allowed",
           ].join(" ")}
         />
-      </div>
+      </Field>
 
       {/* Short code */}
-      <div className="grid gap-1.5">
-        <label
-          htmlFor="shortCode"
-          className="text-sm font-medium text-gray-800"
-        >
+      <Field className="grid gap-1.5">
+        <FieldLabel htmlFor="shortCode">
           Short code
-        </label>
+        </FieldLabel>
         <input
           id="shortCode"
           placeholder="DEX"
@@ -115,13 +105,13 @@ export default function BrandingFields({
             "disabled:opacity-60 disabled:cursor-not-allowed",
           ].join(" ")}
         />
-      </div>
+      </Field>
 
       {/* Website */}
-      <div className="grid gap-1.5">
-        <label htmlFor="website" className="text-sm font-medium text-gray-800">
+      <Field className="grid gap-1.5">
+        <FieldLabel htmlFor="website">
           Website
-        </label>
+        </FieldLabel>
         <input
           id="website"
           placeholder="https://www.dakar2026.org"
@@ -133,13 +123,13 @@ export default function BrandingFields({
             "disabled:opacity-60 disabled:cursor-not-allowed",
           ].join(" ")}
         />
-      </div>
+      </Field>
 
       {/* Social handle */}
-      <div className="grid gap-1.5">
-        <label htmlFor="social" className="text-sm font-medium text-gray-800">
+      <Field className="grid gap-1.5">
+        <FieldLabel htmlFor="social">
           Social handle
-        </label>
+        </FieldLabel>
         <input
           id="social"
           placeholder="@jojdakar2026"
@@ -151,7 +141,7 @@ export default function BrandingFields({
             "disabled:opacity-60 disabled:cursor-not-allowed",
           ].join(" ")}
         />
-      </div>
+      </Field>
     </div>
   );
 }

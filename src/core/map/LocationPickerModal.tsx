@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { Button } from "@/components/ui/button";
+import { XIcon } from "lucide-react";
 
 // Quick default marker fix for bundlers (Vite/CRA) that don't auto-load Leaflet images
 const defaultIcon = new L.Icon({
@@ -121,32 +123,34 @@ export default function LocationPickerModal({
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-background/50 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden
       />
 
       {/* Modal */}
-      <div className="relative z-[101] w-full max-w-3xl overflow-hidden rounded-2xl bg-white/90 backdrop-blur-md shadow-2xl ring-1 ring-black/10">
+      <div className="relative z-[101] w-full max-w-3xl overflow-hidden rounded-2xl bg-background/90 backdrop-blur-md shadow-2xl ring-1 ring-black/10">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4">
-          <h3 className="text-base font-semibold text-zinc-900">
+          <h3 className="text-base font-semibold text-foreground/90">
             Pick location on map
           </h3>
-          <button
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-zinc-600 hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+          <Button
+            variant="ghost"
+            size="icon"
+            className="focus:outline-none focus:ring-2 focus:ring-zinc-300"
             onClick={onClose}
             aria-label="Close"
           >
-            ×
-          </button>
+            <XIcon />
+          </Button>
         </div>
 
         {/* Search */}
         <div className="px-5 pb-2">
           <div className="flex gap-2">
             <input
-              className="h-10 w-full rounded-full bg-white/80 px-4 text-sm shadow-sm outline-none ring-1 ring-zinc-200 transition focus:ring-2 focus:ring-zinc-300"
+              className="h-10 w-full rounded-full bg-background/80 px-4 text-sm shadow-sm outline-none ring-1 ring-zinc-200 transition focus:ring-2 focus:ring-zinc-300"
               placeholder="Search in Senegal (stadium, address, landmark)…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -154,24 +158,24 @@ export default function LocationPickerModal({
                 if (e.key === "Enter") geocode(query);
               }}
             />
-            <button
-              className="shrink-0 rounded-full px-4 text-sm h-10 bg-zinc-900 text-white shadow-sm hover:bg-black transition"
+            <Button
+              className="shrink-0 rounded-full px-4 text-sm h-10 shadow-sm transition"
               onClick={() => geocode(query)}
               disabled={loading}
             >
               {loading ? "Searching…" : "Search"}
-            </button>
+            </Button>
           </div>
 
           {results.length > 0 && (
-            <div className="mt-2 max-h-44 overflow-auto rounded-xl bg-white/90 backdrop-blur ring-1 ring-zinc-200 shadow-sm divide-y divide-zinc-100">
+            <div className="mt-2 max-h-44 overflow-auto rounded-xl bg-background/90 backdrop-blur ring-1 ring-zinc-200 shadow-sm divide-y divide-zinc-100">
               {results.map((r, i) => {
                 const latNum = parseFloat(r.lat);
                 const lonNum = parseFloat(r.lon);
                 return (
                   <button
                     key={i}
-                    className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-50"
+                    className="w-full text-left px-3 py-2 text-sm"
                     onClick={() => {
                       setLat(latNum);
                       setLng(lonNum);
@@ -215,25 +219,27 @@ export default function LocationPickerModal({
               />
             </MapContainer>
           </div>
-          <div className="mt-3 text-[11px] text-zinc-500">
+          <div className="mt-3 text-xs text-foreground/70">
             Tip: Click on the map or drag the marker to fine-tune the position.
           </div>
         </div>
 
         {/* Footer */}
         <div className="flex items-center justify-end gap-2 px-5 pb-5">
-          <button
-            className="rounded-full px-4 py-2 text-sm text-zinc-700 ring-1 ring-zinc-200 hover:bg-zinc-100"
+          <Button
+            variant="outline"
+            className="rounded-full px-4 py-2 text-sm ring-1 ring-zinc-200"
             onClick={onClose}
           >
             Cancel
-          </button>
-          <button
-            className="rounded-full bg-zinc-900 px-4 py-2 text-sm text-white shadow-sm hover:bg-black"
+          </Button>
+          <Button
+            variant="default"
+            className="rounded-full px-4 py-2 text-sm shadow-sm"
             onClick={handleUseThisLocation}
           >
             Use this location
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { Field } from "../../common/Field";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 
 type Zone = { id: string; name: string; color: string; categoryId: string };
 
@@ -27,7 +27,10 @@ export default function CategoryZoneFields({
 }: Props) {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      <Field id="category" label="Category" required>
+      <Field>
+        <FieldLabel htmlFor="category" >
+          Category
+        </FieldLabel>
         <select
           id="category"
           value={categoryId}
@@ -42,17 +45,10 @@ export default function CategoryZoneFields({
         </select>
       </Field>
 
-      <Field
-        id="zone"
-        label="Zone"
-        hint={
-          zonesLoading
-            ? "Loading zones…"
-            : hasFallback
-            ? "No zones in this category — showing Competition zones so you can still attach one."
-            : "Optional. You can save without a zone."
-        }
-      >
+      <Field>
+        <FieldLabel htmlFor="zone" >
+          Zone
+        </FieldLabel>
         <select
           id="zone"
           disabled={zonesLoading}
@@ -90,6 +86,15 @@ export default function CategoryZoneFields({
             </>
           )}
         </select>
+        <FieldDescription>
+        {
+          zonesLoading
+            ? "Loading zones…"
+            : hasFallback
+            ? "No zones in this category — showing Competition zones so you can still attach one."
+            : "Optional. You can save without a zone."
+        }
+        </FieldDescription>
       </Field>
     </div>
   );
