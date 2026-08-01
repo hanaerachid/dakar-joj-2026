@@ -1,18 +1,8 @@
 // src/admin/places/PlaceDetailsPage.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  serverTimestamp,
-  updateDoc,
-  GeoPoint,
-  addDoc,
-} from "firebase/firestore";
-import { db, storage } from "../../auth/firebase";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { deletePlace, duplicatePlace, getPlace, updatePlace } from "../../lib/api/places";
+import { uploadImage as uploadImageRequest } from "../../lib/api/uploads";
 import { SITES_META, type VenueSport } from "../../data/sitesMeta";
 import { Icon } from "@iconify/react";
 import PlacePreview from "../../components/admin/places/PlacePreview";
@@ -143,12 +133,6 @@ function ColorInput({
 
 /* ---------- Helpers for root vs zone scoped docs ---------- */
 const isRoot = (z?: string | null) => !z || z === "root";
-const docRefFor = (z: string | undefined, p: string) =>
-  isRoot(z) ? doc(db, "places", p) : doc(db, "zones", z!, "places", p);
-const collectionFor = (z: string | undefined) =>
-  isRoot(z)
-    ? collection(db, "places")
-    : collection(doc(db, "zones", z!), "places");
 
 /* ---------- Sports helpers (shared with add page) ---------- */
 function uniqSports(list: VenueSport[]): VenueSport[] {
@@ -259,12 +243,12 @@ export function PlaceDetailsPage() {
     (async () => {
       setLoading(true);
       try {
-        const snap = await getDoc(docRefFor(zoneParam, placeId));
-        if (!snap.exists()) {
+        const snap = await getPlace(placeId, isRoot(zoneParam) ? null : zoneParam!);
+        if (!snap) {
           setToast({ kind: "error", msg: "Place not found." });
           return;
         }
-        const d = snap.data() as Place;
+        const d = snap as Place;
 
         setCategoryId(d.categoryId || "competition");
         setZoneIdInDoc(d.zoneId ?? (isRoot(zoneParam) ? null : zoneParam!));
@@ -324,25 +308,11 @@ export function PlaceDetailsPage() {
   /* ---------- Upload ---------- */
   async function uploadImage(folderHint: string | null, placeName: string) {
     if (!file) return null;
-    const ext = file.name.split(".").pop() || "jpg";
-    const safe = placeName.trim().toLowerCase().replace(/\s+/g, "-");
+    void placeName;
     const folder = folderHint || categoryId || "unassigned";
-    const path = `places/${folder}/${Date.now()}-${safe}.${ext}`;
-    const storageRef = ref(storage, path);
-    return new Promise<string>((resolve, reject) => {
-      const task = uploadBytesResumable(storageRef, file, {
-        contentType: file.type,
-      });
-      task.on(
-        "state_changed",
-        (snap) =>
-          setUploadPct(
-            Math.round((snap.bytesTransferred / snap.totalBytes) * 100),
-          ),
-        reject,
-        async () => resolve(await getDownloadURL(task.snapshot.ref)),
-      );
-    });
+    const result = await uploadImageRequest(file, `places/${folder}`);
+    setUploadPct(100);
+    return result.url;
   }
 
   /* ---------- Save ---------- */
@@ -357,10 +327,10 @@ export function PlaceDetailsPage() {
           )
         : null;
 
-      await updateDoc(docRefFor(zoneParam, placeId), {
+      await updatePlace(placeId, {
         name,
         name_fr: nameFr || null,
-        location: new GeoPoint(Number(lat), Number(lng)),
+        location: { latitude: Number(lat), longitude: Number(lng) },
         address: address || null,
         info: info || null,
         info_fr: infoFr || null,
@@ -388,7 +358,6 @@ export function PlaceDetailsPage() {
         sports: categoryId === "competition" ? sports : null,
         sportCount: categoryId === "competition" ? sports.length : 0,
 
-        updatedAt: serverTimestamp(),
       });
 
       setFile(null);
@@ -407,20 +376,12 @@ export function PlaceDetailsPage() {
   /* ---------- Delete / Duplicate ---------- */
   async function onDelete() {
     if (!confirm("Delete this place? This cannot be undone.")) return;
-    await deleteDoc(docRefFor(zoneParam, placeId));
+    await deletePlace(placeId, isRoot(zoneParam) ? null : zoneParam!);
     navigate("/admin/places");
   }
 
   async function duplicate() {
-    const src = await getDoc(docRefFor(zoneParam, placeId));
-    if (!src.exists()) return;
-    const d = src.data() as Place;
-    await addDoc(collectionFor(zoneParam), {
-      ...d,
-      name: `${d.name || "Untitled"} (copy)`,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
+    await duplicatePlace(placeId, isRoot(zoneParam) ? null : zoneParam!);
     navigate(-1);
   }
 

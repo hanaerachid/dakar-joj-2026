@@ -37,7 +37,7 @@ export function RegisterForm({
 
     setLoading(true);
     try {
-      await signUp(email, pw);
+      await signUp(email, pw, name);
       onDone();
     } catch (err) {
       setError((err as Error).message);

@@ -1,18 +1,10 @@
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  doc,
-  getDoc,
-} from "firebase/firestore";
 import type {
   Feature,
   FeatureCollection,
   Point,
   GeoJsonProperties,
 } from "geojson";
-import { db } from "../../auth/firebase";
+import { listPlaces, listZones } from "../../lib/api/places";
 
 export type SiteConfig = { name: string; file: string; color: string };
 
@@ -20,17 +12,12 @@ export type SiteConfig = { name: string; file: string; color: string };
 export async function getZonesForCategory(
   categoryId: string,
 ): Promise<SiteConfig[]> {
-  const qz = query(
-    collection(db, "zones"),
-    where("categoryId", "==", categoryId),
-  );
-  const snap = await getDocs(qz);
-  return snap.docs.map((d) => {
-    const data = d.data() as any;
+  const zones = await listZones(categoryId);
+  return zones.map((data) => {
     return {
-      name: (data.name as string) || "Unnamed Zone",
-      file: `firestore://${d.id}`, // zoned places live under this zone
-      color: (data.color as string) || "#3b82f6",
+      name: data.name || "Unnamed Zone",
+      file: `firestore://${data.id}`,
+      color: data.color || "#3b82f6",
     };
   });
 }
@@ -112,15 +99,10 @@ function parseStringArray(value: unknown): string[] {
  * Load all places under a specific zone (/zones/{zoneId}/places) as a FeatureCollection
  */
 export async function getZoneFeatureCollection(zoneId: string) {
-  const zoneRef = doc(db, "zones", zoneId);
-  const zoneSnap = await getDoc(zoneRef);
-  const zone = zoneSnap.data() as any | undefined;
-  const color = zone?.color || "#3b82f6";
-
-  const ps = await getDocs(collection(zoneRef, "places"));
-  const features = ps.docs
-    .map((d) => {
-      const p = d.data() as any;
+  const places = await listPlaces({ zoneId, scope: "zone" });
+  const color = "#3b82f6";
+  const features = places
+    .map((p) => {
       const { lat, lng } = toLatLng(p);
       if (typeof lat !== "number" || typeof lng !== "number") return null;
 
@@ -141,7 +123,7 @@ export async function getZoneFeatureCollection(zoneId: string) {
           tags, // ✅ normalized
           gradient, // ✅ array form
           Name: p.name,
-          zone: zone?.name || zoneId,
+          zone: p.zone || zoneId,
         },
       } as GeoJSON.Feature;
     })
@@ -160,21 +142,13 @@ export async function getUnassignedFeatureCollection(
   color: string;
   fc: FeatureCollection<Point, GeoJsonProperties>;
 }> {
-  const snap = await getDocs(
-    query(
-      collection(db, "places"),
-      where("categoryId", "==", categoryId),
-      where("zoneId", "==", null),
-    ),
-  );
-
-  const features: Feature<Point, GeoJsonProperties>[] = snap.docs
-    .map((d) => {
-      const raw = d.data() as any;
+  const places = await listPlaces({ categoryId, scope: "root" });
+  const features: Feature<Point, GeoJsonProperties>[] = places
+    .map((raw) => {
       const { lat, lng } = toLatLng(raw);
       if (typeof lat !== "number" || typeof lng !== "number") return null;
       const zoneLabel = raw?.zone || "Unassigned";
-      const props = buildProps({ ...raw, id: d.id }, zoneLabel, null);
+      const props = buildProps({ ...raw, id: raw.id }, zoneLabel, null);
       return {
         type: "Feature",
         geometry: { type: "Point", coordinates: [lng, lat] },

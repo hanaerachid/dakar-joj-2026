@@ -1,5 +1,4 @@
 // src/auth/ProfileView.tsx
-import type { User } from "firebase/auth";
 import { signOut } from "../../auth/authService";
 import { Link } from "react-router-dom";
 import { useRole } from "../../auth/hooks/useRole";
@@ -8,12 +7,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { UserIcon } from "lucide-react";
+import type { SessionUser } from "../../shared/contracts";
 
 export function ProfileView({
   user,
   onClose,
 }: {
-  user: User | null;
+  user: SessionUser | null;
   onClose: () => void;
 }) {
   const { role, loading } = useRole();

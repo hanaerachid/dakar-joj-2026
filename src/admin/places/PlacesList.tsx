@@ -1,20 +1,8 @@
 // src/admin/places/PlacesListPage.tsx
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  collection,
-  collectionGroup,
-  deleteDoc,
-  doc,
-  getDocs,
-  query,
-  serverTimestamp,
-  where,
-  writeBatch,
-} from "firebase/firestore";
-import { db } from "../../auth/firebase";
+import { deletePlace, listPlaces, listZones } from "../../lib/api/places";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { DEFAULT_COMP_ZONES } from "./AddPlaceFull";
 import { CATEGORIES } from "../../components/place-list/place-list-utils";
 
 /* ---------- Small UI helpers (soft, modern) ---------- */
@@ -117,8 +105,8 @@ export type Place = {
   id: string;
   name: string;
   location?: { latitude: number; longitude: number } | any;
-  address?: string;
-  info?: string;
+  address?: string | null;
+  info?: string | null;
   rating?: number | null;
   tags?: string[];
   pointColor?: string;
@@ -141,30 +129,7 @@ export type Place = {
 const ALL_ZONES = "__ALL__";
 
 async function fetchZones(categoryId: string) {
-  const snap = await getDocs(
-    query(collection(db, "zones"), where("categoryId", "==", categoryId)),
-  );
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as Zone[];
-}
-
-async function seedDefaultZonesIfEmpty(categoryId: string) {
-  if (categoryId !== "competition") return;
-  const list = await fetchZones(categoryId);
-  if (list.length > 0) return;
-  const batch = writeBatch(db);
-  const colRef = collection(db, "zones");
-  const ts = serverTimestamp();
-  for (const z of DEFAULT_COMP_ZONES) {
-    const refDoc = doc(colRef);
-    batch.set(refDoc, {
-      name: z.name,
-      color: z.color,
-      categoryId,
-      createdAt: ts,
-      updatedAt: ts,
-    });
-  }
-  await batch.commit();
+  return (await listZones(categoryId)) as Zone[];
 }
 
 /* --------------- Page --------------- */
@@ -187,10 +152,6 @@ export function PlacesListPage() {
       try {
         setZonesLoading(true);
         let list = await fetchZones(categoryId);
-        if (list.length === 0) {
-          await seedDefaultZonesIfEmpty(categoryId);
-          list = await fetchZones(categoryId);
-        }
         if (ignore) return;
         setZones(list);
         // default to "All zones" when zones exist; otherwise root-only view
@@ -215,57 +176,19 @@ export function PlacesListPage() {
 
       // (A) ALL ZONES: use collectionGroup for every /zones/*/places + merge root /places
       if (currentZoneId === ALL_ZONES) {
-        const cgSnap = await getDocs(
-          query(
-            collectionGroup(db, "places"),
-            where("categoryId", "==", categoryId),
-          ),
-        );
-        const cgItems: Place[] = cgSnap.docs.map((d: any) => {
-          const data = d.data();
-          // try to derive zoneId from path in case older docs don't have it
-          const derivedZoneId = d.ref.parent.parent?.id || data.zoneId || null;
-          return { id: d.id, zoneId: derivedZoneId, ...(data as any) };
-        });
-
-        const rootSnap = await getDocs(
-          query(
-            collection(db, "places"),
-            where("categoryId", "==", categoryId),
-          ),
-        );
-        const rootItems: Place[] = rootSnap.docs.map((d) => ({
-          id: d.id,
-          zoneId: null,
-          ...(d.data() as any),
-        }));
-
-        items = [...cgItems, ...rootItems];
+        items = (await listPlaces({ categoryId, scope: "all" })) as Place[];
       }
       // (B) SPECIFIC ZONE: only that zone’s subcollection
       else if (currentZoneId) {
-        const snap = await getDocs(
-          collection(doc(db, "zones", currentZoneId), "places"),
-        );
-        items = snap.docs.map((d) => ({
-          id: d.id,
+        items = (await listPlaces({
+          categoryId,
           zoneId: currentZoneId,
-          ...(d.data() as any),
+          scope: "zone",
         })) as Place[];
       }
       // (C) ROOT-ONLY (categories without zones, e.g., Hotels)
       else {
-        const snap = await getDocs(
-          query(
-            collection(db, "places"),
-            where("categoryId", "==", categoryId),
-          ),
-        );
-        items = snap.docs.map((d) => ({
-          id: d.id,
-          zoneId: null,
-          ...(d.data() as any),
-        })) as Place[];
+        items = (await listPlaces({ categoryId, scope: "root" })) as Place[];
       }
 
       // sort
@@ -302,14 +225,8 @@ export function PlacesListPage() {
 
   async function handleDeleteForPlace(p: Place) {
     if (!confirm("Delete this place? This cannot be undone.")) return;
-    const z = p.zoneId;
-    if (z) {
-      await deleteDoc(doc(db, "zones", z, "places", p.id));
-      await loadPlaces(zoneId);
-    } else {
-      await deleteDoc(doc(db, "places", p.id));
-      await loadPlaces(zoneId);
-    }
+    await deletePlace(p.id, p.zoneId ?? undefined);
+    await loadPlaces(zoneId);
   }
 
   return (

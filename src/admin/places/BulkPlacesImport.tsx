@@ -1,19 +1,8 @@
 // src/admin/places/BulkPlacesImport.tsx
 import { useEffect, useMemo, useState } from "react";
-import {
-  collection,
-  doc,
-  GeoPoint,
-  getDocs,
-  query,
-  serverTimestamp,
-  where,
-  writeBatch,
-} from "firebase/firestore";
-import { auth, authReady, db } from "../../auth/firebase";
+import { importPlaces, listPlaces, listZones } from "../../lib/api/places";
 import { Section } from "../../components/common/Section";
 import { Button } from "../../components/common/Button";
-import { DEFAULT_COMP_ZONES } from "./AddPlaceFull";
 import { CATEGORIES } from "../../components/place-list/place-list-utils";
 
 // ---- Types ----
@@ -60,29 +49,11 @@ function chunk<T>(arr: T[], size = 400): T[][] {
 }
 
 async function fetchZonesByCategory(cid: string): Promise<Zone[]> {
-  const snap = await getDocs(
-    query(collection(db, "zones"), where("categoryId", "==", cid)),
-  );
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as Zone[];
+  return listZones(cid) as Promise<Zone[]>;
 }
 
 async function seedDefaultZonesIfEmpty() {
-  const list = await fetchZonesByCategory("competition");
-  if (list.length > 0) return;
-  const batch = writeBatch(db);
-  const colRef = collection(db, "zones");
-  const ts = serverTimestamp();
-  for (const z of DEFAULT_COMP_ZONES) {
-    const refDoc = doc(colRef);
-    batch.set(refDoc, {
-      name: z.name,
-      color: z.color,
-      categoryId: "competition",
-      createdAt: ts,
-      updatedAt: ts,
-    });
-  }
-  await batch.commit();
+  return;
 }
 
 // function coordsToLatLng(pos: GeoJSONPosition) {
@@ -393,29 +364,8 @@ export default function BulkPlacesImport() {
       (z) => z.name.trim().toLowerCase() === name.trim().toLowerCase(),
     );
     if (found) return found;
-    if (!allowCreateZones) return null;
-
-    // create new zone in this category
-    const colRef = collection(db, "zones");
-    const ref = doc(colRef);
-    const now = serverTimestamp();
-    const payload = {
-      name,
-      color: "#2962FF",
-      categoryId,
-      createdAt: now,
-      updatedAt: now,
-    };
-    const batch = writeBatch(db);
-    batch.set(ref, payload);
-    await batch.commit();
-    const z: Zone = { id: ref.id, ...(payload as any) };
-    pushLog(
-      `➕ Created zone "${name}" (${ref.id}) in category "${categoryId}"`,
-    );
-    // refresh local zones
-    setZones((prev) => [...prev, z]);
-    return z;
+    void allowCreateZones;
+    return null;
   }
 
   async function getZoneForFeature(p: FeatureProps): Promise<string | null> {
@@ -433,23 +383,17 @@ export default function BulkPlacesImport() {
     lng: number,
     zoneId: string | null,
   ): Promise<boolean> {
-    // NOTE: Firestore doesn't support compound where on GeoPoint easily,
-    // so we approximate by name match and nearby lat/lng within small epsilon.
     const epsilon = 1e-6;
-    const colRef = zoneId
-      ? collection(db, "zones", zoneId, "places")
-      : collection(db, "places");
-    const qSnap = await getDocs(query(colRef, where("name", "==", name)));
-    const dup = qSnap.docs.some((d) => {
-      const data = d.data() as any;
-      const gp = data?.location as GeoPoint | undefined;
+    const places = await listPlaces({ categoryId, zoneId, scope: zoneId ? "zone" : "root" });
+    return places.some((p) => {
+      const gp = p.location;
       if (!gp) return false;
       return (
-        Math.abs((gp as any).latitude - lat) < epsilon &&
-        Math.abs((gp as any).longitude - lng) < epsilon
+        p.name === name &&
+        Math.abs((gp.latitude ?? 0) - lat) < epsilon &&
+        Math.abs((gp.longitude ?? 0) - lng) < epsilon
       );
     });
-    return dup;
   }
 
   async function importNow() {
@@ -466,12 +410,6 @@ export default function BulkPlacesImport() {
     setLog([]);
 
     try {
-      // ensure signed in
-      await authReady;
-      if (!auth.currentUser) throw new Error("Not signed in.");
-
-      // const ts = serverTimestamp();
-
       // Build all docs to import
       const build = async (f: FeaturePoint, idx: number) => {
         console.log("build", idx);
@@ -493,7 +431,7 @@ export default function BulkPlacesImport() {
 
         const docData = {
           name,
-          location: new GeoPoint(lat, lon),
+          location: { latitude: lat, longitude: lon },
           address: safeGet(p, fieldMap.address) ?? null,
           info: safeGet(p, fieldMap.info) ?? null,
           rating: numOrNull(safeGet(p, fieldMap.rating)),
@@ -521,8 +459,6 @@ export default function BulkPlacesImport() {
               : 0,
           categoryId,
           zoneId: zoneId ?? null,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
         };
 
         return { skip: false as const, zoneId, docData };
@@ -553,19 +489,17 @@ export default function BulkPlacesImport() {
         return;
       }
 
-      // Commit in chunks with batches
+      // Commit in chunks through the API
       const chunks = chunk(toWrite, 400);
       for (let i = 0; i < chunks.length; i++) {
         const c = chunks[i];
-        const batch = writeBatch(db);
-        for (const row of c) {
-          const colRef = row.zoneId
-            ? collection(db, "zones", row.zoneId, "places")
-            : collection(db, "places");
-          const ref = doc(colRef);
-          batch.set(ref, row.docData);
-        }
-        await batch.commit();
+        await importPlaces({
+          categoryId,
+          zoneId: null,
+          scope: "all",
+          items: c.map((row) => ({ ...row.docData, zoneId: row.zoneId })),
+          skipDuplicates,
+        });
         pushLog(`Committed chunk ${i + 1}/${chunks.length} (${c.length} docs)`);
       }
 

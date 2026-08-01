@@ -1,19 +1,7 @@
 // src/admin/AdminPlacesManager.tsx
 import { useEffect, useState } from "react";
-// import { db } from "@/lib/firebase";
-import {
-  collection,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
-// import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { db } from "../../auth/firebase";
 import { useRole } from "../../auth/hooks/useRole";
+import { createPlace, deletePlace, listPlaces, listZones, updatePlace } from "../../lib/api/places";
 
 type Zone = { id: string; name: string; color: string };
 type Place = {
@@ -39,13 +27,7 @@ export function AdminPlacesManager() {
 
   useEffect(() => {
     (async () => {
-      const snap = await getDocs(
-        query(collection(db, "zones"), where("categoryId", "==", categoryId)),
-      );
-      const z = snap.docs.map((d) => ({
-        id: d.id,
-        ...(d.data() as any),
-      })) as Zone[];
+      const z = (await listZones(categoryId)) as Zone[];
       setZones(z);
       setZoneId(z[0]?.id || "");
     })();
@@ -54,13 +36,12 @@ export function AdminPlacesManager() {
   useEffect(() => {
     if (!zoneId) return;
     (async () => {
-      const ps = await getDocs(collection(doc(db, "zones", zoneId), "places"));
+      const ps = await listPlaces({ zoneId, scope: "zone" });
       setPlaces(
-        ps.docs.map((d) => {
-          const p = d.data() as any;
-          const lat = p.location?.lat ?? p.location?._lat ?? 0;
-          const lng = p.location?.lng ?? p.location?._long ?? 0;
-          return { id: d.id, name: p.name, lat, lng, address: p.address };
+        ps.map((p) => {
+          const lat = p.location?.latitude ?? 0;
+          const lng = p.location?.longitude ?? 0;
+          return { id: p.id, name: p.name, lat, lng, address: p.address ?? undefined };
         }),
       );
     })();
@@ -69,39 +50,38 @@ export function AdminPlacesManager() {
   if (!isAdmin) return <div className="p-4">You need admin access.</div>;
 
   const add = async () => {
-    const ref = collection(doc(db, "zones", zoneId), "places");
-    await addDoc(ref, {
+    await createPlace({
       name: form.name,
-      location: new (window as any).firebase.firestore.GeoPoint(
-        form.lat,
-        form.lng,
-      ), // if using modular SDK in browser, prefer server-side add; otherwise:
+      location: {
+        latitude: Number(form.lat ?? 0),
+        longitude: Number(form.lng ?? 0),
+      },
       address: form.address ?? null,
-      createdAt: (await import("firebase/firestore")).serverTimestamp(),
-      updatedAt: (await import("firebase/firestore")).serverTimestamp(),
-    } as any);
+      categoryId,
+      zoneId,
+    });
     setForm({ name: "", lat: 0, lng: 0, address: "" });
   };
 
   const save = async (id: string, patch: Partial<Place>) => {
-    const ref = doc(db, "zones", zoneId, "places", id);
-    await updateDoc(ref, {
+    await updatePlace(id, {
       ...(patch.name ? { name: patch.name } : {}),
       ...(patch.address !== undefined ? { address: patch.address } : {}),
       ...(patch.lat !== undefined && patch.lng !== undefined
         ? {
-            location: new (window as any).firebase.firestore.GeoPoint(
-              patch.lat,
-              patch.lng,
-            ),
+            location: {
+              latitude: Number(patch.lat),
+              longitude: Number(patch.lng),
+            },
           }
         : {}),
-      updatedAt: (await import("firebase/firestore")).serverTimestamp(),
-    } as any);
+      zoneId,
+      categoryId,
+    });
   };
 
   const remove = async (id: string) => {
-    await deleteDoc(doc(db, "zones", zoneId, "places", id));
+    await deletePlace(id, zoneId);
   };
 
   return (

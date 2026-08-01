@@ -1,5 +1,10 @@
 // src/admin/types.ts
-import type { Timestamp, GeoPoint } from "firebase/firestore";
+
+export type Timestamp = string;
+export type GeoPoint = {
+  latitude: number;
+  longitude: number;
+};
 
 export interface Category {
   id: string;

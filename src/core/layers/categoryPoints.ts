@@ -3,16 +3,8 @@ import mapboxgl, { Map } from "mapbox-gl";
 import { addOrSetSource } from "../map/utils";
 import { destroyPopup, renderVenuePopup } from "../../components/popupRenderer";
 import { keepPopupInView } from "./popupUtils";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  doc,
-  getDoc,
-} from "firebase/firestore";
-import { db } from "../../auth/firebase";
 import type { VenueSport } from "../../data/sitesMeta";
+import { listPlaces, listZones } from "../../lib/api/places";
 
 export type CategoryLayerOptions = {
   initiallyVisible?: boolean; // default false
@@ -208,28 +200,15 @@ function iconForCategory(categoryId?: string) {
 
 // ---------------------- Firestore fetchers ----------------------
 async function getZones(categoryId: string) {
-  const snap = await getDocs(
-    query(collection(db, "zones"), where("categoryId", "==", categoryId)),
-  );
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as Array<{
-    id: string;
-    name: string;
-    color?: string;
-    categoryId: string;
-  }>;
+  return (await listZones(categoryId)).map((z) => ({ ...z }));
 }
 
 async function getZonePlacesFeatures(zoneId: string, zoneName: string) {
-  const zref = doc(db, "zones", zoneId);
-  const zdoc = await getDoc(zref);
-  const z = zdoc.data() as any | undefined;
-  const color = z?.color || "#3b82f6";
+  const color = "#3b82f6";
+  const ps = await listPlaces({ zoneId, scope: "zone" });
 
-  const ps = await getDocs(collection(zref, "places"));
-
-  const features = ps.docs
-    .map((d) => {
-      const p = d.data() as any;
+  const features = ps
+    .map((p) => {
       const { lat, lng } = toLatLng(p);
       if (typeof lat !== "number" || typeof lng !== "number") return null;
 
@@ -241,7 +220,7 @@ async function getZonePlacesFeatures(zoneId: string, zoneName: string) {
         },
         properties: {
           __source: "firestore",
-          id: d.id,
+          id: p.id,
           title: p.name ?? "Untitled",
           title_fr: p.name_fr ?? p.nameFr ?? "",
           info: p.info ?? "",
@@ -259,7 +238,7 @@ async function getZonePlacesFeatures(zoneId: string, zoneName: string) {
           sports: p.sports ?? null, // raw; normalized on click
           gradientFrom: p.gradientFrom ?? null,
           gradientTo: p.gradientTo ?? null,
-          zoneName,
+          zoneName: p.zone || zoneName,
         },
       } as GeoJSON.Feature;
     })
@@ -269,17 +248,10 @@ async function getZonePlacesFeatures(zoneId: string, zoneName: string) {
 }
 
 async function getUnassignedFeatures(categoryId: string) {
-  const ps = await getDocs(
-    query(
-      collection(db, "places"),
-      where("categoryId", "==", categoryId),
-      where("zoneId", "==", null),
-    ),
-  );
+  const ps = await listPlaces({ categoryId, scope: "root" });
 
-  const features = ps.docs
-    .map((d) => {
-      const p = d.data() as any;
+  const features = ps
+    .map((p) => {
       const { lat, lng } = toLatLng(p);
       if (typeof lat !== "number" || typeof lng !== "number") return null;
 
@@ -291,7 +263,7 @@ async function getUnassignedFeatures(categoryId: string) {
         },
         properties: {
           __source: "firestore",
-          id: d.id,
+          id: p.id,
           title: p.name ?? "Untitled",
           title_fr: p.name_fr ?? p.nameFr ?? "",
           info: p.info ?? "",
@@ -309,7 +281,7 @@ async function getUnassignedFeatures(categoryId: string) {
           sports: p.sports ?? null, // raw; normalized on click
           gradientFrom: p.gradientFrom ?? null,
           gradientTo: p.gradientTo ?? null,
-          zoneName: "Unassigned",
+          zoneName: p.zone || "Unassigned",
         },
       } as GeoJSON.Feature;
     })

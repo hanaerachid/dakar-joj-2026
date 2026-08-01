@@ -1,7 +1,6 @@
 // ProfileMenu.tsx
 import { useEffect, useState } from "react";
 import { AuthModal } from "./auth/AuthModal";
-import { auth } from "../auth/firebase";
 import { getIdToken } from "../auth/authService";
 import {
   Avatar,
@@ -59,14 +58,10 @@ export function ProfileMenu() {
         />
       ),
     });
-    // if user already signed in, get tokens
-    const user = auth.currentUser;
     if (user) {
       try {
         const idToken = await getIdToken(); // short-lived token
-        const refreshToken = user.refreshToken; // long-lived token
         console.log("ID Token:", idToken);
-        console.log("Refresh Token:", refreshToken);
       } catch (e) {
         console.error("Failed to fetch tokens:", e);
       }

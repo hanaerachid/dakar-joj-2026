@@ -1,35 +1,12 @@
-// src/auth/firebase.ts
-import { initializeApp, getApps } from "firebase/app";
-import {
-  getAuth,
-  browserLocalPersistence,
-  setPersistence,
-  onAuthStateChanged,
-} from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+import { ensureSessionLoaded, getSessionUser } from "./session";
 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET, // appspot.com ✔
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+export const auth = {
+  get currentUser() {
+    return getSessionUser();
+  },
 };
 
-const app = getApps()[0] ?? initializeApp(firebaseConfig);
+export const db = undefined as never;
+export const storage = undefined as never;
 
-export const auth = getAuth(app);
-setPersistence(auth, browserLocalPersistence); // fire-and-forget is fine
-
-export const db = getFirestore(app);
-export const storage = getStorage(app);
-
-// Promise that resolves once we know the auth user (or null)
-export const authReady = new Promise<void>((resolve) => {
-  const unsub = onAuthStateChanged(auth, () => {
-    unsub();
-    resolve();
-  });
-});
+export const authReady = ensureSessionLoaded().then(() => undefined);

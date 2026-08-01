@@ -1,18 +1,7 @@
 // src/admin/places/AddPlaceFull.tsx
 import { useEffect, useMemo, useState } from "react";
-import {
-  addDoc,
-  collection,
-  doc,
-  GeoPoint,
-  getDocs,
-  query,
-  serverTimestamp,
-  where,
-  writeBatch,
-} from "firebase/firestore";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { auth, authReady, db, storage } from "../../auth/firebase";
+import { listZones, createPlace } from "../../lib/api/places";
+import { uploadImage as uploadImageRequest } from "../../lib/api/uploads";
 import { SITES_META, type VenueSport } from "../../data/sitesMeta";
 import PlacePreview from "../../components/admin/places/PlacePreview";
 import BrandingFields from "../../components/admin/places/BrandingFields";
@@ -91,30 +80,7 @@ export default function AddPlaceFull() {
      Zones: fetch helpers + seeding
   --------------------------------------------- */
   async function fetchZonesByCategory(cid: string): Promise<Zone[]> {
-    const snap = await getDocs(
-      query(collection(db, "zones"), where("categoryId", "==", cid)),
-    );
-    return snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as Zone[];
-  }
-
-  async function seedDefaultZonesIfEmpty() {
-    // only seed defaults under Competition
-    const list = await fetchZonesByCategory("competition");
-    if (list.length > 0) return;
-    const batch = writeBatch(db);
-    const colRef = collection(db, "zones");
-    const ts = serverTimestamp();
-    for (const z of DEFAULT_COMP_ZONES) {
-      const refDoc = doc(colRef);
-      batch.set(refDoc, {
-        name: z.name,
-        color: z.color,
-        categoryId: "competition",
-        createdAt: ts,
-        updatedAt: ts,
-      });
-    }
-    await batch.commit();
+    return listZones(cid);
   }
 
   async function loadZonesForCategory(cid: string) {
@@ -126,7 +92,6 @@ export default function AddPlaceFull() {
       // if none exist AND cid is not competition, provide competition zones as fallback
       let fallback: Zone[] = [];
       if (primary.length === 0 && cid !== "competition") {
-        await seedDefaultZonesIfEmpty();
         fallback = await fetchZonesByCategory("competition");
       }
 
@@ -220,51 +185,14 @@ export default function AddPlaceFull() {
 
   async function uploadImage(zone: string, placeName: string) {
     if (!file) return null;
-
-    // ✅ Ensure auth is ready and user exists before uploading
-    await authReady;
-    if (!auth.currentUser) {
-      throw new Error("Not signed in – cannot upload");
-    }
-
     const ext = (file.name.split(".").pop() || "png").toLowerCase();
     const safeName = placeName.trim().toLowerCase().replace(/\s+/g, "-");
     const folder = zone || categoryId || "unassigned";
-    const path = `places/${folder}/${Date.now()}-${safeName}.${ext}`;
-
-    // ✅ Guarantee a valid contentType
-    const guess =
-      file.type ||
-      (ext === "png"
-        ? "image/png"
-        : ["jpg", "jpeg"].includes(ext)
-        ? "image/jpeg"
-        : ext === "webp"
-        ? "image/webp"
-        : "application/octet-stream");
-
-    const storageRef = ref(storage, path);
-
-    return new Promise<string>((resolve, reject) => {
-      const task = uploadBytesResumable(storageRef, file, {
-        contentType: guess,
-      });
-      task.on(
-        "state_changed",
-        (snap) =>
-          setUploadPct(
-            Math.round((snap.bytesTransferred / snap.totalBytes) * 100),
-          ),
-        reject,
-        async () => resolve(await getDownloadURL(task.snapshot.ref)),
-      );
-    });
-  }
-
-  function placesCollectionRef(zid: string) {
-    return zid
-      ? collection(db, "zones", zid, "places")
-      : collection(db, "places");
+    void ext;
+    void safeName;
+    const result = await uploadImageRequest(file, `places/${folder}`);
+    setUploadPct(100);
+    return result.url;
   }
 
   async function onSave() {
@@ -273,11 +201,10 @@ export default function AddPlaceFull() {
     setToast(null);
     try {
       const imageUrl = await uploadImage(zoneId, name);
-      const colRef = placesCollectionRef(zoneId);
-      const docRef = await addDoc(colRef, {
+      const docRef = await createPlace({
         name,
         name_fr: nameFr || null,
-        location: new GeoPoint(Number(lat), Number(lng)),
+        location: { latitude: Number(lat), longitude: Number(lng) },
         address: address || null,
         info: info || null,
         info_fr: infoFr || null,
@@ -302,9 +229,6 @@ export default function AddPlaceFull() {
         // helpful refs
         categoryId,
         zoneId: zoneId || null,
-
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
       });
 
       setToast({ kind: "success", msg: "Place created 🎉" });
