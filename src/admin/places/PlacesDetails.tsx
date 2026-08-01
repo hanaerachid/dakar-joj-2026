@@ -14,6 +14,7 @@ import { Section } from "@/components/common/Section";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
 import { Spinner } from "@/components/ui/spinner";
+import { ArrowLeft } from "lucide-react";
 
 /* ---------- Small UI helpers ---------- */
 function Field({
@@ -366,12 +367,16 @@ export function PlaceDetailsPage() {
       {/* Top bar */}
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" onClick={() => navigate(-1)}>
-            ← Back
+          <Button
+            variant="ghost"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft />
+            Back
           </Button>
           <div>
             <h2 className="text-xl font-bold tracking-tight">Edit place</h2>
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="mt-1 text-sm text-foreground/70">
               Update details, visuals, links
               {isRoot(zoneParam) ? "" : " — zone-scoped"}.
             </p>
@@ -544,14 +549,6 @@ export function PlaceDetailsPage() {
                 <ColorInput value={pointColor} onChange={setPointColor} />
               </Field>
             </div>
-
-            {tagList.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-1">
-                {tagList.map((t, i) => (
-                  <Badge key={i}>{t}</Badge>
-                ))}
-              </div>
-            )}
           </Section>
 
           {/* Competition Sports */}
@@ -603,15 +600,15 @@ export function PlaceDetailsPage() {
               {sports.length > 0 && (
                 <div className="flex flex-wrap gap-2 pt-2">
                   {sports.map((s) => (
-                    <span
+                    <Badge
                       key={s.key}
-                      className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white/80 px-2 py-0.5 text-xs"
+                      className="inline-flex items-center gap-1 rounded-full border border-border bg-background/80 px-2 py-0.5 text-xs"
                     >
                       {s.icon ? (
                         <Icon icon={s.icon} width={14} height={14} />
                       ) : null}
                       {s.label}
-                    </span>
+                    </Badge>
                   ))}
                 </div>
               )}
@@ -675,13 +672,13 @@ export function PlaceDetailsPage() {
                 <img
                   src={preview}
                   alt="preview"
-                  className="mt-2 max-h-44 w-auto rounded-xl border shadow-sm"
+                  className="object-cover mt-2 max-h-44 w-auto rounded-xl border shadow-sm"
                 />
               ) : imageUrl ? (
                 <img
                   src={imageUrl}
                   alt="cover"
-                  className="mt-2 max-h-44 w-auto rounded-xl border shadow-sm"
+                  className="object-cover mt-2 max-h-44 w-auto rounded-xl border shadow-sm"
                 />
               ) : null}
             </Field>

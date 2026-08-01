@@ -3,6 +3,10 @@
 import { Icon } from "@iconify/react";
 import { useTranslation } from "react-i18next";
 import type { VenueSport } from "../../../data/sitesMeta";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { MapPin, XIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 type Props = {
   // visuals
@@ -82,15 +86,34 @@ export default function PlacePreview({
       : 0;
 
   return (
-    <div
-      className="w-full shadow-xl border border-gray-300/80 bg-white overflow-hidden p-3"
+    <Card
+      size="sm"
+      className="w-full shadow-xl border border-border rounded-3xl relative overflow-hidden"
       style={{
-        fontFamily: "Inter, sans-serif",
         background: `linear-gradient(135deg, ${g0}, ${g1})`,
       }}
     >
+      <Button
+        variant="ghost"
+        size="icon"
+        disabled inert
+        onClick={onClose || (() => { })}
+        className="absolute end-2 top-2 rounded-full"
+        aria-label="Close"
+        title="Preview"
+      >
+        <XIcon />
+      </Button>
+      {/* Hero image */}
+      <div className="absolute inset-0 z-30 aspect-video bg-black/35" />
+      <img
+        src={preview ?? "/v-img/default.jpg"}
+        alt={nameText || "cover"}
+        className="relative z-20 aspect-video w-full object-cover"
+      />
+
       {/* Header gradient with brand + location pill */}
-      <div className="text-white">
+      <CardHeader>
         <div className="flex items-center justify-between">
           <div className="text-xs leading-tight ">
             {brandTitle && <div className="font-semibold">{brandTitle}</div>}
@@ -101,100 +124,74 @@ export default function PlacePreview({
             )}
           </div>
           {locationLabel && (
-            <span
+            <Badge
               style={{ color: `${g1}` }}
               className="text-xs flex items-center justify-center bg-white/90 px-2 py-0.5 rounded-full font-medium"
             >
-              <Icon icon="mdi:map-marker" className="mr-1" /> {locationLabel}
-            </span>
+              <MapPin /> {locationLabel}
+            </Badge>
           )}
         </div>
 
-        <h3 className="mt-2 text-2xl py-3 font-extrabold uppercase text-center tracking-wide">
+      </CardHeader>
+      {/* Body */}
+      <CardContent>
+        <CardTitle>
           {nameText || "EGG TOWER COMPLEX"}
-        </h3>
+        </CardTitle>
 
         {(shortCode || sportCount) && (
-          <div className="mt-1 text-[11px] px-2 text-black tracking-widest bg-white">
+          <span className="font-sans mt-1 text-xs tracking-widest text-white/70">
             {shortCode ?? ""} {shortCode && " ///// "}{" "}
             {sportCount ? `${String(sportCount).padStart(2, "0")} Sports` : ""}
-          </div>
+          </span>
         )}
-      </div>
 
-      {/* Hero image */}
-      <img
-        src={preview ?? "/v-img/default.jpg"}
-        alt={nameText || "cover"}
-        className="w-full h-44 object-cover border-6 border-white"
-      />
+        {/* Sports strip */}
+        {categoryId === "competition" && sports?.length ? (
+          <div className="grid grid-cols-6 gap-1 pt-1 pb-2 rounded-2xl">
+            {sports.map((s, i) => (
+              <div
+                key={i}
+                className="flex flex-col items-center gap-2 pt-2"
+                title={s.label}
+              >
+                {"icon" in s && s.icon ? (
+                  <Icon icon={s.icon as string} className="w-6 h-6 text-white" />
+                ) : (s as any).iconUrl ? (
+                  <img
+                    src={(s as any).iconUrl}
+                    alt={s.label}
+                    className="w-6 h-6"
+                  />
+                ) : (
+                  <div className="text-xs font-semibold" />
+                )}
+                <span className="text-[8px] uppercase text-center w-full text-white font-medium whitespace-nowrap overflow-hidden text-ellipsis">
+                  {s.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : null}
 
-      {/* Sports strip */}
-      {categoryId === "competition" && sports?.length ? (
-        <div className="grid grid-cols-6 gap-1 px-2 pt-1 pb-2 bg-white">
-          {sports.map((s, i) => (
-            <div
-              key={i}
-              className="border flex-col border-black pt-2 flex items-center"
-              title={s.label}
-            >
-              {"icon" in s && s.icon ? (
-                <Icon icon={s.icon as string} className="w-6 h-6 text-black" />
-              ) : (s as any).iconUrl ? (
-                <img
-                  src={(s as any).iconUrl}
-                  alt={s.label}
-                  className="w-6 h-6"
-                />
-              ) : (
-                <div className="text-xs font-semibold" />
-              )}
-              <span className="text-[8px] uppercase text-center w-full bg-black text-white font-medium whitespace-nowrap overflow-hidden text-ellipsis">
-                {s.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      ) : null}
-
-      {/* Body */}
-      <div className=" text-gray-900">
-        <p className="text-sm leading-snug mt-2 text-white">{infoText}</p>
-        <p className="text-xs text-gray-300">{address}</p>
-
-        <div className="mt-3 flex gap-2">
-          <button
-            onClick={onGetDirections || (() => {})}
-            className="flex-1 bg-white rounded-lg hover:bg-blue-100 font-semibold text-sm px-3 py-1.5 transition duration-300"
-            style={{ color: `${g1}` }}
-            title="Preview"
-          >
-            Get Directions
-          </button>
-          <button
-            onClick={onClose || (() => {})}
-            className="w-8 h-8 bg-white hover:bg-gray-50 rounded-full flex items-center justify-center"
-            aria-label="Close"
-            title="Preview"
-          >
-            <Icon
-              icon="mdi:close"
-              className="text-lg"
-              style={{ color: `${g1}` }}
-            />
-          </button>
-        </div>
+        <CardDescription
+          className="font-sans text-[11px] sm:text-xs leading-snug text-white"
+        >
+          {infoText}
+        </CardDescription>
+        <p className="font-sans text-xs sm:text-sm mt-1 text-white/70">{address}</p>
 
         {/* Optional site tags */}
         {!!tagList?.length && (
           <div className="flex flex-wrap gap-1 mt-3">
             {tagList.map((tag, idx) => (
-              <span
+              <Badge
                 key={idx}
-                className="text-[11px] bg-gray-200/70 px-2 py-0.5 rounded-full text-gray-700"
+                className="text-xs bg-white/20 px-2 py-0.5 rounded-full text-white/70"
               >
                 {tag}
-              </span>
+              </Badge>
             ))}
           </div>
         )}
@@ -215,7 +212,21 @@ export default function PlacePreview({
             {socialHandle && <span>{socialHandle}</span>}
           </div>
         )}
-      </div>
-    </div>
+
+      </CardContent>
+      <CardFooter className="flex items-center gap-2">
+        <Button
+          variant="default"
+          size="default"
+          disabled inert
+          onClick={onGetDirections || (() => { })}
+          className="flex-1 rounded-full"
+          style={{ color: `${g1}` }}
+          title="Preview"
+        >
+          Get Directions
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

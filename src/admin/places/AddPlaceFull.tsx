@@ -1,5 +1,6 @@
 // src/admin/places/AddPlaceFull.tsx
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { listZones, createPlace } from "../../lib/api/places";
 import { uploadImage as uploadImageRequest } from "../../lib/api/uploads";
 import { SITES_META, type VenueSport } from "../../data/sitesMeta";
@@ -13,6 +14,7 @@ import CategoryZoneFields from "@/components/admin/places/CategoryZoneFields";
 import { CATEGORIES } from "@/components/place-list/place-list-utils";
 import { ALL_SPORT_OPTIONS } from "../../data/sports";
 import { ButtonGroup } from "@/components/ui/button-group";
+import { ArrowLeft } from "lucide-react";
 
 /* ---------------------------------------------
    Types & constants
@@ -30,6 +32,7 @@ export const DEFAULT_COMP_ZONES = [
    Main component
 --------------------------------------------- */
 export default function AddPlaceFull() {
+  const navigate = useNavigate();
   // data loads
   const [categoryId, setCategoryId] = useState("competition");
 
@@ -287,12 +290,21 @@ export default function AddPlaceFull() {
     <div className="mx-auto max-w-6xl p-4 md:p-6">
       {/* Header */}
       <div className="mb-5 flex items-start justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-bold tracking-tight">Add a Place</h2>
-          <p className="mt-1 text-sm text-foreground/70">
-            Create a new venue with coordinates, visuals, and branding. All
-            fields are stored as Firestore fields.
-          </p>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft />
+            Back
+          </Button>
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">Add a Place</h2>
+            <p className="mt-1 text-sm text-foreground/70">
+              Create a new venue with coordinates, visuals, and branding. All
+              fields are stored as Firestore fields.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -300,8 +312,8 @@ export default function AddPlaceFull() {
       {toast && (
         <div
           className={`mb-4 rounded-xl border px-4 py-3 text-sm shadow-sm ${toast.kind === "success"
-              ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-              : "border-rose-200 bg-rose-50 text-rose-900"
+            ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+            : "border-rose-200 bg-rose-50 text-rose-900"
             }`}
         >
           {toast.msg}

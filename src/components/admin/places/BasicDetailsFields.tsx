@@ -9,6 +9,7 @@ import type { VenueSport } from "../../../data/sitesMeta";
 import LocationPickerModal from "../../../core/map/LocationPickerModal";
 import { useState } from "react";
 import LocationPickerButton from "../../../core/map/LocationPickerButton";
+import { Badge } from "@/components/ui/badge";
 
 type Props = {
   name: string;
@@ -224,14 +225,6 @@ export default function BasicDetailsFields(props: Props) {
             <FieldDescription>Marker color on the map.</FieldDescription>
           </Field>
         </div>
-
-        {tagList.length > 0 && (
-          <div className="flex flex-wrap gap-2 pt-1">
-            {tagList.map((t, i) => (
-              <Chip key={i}>{t}</Chip>
-            ))}
-          </div>
-        )}
       </Section>
 
       {categoryId === "competition" && (
@@ -279,15 +272,15 @@ export default function BasicDetailsFields(props: Props) {
           {sports.length > 0 && (
             <div className="flex flex-wrap gap-2 pt-2">
               {sports.map((s) => (
-                <span
+                <Badge
                   key={s.key}
-                  className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs bg-background/70"
+                  className="inline-flex items-center gap-1 rounded-full border border-border bg-background/80 px-2 py-0.5 text-xs"
                 >
                   {s.icon ? (
                     <Icon icon={s.icon} width={14} height={14} />
                   ) : null}
                   {s.label}
-                </span>
+                </Badge>
               ))}
             </div>
           )}

@@ -11,11 +11,13 @@ import { Section } from "@/components/common/Section";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Empty,
+  EmptyContent,
   EmptyDescription,
   EmptyHeader,
 } from "@/components/ui/empty"
 import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
+import { FileUp, Plus } from "lucide-react";
 
 /* ---------------- Types ---------------- */
 export type Zone = {
@@ -155,15 +157,11 @@ export function PlacesListPage() {
   return (
     <div className="mx-auto max-w-7xl p-4 md:p-6">
       {/* Top bar */}
-      <div className="mb-6 rounded-2xl border border-black/5 bg-background/70 backdrop-blur p-4 md:p-5 shadow-sm">
+      <div className="mb-6">
         <div className="flex flex-wrap items-center justify-between gap-3 md:gap-4">
           {/* Title + subtitle */}
           <div className="min-w-0">
             <h2 className="flex items-center gap-2 text-lg md:text-xl font-semibold tracking-tight text-foreground/90">
-              <Icon
-                icon="mdi:map-marker-radius-outline"
-                className="h-5 w-5 text-blue-600"
-              />
               <span className="truncate">Places</span>
             </h2>
             <p className="mt-0.5 text-sm text-foreground/70 truncate">
@@ -174,18 +172,20 @@ export function PlacesListPage() {
           {/* Actions */}
           <div className="flex items-center gap-2">
             <Button
+              variant="outline"
               onClick={() => navigate("/admin/places/import")}
-              className="h-10 rounded-xl bg-primary shadow-md inline-flex items-center gap-2"
+              className="rounded-full inline-flex items-center gap-2"
             >
-              <Icon icon="mdi:file-upload-outline" className="h-5 w-5" />
+              <FileUp />
               <span>Import places</span>
             </Button>
 
             <Button
+              variant="default"
               onClick={() => navigate("/admin/places/new")}
-              className="h-10 rounded-xl bg-primary shadow-md inline-flex items-center gap-2"
+              className="rounded-full inline-flex items-center gap-2"
             >
-              <Icon icon="mdi:plus" className="h-5 w-5" />
+              <Plus />
               <span>New place</span>
             </Button>
           </div>
@@ -194,7 +194,18 @@ export function PlacesListPage() {
 
       {/* Filters */}
       <Section title="Filters">
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-6">
+
+          <Field className="md:col-span-3">
+            <FieldLabel htmlFor="search">Search</FieldLabel>
+            <Input
+              id="search"
+              placeholder="Name, address, tag…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </Field>
+
           <Field>
             <FieldLabel htmlFor="category">Category</FieldLabel>
             <select
@@ -243,16 +254,6 @@ export function PlacesListPage() {
           </Field>
 
           <Field>
-            <FieldLabel htmlFor="search">Search</FieldLabel>
-            <Input
-              id="search"
-              placeholder="Name, address, tag…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </Field>
-
-          <Field>
             <FieldLabel htmlFor="sort">Sort by</FieldLabel>
             <select
               id="sort"
@@ -295,6 +296,16 @@ export function PlacesListPage() {
                 No places found
               </EmptyDescription>
             </EmptyHeader>
+            <EmptyContent>
+              <Button
+                variant="default"
+                onClick={() => navigate("/admin/places/new")}
+                className="rounded-full inline-flex items-center gap-2"
+              >
+                <Plus />
+                <span>New place</span>
+              </Button>
+            </EmptyContent>
           </Empty>
         )}
 

@@ -123,7 +123,7 @@ export default function VisualsFields({
           <img
             src={preview}
             alt="preview"
-            className="mt-2 max-h-44 w-auto rounded-xl border shadow-sm"
+            className="object-cover mt-2 max-h-44 w-auto rounded-xl border shadow-sm"
           />
         )}
       </Field>

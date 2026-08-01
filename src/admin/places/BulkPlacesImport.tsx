@@ -1,9 +1,20 @@
 // src/admin/places/BulkPlacesImport.tsx
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { importPlaces, listPlaces, listZones } from "../../lib/api/places";
 import { Section } from "../../components/common/Section";
-import { Button } from "../../components/common/Button";
+import { Button } from "@/components/ui/button";
 import { CATEGORIES } from "../../components/place-list/place-list-utils";
+import { ArrowLeft } from "lucide-react";
+import { Field, FieldLabel } from "@/components/ui/field";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 // ---- Types ----
 type Zone = { id: string; name: string; color: string; categoryId: string };
@@ -194,6 +205,7 @@ function maybeToLonLat(
 }
 
 export default function BulkPlacesImport() {
+  const navigate = useNavigate();
   const [categoryId, setCategoryId] = useState("competition");
   const [zones, setZones] = useState<Zone[]>([]);
   const [zonesLoading, setZonesLoading] = useState(false);
@@ -449,9 +461,9 @@ export default function BulkPlacesImport() {
           sports:
             categoryId === "competition"
               ? asStringArray(safeGet(p, fieldMap.sports)).map((key) => ({
-                  key,
-                  label: key,
-                }))
+                key,
+                label: key,
+              }))
               : null,
           sportCount:
             categoryId === "competition"
@@ -479,8 +491,7 @@ export default function BulkPlacesImport() {
       }>;
 
       pushLog(
-        `Prepared ${toWrite.length} docs. Skipped ${
-          skipped.length
+        `Prepared ${toWrite.length} docs. Skipped ${skipped.length
         } (reasons: ${[...new Set(skipped.map((s) => s.reason))].join(", ")})`,
       );
 
@@ -515,31 +526,41 @@ export default function BulkPlacesImport() {
   return (
     <div className="mx-auto max-w-6xl p-4 md:p-6">
       <div className="mb-5 flex items-start justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-bold tracking-tight">
-            Bulk Import Places (GeoJSON)
-          </h2>
-          <p className="mt-1 text-sm text-gray-600">
-            Upload a FeatureCollection of Point features to create multiple
-            places under one category.
-          </p>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft />
+            Back
+          </Button>
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">
+              Bulk Import Places (GeoJSON)
+            </h2>
+            <p className="mt-1 text-sm text-foreground/70">
+              Upload a FeatureCollection of Point features to create multiple
+              places under one category.
+            </p>
+          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
-        <div className="lg:col-span-8 space-y-6 pr-8 border-r border-gray-200">
+        <div className="lg:col-span-8 space-y-6">
           {/* Category & Zone Strategy */}
           <Section
             title="Category & Zone Strategy"
             desc="Import scope and zoning."
           >
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="block">
-                <span className="text-sm font-medium text-gray-700">
+              <Field>
+                <FieldLabel htmlFor="category">
                   Category
-                </span>
+                </FieldLabel>
                 <select
-                  className="mt-1 w-full rounded-lg border-gray-300"
+                  id="category"
+                  className="w-full h-8 rounded-lg border border-border"
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
                   disabled={importing}
@@ -550,14 +571,15 @@ export default function BulkPlacesImport() {
                     </option>
                   ))}
                 </select>
-              </label>
+              </Field>
 
-              <label className="block">
-                <span className="text-sm font-medium text-gray-700">
+              <Field>
+                <FieldLabel htmlFor="zoneAssignment" className="block">
                   Zone assignment
-                </span>
+                </FieldLabel>
                 <select
-                  className="mt-1 w-full rounded-lg border-gray-300"
+                  id="zoneAssignment"
+                  className="w-full h-8 rounded-lg border border-border"
                   value={useSingleZone ? "single" : "property"}
                   onChange={(e) =>
                     setUseSingleZone(e.target.value === "single")
@@ -569,37 +591,37 @@ export default function BulkPlacesImport() {
                     Use zone name from a property
                   </option>
                 </select>
-              </label>
+              </Field>
             </div>
 
             {useSingleZone ? (
-              <div className="mt-4">
-                <label className="block">
-                  <span className="text-sm font-medium text-gray-700">
-                    Fixed zone
-                  </span>
-                  <select
-                    className="mt-1 w-full rounded-lg border-gray-300"
-                    value={singleZoneId}
-                    onChange={(e) => setSingleZoneId(e.target.value)}
-                    disabled={zonesLoading || importing}
-                  >
-                    {zones.map((z) => (
-                      <option key={z.id} value={z.id}>
-                        {z.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
+              <Field className="mt-4">
+                <FieldLabel htmlFor="singleZone" className="block">
+                  Fixed zone
+                </FieldLabel>
+                <select
+                  id="singleZone"
+                  className="w-full h-8 rounded-lg border border-border"
+                  value={singleZoneId}
+                  onChange={(e) => setSingleZoneId(e.target.value)}
+                  disabled={zonesLoading || importing}
+                >
+                  {zones.map((z) => (
+                    <option key={z.id} value={z.id}>
+                      {z.name}
+                    </option>
+                  ))}
+                </select>
+              </Field>
             ) : (
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <label className="block">
-                  <span className="text-sm font-medium text-gray-700">
+                <Field>
+                  <FieldLabel htmlFor="zoneName" className="block">
                     Zone name property
-                  </span>
+                  </FieldLabel>
                   <select
-                    className="mt-1 w-full rounded-lg border-gray-300"
+                    id="zoneName"
+                    className="w-full h-8 rounded-lg border border-border"
                     value={fieldMap.zoneName ?? ""}
                     onChange={(e) =>
                       setFieldMap((m) => ({ ...m, zoneName: e.target.value }))
@@ -613,20 +635,20 @@ export default function BulkPlacesImport() {
                       </option>
                     ))}
                   </select>
-                </label>
+                </Field>
 
-                <label className="flex items-center gap-2 mt-6">
+                <Field orientation="horizontal">
                   <input
                     type="checkbox"
-                    className="rounded border-gray-300"
+                    className="rounded border-border"
                     checked={allowCreateZones}
                     onChange={(e) => setAllowCreateZones(e.target.checked)}
                     disabled={importing}
                   />
-                  <span className="text-sm text-gray-700">
+                  <FieldLabel className="flex items-center gap-2">
                     Create zones if missing (this category)
-                  </span>
-                </label>
+                  </FieldLabel>
+                </Field>
               </div>
             )}
           </Section>
@@ -641,31 +663,29 @@ export default function BulkPlacesImport() {
               accept=".json,.geojson,application/json"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
               disabled={importing}
-              className="block w-full rounded-lg border border-dashed border-gray-300 p-3"
+              className="block w-full rounded-lg border border-dashed border-border p-3"
             />
             {rawJson && (
-              <p className="mt-2 text-xs text-gray-500">
+              <p className="mt-2 text-xs text-foreground/60">
                 Parsed: {features.length} point features
               </p>
             )}
-            <label className="block">
-              <span className="text-sm font-medium text-gray-700">
-                Input CRS
-              </span>
-              <select
-                className="mt-1 w-full rounded-lg border-gray-300"
-                value={inputCrs}
-                onChange={(e) => setInputCrs(e.target.value as CRS)}
-                disabled={importing}
-              >
-                <option value="wgs84">WGS84 (lon/lat)</option>
-                <option value="utm28n">
-                  UTM 28N (Senegal west, e.g., Dakar)
-                </option>
-                <option value="utm29n">UTM 29N (eastern Senegal)</option>
-                <option value="webmercator">Web Mercator (EPSG:3857)</option>
-              </select>
-            </label>
+            <FieldLabel className="block">
+              Input CRS
+            </FieldLabel>
+            <select
+              className="w-full h-8 rounded-lg border border-border"
+              value={inputCrs}
+              onChange={(e) => setInputCrs(e.target.value as CRS)}
+              disabled={importing}
+            >
+              <option value="wgs84">WGS84 (lon/lat)</option>
+              <option value="utm28n">
+                UTM 28N (Senegal west, e.g., Dakar)
+              </option>
+              <option value="utm29n">UTM 29N (eastern Senegal)</option>
+              <option value="webmercator">Web Mercator (EPSG:3857)</option>
+            </select>
           </Section>
 
           {/* Field Mapper */}
@@ -694,12 +714,13 @@ export default function BulkPlacesImport() {
                   ["sports", "Sports (comma-separated keys)"],
                 ] as Array<[keyof FieldMap, string]>
               ).map(([key, label]) => (
-                <label key={key} className="block">
-                  <span className="text-sm font-medium text-gray-700">
+                <Field>
+                  <FieldLabel htmlFor={key} key={key} className="block">
                     {label}
-                  </span>
+                  </FieldLabel>
                   <select
-                    className="mt-1 w-full rounded-lg border-gray-300"
+                    id={key}
+                    className="w-full h-8 rounded-lg border border-border"
                     value={(fieldMap as any)[key] ?? ""}
                     onChange={(e) =>
                       setFieldMap((m) => ({ ...m, [key]: e.target.value }))
@@ -713,36 +734,38 @@ export default function BulkPlacesImport() {
                       </option>
                     ))}
                   </select>
-                </label>
+                </Field>
               ))}
             </div>
 
             <div className="mt-4 flex flex-wrap gap-6">
-              <label className="flex items-center gap-2">
+              <Field orientation="horizontal">
                 <input
+                  id="dry-run"
                   type="checkbox"
-                  className="rounded border-gray-300"
+                  className="rounded border-border"
                   checked={dryRun}
                   onChange={(e) => setDryRun(e.target.checked)}
                   disabled={importing}
                 />
-                <span className="text-sm text-gray-700">
+                <FieldLabel htmlFor="dry-run" className="flex items-center gap-2">
                   Dry run (no writes)
-                </span>
-              </label>
+                </FieldLabel>
 
-              <label className="flex items-center gap-2">
+              </Field>
+              <Field orientation="horizontal">
                 <input
+                  id="skip-duplicates"
                   type="checkbox"
-                  className="rounded border-gray-300"
+                  className="rounded border-border"
                   checked={skipDuplicates}
                   onChange={(e) => setSkipDuplicates(e.target.checked)}
                   disabled={importing}
                 />
-                <span className="text-sm text-gray-700">
+                <FieldLabel htmlFor="skip-duplicates">
                   Skip duplicates (name + coords per zone)
-                </span>
-              </label>
+                </FieldLabel>
+              </Field>
             </div>
           </Section>
 
@@ -771,7 +794,7 @@ export default function BulkPlacesImport() {
 
           {/* Log */}
           <Section title="Log">
-            <pre className="max-h-64 overflow-auto whitespace-pre-wrap rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs">
+            <pre className="max-h-64 overflow-auto whitespace-pre-wrap rounded-lg text-xs">
               {log.join("\n") || "No logs yet."}
             </pre>
           </Section>
@@ -780,43 +803,43 @@ export default function BulkPlacesImport() {
         {/* Preview */}
         <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-20 self-start">
           <Section title="Preview (first 20)">
-            <div className="overflow-auto rounded-lg border border-gray-200">
-              <table className="min-w-full text-sm">
-                <thead className="bg-gray-50">
-                  <tr className="text-left">
-                    <th className="px-3 py-2">#</th>
-                    <th className="px-3 py-2">Name</th>
-                    <th className="px-3 py-2">Lat</th>
-                    <th className="px-3 py-2">Lng</th>
-                    <th className="px-3 py-2">Zone</th>
-                    <th className="px-3 py-2">Rating</th>
-                    <th className="px-3 py-2">Tags</th>
-                  </tr>
-                </thead>
-                <tbody>
+            <div className="overflow-auto rounded-lg border border-border">
+              <Table className="min-w-full">
+                <TableHeader>
+                  <TableRow className="text-left">
+                    <TableHead className="px-3 py-2">#</TableHead>
+                    <TableHead className="px-3 py-2">Name</TableHead>
+                    <TableHead className="px-3 py-2">Lat</TableHead>
+                    <TableHead className="px-3 py-2">Lng</TableHead>
+                    <TableHead className="px-3 py-2">Zone</TableHead>
+                    <TableHead className="px-3 py-2">Rating</TableHead>
+                    <TableHead className="px-3 py-2">Tags</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {previewRows.map((r) => (
-                    <tr key={r.idx} className="border-t">
-                      <td className="px-3 py-2">{r.idx}</td>
-                      <td className="px-3 py-2">{r.name}</td>
-                      <td className="px-3 py-2">{r.lat}</td>
-                      <td className="px-3 py-2">{r.lon}</td>
-                      <td className="px-3 py-2">{r.zoneName}</td>
-                      <td className="px-3 py-2">{String(r.rating ?? "")}</td>
-                      <td className="px-3 py-2">{String(r.tags ?? "")}</td>
-                    </tr>
+                    <TableRow key={r.idx} className="border-t">
+                      <TableCell className="px-3 py-2">{r.idx}</TableCell>
+                      <TableCell className="px-3 py-2">{r.name}</TableCell>
+                      <TableCell className="px-3 py-2">{r.lat}</TableCell>
+                      <TableCell className="px-3 py-2">{r.lon}</TableCell>
+                      <TableCell className="px-3 py-2">{r.zoneName}</TableCell>
+                      <TableCell className="px-3 py-2">{String(r.rating ?? "")}</TableCell>
+                      <TableCell className="px-3 py-2">{String(r.tags ?? "")}</TableCell>
+                    </TableRow>
                   ))}
                   {previewRows.length === 0 && (
-                    <tr>
-                      <td
-                        className="px-3 py-6 text-center text-gray-500"
+                    <TableRow>
+                      <TableCell
+                        className="px-3 py-6 text-center text-foreground/70 text-sm"
                         colSpan={7}
                       >
                         Upload a valid GeoJSON to see preview
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   )}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           </Section>
 
@@ -824,7 +847,7 @@ export default function BulkPlacesImport() {
             title="Tips"
             desc="Your GeoJSON should be a FeatureCollection with Point features. Coordinates are [lng, lat]."
           >
-            <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
+            <ul className="list-disc pl-5 text-sm text-foreground/70 space-y-1">
               <li>
                 <code>properties.name</code> is required (map it above).
               </li>

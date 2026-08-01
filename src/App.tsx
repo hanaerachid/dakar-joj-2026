@@ -11,6 +11,7 @@ import { initAuth } from "./auth/nitAuth";
 import BulkPlacesImport from "./admin/places/BulkPlacesImport";
 import { ThemeProvider } from "@/components/theme-provider"
 import { ModalProvider } from "./components/modal-provider";
+import { ArrowLeft, Plus } from "lucide-react";
 
 function AdminShell() {
   return (
@@ -23,9 +24,12 @@ function AdminShell() {
         <div className="flex items-center gap-2">
           <Link
             to="/"
-            className="rounded px-3 py-1 hover:bg-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
+            className="inline-flex items-center gap-2 rounded px-3 py-1 hover:bg-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
           >
-            ← Back to Map
+            <ArrowLeft className="h-4 w-4" />
+              <span>
+            Back to Map
+              </span>
           </Link>
 
           <div className="ml-auto flex gap-2">
@@ -38,9 +42,12 @@ function AdminShell() {
 
             <Link
               to="/admin/places/new"
-              className="rounded-xl bg-black text-white px-3 py-1 hover:bg-black/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-black/30"
+              className="inline-flex items-center gap-2 rounded-full bg-foreground text-background uppercase font-semibold text-sm px-3 py-1 hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-black/30"
             >
-              + New place
+              <Plus className="h-4 w-4" />
+              <span>
+              New place
+              </span>
             </Link>
           </div>
         </div>
