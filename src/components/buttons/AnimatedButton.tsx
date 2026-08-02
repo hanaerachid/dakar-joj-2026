@@ -49,8 +49,8 @@ export function AnimatedButton({
           shadow-lg shadow-black/10
           ring-1 ring-black/5
           outline-none
-          focus-visible:ring-2 focus-visible:ring-blue-400/40
-        `, isOpen && "bg-blue-500/80 hover:bg-blue-500 text-foreground",
+          focus-visible:ring-2 focus-visible:ring-primary/40
+        `, isOpen && "bg-primary/80 hover:bg-primary text-foreground",
         className)}
         onClick={onClick}
         title={resolvedTitle}

@@ -35,7 +35,7 @@ export default function CategoryZoneFields({
           id="category"
           value={categoryId}
           onChange={(e) => setCategoryId(e.target.value)}
-          className="h-10 w-full rounded-xl border px-3 text-sm shadow-sm focus:border-gray-300 focus:ring-2 focus:ring-black/10"
+          className="bg-input h-10 w-full rounded-xl border px-3 text-sm shadow-sm focus:border-gray-300 focus:ring-2 focus:ring-black/10"
         >
           {CATEGORIES.map((c) => (
             <option key={c.id} value={c.id}>
@@ -54,7 +54,7 @@ export default function CategoryZoneFields({
           disabled={zonesLoading}
           value={zoneId}
           onChange={(e) => setZoneId(e.target.value)}
-          className="h-10 w-full rounded-xl border px-3 text-sm shadow-sm focus:border-gray-300 focus:ring-2 focus:ring-black/10 disabled:opacity-60"
+          className="bg-input h-10 w-full rounded-xl border px-3 text-sm shadow-sm focus:border-gray-300 focus:ring-2 focus:ring-black/10 disabled:opacity-60"
         >
           <option value="">(No zone)</option>
 

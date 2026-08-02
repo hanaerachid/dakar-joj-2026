@@ -3,7 +3,6 @@ import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { TextInput } from "../../common/TextInput";
 import { TextArea } from "../../common/TextArea";
 import { ColorInput } from "../../common/ColorInput";
-import { Chip } from "../../common/Chip";
 import { Section } from "../../common/Section";
 import type { VenueSport } from "../../../data/sitesMeta";
 import LocationPickerModal from "../../../core/map/LocationPickerModal";

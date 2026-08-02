@@ -1,13 +1,16 @@
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+
 export function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <input
+    <Input
       {...props}
-      className={[
-        "h-10 w-full rounded-xl border px-3 text-sm shadow-sm outline-none transition",
-        "focus:ring-2 focus:ring-black/10 focus:border-gray-300",
+      className={cn(
+        "h-10 w-full rounded-2xl border border-border bg-input px-3 text-sm shadow-sm outline-none transition",
+        "focus:border-blue-300 focus:ring-4 focus:ring-blue-100",
         "disabled:opacity-60 disabled:cursor-not-allowed",
         props.className || "",
-      ].join(" ")}
+      )}
     />
   );
 }

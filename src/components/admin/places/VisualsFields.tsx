@@ -1,3 +1,4 @@
+import { ColorInput } from "@/components/common/ColorInput";
 import { Field, FieldLabel } from "@/components/ui/field";
 
 type Props = {
@@ -41,25 +42,11 @@ export default function VisualsFields({
           >
             Gradient from
           </FieldLabel>
-          <div className="flex items-center gap-2">
-            <input
-              id="gradFrom"
-              type="color"
-              value={gradientFrom}
-              onChange={(e) => setGradientFrom(e.target.value)}
-              className="h-9 w-9 cursor-pointer rounded-md border p-0"
-              aria-label="Pick color"
-            />
-            <input
-              value={gradientFrom}
-              onChange={(e) => setGradientFrom(e.target.value)}
-              className={[
-                "h-10 w-full rounded-xl border px-3 text-sm shadow-sm outline-none transition",
-                "focus:ring-2 focus:ring-black/10 focus:border-gray-300",
-                "disabled:opacity-60 disabled:cursor-not-allowed",
-              ].join(" ")}
-            />
-          </div>
+          <ColorInput
+            id="gradFrom"
+            value={gradientFrom}
+            onChange={setGradientFrom}
+          />
         </Field>
 
         {/* Field: Gradient to */}
@@ -67,25 +54,11 @@ export default function VisualsFields({
           <FieldLabel htmlFor="gradTo">
             Gradient to
           </FieldLabel>
-          <div className="flex items-center gap-2">
-            <input
-              id="gradTo"
-              type="color"
-              value={gradientTo}
-              onChange={(e) => setGradientTo(e.target.value)}
-              className="h-9 w-9 cursor-pointer rounded-md border p-0"
-              aria-label="Pick color"
-            />
-            <input
-              value={gradientTo}
-              onChange={(e) => setGradientTo(e.target.value)}
-              className={[
-                "h-10 w-full rounded-xl border px-3 text-sm shadow-sm outline-none transition",
-                "focus:ring-2 focus:ring-black/10 focus:border-gray-300",
-                "disabled:opacity-60 disabled:cursor-not-allowed",
-              ].join(" ")}
-            />
-          </div>
+          <ColorInput
+            id="gradTo"
+            value={gradientTo}
+            onChange={setGradientTo}
+          />
         </Field>
       </div>
 
@@ -96,7 +69,7 @@ export default function VisualsFields({
           style={gradientStyle}
           aria-label="Gradient preview"
         />
-        <span className="text-xs text-foreground/70">Live gradient preview</span>
+        <span className="text-xs text-muted-foreground">Live gradient preview</span>
       </div>
 
       {/* Cover image */}

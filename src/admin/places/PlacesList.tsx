@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { deletePlace, listPlaces, listZones } from "../../lib/api/places";
-import { Icon } from "@iconify/react/dist/iconify.js";
 import { CATEGORIES } from "../../components/place-list/place-list-utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

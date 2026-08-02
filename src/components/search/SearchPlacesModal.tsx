@@ -40,38 +40,33 @@ export function SearchPlacesModal({
       onClose={onClose}
       title={t("search.title")}
       size="lg"
-      panelClassName="sm:max-w-2xl md:max-w-3xl p-0"
-      contentClassName="px-0 py-0"
+      panelClassName="sm:max-w-2xl md:max-w-3xl"
     >
       {/* Tabs */}
-      <div className="md:px-4 px-1 pt-2">
-        <TabBar
-          tabs={[
-            { id: "global", label: t("search.tab.global") },
-            { id: "local", label: t("search.tab.local") },
-          ]}
-          activeId={active}
-          onChange={(id) => setActive(id as "global" | "local")}
-        />
-      </div>
+      <TabBar
+        tabs={[
+          { id: "global", label: t("search.tab.global") },
+          { id: "local", label: t("search.tab.local") },
+        ]}
+        activeId={active}
+        onChange={(id) => setActive(id as "global" | "local")}
+      />
 
       {/* Body */}
-      <div className="md:p-4 p-1">
-        {active === "global" ? (
-          <GlobalPlacesTab
-            query={globalQuery}
-            onQueryChange={setGlobalQuery}
-            onPicked={() => onClose()}
-          />
-        ) : (
-          <LocalPlacesTab
-            categories={categories}
-            query={localQuery}
-            onQueryChange={setLocalQuery}
-            onPicked={() => onClose()}
-          />
-        )}
-      </div>
+      {active === "global" ? (
+        <GlobalPlacesTab
+          query={globalQuery}
+          onQueryChange={setGlobalQuery}
+          onPicked={() => onClose()}
+        />
+      ) : (
+        <LocalPlacesTab
+          categories={categories}
+          query={localQuery}
+          onQueryChange={setLocalQuery}
+          onPicked={() => onClose()}
+        />
+      )}
     </Modal>
   );
 }

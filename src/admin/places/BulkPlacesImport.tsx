@@ -546,7 +546,7 @@ export default function BulkPlacesImport() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         <div className="lg:col-span-8 space-y-6">
           {/* Category & Zone Strategy */}
           <Section
@@ -847,7 +847,7 @@ export default function BulkPlacesImport() {
             title="Tips"
             desc="Your GeoJSON should be a FeatureCollection with Point features. Coordinates are [lng, lat]."
           >
-            <ul className="list-disc pl-5 text-sm text-foreground/70 space-y-1">
+            <ul className="list-disc ps-5 text-sm text-muted-foreground space-y-1">
               <li>
                 <code>properties.name</code> is required (map it above).
               </li>

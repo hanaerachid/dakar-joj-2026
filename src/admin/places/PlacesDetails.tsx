@@ -15,6 +15,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
 import { Spinner } from "@/components/ui/spinner";
 import { ArrowLeft } from "lucide-react";
+import { ColorInput } from "@/components/common/ColorInput";
+import { TextInput } from "@/components/common/TextInput";
 
 /* ---------- Small UI helpers ---------- */
 function Field({
@@ -41,52 +43,17 @@ function Field({
   );
 }
 
-function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <input
-      {...props}
-      className={[
-        "h-10 w-full rounded-2xl border border-border bg-background/80 px-3 text-sm shadow-sm outline-none transition",
-        "focus:border-blue-300 focus:ring-4 focus:ring-blue-100",
-        "disabled:opacity-60 disabled:cursor-not-allowed",
-        props.className || "",
-      ].join(" ")}
-    />
-  );
-}
-
 function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea
       {...props}
       className={[
-        "min-h-[92px] w-full rounded-2xl border border-border bg-background/80 px-3 py-2 text-sm shadow-sm outline-none transition",
+        "min-h-[92px] w-full rounded-2xl border border-border bg-input px-3 py-2 text-sm shadow-sm outline-none transition",
         "focus:border-blue-300 focus:ring-4 focus:ring-blue-100",
         "disabled:opacity-60 disabled:cursor-not-allowed",
         props.className || "",
       ].join(" ")}
     />
-  );
-}
-
-function ColorInput({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <div className="flex items-center gap-2">
-      <input
-        type="color"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="h-9 w-9 cursor-pointer rounded-md border p-0"
-        aria-label="Pick color"
-      />
-      <TextInput value={value} onChange={(e) => onChange(e.target.value)} />
-    </div>
   );
 }
 
@@ -631,7 +598,7 @@ export function PlaceDetailsPage() {
                 style={gradientStyle}
                 aria-label="Gradient preview"
               />
-              <span className="text-xs text-gray-600">
+              <span className="text-xs text-muted-foreground">
                 Live gradient preview
               </span>
             </div>

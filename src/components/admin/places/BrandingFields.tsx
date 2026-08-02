@@ -1,3 +1,4 @@
+import { TextInput } from "@/components/common/TextInput";
 import { Field, FieldLabel } from "@/components/ui/field";
 
 type Props = {
@@ -40,16 +41,11 @@ export default function BrandingFields({
         <FieldLabel htmlFor="brandTitle">
           Brand title
         </FieldLabel>
-        <input
+        <TextInput
           id="brandTitle"
           placeholder="DAKAR 2026"
           value={brandTitle}
           onChange={(e) => setBrandTitle(e.target.value)}
-          className={[
-            "h-10 w-full rounded-xl border px-3 text-sm shadow-sm outline-none transition",
-            "focus:ring-2 focus:ring-black/10 focus:border-gray-300",
-            "disabled:opacity-60 disabled:cursor-not-allowed",
-          ].join(" ")}
         />
       </Field>
 
@@ -58,16 +54,11 @@ export default function BrandingFields({
         <FieldLabel htmlFor="brandSubtitle">
           Brand subtitle
         </FieldLabel>
-        <input
+        <TextInput
           id="brandSubtitle"
           placeholder="YOUTH OLYMPIC GAMES"
           value={brandSubtitle}
           onChange={(e) => setBrandSubtitle(e.target.value)}
-          className={[
-            "h-10 w-full rounded-xl border px-3 text-sm shadow-sm outline-none transition",
-            "focus:ring-2 focus:ring-black/10 focus:border-gray-300",
-            "disabled:opacity-60 disabled:cursor-not-allowed",
-          ].join(" ")}
         />
       </Field>
 
@@ -76,16 +67,11 @@ export default function BrandingFields({
         <FieldLabel htmlFor="locationLabel">
           Location label
         </FieldLabel>
-        <input
+        <TextInput
           id="locationLabel"
           placeholder="Diamniadio"
           value={locationLabel}
           onChange={(e) => setLocationLabel(e.target.value)}
-          className={[
-            "h-10 w-full rounded-xl border px-3 text-sm shadow-sm outline-none transition",
-            "focus:ring-2 focus:ring-black/10 focus:border-gray-300",
-            "disabled:opacity-60 disabled:cursor-not-allowed",
-          ].join(" ")}
         />
       </Field>
 
@@ -94,16 +80,11 @@ export default function BrandingFields({
         <FieldLabel htmlFor="shortCode">
           Short code
         </FieldLabel>
-        <input
+        <TextInput
           id="shortCode"
           placeholder="DEX"
           value={shortCode}
           onChange={(e) => setShortCode(e.target.value)}
-          className={[
-            "h-10 w-full rounded-xl border px-3 text-sm shadow-sm outline-none transition",
-            "focus:ring-2 focus:ring-black/10 focus:border-gray-300",
-            "disabled:opacity-60 disabled:cursor-not-allowed",
-          ].join(" ")}
         />
       </Field>
 
@@ -112,16 +93,11 @@ export default function BrandingFields({
         <FieldLabel htmlFor="website">
           Website
         </FieldLabel>
-        <input
+        <TextInput
           id="website"
           placeholder="https://www.dakar2026.org"
           value={website}
           onChange={(e) => setWebsite(e.target.value)}
-          className={[
-            "h-10 w-full rounded-xl border px-3 text-sm shadow-sm outline-none transition",
-            "focus:ring-2 focus:ring-black/10 focus:border-gray-300",
-            "disabled:opacity-60 disabled:cursor-not-allowed",
-          ].join(" ")}
         />
       </Field>
 
@@ -130,16 +106,11 @@ export default function BrandingFields({
         <FieldLabel htmlFor="social">
           Social handle
         </FieldLabel>
-        <input
+        <TextInput
           id="social"
           placeholder="@jojdakar2026"
           value={socialHandle}
           onChange={(e) => setSocialHandle(e.target.value)}
-          className={[
-            "h-10 w-full rounded-xl border px-3 text-sm shadow-sm outline-none transition",
-            "focus:ring-2 focus:ring-black/10 focus:border-gray-300",
-            "disabled:opacity-60 disabled:cursor-not-allowed",
-          ].join(" ")}
         />
       </Field>
     </div>

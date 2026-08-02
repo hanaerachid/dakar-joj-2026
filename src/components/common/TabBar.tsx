@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 export function TabBar({
   tabs,
   activeId,
@@ -9,19 +11,19 @@ export function TabBar({
 }) {
   return (
     <div className="w-full">
-      <div className="inline-flex rounded-xl bg-black/5 p-1">
+      <div className="inline-flex gap-1 rounded-xl bg-background/5 p-1">
         {tabs.map((t) => {
           const active = t.id === activeId;
           return (
             <button
               key={t.id}
               onClick={() => onChange(t.id)}
-              className={[
+              className={cn(
                 "px-4 py-2 rounded-lg text-sm transition",
                 active
-                  ? "bg-accent shadow ring-1 ring-black/5"
-                  : "text-gray-600 hover:bg-black/10",
-              ].join(" ")}
+                  ? "bg-primary shadow ring-1 ring-border/5"
+                  : "text-muted-foreground hover:bg-background/10",
+              )}
             >
               {t.label}
             </button>

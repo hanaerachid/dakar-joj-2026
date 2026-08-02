@@ -1,9 +1,18 @@
 // src/core/BasemapSwitcherModal.tsx
 import { useState } from "react";
-import { Icon } from "@iconify/react";
+import { useTranslation } from "react-i18next";
+import { Asterisk, CarFront, CircleCheck, Map, MoonStar, Mountain, Satellite, Sun, type LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { MapManager } from "./MapManager";
 import { Modal } from "../components/common/Modal";
-import { useTranslation } from "react-i18next";
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item"
 
 type BasemapId =
   | "mapbox-streets"
@@ -16,7 +25,7 @@ type BasemapId =
 
 const OPTIONS: {
   id: BasemapId;
-  icon: string;
+  icon: string | LucideIcon;
   labelKey: string;
   descKey: string;
   // 👇 human fallback shown if i18n key missing
@@ -25,7 +34,7 @@ const OPTIONS: {
 }[] = [
     {
       id: "mapbox-streets",
-      icon: "mdi:map-outline",
+      icon: Map,
       labelKey: "basemap.option.mapbox_streets.label",
       descKey: "basemap.option.mapbox_streets.desc",
       labelFallback: "Mapbox Streets",
@@ -33,7 +42,7 @@ const OPTIONS: {
     },
     {
       id: "mapbox-outdoors",
-      icon: "mdi:terrain",
+      icon: Mountain,
       labelKey: "basemap.option.mapbox_outdoors.label",
       descKey: "basemap.option.mapbox_outdoors.desc",
       labelFallback: "Outdoors (Mapbox)",
@@ -41,7 +50,7 @@ const OPTIONS: {
     },
     {
       id: "mapbox-light",
-      icon: "mdi:white-balance-sunny",
+      icon: Sun,
       labelKey: "basemap.option.mapbox_light.label",
       descKey: "basemap.option.mapbox_light.desc",
       labelFallback: "Light (Mapbox)",
@@ -49,7 +58,7 @@ const OPTIONS: {
     },
     {
       id: "mapbox-dark",
-      icon: "mdi:weather-night",
+      icon: MoonStar,
       labelKey: "basemap.option.mapbox_dark.label",
       descKey: "basemap.option.mapbox_dark.desc",
       labelFallback: "Dark (Mapbox)",
@@ -57,7 +66,7 @@ const OPTIONS: {
     },
     {
       id: "mapbox-satellite",
-      icon: "mdi:satellite-variant",
+      icon: Satellite,
       labelKey: "basemap.option.mapbox_satellite.label",
       descKey: "basemap.option.mapbox_satellite.desc",
       labelFallback: "Satellite (Mapbox)",
@@ -65,7 +74,7 @@ const OPTIONS: {
     },
     {
       id: "mapbox-navigation-day",
-      icon: "mdi:car",
+      icon: CarFront,
       labelKey: "basemap.option.mapbox_nav_day.label",
       descKey: "basemap.option.mapbox_nav_day.desc",
       labelFallback: "Navigation Day (Mapbox)",
@@ -73,7 +82,7 @@ const OPTIONS: {
     },
     {
       id: "mapbox-navigation-night",
-      icon: "mdi:car-shift-pattern",
+      icon: Asterisk,
       labelKey: "basemap.option.mapbox_nav_night.label",
       descKey: "basemap.option.mapbox_nav_night.desc",
       labelFallback: "Navigation Night (Mapbox)",
@@ -92,15 +101,6 @@ export function BasemapSwitcherModal({
   const [active, setActive] = useState<BasemapId>("mapbox-streets");
   const mgr = MapManager.getInstance();
 
-  // Helper: translate with a guaranteed fallback
-  const tr = (key: string, fallback: string) => {
-    const fallbackTranslated = t(fallback);
-    const safeFallback =
-      fallbackTranslated === fallback ? fallback : fallbackTranslated;
-    const out = t(key, { defaultValue: safeFallback });
-    return out === key ? safeFallback : out;
-  };
-
   const apply = async (id: BasemapId) => {
     setActive(id);
     await mgr.setBasemap(id);
@@ -111,56 +111,57 @@ export function BasemapSwitcherModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={tr("basemap.modal.title", "Map Layers")}
+      title={t("basemap.modal.title", "Map Layers")}
       size="md"
-      contentClassName="px-0 py-0"
       footer={
-        <div className="px-4 pb-4 text-xs text-foreground/50">
-          {tr(
+        <div className="text-xs text-foreground/50">
+          {t(
             "basemap.tip",
             "Tip: you can change the basemap at any time. Your custom layers will reload automatically.",
           )}
         </div>
       }
     >
-      <ul className="p-2">
+      <ItemGroup>
         {OPTIONS.map((opt) => {
           const selected = opt.id === active;
           return (
-            <li key={opt.id}>
-              <button
-                type="button"
-                onClick={() => apply(opt.id)}
-                className={[
-                  "w-full text-start px-4 py-3 rounded-xl transition flex items-center gap-3",
-                  selected
-                    ? "bg-accent shadow ring-1 ring-foreground/5"
-                    : "hover:bg-black/5",
-                ].join(" ")}
-                aria-pressed={selected}
+            <Item
+              variant="default"
+              size="xs"
+              key={opt.id}
+              onClick={() => apply(opt.id)}
+              className={cn(
+                "w-full rounded-xl transition",
+                selected
+                  ? "bg-accent shadow ring-1 ring-foreground/5"
+                  : "hover:bg-background/50 cursor-pointer",
+              )}
+              aria-pressed={selected}
+            >
+              <ItemMedia
+                variant="icon"
+                className="rounded-lg bg-background/5 w-9 h-9"
               >
-                <span className="grid place-items-center rounded-lg bg-black/5 w-9 h-9">
-                  <Icon icon={opt.icon} className="w-5 h-5" />
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium truncate">
-                    {tr(opt.labelKey, opt.labelFallback)}
-                  </div>
-                  <div className="text-xs text-gray-500 truncate">
-                    {tr(opt.descKey, opt.descFallback)}
-                  </div>
-                </div>
+                <opt.icon className="w-5 h-5" />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle className="truncate">
+                  {t(opt.labelKey, opt.labelFallback)}
+                </ItemTitle>
+                <ItemDescription className="text-xs truncate">
+                  {t(opt.descKey, opt.descFallback)}
+                </ItemDescription>
+              </ItemContent>
+              <ItemContent>
                 {selected && (
-                  <Icon
-                    icon="mdi:check-circle"
-                    className="w-5 h-5 text-blue-600"
-                  />
+                  <CircleCheck className="text-primary" />
                 )}
-              </button>
-            </li>
+              </ItemContent>
+            </Item>
           );
         })}
-      </ul>
+      </ItemGroup>
     </Modal>
   );
 }
