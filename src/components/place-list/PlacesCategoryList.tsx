@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Spinner } from "@/components/ui/spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
+import { Empty, EmptyContent, EmptyDescription } from "../ui/empty";
 
 type Props = {
   CATEGORIES: any[];
@@ -66,14 +67,14 @@ export function PlacesCategoryList({
           <motion.li
             key={cat.id}
             layout
-            className="rounded-xl border border-slate-200/70 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow"
+            className="rounded-xl border border-border bg-background/90 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow"
           >
             {/* Header */}
             <div
               role="button"
               tabIndex={0}
               aria-expanded={isOpen}
-              className="w-full flex items-center gap-3 px-3.5 py-2.5 text-left rounded-xl cursor-pointer select-none"
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 text-start rounded-xl cursor-pointer select-none"
               onClick={() => setOpenCatId(isOpen ? null : cat.id)}
               onKeyDown={(e) => {
                 const t = e.target as HTMLElement;
@@ -105,17 +106,17 @@ export function PlacesCategoryList({
                 className="flex items-center gap-2.5"
                 onClick={(e) => e.stopPropagation()}
                 htmlFor={cat.id}
-              ><span className="font-medium text-slate-800">{cat.label}</span></Label>
+              ><span className="font-medium text-foreground">{cat.label}</span></Label>
 
               {/* Count pill when active */}
               {isActive && (
-                <span className="ml-auto inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+                <span className="ml-auto inline-flex items-center rounded-full bg-card px-2 py-0.5 text-xs font-medium text-muted-foreground">
                   {venues.length}
                 </span>
               )}
 
               {/* Chevron */}
-              <div className="ml-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-600">
+              <div className="ml-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-card text-muted-foreground">
                 <Chevron open={isOpen} />
               </div>
             </div>
@@ -133,7 +134,7 @@ export function PlacesCategoryList({
                   <div className="px-3.5 pb-3.5">
                     {/* Loading */}
                     {loading && (
-                      <div className="py-4 flex items-center gap-2 text-slate-600">
+                      <div className="py-4 flex items-center gap-2 text-muted-foreground">
                         <Spinner />
                         <span className="text-sm">Loading…</span>
                       </div>
@@ -151,9 +152,13 @@ export function PlacesCategoryList({
 
                     {/* Empty */}
                     {!loading && !loadError && venues.length === 0 && (
-                      <div className="py-3 text-sm text-slate-600">
-                        {cat.hint ?? "No items yet."}
-                      </div>
+                      <Empty className="py-3 text-sm text-muted-foreground">
+                        <EmptyContent>
+                          <EmptyDescription>
+                            {cat.hint ?? "No items yet."}
+                          </EmptyDescription>
+                        </EmptyContent>
+                      </Empty>
                     )}
 
                     {/* Zones + Places */}
@@ -168,11 +173,11 @@ export function PlacesCategoryList({
                             <motion.li
                               key={zone}
                               layout
-                              className="rounded-lg border border-slate-200/60 bg-white/70"
+                              className="rounded-lg border border-border bg-card"
                             >
                               {/* Zone header */}
                               <button
-                                className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-slate-50 rounded-lg transition-colors"
+                                className="w-full flex items-center gap-2.5 px-3 py-2 text-start hover:bg-card/20 rounded-lg transition-colors"
                                 onClick={() =>
                                   setOpenZones((prev) => ({
                                     ...prev,
@@ -186,15 +191,15 @@ export function PlacesCategoryList({
                                     style={{ backgroundColor: color }}
                                   />
                                 </div>
-                                <span className="font-medium text-slate-800">
+                                <span className="font-medium text-foreground">
                                   {zone}
                                 </span>
-                                <span className="ml-auto inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+                                <span className="ml-auto inline-flex items-center rounded-full bg-card px-2 py-0.5 text-xs font-medium text-muted-foreground">
                                   {list.length}
                                 </span>
-                                  <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-600">
-                                    <Chevron open={zoneOpen} />
-                                  </div>
+                                <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-card text-muted-foreground">
+                                  <Chevron open={zoneOpen} />
+                                </div>
                               </button>
 
                               {/* Places */}
@@ -224,9 +229,9 @@ export function PlacesCategoryList({
                                               onClick={() => {
                                                 const [lng, lat] = feature
                                                   .geometry.coordinates as [
-                                                  number,
-                                                  number,
-                                                ];
+                                                    number,
+                                                    number,
+                                                  ];
                                                 const id =
                                                   (feature.properties
                                                     ?.id as string) ??
@@ -244,14 +249,12 @@ export function PlacesCategoryList({
                                                   id,
                                                 );
                                               }}
-                                              className={`w-full flex items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm transition-colors hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-200 ${
-                                                selectedTitle === title
-                                                  ? "bg-blue-100/70 font-semibold ring-1 ring-blue-200"
-                                                  : "bg-white/60"
-                                              }`}
+                                              className={`w-full flex items-center gap-2 rounded-md px-2.5 py-2 text-start text-sm transition-colors hover:bg-primary/20 ${selectedTitle === title
+                                                  ? "bg-primary/70 font-semibold"
+                                                  : "bg-card/90"
+                                                }`}
                                             >
-                                              <span className="inline-block h-1.5 w-1.5 rounded-full bg-slate-400" />
-                                              <span className="truncate text-slate-800">
+                                              <span className="truncate text-foreground">
                                                 {title}
                                               </span>
                                             </button>

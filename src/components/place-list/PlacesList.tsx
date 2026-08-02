@@ -488,7 +488,7 @@ export function PlacesList() {
                 exit={{ scale: 0.95, opacity: 0, x: 8 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
                 className="absolute top-0 right-full me-3
-                       bg-white/70 backdrop-blur-md shadow-lg
+                       bg-background/80 backdrop-blur-md shadow-lg
                        rounded-xl sm:rounded-xl p-4 sm:p-2 text-sm
                        w-[90vw] sm:w-72 max-h-[50dvh] overflow-y-auto"
               >
