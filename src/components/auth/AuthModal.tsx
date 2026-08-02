@@ -1,6 +1,7 @@
 // src/auth/AuthModal.tsx
 // no React hooks needed here
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { LoginForm } from "./LoginForm";
 import { RegisterForm } from "./RegisterForm";
 import { ResetPasswordForm } from "./ResetPasswordForm";
@@ -11,26 +12,59 @@ import { Spinner } from "@/components/ui/spinner";
 
 type AuthView = "login" | "register" | "reset" | "profile";
 
+interface Props {
+  // view: AuthView;
+  // setView: (view: AuthView) => void;
+  onClose: () => void;
+  initialView?: AuthView;
+}
+
+const variants: Variants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 40 : -40,
+    opacity: 0,
+    scale: 0.98,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+  },
+  exit: (direction: number) => ({
+    x: direction > 0 ? -40 : 40,
+    opacity: 0,
+    scale: 0.98,
+  }),
+};
+
 export function AuthModal({
   // view = "login",
   // setView,
   onClose,
   initialView = "login",
-}: {
-  // view: AuthView;
-  // setView: (view: AuthView) => void;
-  onClose: () => void;
-  initialView?: AuthView;
-}) {
+}: Props) {
   const { user, loading } = useAuthUser();
   const { t } = useTranslation();
   const [view, setView] = useState<AuthView>(initialView);
+  const [direction, setDirection] = useState(1);
 
   useEffect(() => {
-    setView(user ? "profile" : initialView);
+    if (user) {
+      setDirection(1);
+      setView("profile");
+    } else {
+      setDirection(-1);
+      setView(initialView);
+    }
   }, [user, initialView]);
+
+  const go = (next: AuthView, dir: 1 | -1) => {
+    setDirection(dir);
+    setView(next);
+  };
+
   return (
-    <div className="relative h-full" >
+    <div className="flex h-full flex-col overflow-hidden">
       {loading ? (
         <div className="grid place-items-center h-full">
           <div className="flex items-center gap-3 text-foreground/90">
@@ -38,9 +72,9 @@ export function AuthModal({
           </div>
         </div>
       ) : (
-        // NEW: column layout — logo in normal flow, panes fill the rest
-        <div className="flex h-full flex-col">
+        <>
           {/* Top logo (in flow, not absolute) */}
+          {/*
           <div className="flex justify-center shrink-0 py-4 sm:py-5">
             <img
               src="/logo.jpeg"
@@ -48,70 +82,51 @@ export function AuthModal({
               className="h-12 sm:h-20 object-contain"
             />
           </div>
-
-          {/* Panes area fills remaining height; slide between absolute panels */}
-          <div className="relative flex-1 overflow-x-hidden overflow-y-auto overscroll-contain">
-            {/* LOGIN */}
-            <div
-              className={`absolute inset-0 transition-transform duration-300 ease-out ${
-                view === "login"
-                  ? "translate-x-0 opacity-100"
-                  : view === "register"
-                  ? "-translate-x-full opacity-0"
-                  : "translate-x-full opacity-0"
-              } ${view === "profile" ? "translate-x-full opacity-0" : ""}`}
+          */}
+          <AnimatePresence mode="wait" initial={false} custom={direction}>
+            <motion.div
+              key={view}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                duration: 0.25,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="h-full"
             >
-              <LoginForm
-                onRegister={() => setView("register")}
-                onForgot={() => setView("reset")}
-                onDone={() => setView("profile")}
-              />
-            </div>
+              {view === "login" && (
+                <LoginForm
+                  onRegister={() => go("register", 1)}
+                  onForgot={() => go("reset", 1)}
+                  onDone={() => go("profile", 1)}
+                />
+              )}
 
-            {/* REGISTER */}
-            <div
-              className={`absolute inset-0 transition-transform duration-300 ease-out ${
-                view === "register"
-                  ? "translate-x-0 opacity-100"
-                  : view === "reset"
-                  ? "-translate-x-full opacity-0"
-                  : "translate-x-full opacity-0"
-              } ${view === "profile" ? "translate-x-full opacity-0" : ""}`}
-            >
-              <RegisterForm
-                onLogin={() => setView("login")}
-                onDone={() => setView("profile")}
-              />
-            </div>
+              {view === "register" && (
+                <RegisterForm
+                  onLogin={() => go("login", -1)}
+                  onDone={() => go("profile", 1)}
+                />
+              )}
 
-            {/* RESET */}
-            <div
-              className={`absolute inset-0 transition-transform duration-300 ease-out ${
-                view === "reset"
-                  ? "translate-x-0 opacity-100"
-                  : view === "login"
-                  ? "-translate-x-full opacity-0"
-                  : "translate-x-full opacity-0"
-              } ${view === "profile" ? "translate-x-full opacity-0" : ""}`}
-            >
-              <ResetPasswordForm onLogin={() => setView("login")} />
-            </div>
+              {view === "reset" && (
+                <ResetPasswordForm
+                  onLogin={() => go("login", -1)}
+                />
+              )}
 
-            {/* PROFILE */}
-            <div
-              className={`absolute inset-0 transition-transform duration-300 ease-out ${
-                view === "profile"
-                  ? "translate-x-0 opacity-100"
-                  : "-translate-x-full opacity-0"
-              }`}
-            >
-              <ProfileView
-                user={user}
-                onClose={onClose}
-              />
-            </div>
-          </div>
-        </div>
+              {view === "profile" && (
+                <ProfileView
+                  user={user}
+                  onClose={onClose}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </>
       )}
     </div>
   );
