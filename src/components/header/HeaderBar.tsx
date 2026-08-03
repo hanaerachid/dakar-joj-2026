@@ -1,22 +1,22 @@
 import { LogoBrand } from "./LogoBrand";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ProfileMenu } from "../ProfileMenu";
-import { useTranslation } from "react-i18next";
 import { ModeToggle } from "@/components/mode-toggle";
+import { cn } from "@/lib/utils";
 
 type Props = {
   title?: string;
+  description?: string;
   onReset: () => void;
 };
 
-export function HeaderBar({ onReset }: Props) {
-  const { t } = useTranslation();
+export function HeaderBar({ title, description, onReset }: Props) {
 
   return (
-    <div className="absolute top-0 start-0 end-0 z-30">
+    <div className="absolute top-0 start-0 end-0 z-20">
       <div
-        className="flex items-center w-full mx-auto gap-2 sm:gap-4
-                        backdrop-blur-sm bg-background/70 px-2 sm:px-4 py-1.5 sm:py-2 shadow-md"
+        className={cn("flex items-center w-full mx-auto gap-2 sm:gap-4 backdrop-blur-sm bg-background/90 px-2 sm:px-4 py-1.5 sm:py-2 shadow-md",
+                        "relative before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[linear-gradient(90deg,#008751_0%,#FCD116_52%,#CE1126_100%)] before:content-['']")}
       >
         {/* left: logo */}
         <div className="min-w-0 shrink-0">
@@ -30,9 +30,14 @@ export function HeaderBar({ onReset }: Props) {
         </div>
 
         {/* center: title */}
-        <h1 className="font-heading flex-1 min-w-0 px-1 text-sm font-semibold text-foreground/90 text-center leading-tight whitespace-normal break-words sm:px-2 sm:text-lg sm:truncate">
-          {t("title")}
+        <div className=" flex-1 min-w-0 px-1 ">
+        <h1 className="font-heading text-xs font-bold text-foreground text-center uppercase leading-tight whitespace-normal break-words sm:px-2 sm:text-lg sm:truncate">
+          {title}
         </h1>
+        <p className="font-sans text-xs font-normal text-muted-foreground text-center uppercase leading-tight whitespace-normal break-words sm:px-2 sm:text-lg sm:truncate">
+          {description}
+        </p>
+        </div>
 
         {/* right: flags + profile */}
         <div className="flex items-center gap-2 shrink-0 sm:gap-3">

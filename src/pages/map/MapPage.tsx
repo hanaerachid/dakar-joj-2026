@@ -5,6 +5,7 @@ import { MapManager } from "../../core/MapManager";
 import { Sidebar } from "../../components/Sidebar";
 import { HeaderBar } from "../../components/header/HeaderBar";
 import { getInitialZoom } from "../../utils/mapConfig";
+import { useTranslation } from "react-i18next";
 
 export default function MapPage() {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -12,6 +13,7 @@ export default function MapPage() {
   const [longitude, setLongitude] = useState(-74.0242);
   const [latitude, setLatitude] = useState(40.6941);
   const [zoom, setZoom] = useState(() => getInitialZoom());
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -39,7 +41,11 @@ export default function MapPage() {
 
   return (
     <div className="relative w-full h-[100dvh]">
-      <HeaderBar title="Dakar Jeux Olympiques de la Jeunesse 2026" onReset={handleReset} />
+      <HeaderBar
+        title={t("title")}
+        description={t("description")}
+        onReset={handleReset}
+      />
       {/* Top-left: Admin link (only if admin) */}
 
       {/* Sidebar (original) */}
