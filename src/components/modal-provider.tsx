@@ -2,18 +2,19 @@
 
 import { createContext, useContext, useState} from "react";
 import { Modal } from "@/components/common/Modal";
-type isOpen = boolean;
 
 type ModalProviderProps = {
   children: React.ReactNode
 }
 
 type ModalProviderState = {
+  isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
   setModalContent: (content: any) => void
 }
 
 const initialState: ModalProviderState = {
+  isOpen: false,
   setIsOpen: () => null,
   setModalContent: () => null
 };
@@ -27,7 +28,7 @@ export function ModalProvider({
   ...props
 }: ModalProviderProps) {
 
-  const [isOpen, setIsOpen] = useState<isOpen>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [modalContent, setModalContent] = useState({
     title: "Confirm",
     onConfirm: () => {},

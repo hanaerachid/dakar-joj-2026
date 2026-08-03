@@ -9,6 +9,7 @@ import { LocateMeButton } from "../core/LocateMeButton";
 import { toast } from "sonner";
 import { CATEGORIES } from "./place-list/place-list-utils";
 import { Map, MapPinHouse, RouteOff, Search, Share2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 type SidebarProps = {
   longitude: number;
@@ -78,33 +79,33 @@ export function Sidebar({
       >
         {/* Top group */}
         <AnimatedButton
-          icon={Search}
-          title="Search Places"
-          tooltip="Search"
-          onClick={() => setSearchOpen(true)}
-        />
-        <AnimatedButton
           icon={Map}
           title="Map Layers"
           tooltip="Layers"
           onClick={() => setLayersOpen(true)}
         />
-        {/* thin divider */}
-        <div className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
         {/* Utility group */}
-        <LocateMeButton />
         <PlacesList /> {/* keeps its own popover; button fits the dock */}
+        {/* thin divider */}
+        <Separator className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
+        <AnimatedButton
+          icon={Search}
+          title="Search Places"
+          tooltip="Search"
+          onClick={() => setSearchOpen(true)}
+        />
         {/* Zoom */}
         <ZoomPill />
-        {/* thin divider */}
-        <div className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
-        {/* Bottom group */}
+        <LocateMeButton />
         <AnimatedButton
           icon={MapPinHouse}
           title="Reset View"
           tooltip="Reset View"
           onClick={onReset}
         />
+        {/* thin divider */}
+        <Separator className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
+        {/* Bottom group */}
         <AnimatedButton
           icon={RouteOff}
           title="Reset View"

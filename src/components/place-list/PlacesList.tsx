@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { MapManager } from "../../core/MapManager";
 import type { Feature, Point, GeoJsonProperties } from "geojson";
-import { AnimatePresence, motion } from "framer-motion";
 import { AnimatedButton } from "../buttons/AnimatedButton";
 import {
   getUnassignedFeatureCollection,
@@ -17,10 +16,11 @@ import {
 } from "../../core/layers/categoryPoints";
 import mapboxgl from "mapbox-gl";
 import { CATEGORIES } from "./place-list-utils";
-import { Modal } from "../common/Modal";
 import { useTranslation } from "react-i18next";
 import { withTranslatedCategoryLabels } from "./categoryTranslations";
 import { ChevronDown, ChevronRight, Layers2 } from "lucide-react";
+import { usePanelContext } from "@/components/panel-provider";
+import { useModalContext } from "@/components/modal-provider";
 
 type VenueFeature = Feature<Point, GeoJsonProperties>;
 const DEFAULT_VISIBLE_CATS = new Set<string>(["competition"]);
@@ -76,21 +76,59 @@ function useIsMobile() {
   return m;
 }
 
-export function PlacesList() {
-  const { t, i18n } = useTranslation();
+export const PlacesList = () => {
   const isMobile = useIsMobile();
-  const mapManager = MapManager.getInstance();
-  const [panelOpen, setPanelOpen] = useState(false);
+  const { isOpen, setIsOpen, setPanelContent } = usePanelContext();
+  const {
+    isOpen: panelOpen,
+    setIsOpen: setPanelOpen,
+    setModalContent: setModalContent,
+  } = useModalContext();
 
-  const [openCatId, setOpenCatId] = useState<string | null>(CATEGORIES[0].id);
-  const [openZones, setOpenZones] = useState<Record<string, boolean>>({});
+  const openPanel = () => {
+    if (!isMobile) {
+      if (isOpen) {
+        setIsOpen(false);
+        return;
+      }
+      setPanelContent({
+        title: null,
+        size: "sm",
+        children: <PlacesListContent setPanelOpen={setPanelOpen} />,
+      });
+      setIsOpen(true);
+    }
 
-  const [checkedCats, setCheckedCats] = useState<Record<string, boolean>>(
-    Object.fromEntries(
-      CATEGORIES.map((c) => [c.id, DEFAULT_VISIBLE_CATS.has(c.id)]),
-    ),
+    if (isMobile) {
+      if (panelOpen) {
+        setPanelOpen(false);
+        return;
+      }
+      setModalContent({
+        title: null,
+        onClose: () => setPanelOpen(false),
+        panelClassName: "sm:max-w-md",
+        contentClassName: "relative h-[80vh] sm:h-[680px] px-0 py-0",
+        size: "sm",
+        children: <PlacesListContent setPanelOpen={setPanelOpen} />,
+      });
+      setPanelOpen(true);
+    }
+  }
+
+  return (
+    <AnimatedButton
+      icon={Layers2}
+      isOpen={isOpen}
+      onClick={openPanel}
+    />
   );
+}
 
+const PlacesListContent = ({ setPanelOpen }: any) => {
+  const { t, i18n } = useTranslation();
+  const mapManager = MapManager.getInstance();
+  const [openCatId, setOpenCatId] = useState<string | null>(CATEGORIES[0].id);
   const translatedCategories = useMemo(
     () => withTranslatedCategoryLabels(CATEGORIES, t),
     [t, i18n.language],
@@ -103,11 +141,26 @@ export function PlacesList() {
       CATEGORIES[0],
     [openCatId, translatedCategories],
   );
+  const [openZones, setOpenZones] = useState<Record<string, boolean>>({});
 
   const [venues, setVenues] = useState<LoadedVenue[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedTitle, setSelectedTitle] = useState<string | null>(null);
+  const [checkedCats, setCheckedCats] = useState<Record<string, boolean>>(
+    Object.fromEntries(
+      CATEGORIES.map((c) => [c.id, DEFAULT_VISIBLE_CATS.has(c.id)]),
+    ),
+  );
+
+  const grouped = useMemo(() => {
+    const by: Record<string, LoadedVenue[]> = {};
+    for (const v of venues) {
+      const zone = (v.properties?.zone as string) ?? "Unknown";
+      (by[zone] ||= []).push(v);
+    }
+    return by;
+  }, [venues]);
 
   useEffect(() => {
     let cancelled = false;
@@ -192,6 +245,22 @@ export function PlacesList() {
       cancelled = true;
     };
   }, [activeCategory]);
+  // re-apply emphasis on hot reload / map mount
+  useEffect(() => {
+    const map = mapManager.getMap();
+    if (!map) return;
+    Object.entries(checkedCats).forEach(([catId, isChecked]) => {
+      setCategoryVisibility(catId, isChecked); // 👈 ensure visibility matches UI
+      applyCategoryEmphasis(catId, isChecked);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapManager]);
+
+  useEffect(() => {
+    // when category changes, stop current bounce
+    const map = mapManager.getMap();
+    if (map) stopBounceSelected(map);
+  }, [openCatId]);
 
   // === layer helpers (prefixes must match your style layer ids) ===
   function layerPrefixFor(catId: string): string {
@@ -292,6 +361,52 @@ export function PlacesList() {
     }
   }
 
+  // update signature to accept id
+  const handleClick = (
+    lng: number,
+    lat: number,
+    title: string,
+    id?: string,
+  ) => {
+    setSelectedTitle(title);
+    const map = mapManager.getMap();
+    if (map) {
+      // Ensure this category is visible
+      setCategoryVisibility(activeCategory.id, true);
+      setCheckedCats((prev) => ({ ...prev, [activeCategory.id]: true }));
+
+      // Stop any previous bounce right away
+      stopBounceSelected(map);
+
+      // If we already have an id from the list, apply immediately
+      const apply = (pid: string | null) => {
+        if (!pid) return;
+        highlightCategoryPlace(map, activeCategory.id, pid);
+        startBounceSelected(map, activeCategory.id, pid);
+      };
+      if (id) apply(id);
+
+      map.flyTo({
+        center: [lng, lat],
+        // > clusterMaxZoom (14) ensures clusters split so symbols are queryable
+        zoom: Math.max(15, map.getZoom()),
+        speed: 1.2,
+      });
+
+      const once = () => {
+        // If no id was supplied, recover it from rendered symbol features now
+        if (!id) {
+          const recovered = findFeatureIdAt(activeCategory.id, lng, lat);
+          apply(recovered);
+        }
+        openPopupForCategory(activeCategory.id, lng, lat);
+        map.off("moveend", once);
+      };
+      map.on("moveend", once);
+    }
+    if (window.innerWidth < 768) setPanelOpen(false);
+  };
+
   function handleCategoryCheck(
     checked: boolean,
     catId: string,
@@ -352,78 +467,6 @@ export function PlacesList() {
     }
   }
 
-  // update signature to accept id
-  const handleClick = (
-    lng: number,
-    lat: number,
-    title: string,
-    id?: string,
-  ) => {
-    setSelectedTitle(title);
-    const map = mapManager.getMap();
-    if (map) {
-      // Ensure this category is visible
-      setCategoryVisibility(activeCategory.id, true);
-      setCheckedCats((prev) => ({ ...prev, [activeCategory.id]: true }));
-
-      // Stop any previous bounce right away
-      stopBounceSelected(map);
-
-      // If we already have an id from the list, apply immediately
-      const apply = (pid: string | null) => {
-        if (!pid) return;
-        highlightCategoryPlace(map, activeCategory.id, pid);
-        startBounceSelected(map, activeCategory.id, pid);
-      };
-      if (id) apply(id);
-
-      map.flyTo({
-        center: [lng, lat],
-        // > clusterMaxZoom (14) ensures clusters split so symbols are queryable
-        zoom: Math.max(15, map.getZoom()),
-        speed: 1.2,
-      });
-
-      const once = () => {
-        // If no id was supplied, recover it from rendered symbol features now
-        if (!id) {
-          const recovered = findFeatureIdAt(activeCategory.id, lng, lat);
-          apply(recovered);
-        }
-        openPopupForCategory(activeCategory.id, lng, lat);
-        map.off("moveend", once);
-      };
-      map.on("moveend", once);
-    }
-    if (window.innerWidth < 768) setPanelOpen(false);
-  };
-
-  const grouped = useMemo(() => {
-    const by: Record<string, LoadedVenue[]> = {};
-    for (const v of venues) {
-      const zone = (v.properties?.zone as string) ?? "Unknown";
-      (by[zone] ||= []).push(v);
-    }
-    return by;
-  }, [venues]);
-
-  // re-apply emphasis on hot reload / map mount
-  useEffect(() => {
-    const map = mapManager.getMap();
-    if (!map) return;
-    Object.entries(checkedCats).forEach(([catId, isChecked]) => {
-      setCategoryVisibility(catId, isChecked); // 👈 ensure visibility matches UI
-      applyCategoryEmphasis(catId, isChecked);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapManager]);
-
-  useEffect(() => {
-    // when category changes, stop current bounce
-    const map = mapManager.getMap();
-    if (map) stopBounceSelected(map);
-  }, [openCatId]);
-
   const Chevron = ({ open }: { open: boolean }) => (
     <>
       {
@@ -437,84 +480,23 @@ export function PlacesList() {
   );
 
   return (
-    <>
-      <div className="relative inline-block z-40">
-        <AnimatedButton
-          icon={Layers2}
-          isOpen={panelOpen}
-          onClick={() => setPanelOpen(!panelOpen)}
-        />
-
-        {/* 👉 MOBILE: full modal */}
-        {isMobile ? (
-          <Modal
-            isOpen={panelOpen}
-            onClose={() => setPanelOpen(false)}
-            // showClose={false}
-            // title="Places"
-            title={null}
-            // make it full-width on mobile; desktop keeps default
-            panelClassName="w-full max-w-dvw sm:max-w-md rounded-xl sm:rounded-xl rounded-none"
-            contentClassName="px-0 py-0 m-0 h-[85vh]" // tall, scrollable
-          >
-            <div className="text-sm h-full overflow-y-auto">
-              <PlacesCategoryList
-                CATEGORIES={translatedCategories}
-                openCatId={openCatId}
-                activeCategory={activeCategory}
-                setOpenCatId={setOpenCatId}
-                checkedCats={checkedCats}
-                handleCategoryCheck={handleCategoryCheck}
-                venues={venues}
-                Chevron={Chevron}
-                collapseVariants={collapseVariants}
-                loading={loading}
-                loadError={loadError}
-                grouped={grouped}
-                openZones={openZones}
-                setOpenZones={setOpenZones}
-                handleClick={handleClick}
-                selectedTitle={selectedTitle}
-              />
-            </div>
-          </Modal>
-        ) : (
-          // 💻 DESKTOP/TABLET: keep your anchored popover
-          <AnimatePresence>
-            {panelOpen && (
-              <motion.div
-                initial={{ scale: 0.85, opacity: 0, x: 8 }}
-                animate={{ scale: 1, opacity: 1, x: 0 }}
-                exit={{ scale: 0.95, opacity: 0, x: 8 }}
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="absolute top-0 right-full me-3
-                       bg-background/80 backdrop-blur-md shadow-lg
-                       rounded-xl sm:rounded-xl p-4 sm:p-2 text-sm
-                       w-[90vw] sm:w-72 max-h-[50dvh] overflow-y-auto"
-              >
-                <PlacesCategoryList
-                  CATEGORIES={translatedCategories}
-                  openCatId={openCatId}
-                  activeCategory={activeCategory}
-                  setOpenCatId={setOpenCatId}
-                  checkedCats={checkedCats}
-                  handleCategoryCheck={handleCategoryCheck}
-                  venues={venues}
-                  Chevron={Chevron}
-                  collapseVariants={collapseVariants}
-                  loading={loading}
-                  loadError={loadError}
-                  grouped={grouped}
-                  openZones={openZones}
-                  setOpenZones={setOpenZones}
-                  handleClick={handleClick}
-                  selectedTitle={selectedTitle}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        )}
-      </div>
-    </>
-  );
+    <PlacesCategoryList
+      CATEGORIES={translatedCategories}
+      openCatId={openCatId}
+      activeCategory={activeCategory}
+      setOpenCatId={setOpenCatId}
+      checkedCats={checkedCats}
+      handleCategoryCheck={handleCategoryCheck}
+      venues={venues}
+      Chevron={Chevron}
+      collapseVariants={collapseVariants}
+      loading={loading}
+      loadError={loadError}
+      grouped={grouped}
+      openZones={openZones}
+      setOpenZones={setOpenZones}
+      handleClick={handleClick}
+      selectedTitle={selectedTitle}
+    />
+  )
 }

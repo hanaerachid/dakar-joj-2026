@@ -1,8 +1,17 @@
 // src/components/buttons/AnimatedButton.tsx
 import { motion } from "framer-motion";
-import { Icon } from "@iconify/react";
 import type { LucideIcon } from "lucide-react";
+import { Icon } from "@iconify/react";
+import { Button } from "@/components/ui/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { cn } from "@/utils/utils";
+
+const MotionButton = motion(Button)
+
 type IconType = string | LucideIcon;
 
 interface AnimatedButtonProps {
@@ -35,55 +44,46 @@ export function AnimatedButton({
   const tip = tooltip || resolvedTitle;
 
   return (
-    <div className="relative group">
-      <motion.button
-        whileTap={{ scale: 0.9, rotate: -6 }}
-        whileHover={{ y: -1 }}
-        transition={{ type: "spring", stiffness: 500, damping: 18, mass: 0.9 }}
-        className={cn(`
-          inline-flex items-center justify-center leading-none
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <MotionButton
+            variant={isOpen ? "default" : "secondary"}
+            size="icon"
+            whileTap={{ scale: 0.9, rotate: -6 }}
+            whileHover={{ y: -1 }}
+            transition={{ type: "spring", stiffness: 500, damping: 18, mass: 0.9 }}
+            className={cn(`
           rounded-xl
-          h-10 w-10
-          backdrop-blur-xl
-          bg-background/55 hover:bg-background
           shadow-lg shadow-black/10
-          ring-1 ring-black/5
           outline-none
+          ring-1 ring-black/5
           focus-visible:ring-2 focus-visible:ring-primary/40
-        `, isOpen && "bg-primary/80 hover:bg-primary text-foreground",
-        className)}
-        onClick={onClick}
-        title={resolvedTitle}
-        aria-label={resolvedTitle}
-        type="button"
+        `,
+              className)}
+            onClick={onClick}
+            title={resolvedTitle}
+            aria-label={resolvedTitle}
+            type="button"
+          >
+            {typeof ResolvedIcon === "string" ? (
+              <Icon icon={ResolvedIcon} className={iconClassName || "block h-5 w-5 md:h-5.5 md:w-5.5"} />
+            ) : (
+              <ResolvedIcon className={iconClassName} />
+            )}
+          </MotionButton>
+        }
       >
-        {typeof ResolvedIcon === "string" ? (
-          <Icon icon={ResolvedIcon} className={iconClassName || "block h-5 w-5 md:h-5.5 md:w-5.5"} />
-        ) : (
-          <ResolvedIcon className={iconClassName} />
-        )}
-      </motion.button>
-
+      </TooltipTrigger>
       {/* Tooltip (desktop only) */}
-      <div
-        className="
-          pointer-events-none
-          absolute right-full top-1/2 -translate-y-1/2 mr-2
-          hidden md:block
-          opacity-0 group-hover:opacity-100
-          transition-opacity duration-150
-        "
+      <TooltipContent
+        className="hidden md:block z-50 pointer-events-none rounded-lg text-xs font-medium shadow-lg backdrop-blur"
+        side="right"
+        sideOffset={12}
+        align="center"
       >
-        <div
-          className="
-          px-2.5 py-1 rounded-lg text-xs font-medium
-          bg-black/75 text-white
-          shadow-lg backdrop-blur
-        "
-        >
-          {tip}
-        </div>
-      </div>
-    </div>
+        {tip}
+      </TooltipContent>
+    </Tooltip>
   );
 }

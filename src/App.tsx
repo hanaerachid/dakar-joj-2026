@@ -11,6 +11,8 @@ import { initAuth } from "./auth/nitAuth";
 import BulkPlacesImport from "./admin/places/BulkPlacesImport";
 import { ThemeProvider } from "@/components/theme-provider"
 import { ModalProvider } from "./components/modal-provider";
+import { PanelProvider } from "./components/panel-provider";
+import { TooltipProvider } from "@/components/ui/tooltip"
 import { ArrowLeft, Plus } from "lucide-react";
 
 function AdminShell() {
@@ -73,9 +75,14 @@ export default function App() {
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <TooltipProvider>
     <ModalProvider>
     <Routes>
-      <Route path="/" element={<MapPage />} />
+      <Route path="/" element={
+        <PanelProvider>
+          <MapPage />
+        </PanelProvider>
+      } />
 
       <Route
         path="/admin"
@@ -97,6 +104,7 @@ export default function App() {
       <Route path="*" element={<MapPage />} />
     </Routes>
     </ModalProvider>
+    </TooltipProvider>
     </ThemeProvider>
   );
 }
