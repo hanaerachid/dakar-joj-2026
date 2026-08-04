@@ -60,12 +60,11 @@ export function Panel({
         >
           <DrawerContent
             className={cn(`
-            z-150 my-24 bg-transparent
+            z-150 my-24 bg-background/80 backdrop-blur-md shadow-lg
             `, SIZE_MAP[size],
-              "[--drawer-inset:12px] [--drawer-bleed-background:transparent]"
             )}
           >
-            <div className="flex-1 bg-background/80 backdrop-blur-md shadow-lg overflow-y-auto p-4 sm:p-2 rounded-xl sm:rounded-xl">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-2">
               {(showHeader) && (
                 <DrawerHeader>
                   {title && (
