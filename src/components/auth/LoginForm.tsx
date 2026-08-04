@@ -61,7 +61,7 @@ export function LoginForm({
             {t("auth.common.emailLabel")}
           </FieldLabel>
           <Input
-            className="w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-foreground/10"
+            className="w-full px-3 py-2 outline-none focus:ring-2 focus:ring-foreground/10"
             id="email"
             type="email"
             required
@@ -88,7 +88,7 @@ export function LoginForm({
 
           </FieldLabel>
           <Input
-            className="w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-foreground/10"
+            className="w-full border px-3 py-2 outline-none focus:ring-2 focus:ring-foreground/10"
             id="password"
             type="password"
             required
@@ -106,7 +106,7 @@ export function LoginForm({
             type="submit"
             variant="default"
             disabled={loading}
-            className="w-full rounded-lg py-2.5 active:scale-[.99] transition"
+            className="w-full py-2.5 active:scale-[.99] transition"
           >
             {loading ? t("auth.login.submitting") : t("auth.login.submit")}
           </Button>
@@ -114,7 +114,7 @@ export function LoginForm({
             type="button"
             variant="ghost"
             onClick={onRegister}
-            className="w-full rounded-lg py-2.5 active:scale-[.99] transition"
+            className="w-full py-2.5 active:scale-[.99] transition"
           >
             {t("auth.login.createAccount")}
           </Button>

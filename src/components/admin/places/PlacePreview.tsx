@@ -88,7 +88,7 @@ export default function PlacePreview({
   return (
     <Card
       size="sm"
-      className="w-full shadow-xl border border-border rounded-3xl relative overflow-hidden"
+      className="w-full shadow-xl border border-border relative overflow-hidden"
       style={{
         background: `linear-gradient(135deg, ${g0}, ${g1})`,
       }}
@@ -98,7 +98,7 @@ export default function PlacePreview({
         size="icon"
         disabled inert
         onClick={onClose || (() => { })}
-        className="absolute end-2 top-2 rounded-full"
+        className="absolute end-2 top-2"
         aria-label="Close"
         title="Preview"
       >
@@ -126,7 +126,7 @@ export default function PlacePreview({
           {locationLabel && (
             <Badge
               style={{ color: `${g1}` }}
-              className="text-xs flex items-center justify-center bg-white/90 px-2 py-0.5 rounded-full font-medium"
+              className="text-xs flex items-center justify-center bg-white/90 px-2 py-0.5 font-medium"
             >
               <MapPin /> {locationLabel}
             </Badge>
@@ -188,7 +188,7 @@ export default function PlacePreview({
             {tagList.map((tag, idx) => (
               <Badge
                 key={idx}
-                className="text-xs bg-white/20 px-2 py-0.5 rounded-full text-white/70"
+                className="text-xs bg-white/20 px-2 py-0.5 text-white/70"
               >
                 {tag}
               </Badge>
@@ -220,7 +220,7 @@ export default function PlacePreview({
           size="default"
           disabled inert
           onClick={onGetDirections || (() => { })}
-          className="flex-1 rounded-full"
+          className="flex-1"
           style={{ color: `${g1}` }}
           title="Preview"
         >

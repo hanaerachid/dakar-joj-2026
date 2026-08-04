@@ -58,14 +58,14 @@ export function LanguageSwitcher({ value, onChange }: Props) {
           handleSelect(lang as Lang);
         }
       }}
-      className="rounded-full p-0.5"
+      className="p-0.5"
     >
       {languages.map((lang) => (
         <ToggleGroupItem
           key={lang.code}
           value={lang.code}
           aria-label={lang.aria}
-          className="flex items-center gap-2 rounded-full px-3 py-2 data-[state=on]:bg-primary data-[state=on]:text-white"
+          className="flex items-center gap-2 px-3 py-2 data-[state=on]:bg-primary data-[state=on]:text-white"
         >
           <Icon icon={lang.icon} className="h-4 w-4" />
           <span className="text-xs uppercase">

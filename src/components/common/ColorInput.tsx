@@ -13,7 +13,7 @@ export function ColorInput({
 }) {
   return (
     <InputGroup className={cn(
-      "h-10 w-full rounded-2xl border border-border bg-input shadow-sm outline-none ",
+      "h-10 w-full border border-border bg-input shadow-sm outline-none ",
       "disabled:opacity-60 disabled:cursor-not-allowed",
     )}>
       <InputGroupAddon align="inline-start">

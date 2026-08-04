@@ -65,7 +65,7 @@ export function RegisterForm({
             {t("auth.common.nameLabel")}
           </FieldLabel>
           <Input
-            className="w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-foreground/10"
+            className="w-full border px-3 py-2 outline-none focus:ring-2 focus:ring-foreground/10"
             id="name"
             type="text"
             required
@@ -84,7 +84,7 @@ export function RegisterForm({
             {t("auth.common.emailLabel")}
           </FieldLabel>
           <Input
-            className="w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-foreground/10"
+            className="w-full border px-3 py-2 outline-none focus:ring-2 focus:ring-foreground/10"
             id="emailRegister"
             type="email"
             value={email}
@@ -106,7 +106,7 @@ export function RegisterForm({
             {t("auth.register.passwordPlaceholder")}
           </FieldDescription>
           <Input
-            className="w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-foreground/10"
+            className="w-full border px-3 py-2 outline-none focus:ring-2 focus:ring-foreground/10"
             id="newPassword"
             type="password"
             required
@@ -138,7 +138,7 @@ export function RegisterForm({
             type="submit"
             variant="default"
             disabled={!agree || loading}
-            className="w-full rounded-lg py-2.5 active:scale-[.99] transition"
+            className="w-full py-2.5 active:scale-[.99] transition"
           >
             {loading ? t("auth.register.submitting") : t("auth.register.submit")}
           </Button>
@@ -146,7 +146,7 @@ export function RegisterForm({
             type="button"
             variant="ghost"
             onClick={onLogin}
-            className="w-full rounded-lg py-2.5 active:scale-[.99] transition"
+            className="w-full py-2.5 active:scale-[.99] transition"
           >
             {t("auth.common.backToSignIn")}
           </Button>

@@ -123,7 +123,7 @@ const EventVenueCard: React.FC<Props> = ({
   return (
     <Card
       size="sm"
-      className="w-[82vw] max-w-[320px] sm:w-[450px] sm:max-w-none shadow-xl rounded-lg overflow-hidden"
+      className="w-[82vw] max-w-[320px] sm:w-[450px] sm:max-w-none shadow-xl overflow-hidden"
       style={{
         background: `linear-gradient(135deg, ${g0}, ${g1})`,
       }}
@@ -135,7 +135,7 @@ const EventVenueCard: React.FC<Props> = ({
             variant="default"
             size="icon-sm"
             onClick={onClose}
-            className="absolute end-2 top-2 w-8 h-8 rounded-full flex items-center justify-center"
+            className="absolute end-2 top-2 w-8 h-8 flex items-center justify-center"
             aria-label={t("layer.actions.close")}
           >
             <X />
@@ -146,14 +146,14 @@ const EventVenueCard: React.FC<Props> = ({
             <img
               src={imageUrl}
               alt={title}
-              className="w-full h-36 sm:h-52 object-cover rounded-sm"
+              className="w-full h-36 sm:h-52 object-cover"
             />
           ) : null}
           <div className="absolute end-2 bottom-2">
             {locationLabel && (
               <Badge
                 style={{ color: `${g1}` }}
-                className="text-xs flex items-center justify-center bg-white/90 px-2 py-0.5 rounded-full font-medium"
+                className="text-xs flex items-center justify-center bg-white/90 px-2 py-0.5 font-medium"
               >
                 <MapPin /> {locationLabel}
               </Badge>
@@ -341,7 +341,7 @@ const EventVenueCard: React.FC<Props> = ({
           variant="outline"
           size="sm"
           onClick={onGetDirections}
-          className="flex-1 bg-white rounded-3xl hover:bg-blue-100 font-semibold text-[12.5px] sm:text-sm px-3 py-1.5 transition duration-300"
+          className="flex-1 bg-white hover:bg-blue-100 font-semibold text-[12.5px] sm:text-sm px-3 py-1.5 transition duration-300"
           style={{ color: `${g1}` }}
         >
           {t("layer.actions.getDirections")}
@@ -351,7 +351,7 @@ const EventVenueCard: React.FC<Props> = ({
             variant="outline"
             size="sm"
             onClick={onClear}
-            className="flex-.5 rounded-3xl bg-white hover:bg-gray-100 font-semibold text-[12.5px] sm:text-sm px-3.5 w-fit py-1.5 transition"
+            className="flex-.5 bg-white hover:bg-gray-100 font-semibold text-[12.5px] sm:text-sm px-3.5 w-fit py-1.5 transition"
             style={{ color: `${g1}` }}
           >
             {t("layer.actions.clearRoute")}

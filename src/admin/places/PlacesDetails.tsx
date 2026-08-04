@@ -569,7 +569,7 @@ export function PlaceDetailsPage() {
                   {sports.map((s) => (
                     <Badge
                       key={s.key}
-                      className="inline-flex items-center gap-1 rounded-full border border-border bg-background/80 px-2 py-0.5 text-xs"
+                      className="inline-flex items-center gap-2 px-4 py-2 text-base"
                     >
                       {s.icon ? (
                         <Icon icon={s.icon} width={14} height={14} />
@@ -639,13 +639,13 @@ export function PlaceDetailsPage() {
                 <img
                   src={preview}
                   alt="preview"
-                  className="object-cover mt-2 max-h-44 w-auto rounded-xl border shadow-sm"
+                  className="object-cover mt-2 max-h-44 w-auto rounded-3xl border shadow-sm"
                 />
               ) : imageUrl ? (
                 <img
                   src={imageUrl}
                   alt="cover"
-                  className="object-cover mt-2 max-h-44 w-auto rounded-xl border shadow-sm"
+                  className="object-cover mt-2 max-h-44 w-auto rounded-x3l border shadow-sm"
                 />
               ) : null}
             </Field>

@@ -132,10 +132,10 @@ export function BasemapSwitcherModal({
               key={opt.id}
               onClick={() => apply(opt.id)}
               className={cn(
-                "w-full rounded-xl transition",
+                "w-full transition",
                 selected
                   ? "bg-accent shadow ring-1 ring-foreground/5"
-                  : "hover:bg-background/50 cursor-pointer",
+                  : "c",
               )}
               aria-pressed={selected}
             >

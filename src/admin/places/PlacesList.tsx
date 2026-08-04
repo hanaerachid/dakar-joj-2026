@@ -173,7 +173,7 @@ export function PlacesListPage() {
             <Button
               variant="outline"
               onClick={() => navigate("/admin/places/import")}
-              className="rounded-full inline-flex items-center gap-2"
+              className="inline-flex items-center gap-2"
             >
               <FileUp />
               <span>Import places</span>
@@ -182,7 +182,7 @@ export function PlacesListPage() {
             <Button
               variant="default"
               onClick={() => navigate("/admin/places/new")}
-              className="rounded-full inline-flex items-center gap-2"
+              className="inline-flex items-center gap-2"
             >
               <Plus />
               <span>New place</span>
@@ -289,7 +289,7 @@ export function PlacesListPage() {
         )}
 
         {!loading && filtered.length === 0 && (
-          <Empty className="col-span-full rounded-3xl border border-foreground/30 p-8 text-foreground/50 shadow-sm">
+          <Empty className="col-span-full border border-foreground/30 p-8 text-foreground/50 shadow-sm">
             <EmptyHeader>
               <EmptyDescription className="text-center text-sm text-foreground/50">
                 No places found
@@ -299,7 +299,7 @@ export function PlacesListPage() {
               <Button
                 variant="default"
                 onClick={() => navigate("/admin/places/new")}
-                className="rounded-full inline-flex items-center gap-2"
+                className="inline-flex items-center gap-2"
               >
                 <Plus />
                 <span>New place</span>
@@ -317,7 +317,7 @@ export function PlacesListPage() {
               <Card
                 key={p.id}
                 size="sm"
-                className="rounded-3xl relative mx-auto w-full max-w-sm pt-0"
+                className="relative mx-auto w-full max-w-sm pt-0"
                 style={{
                   background: `linear-gradient(90deg, ${p.gradientFrom || "#e5e7eb"
                     }, ${p.gradientTo || "#d1d5db"})`,
@@ -343,7 +343,7 @@ export function PlacesListPage() {
                 <CardHeader>
                   <div className="flex items-center gap-2">
                     <span
-                      className="inline-block h-2.5 w-2.5 rounded-full border border-foreground/30"
+                      className="inline-block h-2.5 w-2.5 rounded-full border border-border"
                       style={{ background: p.pointColor || "#9ca3af" }}
                     />
                     <CardTitle className="font-semibold leading-tight text-foreground/90">

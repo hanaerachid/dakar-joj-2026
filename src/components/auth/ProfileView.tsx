@@ -68,14 +68,14 @@ export function ProfileView({
           <Button
             variant="default"
             onClick={handleLogout}
-            className="w-full rounded-lg py-2.5 active:scale-[.99] transition"
+            className="w-full py-2.5 active:scale-[.99] transition"
           >
             {t("auth.profile.logout")}
           </Button>
           <Button
             onClick={onClose}
             variant="ghost"
-            className="w-full rounded-lg py-2.5 active:scale-[.99] transition"
+            className="w-full py-2.5 active:scale-[.99] transition"
           >
             {t("auth.profile.close")}
           </Button>

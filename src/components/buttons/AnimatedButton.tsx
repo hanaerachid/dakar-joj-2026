@@ -49,12 +49,11 @@ export function AnimatedButton({
         render={
           <MotionButton
             variant={isOpen ? "default" : "secondary"}
-            size="icon"
+            size="icon-lg"
             whileTap={{ scale: 0.9, rotate: -6 }}
             whileHover={{ y: -1 }}
             transition={{ type: "spring", stiffness: 500, damping: 18, mass: 0.9 }}
             className={cn(`
-          rounded-xl
           shadow-lg shadow-black/10
           outline-none
           ring-1 ring-black/5
@@ -77,7 +76,7 @@ export function AnimatedButton({
       </TooltipTrigger>
       {/* Tooltip (desktop only) */}
       <TooltipContent
-        className="hidden md:block z-50 pointer-events-none rounded-lg text-xs font-medium shadow-lg backdrop-blur"
+        className="hidden md:block z-50 pointer-events-none text-xs font-medium shadow-lg backdrop-blur"
         side="right"
         sideOffset={12}
         align="center"

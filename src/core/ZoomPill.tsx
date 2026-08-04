@@ -19,10 +19,11 @@ export function ZoomPill({ className = "" }: { className?: string }) {
 
   return (
     <ButtonGroup
+      orientation="vertical"
       aria-label="Map zoom controls"
       aria-orientation="vertical"
       className={cn(
-        "inline-flex flex-col items-center justify-center backdrop-blur-md shadow-lg shadow-black/10 rounded-xl overflow-hidden",
+        "backdrop-blur-md shadow-lg shadow-black/10 rounded-3xl overflow-hidden",
         `outline-none ring-1 ring-black/5 focus-visible:ring-2 focus-visible:ring-primary/40`,
         className,
       )}
@@ -44,7 +45,7 @@ export function ZoomPill({ className = "" }: { className?: string }) {
         </TooltipTrigger>
         {/* Tooltip (desktop only) */}
         <TooltipContent
-          className="hidden md:block z-50 pointer-events-none rounded-lg text-xs font-medium shadow-lg backdrop-blur"
+          className="hidden md:block z-50 pointer-events-none text-xs font-medium shadow-lg backdrop-blur"
           side="right"
           sideOffset={12}
           align="center"
@@ -71,7 +72,7 @@ export function ZoomPill({ className = "" }: { className?: string }) {
         </TooltipTrigger>
         {/* Tooltip (desktop only) */}
         <TooltipContent
-          className="hidden md:block z-50 pointer-events-none rounded-lg text-xs font-medium shadow-lg backdrop-blur"
+          className="hidden md:block z-50 pointer-events-none text-xs font-medium shadow-lg backdrop-blur"
           side="right"
           sideOffset={12}
           align="center"

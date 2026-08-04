@@ -133,7 +133,6 @@ export function GlobalPlacesTab({
               size="icon-sm"
               onClick={() => onQueryChange("")}
               aria-label="Clear"
-              className="rounded-full"
             >
               <X />
             </InputGroupButton>
@@ -182,9 +181,9 @@ export function GlobalPlacesTab({
                   variant="default"
                   size="xs"
                   onClick={() => handlePick(f)}
-                  className="w-full cursor-pointer rounded-xl"
+                  className="w-full hover:bg-background/50 cursor-pointer"
                 >
-                  <ItemMedia className="h-9 w-9 rounded-lg bg-muted-background">
+                  <ItemMedia className="h-9 w-9 bg-muted-background">
                     <MapPin />
                   </ItemMedia>
                   <ItemContent className="min-w-0">
