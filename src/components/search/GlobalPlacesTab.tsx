@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MapManager } from "../../core/MapManager";
 import { MAPBOX_ACCESS_TOKEN } from "../../utils/mapConfig";
+import { X, SearchIcon, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   InputGroup,
@@ -9,8 +10,11 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group"
-import { Field } from "@/components/ui/field";
-import { X, SearchIcon } from "lucide-react";
+import { Empty, EmptyDescription } from "@/components/ui/empty";
+import { Field, FieldDescription } from "@/components/ui/field";
+import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "@/components/ui/item";
+import { Spinner } from "@/components/ui/spinner";
+import { Alert, AlertDescription } from "../ui/alert";
 
 type MbFeature = {
   id: string;
@@ -114,13 +118,13 @@ export function GlobalPlacesTab({
       <Field className="py-2">
         <InputGroup className="flex items-center gap-2">
           <InputGroupAddon>
-            <SearchIcon className="w-4 h-4 text-gray-400" />
+            <SearchIcon className="w-4 h-4 text-muted-foreground" />
           </InputGroupAddon>
           <InputGroupInput
             value={query}
             onChange={(e) => onQueryChange(e.currentTarget.value)}
             placeholder={placeholder}
-            className="w-full bg-transparent outline-none text-sm placeholder:text-gray-400"
+            className="w-full bg-transparent outline-none text-sm placeholder:text-muted-foreground"
             autoFocus
           />
           {!!query && (
@@ -135,47 +139,70 @@ export function GlobalPlacesTab({
             </InputGroupButton>
           )}
         </InputGroup>
+        {!query && (
+          <FieldDescription>
+            {tipText}
+          </FieldDescription>
+        )}
       </Field>
 
       {/* Results (inside modal) */}
-      <div className="rounded-xl ring-1 ring-black/10 bg-background/85 backdrop-blur">
-        <div className="max-h-72 overflow-auto divide-y divide-black/5">
+      <div className="rounded-xl overflow-hidden">
+        <div className="max-h-72 overflow-auto space-y-4 rounded-xl">
           {/* States */}
-          {!query && <div className="p-4 text-sm text-gray-500">{tipText}</div>}
+
           {query && loading && (
-            <div className="p-4 text-sm text-gray-500">Searching…</div>
-          )}
-          {query && !loading && err && (
-            <div className="p-4 text-sm text-red-600">{err}</div>
-          )}
-          {query && !loading && !err && results.length === 0 && (
-            <div className="p-4 text-sm text-gray-500">No results.</div>
+            <div className="flex justify-center items-center gap-2 text-muted-foreground">
+              <Spinner />
+              <span className="text-sm">Searching…</span>
+            </div>
           )}
 
-          {/* List */}
-          {results.map((f) => (
-            <button
-              key={f.id}
-              onClick={() => handlePick(f)}
-              className="w-full text-left p-3 hover:bg-black/[0.04] transition flex gap-3"
-            >
-              <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-emerald-500/15 to-blue-500/15 grid place-items-center shrink-0">
-                <span className="text-lg">📍</span>
-              </div>
-              <div className="min-w-0">
-                <div className="text-sm font-medium text-gray-600  truncate">
-                  {f.text}
-                </div>
-                <div className="text-xs text-gray-600  line-clamp-2">
-                  {f.place_name}
-                </div>
-              </div>
-            </button>
-          ))}
+          {query && !loading && err && (
+            <Alert variant="destructive">
+              <AlertDescription>
+                {err}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {query && !loading && !err && results.length === 0 && (
+            <Empty>
+              <EmptyDescription className="text-sm text-muted-foreground">
+                No results.
+              </EmptyDescription>
+            </Empty>
+          )}
+          {results.length > 0 && !loading && (
+            <div className="space-y-1">
+              {/* List */}
+              {results.map((f) => (
+                <Item
+                  key={f.id}
+                  variant="default"
+                  size="xs"
+                  onClick={() => handlePick(f)}
+                  className="w-full cursor-pointer rounded-xl"
+                >
+                  <ItemMedia className="h-9 w-9 rounded-lg bg-muted-background">
+                    <MapPin />
+                  </ItemMedia>
+                  <ItemContent className="min-w-0">
+                    <ItemTitle className="text-sm font-medium truncate">
+                      {f.text}
+                    </ItemTitle>
+                    <ItemDescription className="text-xs line-clamp-2">
+                      {f.place_name}
+                    </ItemDescription>
+                  </ItemContent>
+                </Item>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Mapbox credit (required by TOS) */}
-        <div className="px-3 py-2 text-[11px] text-gray-500  text-right">
+        <div className="px-3 py-2 text-xs text-muted-foreground text-end">
           Powered by Mapbox
         </div>
       </div>

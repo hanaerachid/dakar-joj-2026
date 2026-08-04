@@ -22,6 +22,8 @@ import { Field } from "@/components/ui/field";
 // import { Kbd } from "@/components/ui/kbd"
 import { SearchIcon } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
+import { Alert, AlertDescription } from "../ui/alert";
+import { Empty, EmptyDescription } from "../ui/empty";
 
 // —— types & helpers ——
 type VenueFeature = Feature<Point, GeoJsonProperties>;
@@ -285,16 +287,22 @@ export function LocalPlacesTab({
 
       {/* Results */}
       {loading ? (
-        <div className="grid place-items-center py-10">
-          <div className="flex items-center gap-3 text-foreground">
-            <Spinner />
-            <span>{t("local.loading")}</span>
-          </div>
+        <div className="flex justify-center items-center gap-2 text-muted-foreground">
+          <Spinner />
+          <span>{t("local.loading")}</span>
         </div>
       ) : error ? (
-        <div className="text-red-600">{error}</div>
+        <Alert variant="destructive">
+          <AlertDescription>
+            {error}
+          </AlertDescription>
+        </Alert>
       ) : filtered.length === 0 ? (
-        <div className="text-gray-500">{t("local.noMatches")}</div>
+        <Empty>
+          <EmptyDescription className="text-sm text-muted-foreground">
+            {t("local.noMatches")}
+          </EmptyDescription>
+        </Empty>
       ) : (
         <ul className="max-h-[60vh] overflow-y-auto divide-y divide-black/5">
           {filtered.map((v, i) => {

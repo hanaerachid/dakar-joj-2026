@@ -1,9 +1,16 @@
 import { useState } from "react";
-import { Modal } from "../common/Modal";
-import { TabBar } from "../common/TabBar";
 import { GlobalPlacesTab } from "./GlobalPlacesTab";
 import { LocalPlacesTab } from "./LocalPlacesTab";
+import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { AnimatedButton } from "../buttons/AnimatedButton";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
+} from "@/components/ui/tabs"
+import { useModalContext } from "@/components/modal-provider";
 
 export interface SiteConfig {
   name: string;
@@ -17,17 +24,51 @@ export interface CategoryConfig {
   hint?: string;
 }
 
-export function SearchPlacesModal({
-  isOpen,
-  onClose,
+export const SearchPlaces = ({
   categories,
 }: {
-  isOpen: boolean;
-  onClose: () => void;
   categories: CategoryConfig[];
-}) {
+}) => {
+  const { t } = useTranslation();
+
+  const {
+    isOpen: panelOpen,
+    setIsOpen: setPanelOpen,
+    setModalContent: setModalContent,
+  } = useModalContext();
+
+  const openPanel = () => {
+    if (panelOpen) {
+      setPanelOpen(false);
+      return;
+    }
+    setModalContent({
+      title: t("search.title"),
+      onClose: () => setPanelOpen(false),
+      panelClassName: "sm:max-w-2xl md:max-w-3xl",
+      size: "lg",
+      children: <SearchPlacesModal setPanelOpen={setPanelOpen} categories={categories} />,
+    });
+    setPanelOpen(true);
+  }
+  return (
+    <AnimatedButton
+      icon={Search}
+      title="Search Places"
+      tooltip="Search"
+      onClick={openPanel}
+    />
+  )
+}
+
+export const SearchPlacesModal = ({
+  setPanelOpen,
+  categories,
+}: {
+  setPanelOpen: (open: boolean) => void;
+  categories: CategoryConfig[];
+}) => {
   // default = "Search Anywhere"
-  const [active, setActive] = useState<"global" | "local">("global");
   const { t } = useTranslation();
 
   // keep per-tab state here so it survives open/close
@@ -35,38 +76,27 @@ export function SearchPlacesModal({
   const [localQuery, setLocalQuery] = useState("");
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={t("search.title")}
-      size="lg"
-      panelClassName="sm:max-w-2xl md:max-w-3xl"
-    >
-      {/* Tabs */}
-      <TabBar
-        tabs={[
-          { id: "global", label: t("search.tab.global") },
-          { id: "local", label: t("search.tab.local") },
-        ]}
-        activeId={active}
-        onChange={(id) => setActive(id as "global" | "local")}
-      />
-
+    <Tabs defaultValue="global">
+      <TabsList variant="default">
+        <TabsTrigger value="global">{t("search.tab.global")}</TabsTrigger>
+        <TabsTrigger value="local">{t("search.tab.local")}</TabsTrigger>
+      </TabsList>
       {/* Body */}
-      {active === "global" ? (
+      <TabsContent value="global">
         <GlobalPlacesTab
           query={globalQuery}
           onQueryChange={setGlobalQuery}
-          onPicked={() => onClose()}
+          onPicked={() => setPanelOpen(false)}
         />
-      ) : (
+      </TabsContent>
+      <TabsContent value="local">
         <LocalPlacesTab
           categories={categories}
           query={localQuery}
           onQueryChange={setLocalQuery}
-          onPicked={() => onClose()}
+          onPicked={() => setPanelOpen(false)}
         />
-      )}
-    </Modal>
+      </TabsContent>
+    </Tabs>
   );
 }

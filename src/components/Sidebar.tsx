@@ -2,13 +2,13 @@
 import { useState } from "react";
 import { AnimatedButton } from "./buttons/AnimatedButton";
 import { PlacesList } from "./place-list/PlacesList";
-import { SearchPlacesModal } from "./search/SearchPlacesModal";
+import { SearchPlaces } from "./search/SearchPlacesModal";
 import { BasemapSwitcherModal } from "../core/BasemapSwitcherModal";
 import { ZoomPill } from "../core/ZoomPill";
 import { LocateMeButton } from "../core/LocateMeButton";
 import { toast } from "sonner";
 import { CATEGORIES } from "./place-list/place-list-utils";
-import { Map, MapPinHouse, RouteOff, Search, Share2 } from "lucide-react";
+import { Map, MapPinHouse, RouteOff, Share2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 type SidebarProps = {
@@ -26,7 +26,6 @@ export function Sidebar({
   zoom,
   onClearRoute,
 }: SidebarProps) {
-  const [searchOpen, setSearchOpen] = useState(false);
   const [layersOpen, setLayersOpen] = useState(false);
 
   const handleShare = async () => {
@@ -88,12 +87,7 @@ export function Sidebar({
         <PlacesList /> {/* keeps its own popover; button fits the dock */}
         {/* thin divider */}
         <Separator className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
-        <AnimatedButton
-          icon={Search}
-          title="Search Places"
-          tooltip="Search"
-          onClick={() => setSearchOpen(true)}
-        />
+        <SearchPlaces categories={CATEGORIES} />
         {/* Zoom */}
         <ZoomPill />
         <LocateMeButton />
@@ -121,11 +115,7 @@ export function Sidebar({
       </div>
 
       {/* Modals */}
-      <SearchPlacesModal
-        isOpen={searchOpen}
-        onClose={() => setSearchOpen(false)}
-        categories={CATEGORIES}
-      />
+
       <BasemapSwitcherModal
         isOpen={layersOpen}
         onClose={() => setLayersOpen(false)}
