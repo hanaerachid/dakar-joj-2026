@@ -1,17 +1,21 @@
 import "dotenv/config";
+import { existsSync } from "node:fs";
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { serve } from "@hono/node-server";
+import { serveStatic } from "@hono/node-server/serve-static";
 import { swaggerUI } from "@hono/swagger-ui";
 import { OpenAPIHono, z } from "@hono/zod-openapi";
-import { env } from "./config/env";
-import { authRoutes } from "./features/auth/auth.routes";
-import { zonesRoutes } from "./features/zones/zones.routes";
-import { placesRoutes } from "./features/places/places.routes";
-import { uploadRoutes } from "./features/uploads/upload.routes";
-import { fail } from "./http/response";
-import { HttpError } from "./http/errors";
-import { placeSchema, sessionUserSchema, zoneSchema } from "../shared/contracts";
+import { env } from "./config/env.js";
+import { authRoutes } from "./features/auth/auth.routes.js";
+import { zonesRoutes } from "./features/zones/zones.routes.js";
+import { placesRoutes } from "./features/places/places.routes.js";
+import { uploadRoutes } from "./features/uploads/upload.routes.js";
+import { fail } from "./http/response.js";
+import { HttpError } from "./http/errors.js";
+import { placeSchema, sessionUserSchema, zoneSchema } from "../shared/contracts.js";
 
 const app = new OpenAPIHono();
 
@@ -102,11 +106,19 @@ const categoryIdSchema = z.enum([
   "railway",
 ]);
 
+const clientDistDir = resolve(process.cwd(), "dist/client");
+const shouldServeClient =
+  env.NODE_ENV === "production" && existsSync(clientDistDir);
+
+const corsOrigins = env.CORS_ORIGIN.split(",")
+  .map((value) => value.trim())
+  .filter(Boolean);
+
 app.use("*", logger());
 app.use(
   "*",
   cors({
-    origin: env.CORS_ORIGIN.split(",").map((value) => value.trim()),
+    origin: corsOrigins.length > 0 ? corsOrigins : ["http://localhost:5173"],
     credentials: true,
   }),
 );
@@ -128,6 +140,32 @@ app.onError((err, c) => {
 });
 
 app.get("/api/v1/health", (c) => c.json({ success: true, data: { ok: true } }));
+
+if (shouldServeClient) {
+  app.get("*", async (c, next) => {
+    if (c.req.path.startsWith("/api/")) {
+      return next();
+    }
+
+    return serveStatic({ root: clientDistDir })(c, next);
+  });
+
+  app.notFound((c) => {
+    if (c.req.path.startsWith("/api/")) {
+      return fail(c, 404, "NOT_FOUND", "Route not found");
+    }
+
+    if (c.req.path.includes(".")) {
+      return c.text("Not Found", 404);
+    }
+
+    return readFile(resolve(clientDistDir, "index.html"), "utf8").then((html) =>
+      c.html(html),
+    );
+  });
+} else {
+  app.notFound((c) => fail(c, 404, "NOT_FOUND", "Route not found"));
+}
 
 app.openAPIRegistry.registerPath({
   method: "get",

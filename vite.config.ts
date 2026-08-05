@@ -6,6 +6,9 @@ import path from "path";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  build: {
+    outDir: "dist/client",
+  },
   server: {
     proxy: {
       "/api": "http://localhost:8787/",

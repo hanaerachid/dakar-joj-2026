@@ -1,7 +1,7 @@
 import admin from "firebase-admin";
 import { cert, applicationDefault, getApps } from "firebase-admin/app";
-import { env } from "../config/env";
-import { HttpError } from "../http/errors";
+import { env } from "../config/env.js";
+import { HttpError } from "../http/errors.js";
 
 function resolveProjectId() {
   return (

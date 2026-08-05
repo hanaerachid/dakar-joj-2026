@@ -1,5 +1,5 @@
-import { getAdminFirestore } from "../../firebase/admin";
-import type { Zone } from "../../../shared/contracts";
+import { getAdminFirestore } from "../../firebase/admin.js";
+import type { Zone } from "../../../shared/contracts.js";
 
 const DEFAULT_COMP_ZONES = [
   { name: "Dakar", color: "#E91E63" },

@@ -1,5 +1,5 @@
-import { getAdminFirestore, admin } from "../../firebase/admin";
-import type { Place } from "../../../shared/contracts";
+import { getAdminFirestore, admin } from "../../firebase/admin.js";
+import type { Place } from "../../../shared/contracts.js";
 
 function toIso(value: FirebaseFirestore.Timestamp | FirebaseFirestore.FieldValue | undefined | null) {
   if (!value || typeof value !== "object" || !("toDate" in value)) return null;

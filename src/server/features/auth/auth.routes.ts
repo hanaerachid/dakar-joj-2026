@@ -1,19 +1,19 @@
 import { Hono } from "hono";
-import { attachSessionUser } from "../../middleware/auth";
-import { ok } from "../../http/response";
+import { attachSessionUser } from "../../middleware/auth.js";
+import { ok } from "../../http/response.js";
 import {
   authCredentialsSchema,
   authRegisterSchema,
   authResetSchema,
-} from "../../../shared/contracts";
-import { cookieHeader, parseCookie } from "../../lib/http";
-import { env } from "../../config/env";
+} from "../../../shared/contracts.js";
+import { cookieHeader, parseCookie } from "../../lib/http.js";
+import { env } from "../../config/env.js";
 import {
   currentSessionUser,
   registerWithEmail,
   resetPassword,
   signInWithEmail,
-} from "./auth.service";
+} from "./auth.service.js";
 
 export const authRoutes = new Hono();
 

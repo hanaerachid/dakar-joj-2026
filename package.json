@@ -9,6 +9,7 @@
     "dev:server": "tsx watch src/server/main.ts",
     "build": "tsc -b && vite build",
     "build:server": "tsc -p tsconfig.server.json",
+    "start": "node dist/server/main.js",
     "start:server": "node dist/server/main.js",
     "lint": "eslint .",
     "preview": "vite preview"

@@ -1,8 +1,8 @@
-import { env } from "../../config/env";
-import { getAdminAuth, getAdminFirestore } from "../../firebase/admin";
-import { cookieHeader } from "../../lib/http";
-import { HttpError } from "../../http/errors";
-import { sessionUserSchema, type SessionUser } from "../../../shared/contracts";
+import { env } from "../../config/env.js";
+import { getAdminAuth, getAdminFirestore } from "../../firebase/admin.js";
+import { cookieHeader } from "../../lib/http.js";
+import { HttpError } from "../../http/errors.js";
+import { sessionUserSchema, type SessionUser } from "../../../shared/contracts.js";
 
 const FIREBASE_IDENTITY_BASE = "https://identitytoolkit.googleapis.com/v1";
 

@@ -1,8 +1,8 @@
 import type { Context, Next } from "hono";
-import { getAdminAuth, getAdminFirestore } from "../firebase/admin";
-import { env } from "../config/env";
-import { parseCookie } from "../lib/http";
-import type { SessionUser } from "../../shared/contracts";
+import { getAdminAuth, getAdminFirestore } from "../firebase/admin.js";
+import { env } from "../config/env.js";
+import { parseCookie } from "../lib/http.js";
+import type { SessionUser } from "../../shared/contracts.js";
 
 async function getSessionUser(token: string): Promise<SessionUser | null> {
   try {

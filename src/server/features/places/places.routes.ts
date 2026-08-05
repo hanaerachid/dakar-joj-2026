@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import { ok, fail } from "../../http/response";
-import { attachSessionUser } from "../../middleware/auth";
-import { requireAdmin } from "../../middleware/auth";
-import { placeImportSchema, placeInputSchema } from "../../../shared/contracts";
+import { ok, fail } from "../../http/response.js";
+import { attachSessionUser } from "../../middleware/auth.js";
+import { requireAdmin } from "../../middleware/auth.js";
+import { placeImportSchema, placeInputSchema } from "../../../shared/contracts.js";
 import {
   createPlace,
   deletePlace,
@@ -10,7 +10,7 @@ import {
   getPlace,
   listPlaces,
   updatePlace,
-} from "./places.service";
+} from "./places.service.js";
 
 export const placesRoutes = new Hono();
 

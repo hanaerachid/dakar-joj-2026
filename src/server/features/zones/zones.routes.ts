@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { ok } from "../../http/response";
-import { listZones } from "./zones.service";
+import { ok } from "../../http/response.js";
+import { listZones } from "./zones.service.js";
 
 export const zonesRoutes = new Hono();
 

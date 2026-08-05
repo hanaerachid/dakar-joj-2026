@@ -1,4 +1,4 @@
-import type { SessionUser } from "../shared/contracts";
+import type { SessionUser } from "../shared/contracts.js";
 
 declare module "hono" {
   interface ContextVariableMap {

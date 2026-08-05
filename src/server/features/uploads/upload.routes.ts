@@ -1,7 +1,7 @@
 import { Hono } from "hono";
-import { ok, fail } from "../../http/response";
-import { getAdminStorage } from "../../firebase/admin";
-import { env } from "../../config/env";
+import { ok, fail } from "../../http/response.js";
+import { getAdminStorage } from "../../firebase/admin.js";
+import { env } from "../../config/env.js";
 
 export const uploadRoutes = new Hono();
 
