@@ -361,7 +361,6 @@ export default function AddPlaceFull() {
             setRating={setRating}
             tags={tags}
             setTags={setTags}
-            tagList={tagList}
             pointColor={pointColor}
             setPointColor={setPointColor}
             categoryId={categoryId}

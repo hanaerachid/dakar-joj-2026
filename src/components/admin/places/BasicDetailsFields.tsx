@@ -29,7 +29,6 @@ type Props = {
   setRating: (v: number | "") => void;
   tags: string;
   setTags: (v: string) => void;
-  tagList: string[];
   pointColor: string;
   setPointColor: (v: string) => void;
 
@@ -62,7 +61,6 @@ export default function BasicDetailsFields(props: Props) {
     setRating,
     tags,
     setTags,
-    tagList,
     pointColor,
     setPointColor,
     categoryId,
