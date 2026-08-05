@@ -123,24 +123,23 @@ const EventVenueCard: React.FC<Props> = ({
   return (
     <Card
       size="sm"
-      className="w-[82vw] max-w-[320px] sm:w-[450px] sm:max-w-none shadow-xl overflow-hidden"
+      className="relative w-[82vw] max-w-[320px] sm:w-[450px] sm:max-w-none shadow-xl pt-0 overflow-hidden"
       style={{
         background: `linear-gradient(135deg, ${g0}, ${g1})`,
       }}
     >
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        onClick={onClose}
+        className="absolute end-4 top-4 w-8 h-8 flex items-center justify-center z-20"
+        aria-label={t("layer.actions.close")}
+      >
+        <X />
+      </Button>
       {/* Header gradient with brand + location pill */}
-      <CardHeader className="text-white">
+      <CardHeader className="p-0 gap-0">
         <div className="relative">
-          <Button
-            variant="default"
-            size="icon-sm"
-            onClick={onClose}
-            className="absolute end-2 top-2 w-8 h-8 flex items-center justify-center"
-            aria-label={t("layer.actions.close")}
-          >
-            <X />
-          </Button>
-
           {/* Hero image */}
           {imageUrl ? (
             <img

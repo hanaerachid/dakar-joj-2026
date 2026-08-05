@@ -123,26 +123,26 @@ const CategoryVenueCard: React.FC<Props> = ({
   return (
     <Card
       size="sm"
-      className="relative w-[82vw] max-w-[320px] sm:w-[450px] sm:max-w-none shadow-xl overflow-hidden"
+      className="relative w-[82vw] max-w-[320px] sm:w-[450px] sm:max-w-none shadow-xl pt-0 overflow-hidden"
     >
       <Button
         variant="ghost"
         size="icon-sm"
         onClick={onClose}
-        className="absolute end-4 top-4 w-8 h-8 flex items-center justify-center"
+        className="absolute end-4 top-4 w-8 h-8 flex items-center justify-center z-20"
         aria-label={t("layer.actions.close")}
       >
         <X />
       </Button>
-      {/* Optional hero image */}
-      {imageUrl ? (
-        <img
-          src={imageUrl}
-          alt={title}
-          className="absolute top-0 w-full object-cover"
-        />
-      ) : null}
-      <CardHeader className="text-white">
+      <CardHeader className="p-0 gap-0">
+        {/* Optional hero image */}
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={title}
+            className="w-full object-cover"
+          />
+        ) : null}
 
         {/* Header: icon + zone tag */}
         <div
