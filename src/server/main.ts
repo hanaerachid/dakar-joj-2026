@@ -15,7 +15,13 @@ import { placesRoutes } from "./features/places/places.routes.js";
 import { uploadRoutes } from "./features/uploads/upload.routes.js";
 import { fail } from "./http/response.js";
 import { HttpError } from "./http/errors.js";
-import { placeSchema, sessionUserSchema, zoneSchema } from "../shared/contracts.js";
+import {
+  placeSchema,
+  placeImportSchema,
+  placeInputSchema,
+  sessionUserSchema,
+  zoneSchema,
+} from "../shared/contracts.js";
 
 const app = new OpenAPIHono();
 
@@ -74,7 +80,12 @@ const resetPasswordSchema = z.object({
   }),
 });
 
-// const scopeSchema = z.enum(["all", "zone", "root"]);
+const scopeSchema = z.enum(["all", "zone", "root"]);
+
+const zoneIdSchema = z.string().openapi({
+  description: "Zone ID",
+  example: "xxxxxxxxxxxxxxxxxxxx",
+});
 
 const categoryIdSchema = z.enum([
   "competition",
@@ -318,6 +329,14 @@ app.openAPIRegistry.registerPath({
   method: "get",
   path: "/api/v1/zones",
   summary: "List zones",
+  request: {
+    query: z.object({
+      categoryId: categoryIdSchema.nullable().optional().openapi({
+        description: "Category ID",
+        example: "competition",
+      }),
+    }),
+  },
   responses: {
     200: {
       description: "Zones list",
@@ -336,11 +355,15 @@ app.openAPIRegistry.registerPath({
   summary: "List places",
   request: {
     query: z.object({
-      // scope: scopeSchema.openapi({
-      //   description: "Place scope",
-      //   example: "all",
-      // }),
-      categoryId: categoryIdSchema.openapi({
+      scope: scopeSchema.nullable().optional().openapi({
+        description: "Place scope",
+        example: "zone",
+      }),
+      zoneId: zoneIdSchema.nullable().optional().openapi({
+        description: "Zone ID",
+        example: "xxxxxxxxxxxxxxxxxxxx",
+      }),
+      categoryId: categoryIdSchema.optional().openapi({
         description: "Category ID",
         example: "competition",
       }),
@@ -391,6 +414,16 @@ app.openAPIRegistry.registerPath({
   method: "post",
   path: "/api/v1/places",
   summary: "Create place",
+  request: {
+    body: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: placeInputSchema,
+        },
+      },
+    },
+  },
   responses: {
     201: {
       description: "Created place",
@@ -409,8 +442,24 @@ app.openAPIRegistry.registerPath({
   summary: "Update place",
   request: {
     params: z.object({
-      id: z.string(),
+      id: z.string().openapi({
+        description: "Place ID",
+        example: "xxxxxxxxxxxxxxxxxxxx",
+      }),
     }),
+    query: z.object({
+      zoneId: z.string().nullable().optional().openapi({
+        description: "Zone to associate with the place",
+      }),
+    }),
+    body: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: placeInputSchema.partial(),
+        },
+      },
+    },
   },
   responses: {
     200: {
@@ -478,6 +527,17 @@ app.openAPIRegistry.registerPath({
   method: "post",
   path: "/api/v1/places/import",
   summary: "Import places",
+  request: {
+    body: {
+      required: true,
+      description: "Bulk import places",
+      content: {
+        "application/json": {
+          schema: placeImportSchema,
+        },
+      },
+    },
+  },
   responses: {
     200: {
       description: "Import results",
@@ -494,6 +554,25 @@ app.openAPIRegistry.registerPath({
   method: "post",
   path: "/api/v1/uploads/image",
   summary: "Upload image",
+  request: {
+    body: {
+      required: true,
+      content: {
+        "multipart/form-data": {
+          schema: z.object({
+            file: z
+              .instanceof(File)
+              .openapi({
+                type: "string",
+                format: "binary",
+                description: "Image file to upload",
+              }),
+            folder: z.string().describe("Destination folder"),
+          }),
+        },
+      },
+    },
+  },
   responses: {
     200: {
       description: "Uploaded image metadata",
@@ -515,7 +594,7 @@ app.openAPIRegistry.registerPath({
 
 app.doc("/api/v1/openapi.json", {
   openapi: "3.0.3",
-  info: { title: "Dakar YOG API", version: "1.0.0" },
+  info: { title: "API Docs", version: "1.0.0" },
 });
 
 app.get("/api/v1/docs", swaggerUI({ url: "/api/v1/openapi.json" }));

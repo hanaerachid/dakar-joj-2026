@@ -11,7 +11,7 @@ const envSchema = z.object({
   FIREBASE_CLIENT_EMAIL: z.string().email().optional(),
   FIREBASE_PRIVATE_KEY: z.string().optional(),
   FIREBASE_DATABASE_URL: z.string().optional(),
-  SESSION_COOKIE_NAME: z.string().default("yog_session"),
+  SESSION_COOKIE_NAME: z.string().default("session"),
   SESSION_EXPIRES_DAYS: z.coerce.number().int().positive().default(5),
 });
 
