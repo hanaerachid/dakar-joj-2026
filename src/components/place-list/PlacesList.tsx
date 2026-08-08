@@ -21,6 +21,7 @@ import { withTranslatedCategoryLabels } from "./categoryTranslations";
 import { ChevronDown, ChevronRight, Layers2 } from "lucide-react";
 import { usePanelContext } from "@/components/panel-provider";
 import { useModalContext } from "@/components/modal-provider";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type VenueFeature = Feature<Point, GeoJsonProperties>;
 const DEFAULT_VISIBLE_CATS = new Set<string>(["competition"]);
@@ -62,18 +63,6 @@ function getFeatureCategoryId(props: GeoJsonProperties | undefined): string {
     (p.type as string) ??
     "";
   return String(v).toLowerCase();
-}
-
-function useIsMobile() {
-  const [m, setM] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 640px)");
-    const on = () => setM(mq.matches);
-    on();
-    mq.addEventListener("change", on);
-    return () => mq.removeEventListener("change", on);
-  }, []);
-  return m;
 }
 
 export const PlacesList = () => {

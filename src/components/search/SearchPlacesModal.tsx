@@ -32,40 +32,41 @@ export const SearchPlaces = ({
   const { t } = useTranslation();
 
   const {
-    isOpen: panelOpen,
-    setIsOpen: setPanelOpen,
+    isOpen: modalOpen,
+    setIsOpen: setModalOpen,
     setModalContent: setModalContent,
   } = useModalContext();
 
   const openPanel = () => {
-    if (panelOpen) {
-      setPanelOpen(false);
+    if (modalOpen) {
+      setModalOpen(false);
       return;
     }
     setModalContent({
       title: t("search.title"),
-      onClose: () => setPanelOpen(false),
-      panelClassName: "sm:max-w-2xl md:max-w-3xl",
+      onClose: () => setModalOpen(false),
       size: "lg",
-      children: <SearchPlacesModal setPanelOpen={setPanelOpen} categories={categories} />,
+      children: <SearchPlacesModal setModalOpen={setModalOpen} categories={categories} />,
     });
-    setPanelOpen(true);
+    setModalOpen(true);
   }
+
   return (
     <AnimatedButton
       icon={Search}
       title="Search Places"
       tooltip="Search"
+      isOpen={modalOpen}
       onClick={openPanel}
     />
   )
 }
 
 export const SearchPlacesModal = ({
-  setPanelOpen,
+  setModalOpen,
   categories,
 }: {
-  setPanelOpen: (open: boolean) => void;
+  setModalOpen: (open: boolean) => void;
   categories: CategoryConfig[];
 }) => {
   // default = "Search Anywhere"
@@ -86,7 +87,7 @@ export const SearchPlacesModal = ({
         <GlobalPlacesTab
           query={globalQuery}
           onQueryChange={setGlobalQuery}
-          onPicked={() => setPanelOpen(false)}
+          onPicked={() => setModalOpen(false)}
         />
       </TabsContent>
       <TabsContent value="local">
@@ -94,7 +95,7 @@ export const SearchPlacesModal = ({
           categories={categories}
           query={localQuery}
           onQueryChange={setLocalQuery}
-          onPicked={() => setPanelOpen(false)}
+          onPicked={() => setModalOpen(false)}
         />
       </TabsContent>
     </Tabs>
