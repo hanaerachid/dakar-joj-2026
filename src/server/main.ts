@@ -302,41 +302,16 @@ app.openAPIRegistry.registerPath({
 app.openAPIRegistry.registerPath({
   method: "get",
   path: "/api/v1/torch",
-  summary: "List torch entries",
-  request: {
-    query: z.object({
-      status: z.string().optional().openapi({
-        description: "Optional status filter, for example published",
-        example: "published",
-      }),
-      limit: z.coerce.number().int().min(1).max(250).optional().openapi({
-        description: "Maximum number of items to return",
-        example: 20,
-      }),
-    }),
-  },
+  summary: "Get the torch path",
   responses: {
     200: {
-      description: "Torch list",
+      description: "Torch path",
       content: {
         "application/json": {
           schema: apiSuccessSchema(z.array(torchSchema)),
         },
       },
     },
-  },
-});
-
-app.openAPIRegistry.registerPath({
-  method: "get",
-  path: "/api/v1/torch/{id}",
-  summary: "Get a torch item",
-  request: {
-    params: z.object({ id: z.string() }),
-  },
-  responses: {
-    200: { description: "Torch item", content: { "application/json": { schema: apiSuccessSchema(torchSchema) } } },
-    404: { description: "Torch item not found", content: { "application/json": { schema: apiErrorSchema } } },
   },
 });
 

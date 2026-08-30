@@ -30,8 +30,3 @@ contentRoutes.get("/events/:id", async (c) => {
 });
 
 contentRoutes.get("/torch", async (c) => getList(c, "torch"));
-contentRoutes.get("/torch/:id", async (c) => {
-  const item = await getContentItem("torch", c.req.param("id"));
-  if (!item) return fail(c, 404, "NOT_FOUND", "Torch item not found");
-  return ok(c, item);
-});
