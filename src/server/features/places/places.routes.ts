@@ -17,8 +17,13 @@ export const placesRoutes = new Hono();
 placesRoutes.use("*", attachSessionUser);
 
 placesRoutes.get("/", async (c) => {
+  const categoryId = c.req.query("categoryId") ?? c.req.query("categoryIds") ?? undefined;
+  const mainCategoryId =
+    c.req.query("mainCategoryId") ?? c.req.query("mainCategoryIds") ?? undefined;
+
   const places = await listPlaces({
-    categoryId: c.req.query("categoryId") ?? undefined,
+    categoryId,
+    mainCategoryId,
     zoneId: c.req.query("zoneId") ?? null,
     scope: (c.req.query("scope") as any) ?? "zone",
   });

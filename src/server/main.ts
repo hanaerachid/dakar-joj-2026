@@ -12,6 +12,7 @@ import { env } from "./config/env.js";
 import { authRoutes } from "./features/auth/auth.routes.js";
 import { zonesRoutes } from "./features/zones/zones.routes.js";
 import { placesRoutes } from "./features/places/places.routes.js";
+import { contentRoutes } from "./features/content/content.routes.js";
 import { uploadRoutes } from "./features/uploads/upload.routes.js";
 import { fail } from "./http/response.js";
 import { HttpError } from "./http/errors.js";
@@ -19,6 +20,9 @@ import {
   placeSchema,
   placeImportSchema,
   placeInputSchema,
+  newsSchema,
+  eventSchema,
+  torchSchema,
   sessionUserSchema,
   zoneSchema,
 } from "../shared/contracts.js";
@@ -117,6 +121,19 @@ const categoryIdSchema = z.enum([
   "railway",
 ]);
 
+const mainCategoryIdSchema = z.enum([
+  "housing",
+  "food_and_drink",
+  "mobility",
+  "shopping_and_crafts",
+  "culture_and_heritage",
+  "health",
+  "security",
+  "services",
+  "religion",
+  "other",
+]);
+
 const clientDistDir = resolve(process.cwd(), "dist/client");
 const shouldServeClient =
   env.NODE_ENV === "production" && existsSync(clientDistDir);
@@ -197,7 +214,131 @@ app.openAPIRegistry.registerPath({
 app.route("/api/v1/auth", authRoutes);
 app.route("/api/v1/zones", zonesRoutes);
 app.route("/api/v1/places", placesRoutes);
+app.route("/api/v1", contentRoutes);
 app.route("/api/v1/uploads", uploadRoutes);
+
+app.openAPIRegistry.registerPath({
+  method: "get",
+  path: "/api/v1/news",
+  summary: "List published news",
+  request: {
+    query: z.object({
+      status: z.string().optional().openapi({
+        description: "Optional status filter, for example published",
+        example: "published",
+      }),
+      limit: z.coerce.number().int().min(1).max(250).optional().openapi({
+        description: "Maximum number of items to return",
+        example: 20,
+      }),
+    }),
+  },
+  responses: {
+    200: {
+      description: "News list",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(z.array(newsSchema)),
+        },
+      },
+    },
+  },
+});
+
+app.openAPIRegistry.registerPath({
+  method: "get",
+  path: "/api/v1/news/{id}",
+  summary: "Get a news item",
+  request: {
+    params: z.object({ id: z.string() }),
+  },
+  responses: {
+    200: { description: "News item", content: { "application/json": { schema: apiSuccessSchema(newsSchema) } } },
+    404: { description: "News item not found", content: { "application/json": { schema: apiErrorSchema } } },
+  },
+});
+
+app.openAPIRegistry.registerPath({
+  method: "get",
+  path: "/api/v1/events",
+  summary: "List events",
+  request: {
+    query: z.object({
+      status: z.string().optional().openapi({
+        description: "Optional status filter, for example published",
+        example: "published",
+      }),
+      limit: z.coerce.number().int().min(1).max(250).optional().openapi({
+        description: "Maximum number of items to return",
+        example: 20,
+      }),
+    }),
+  },
+  responses: {
+    200: {
+      description: "Events list",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(z.array(eventSchema)),
+        },
+      },
+    },
+  },
+});
+
+app.openAPIRegistry.registerPath({
+  method: "get",
+  path: "/api/v1/events/{id}",
+  summary: "Get an event",
+  request: {
+    params: z.object({ id: z.string() }),
+  },
+  responses: {
+    200: { description: "Event", content: { "application/json": { schema: apiSuccessSchema(eventSchema) } } },
+    404: { description: "Event not found", content: { "application/json": { schema: apiErrorSchema } } },
+  },
+});
+
+app.openAPIRegistry.registerPath({
+  method: "get",
+  path: "/api/v1/torch",
+  summary: "List torch entries",
+  request: {
+    query: z.object({
+      status: z.string().optional().openapi({
+        description: "Optional status filter, for example published",
+        example: "published",
+      }),
+      limit: z.coerce.number().int().min(1).max(250).optional().openapi({
+        description: "Maximum number of items to return",
+        example: 20,
+      }),
+    }),
+  },
+  responses: {
+    200: {
+      description: "Torch list",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(z.array(torchSchema)),
+        },
+      },
+    },
+  },
+});
+
+app.openAPIRegistry.registerPath({
+  method: "get",
+  path: "/api/v1/torch/{id}",
+  summary: "Get a torch item",
+  request: {
+    params: z.object({ id: z.string() }),
+  },
+  responses: {
+    200: { description: "Torch item", content: { "application/json": { schema: apiSuccessSchema(torchSchema) } } },
+    404: { description: "Torch item not found", content: { "application/json": { schema: apiErrorSchema } } },
+  },
+});
 
 app.openAPIRegistry.registerPath({
   method: "get",
@@ -366,6 +507,10 @@ app.openAPIRegistry.registerPath({
       categoryId: categoryIdSchema.optional().openapi({
         description: "Category ID",
         example: "competition",
+      }),
+      mainCategoryId: mainCategoryIdSchema.optional().openapi({
+        description: "Main category ID filter",
+        example: "housing",
       }),
     }),
   },

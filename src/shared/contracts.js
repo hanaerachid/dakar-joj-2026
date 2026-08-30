@@ -1,10 +1,13 @@
 import { z } from "zod";
+export const appRoleSchema = z
+    .enum(["standard", "business", "admin", "user"])
+    .transform((value) => (value === "user" ? "standard" : value));
 export const sessionUserSchema = z.object({
     uid: z.string(),
     email: z.string().email().nullable().optional(),
     displayName: z.string().nullable().optional(),
     photoURL: z.string().nullable().optional(),
-    role: z.string().default("user"),
+    role: appRoleSchema.default("standard"),
 });
 export const authCredentialsSchema = z.object({
     email: z.string().email(),

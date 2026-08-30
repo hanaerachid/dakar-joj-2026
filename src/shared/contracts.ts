@@ -1,11 +1,17 @@
 import { z } from "zod";
 
+export const appRoleSchema = z
+  .enum(["standard", "business", "admin", "user"])
+  .transform((value) => (value === "user" ? "standard" : value));
+
+export type AppRole = "standard" | "business" | "admin";
+
 export const sessionUserSchema = z.object({
   uid: z.string(),
   email: z.string().email().nullable().optional(),
   displayName: z.string().nullable().optional(),
   photoURL: z.string().nullable().optional(),
-  role: z.string().default("user"),
+  role: appRoleSchema.default("standard"),
 });
 
 export type SessionUser = z.infer<typeof sessionUserSchema>;
@@ -39,6 +45,19 @@ export const geoPointSchema = z.object({
   longitude: z.number(),
 });
 
+export const mainCategoryIdSchema = z.enum([
+  "housing",
+  "food_and_drink",
+  "mobility",
+  "shopping_and_crafts",
+  "culture_and_heritage",
+  "health",
+  "security",
+  "services",
+  "religion",
+  "other",
+]);
+
 export const placeSchema = z
   .object({
     id: z.string(),
@@ -65,6 +84,7 @@ export const placeSchema = z
     sportCount: z.number().default(0),
     sports: z.array(z.any()).default([]),
     categoryId: z.string().nullable().optional(),
+    mainCategoryId: mainCategoryIdSchema.nullable().optional(),
     zoneId: z.string().nullable().optional(),
     zone: z.string().nullable().optional(),
     createdAt: z.string().datetime().nullable().optional(),
@@ -104,18 +124,77 @@ export const placeInputSchema = z
     sportCount: z.number().optional(),
     sports: z.array(z.any()).optional(),
     categoryId: z.string().optional(),
+    mainCategoryId: mainCategoryIdSchema.optional(),
     zoneId: z.string().nullable().optional(),
     zone: z.string().nullable().optional(),
   })
   .passthrough();
 
 export const placeImportSchema = z.object({
-  categoryId: z.string(),
+  categoryId: z.string().optional(),
+  mainCategoryId: mainCategoryIdSchema.optional(),
   zoneId: z.string().nullable().optional(),
   scope: z.enum(["root", "zone", "all"]).default("zone"),
   items: z.array(placeInputSchema),
   skipDuplicates: z.boolean().default(true),
 });
+
+export const newsSchema = z
+  .object({
+    id: z.string().optional(),
+    legacyFirestoreId: z.string().nullable().optional(),
+    title: z.string().nullable().optional(),
+    titleFr: z.string().nullable().optional(),
+    titleEs: z.string().nullable().optional(),
+    body: z.string().nullable().optional(),
+    bodyFr: z.string().nullable().optional(),
+    bodyEs: z.string().nullable().optional(),
+    imageUrl: z.string().nullable().optional(),
+    status: z.string().nullable().optional(),
+    pinned: z.boolean().nullable().optional(),
+    publishedAt: z.string().datetime().nullable().optional(),
+    createdAt: z.string().datetime().nullable().optional(),
+    updatedAt: z.string().datetime().nullable().optional(),
+  })
+  .passthrough();
+
+export const eventSchema = z
+  .object({
+    id: z.string().optional(),
+    legacyFirestoreId: z.string().nullable().optional(),
+    name: z.string().nullable().optional(),
+    nameFr: z.string().nullable().optional(),
+    day: z.string().nullable().optional(),
+    time: z.string().nullable().optional(),
+    sport: z.string().nullable().optional(),
+    status: z.string().nullable().optional(),
+    venueName: z.string().nullable().optional(),
+    venueLocation: z.any().nullable().optional(),
+    createdAt: z.string().datetime().nullable().optional(),
+    updatedAt: z.string().datetime().nullable().optional(),
+  })
+  .passthrough();
+
+export const torchSchema = z
+  .object({
+    id: z.string().optional(),
+    legacyFirestoreId: z.string().nullable().optional(),
+    title: z.string().nullable().optional(),
+    name: z.string().nullable().optional(),
+    description: z.string().nullable().optional(),
+    body: z.string().nullable().optional(),
+    status: z.string().nullable().optional(),
+    imageUrl: z.string().nullable().optional(),
+    city: z.string().nullable().optional(),
+    country: z.string().nullable().optional(),
+    location: z.any().nullable().optional(),
+    startDate: z.string().datetime().nullable().optional(),
+    endDate: z.string().datetime().nullable().optional(),
+    publishedAt: z.string().datetime().nullable().optional(),
+    createdAt: z.string().datetime().nullable().optional(),
+    updatedAt: z.string().datetime().nullable().optional(),
+  })
+  .passthrough();
 
 export const uploadResponseSchema = z.object({
   url: z.string().url(),

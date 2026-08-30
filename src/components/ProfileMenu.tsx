@@ -6,11 +6,12 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/components/ui/avatar"
+} from "@/components/ui/avatar";
 import { useModalContext } from "@/components/modal-provider";
 import { useTranslation } from "react-i18next";
 import { useAuthUser } from "../auth/hooks/useAuthUser";
 import { UserIcon } from "lucide-react";
+import { ClerkAuthControls } from "./auth/ClerkAuthControls";
 
 type AuthView = "login" | "register" | "reset" | "profile";
 
@@ -29,21 +30,23 @@ export function ProfileMenu() {
 
   const { user } = useAuthUser();
   const [view, setView] = useState<AuthView>(initialView);
+  const hasClerkConfig = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
 
   const photoURL = user?.photoURL ?? "";
 
   useEffect(() => {
     setView(user ? "profile" : initialView);
-  }, [user, initialView]);
+  }, [user]);
 
   const headerTitle = t(TITLE_BY_VIEW[view]);
 
-  {/* AUTH MODAL */ }
   const handleProfileClick = async (e: any) => {
-    // 1. Check Authentication
+    if (hasClerkConfig) {
+      return;
+    }
+
     e.preventDefault();
     e.stopPropagation();
-    // console.log(view)
     setModalContent({
       title: headerTitle,
       panelClassName: "sm:max-w-md",
@@ -51,8 +54,6 @@ export function ProfileMenu() {
       size: "lg",
       children: (
         <AuthModal
-          // view={view}
-          // setView={setView}
           onClose={() => setIsOpen(false)}
           initialView={view}
         />
@@ -60,19 +61,25 @@ export function ProfileMenu() {
     });
     if (user) {
       try {
-        const idToken = await getIdToken(); // short-lived token
+        const idToken = await getIdToken();
         console.log("ID Token:", idToken);
       } catch (e) {
         console.error("Failed to fetch tokens:", e);
       }
     }
     setIsOpen(true);
-    return;
   };
+
+  if (hasClerkConfig) {
+    return (
+      <div className="relative flex items-center gap-2">
+        <ClerkAuthControls />
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex gap-2">
-      {/* Profile Button -> opens AUTH modal */}
       <Avatar
         onClick={handleProfileClick}
         className="h-8 w-8 bg-foreground-100 transition sm:h-10 sm:w-10"

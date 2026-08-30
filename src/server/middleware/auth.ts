@@ -3,6 +3,7 @@ import { getAdminAuth } from "../firebase/admin.js";
 import { getMongoDatabase } from "../mongodb/client.js";
 import { env } from "../config/env.js";
 import { parseCookie } from "../lib/http.js";
+import { normalizeRole } from "../../auth/roles.js";
 import type { SessionUser } from "../../shared/contracts.js";
 
 async function getSessionUser(token: string): Promise<SessionUser | null> {
@@ -12,7 +13,7 @@ async function getSessionUser(token: string): Promise<SessionUser | null> {
     const profile = await (await getMongoDatabase())
       .collection<any>("users")
       .findOne({ _id: decoded.uid });
-    const role = (profile?.role as string | undefined) ?? "user";
+    const role = normalizeRole(profile?.role ?? "standard");
 
     return {
       uid: userRecord.uid,
@@ -26,6 +27,32 @@ async function getSessionUser(token: string): Promise<SessionUser | null> {
   }
 }
 
+async function getApiKeyUser(apiKey: string): Promise<SessionUser | null> {
+  if (!apiKey) {
+    return null;
+  }
+
+  try {
+    const profile = await (await getMongoDatabase())
+      .collection<any>("users")
+      .findOne({ apiKey });
+
+    if (!profile) {
+      return null;
+    }
+
+    return {
+      uid: String(profile._id ?? profile.uid ?? profile.email ?? apiKey),
+      email: profile.email ?? null,
+      displayName: profile.displayName ?? null,
+      photoURL: profile.photoURL ?? null,
+      role: normalizeRole(profile.role ?? "standard"),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function attachSessionUser(c: Context, next: Next) {
   const cookie = parseCookie(
     c.req.header("cookie"),
@@ -33,9 +60,17 @@ export async function attachSessionUser(c: Context, next: Next) {
   );
 
   const bearer = c.req.header("authorization")?.replace(/^Bearer\s+/i, "");
+  const apiKey =
+    c.req.query("api_key") ?? c.req.header("x-api-key") ?? null;
   const token = cookie ?? bearer ?? null;
+
   if (token) {
     const user = await getSessionUser(token);
+    if (user) c.set("user", user);
+  }
+
+  if (!c.get("user") && apiKey) {
+    const user = await getApiKeyUser(apiKey);
     if (user) c.set("user", user);
   }
 

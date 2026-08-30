@@ -14,6 +14,8 @@ const envSchema = z.object({
   FIREBASE_DATABASE_URL: z.string().optional(),
   SESSION_COOKIE_NAME: z.string().default("session"),
   SESSION_EXPIRES_DAYS: z.coerce.number().int().positive().default(5),
+  CLERK_PUBLISHABLE_KEY: z.string().optional(),
+  CLERK_SECRET_KEY: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

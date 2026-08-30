@@ -1,5 +1,6 @@
 // src/App.tsx
 import { Routes, Route, Navigate, Outlet, Link } from "react-router-dom";
+import { ClerkProvider } from "@clerk/clerk-react";
 import MapPage from "./pages/map/MapPage";
 import AdminRoute from "./components/auth/AdminRoute";
 import AddPlaceFull from "./admin/places/AddPlaceFull";
@@ -9,10 +10,10 @@ import "./App.css";
 import { useEffect, useState } from "react";
 import { initAuth } from "./auth/nitAuth";
 import BulkPlacesImport from "./admin/places/BulkPlacesImport";
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "@/components/theme-provider";
 import { ModalProvider } from "./components/modal-provider";
 import { PanelProvider } from "./components/panel-provider";
-import { TooltipProvider } from "@/components/ui/tooltip"
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { ArrowLeft, Plus } from "lucide-react";
 
 function AdminShell() {
@@ -63,9 +64,9 @@ function AdminShell() {
 
 export default function App() {
   const [role, setRole] = useState<string | undefined>(undefined);
+  const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
   useEffect(() => {
-    // Call once on mount
     initAuth((user, r) => {
       console.log("[initAuth] user:", user?.uid, "role:", r);
       console.log("[initAuth] role:", role);
@@ -73,38 +74,49 @@ export default function App() {
     });
   }, []);
 
-  return (
+  const appRoutes = (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-    <TooltipProvider>
-    <ModalProvider>
-    <Routes>
-      <Route path="/" element={
-        <PanelProvider>
-          <MapPage />
-        </PanelProvider>
-      } />
+      <TooltipProvider>
+        <ModalProvider>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <PanelProvider>
+                  <MapPage />
+                </PanelProvider>
+              }
+            />
 
-      <Route
-        path="/admin"
-        element={
-          <AdminRoute>
-            <AdminShell />
-          </AdminRoute>
-        }
-      >
-        {/* /admin -> /admin/places */}
-        <Route index element={<Navigate to="places" replace />} />
-        <Route path="places" element={<PlacesListPage />} />
-        <Route path="places/import" element={<BulkPlacesImport />} />
-        <Route path="places/new" element={<AddPlaceFull />} />
-        <Route path="places/:zoneId/:placeId" element={<PlaceDetailsPage />} />
-      </Route>
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminShell />
+                </AdminRoute>
+              }
+            >
+              <Route index element={<Navigate to="places" replace />} />
+              <Route path="places" element={<PlacesListPage />} />
+              <Route path="places/import" element={<BulkPlacesImport />} />
+              <Route path="places/new" element={<AddPlaceFull />} />
+              <Route path="places/:zoneId/:placeId" element={<PlaceDetailsPage />} />
+            </Route>
 
-      {/* catch-all */}
-      <Route path="*" element={<MapPage />} />
-    </Routes>
-    </ModalProvider>
-    </TooltipProvider>
+            <Route path="*" element={<MapPage />} />
+          </Routes>
+        </ModalProvider>
+      </TooltipProvider>
     </ThemeProvider>
+  );
+
+  if (!clerkPublishableKey) {
+    return appRoutes;
+  }
+
+  return (
+    <ClerkProvider publishableKey={clerkPublishableKey} afterSignOutUrl="/">
+      {appRoutes}
+    </ClerkProvider>
   );
 }

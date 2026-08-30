@@ -1,9 +1,15 @@
+import { randomBytes } from "node:crypto";
 import { env } from "../../config/env.js";
 import { getAdminAuth } from "../../firebase/admin.js";
 import { getMongoDatabase } from "../../mongodb/client.js";
 import { cookieHeader } from "../../lib/http.js";
 import { HttpError } from "../../http/errors.js";
-import { sessionUserSchema, type SessionUser } from "../../../shared/contracts.js";
+import {
+  sessionUserSchema,
+  type SessionUser,
+  type AppRole,
+} from "../../../shared/contracts.js";
+import { normalizeRole } from "../../../auth/roles.js";
 
 const FIREBASE_IDENTITY_BASE = "https://identitytoolkit.googleapis.com/v1";
 
@@ -66,6 +72,10 @@ async function identityToolkit<T>(
 async function ensureUserProfile(user: SessionUser) {
   const users = (await getMongoDatabase()).collection<any>("users");
   const now = new Date();
+  const existing = await users.findOne({ _id: user.uid });
+  const existingRole = normalizeRole(existing?.role ?? "standard");
+  const nextRole = normalizeRole(user.role ?? existingRole ?? "standard");
+
   const result = await users.updateOne(
     { _id: user.uid },
     {
@@ -75,13 +85,20 @@ async function ensureUserProfile(user: SessionUser) {
         email: user.email,
         displayName: user.displayName,
         photoURL: user.photoURL,
-        role: "user",
+        role: nextRole,
         createdAt: now,
       },
-      $set: { updatedAt: now },
+      $set: {
+        updatedAt: now,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        role: nextRole,
+      },
     },
     { upsert: true },
   );
+
   if (result.upsertedCount > 0) {
     return;
   }
@@ -110,7 +127,7 @@ export async function signInWithEmail(email: string, password: string) {
     email: payload.email,
     displayName: payload.displayName ?? null,
     photoURL: payload.photoUrl ?? null,
-    role: "user",
+    role: "standard",
   });
 
   await ensureUserProfile(user);
@@ -147,7 +164,7 @@ export async function registerWithEmail(
     email: payload.email,
     displayName: displayName ?? payload.displayName ?? null,
     photoURL: payload.photoUrl ?? null,
-    role: "user",
+    role: "standard",
   });
 
   await ensureUserProfile(user);
@@ -176,9 +193,28 @@ export async function currentSessionUser(token: string) {
     email: record.email ?? null,
     displayName: record.displayName ?? null,
     photoURL: record.photoURL ?? null,
-    role: (profile?.role as string | undefined) ?? "user",
+    role: normalizeRole(profile?.role ?? "standard"),
   });
   return user;
+}
+
+export function createApiKeyForUser(uid: string, role: AppRole = "standard") {
+  return {
+    apiKey: randomBytes(24).toString("hex"),
+    role: normalizeRole(role),
+    uid,
+  };
+}
+
+export async function setUserRole(uid: string, role: AppRole) {
+  const normalized = normalizeRole(role);
+  const users = (await getMongoDatabase()).collection<any>("users");
+  await users.updateOne(
+    { _id: uid },
+    { $set: { role: normalized, updatedAt: new Date() } },
+    { upsert: true },
+  );
+  return normalized;
 }
 
 export async function resetPassword(email: string) {

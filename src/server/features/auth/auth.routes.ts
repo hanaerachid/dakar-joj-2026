@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { Hono } from "hono";
 import { attachSessionUser } from "../../middleware/auth.js";
 import { ok } from "../../http/response.js";
@@ -9,11 +10,14 @@ import {
 import { cookieHeader, parseCookie } from "../../lib/http.js";
 import { env } from "../../config/env.js";
 import {
+  createApiKeyForUser,
   currentSessionUser,
   registerWithEmail,
   resetPassword,
   signInWithEmail,
+  setUserRole,
 } from "./auth.service.js";
+import { normalizeRole } from "../../../auth/roles.js";
 
 export const authRoutes = new Hono();
 
@@ -76,6 +80,54 @@ authRoutes.post("/logout", (c) => {
     }),
   );
   return ok(c, { success: true });
+});
+
+authRoutes.post("/api-key", async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json(
+      { success: false, error: { code: "UNAUTHORIZED", message: "Authentication required" } },
+      401,
+    );
+  }
+
+  const role = normalizeRole(user.role ?? "standard");
+  const { apiKey } = createApiKeyForUser(user.uid, role);
+
+  const { getMongoDatabase } = await import("../../mongodb/client.js");
+  const users = (await getMongoDatabase()).collection<any>("users");
+  await users.updateOne(
+    { _id: user.uid },
+    { $set: { apiKey, role, updatedAt: new Date() } },
+    { upsert: true },
+  );
+
+  return ok(c, { apiKey, role, uid: user.uid });
+});
+
+authRoutes.post("/role", async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json(
+      { success: false, error: { code: "UNAUTHORIZED", message: "Authentication required" } },
+      401,
+    );
+  }
+
+  const body = z.object({ role: z.enum(["standard", "business", "admin"]) }).parse(
+    await c.req.json(),
+  );
+  const role = normalizeRole(body.role);
+
+  if (user.role !== "admin" && role !== user.role) {
+    return c.json(
+      { success: false, error: { code: "FORBIDDEN", message: "Role update not allowed" } },
+      403,
+    );
+  }
+
+  await setUserRole(user.uid, role);
+  return ok(c, { role });
 });
 
 authRoutes.post("/reset-password", async (c) => {

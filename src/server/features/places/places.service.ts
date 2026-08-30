@@ -51,6 +51,7 @@ function serializePlace(id: string, data: PlaceDocument, zoneId?: string | null)
     sportCount: Number(data.sportCount ?? 0),
     sports: Array.isArray(data.sports) ? data.sports : [],
     categoryId: data.categoryId ?? null,
+    mainCategoryId: data.mainCategoryId ?? null,
     zoneId: zoneId ?? data.zoneId ?? null,
     zone: data.zone ?? null,
     createdAt: toIso(data.createdAt),
@@ -90,6 +91,7 @@ function buildPayload(input: any, zoneId?: string | null, includeCreatedAt = tru
     sportCount: input.sportCount ?? (Array.isArray(input.sports) ? input.sports.length : 0),
     sports: Array.isArray(input.sports) ? input.sports : [],
     categoryId: input.categoryId ?? null,
+    mainCategoryId: input.mainCategoryId ?? input.mainCategoryIds ?? null,
     zoneId: zoneId ?? input.zoneId ?? null,
     zone: input.zone ?? null,
     updatedAt: new Date(),
@@ -122,25 +124,29 @@ function buildCreateDocument(input: any, zoneId?: string | null) {
 
 export async function listPlaces(params: {
   categoryId?: string;
+  mainCategoryId?: string;
   zoneId?: string | null;
   scope?: "all" | "zone" | "root";
 }) {
-  const { categoryId, zoneId, scope } = params;
+  const { categoryId, mainCategoryId, zoneId, scope } = params;
   const db = await getMongoDatabase();
   const collection = db.collection<PlaceDocument>("places");
-  const categoryFilter = { categoryId: categoryId ?? "" };
+  const filters: Filter<PlaceDocument> = {};
+
+  if (categoryId) filters.categoryId = categoryId;
+  if (mainCategoryId) filters.mainCategoryId = mainCategoryId;
 
   if (scope === "all") {
-    const docs = await collection.find(categoryFilter).toArray();
+    const docs = await collection.find(filters).toArray();
     return docs.map((doc) => serializeDocument(doc, doc.zoneId ?? null));
   }
 
   if (scope === "root" || !zoneId) {
-    const docs = await collection.find({ ...categoryFilter, zoneId: null }).toArray();
+    const docs = await collection.find({ ...filters, zoneId: null }).toArray();
     return docs.map((doc) => serializeDocument(doc, null));
   }
 
-  const docs = await collection.find({ ...categoryFilter, zoneId }).toArray();
+  const docs = await collection.find({ ...filters, zoneId }).toArray();
   return docs.map((doc) => serializeDocument(doc, zoneId));
 }
 
@@ -167,7 +173,8 @@ export async function updatePlace(id: string, input: any, zoneId?: string | null
     "name", "name_fr", "nameFr", "location", "address", "info", "info_fr",
     "infoFr", "rating", "tags", "pointColor", "imageUrl", "brandTitle",
     "brandSubtitle", "locationLabel", "shortCode", "gradientFrom", "gradientTo",
-    "website", "socialHandle", "sportCount", "sports", "categoryId", "zoneId", "zone",
+    "website", "socialHandle", "sportCount", "sports", "categoryId", "mainCategoryId",
+    "zoneId", "zone",
   ];
   const changed = Object.fromEntries(
     fields
