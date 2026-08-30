@@ -1,5 +1,6 @@
 import { env } from "../../config/env.js";
-import { getAdminAuth, getAdminFirestore } from "../../firebase/admin.js";
+import { getAdminAuth } from "../../firebase/admin.js";
+import { getMongoDatabase } from "../../mongodb/client.js";
 import { cookieHeader } from "../../lib/http.js";
 import { HttpError } from "../../http/errors.js";
 import { sessionUserSchema, type SessionUser } from "../../../shared/contracts.js";
@@ -63,19 +64,26 @@ async function identityToolkit<T>(
 }
 
 async function ensureUserProfile(user: SessionUser) {
-  const ref = getAdminFirestore().collection("users").doc(user.uid);
-  const snap = await ref.get();
-  if (!snap.exists) {
-    await ref.set({
-      email: user.email,
-      displayName: user.displayName,
-      photoURL: user.photoURL,
-      role: "user",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-  } else {
-    await ref.set({ updatedAt: new Date() }, { merge: true });
+  const users = (await getMongoDatabase()).collection<any>("users");
+  const now = new Date();
+  const result = await users.updateOne(
+    { _id: user.uid },
+    {
+      $setOnInsert: {
+        _id: user.uid,
+        _firestorePath: `users/${user.uid}`,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        role: "user",
+        createdAt: now,
+      },
+      $set: { updatedAt: now },
+    },
+    { upsert: true },
+  );
+  if (result.upsertedCount > 0) {
+    return;
   }
 }
 
@@ -160,13 +168,15 @@ export async function signOutSession() {
 export async function currentSessionUser(token: string) {
   const decoded = await getAdminAuth().verifySessionCookie(token, true);
   const record = await getAdminAuth().getUser(decoded.uid);
-  const profile = await getAdminFirestore().collection("users").doc(decoded.uid).get();
+  const profile = await (await getMongoDatabase())
+    .collection<any>("users")
+    .findOne({ _id: decoded.uid });
   const user = sessionUserSchema.parse({
     uid: record.uid,
     email: record.email ?? null,
     displayName: record.displayName ?? null,
     photoURL: record.photoURL ?? null,
-    role: (profile.data()?.role as string | undefined) ?? "user",
+    role: (profile?.role as string | undefined) ?? "user",
   });
   return user;
 }

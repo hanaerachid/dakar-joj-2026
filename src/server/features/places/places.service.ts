@@ -1,9 +1,14 @@
-import { getAdminFirestore, admin } from "../../firebase/admin.js";
+import { ObjectId, type Filter, type WithId } from "mongodb";
+import { getMongoDatabase } from "../../mongodb/client.js";
 import type { Place } from "../../../shared/contracts.js";
 
-function toIso(value: FirebaseFirestore.Timestamp | FirebaseFirestore.FieldValue | undefined | null) {
-  if (!value || typeof value !== "object" || !("toDate" in value)) return null;
-  return (value as FirebaseFirestore.Timestamp).toDate().toISOString();
+type PlaceDocument = { _id: string | ObjectId; [key: string]: any };
+type PlacePayload = Record<string, any>;
+
+function toIso(value: Date | string | undefined | null) {
+  if (!value) return null;
+  if (value instanceof Date) return value.toISOString();
+  return typeof value === "string" ? value : null;
 }
 
 function normalizeLocation(location: any) {
@@ -20,7 +25,7 @@ function normalizeLocation(location: any) {
   return null;
 }
 
-function serializePlace(id: string, data: FirebaseFirestore.DocumentData, zoneId?: string | null): Place {
+function serializePlace(id: string, data: PlaceDocument, zoneId?: string | null): Place {
   return {
     id,
     name: String(data.name ?? "Untitled"),
@@ -53,13 +58,15 @@ function serializePlace(id: string, data: FirebaseFirestore.DocumentData, zoneId
   };
 }
 
-function placeCollection(zoneId?: string | null) {
-  const db = getAdminFirestore();
-  return zoneId ? db.collection("zones").doc(zoneId).collection("places") : db.collection("places");
+function idFilter(id: string): Filter<PlaceDocument> {
+  if (ObjectId.isValid(id)) {
+    return { _id: { $in: [id, new ObjectId(id)] } };
+  }
+  return { _id: id };
 }
 
-function buildPayload(input: any, zoneId?: string | null) {
-  return {
+function buildPayload(input: any, zoneId?: string | null, includeCreatedAt = true) {
+  const payload: PlacePayload = {
     name: input.name,
     name_fr: input.name_fr ?? input.nameFr ?? null,
     nameFr: input.nameFr ?? null,
@@ -85,8 +92,31 @@ function buildPayload(input: any, zoneId?: string | null) {
     categoryId: input.categoryId ?? null,
     zoneId: zoneId ?? input.zoneId ?? null,
     zone: input.zone ?? null,
-    createdAt: input.createdAt ?? admin.firestore.FieldValue.serverTimestamp(),
-    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    updatedAt: new Date(),
+  };
+  if (includeCreatedAt) payload.createdAt = input.createdAt ?? new Date();
+  return payload;
+}
+
+function serializeDocument(doc: WithId<PlaceDocument>, zoneId?: string | null) {
+  return serializePlace(String(doc._id), doc, zoneId);
+}
+
+async function findPlace(id: string, zoneId?: string | null) {
+  const db = await getMongoDatabase();
+  const filter: Filter<PlaceDocument> = {
+    ...idFilter(id),
+    ...(zoneId ? { zoneId } : {}),
+  };
+  return db.collection<PlaceDocument>("places").findOne(filter);
+}
+
+function buildCreateDocument(input: any, zoneId?: string | null) {
+  const id = new ObjectId().toHexString();
+  return {
+    _id: id,
+    _firestorePath: `places/${id}`,
+    ...buildPayload(input, zoneId),
   };
 }
 
@@ -96,61 +126,76 @@ export async function listPlaces(params: {
   scope?: "all" | "zone" | "root";
 }) {
   const { categoryId, zoneId, scope } = params;
-  const db = getAdminFirestore();
+  const db = await getMongoDatabase();
+  const collection = db.collection<PlaceDocument>("places");
+  const categoryFilter = { categoryId: categoryId ?? "" };
 
   if (scope === "all") {
-    const [zoneGroupSnap, rootSnap] = await Promise.all([
-      db.collectionGroup("places").where("categoryId", "==", categoryId ?? "").get(),
-      db.collection("places").where("categoryId", "==", categoryId ?? "").get(),
-    ]);
-
-    return [
-      ...zoneGroupSnap.docs.map((doc) => {
-        const zoneParent = doc.ref.parent.parent?.id ?? null;
-        return serializePlace(doc.id, doc.data(), zoneParent);
-      }),
-      ...rootSnap.docs.map((doc) => serializePlace(doc.id, doc.data(), null)),
-    ];
+    const docs = await collection.find(categoryFilter).toArray();
+    return docs.map((doc) => serializeDocument(doc, doc.zoneId ?? null));
   }
 
   if (scope === "root" || !zoneId) {
-    const snap = await db.collection("places").where("categoryId", "==", categoryId ?? "").get();
-    return snap.docs.map((doc) => serializePlace(doc.id, doc.data(), null));
+    const docs = await collection.find({ ...categoryFilter, zoneId: null }).toArray();
+    return docs.map((doc) => serializeDocument(doc, null));
   }
 
-  const snap = await placeCollection(zoneId).get();
-  return snap.docs.map((doc) => serializePlace(doc.id, doc.data(), zoneId));
+  const docs = await collection.find({ ...categoryFilter, zoneId }).toArray();
+  return docs.map((doc) => serializeDocument(doc, zoneId));
 }
 
 export async function getPlace(id: string, zoneId?: string | null) {
-  const snap = await placeCollection(zoneId).doc(id).get();
-  if (!snap.exists) return null;
-  return serializePlace(snap.id, snap.data() as FirebaseFirestore.DocumentData, zoneId);
+  const doc = await findPlace(id, zoneId);
+  return doc ? serializeDocument(doc, zoneId ?? doc.zoneId ?? null) : null;
 }
 
 export async function createPlace(input: any, zoneId?: string | null) {
-  const ref = await placeCollection(zoneId).add(buildPayload(input, zoneId));
-  return getPlace(ref.id, zoneId);
+  const db = await getMongoDatabase();
+  const document = buildCreateDocument(input, zoneId);
+  await db.collection<PlaceDocument>("places").insertOne(document);
+  return getPlace(String(document._id), zoneId);
 }
 
 export async function updatePlace(id: string, input: any, zoneId?: string | null) {
-  const ref = placeCollection(zoneId).doc(id);
-  await ref.update(buildPayload(input, zoneId));
+  const db = await getMongoDatabase();
+  const filter = {
+    ...idFilter(id),
+    ...(zoneId ? { zoneId } : {}),
+  };
+  const payload = buildPayload(input, zoneId, false);
+  const fields = [
+    "name", "name_fr", "nameFr", "location", "address", "info", "info_fr",
+    "infoFr", "rating", "tags", "pointColor", "imageUrl", "brandTitle",
+    "brandSubtitle", "locationLabel", "shortCode", "gradientFrom", "gradientTo",
+    "website", "socialHandle", "sportCount", "sports", "categoryId", "zoneId", "zone",
+  ];
+  const changed = Object.fromEntries(
+    fields
+      .filter((field) => Object.prototype.hasOwnProperty.call(input, field))
+      .map((field) => [field, payload[field]]),
+  );
+  await db.collection<PlaceDocument>("places").updateOne(filter, {
+    $set: { ...changed, updatedAt: new Date() },
+  });
   return getPlace(id, zoneId);
 }
 
 export async function deletePlace(id: string, zoneId?: string | null) {
-  await placeCollection(zoneId).doc(id).delete();
+  const db = await getMongoDatabase();
+  await db.collection<PlaceDocument>("places").deleteOne({
+    ...idFilter(id),
+    ...(zoneId ? { zoneId } : {}),
+  });
 }
 
 export async function duplicatePlace(id: string, zoneId?: string | null) {
   const place = await getPlace(id, zoneId);
   if (!place) return null;
-  const ref = await placeCollection(zoneId).add({
-    ...place,
+  const db = await getMongoDatabase();
+  const document = {
+    ...buildCreateDocument(place, zoneId),
     name: `${place.name} (copy)`,
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-  });
-  return getPlace(ref.id, zoneId);
+  };
+  await db.collection<PlaceDocument>("places").insertOne(document);
+  return getPlace(String(document._id), zoneId);
 }

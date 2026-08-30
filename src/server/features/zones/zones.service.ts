@@ -1,4 +1,4 @@
-import { getAdminFirestore } from "../../firebase/admin.js";
+import { getMongoDatabase } from "../../mongodb/client.js";
 import type { Zone } from "../../../shared/contracts.js";
 
 const DEFAULT_COMP_ZONES = [
@@ -8,39 +8,39 @@ const DEFAULT_COMP_ZONES = [
   { name: "Olympic Village", color: "#ffe100" },
 ];
 
-function toZone(id: string, data: FirebaseFirestore.DocumentData): Zone {
+function toZone(id: string, data: Record<string, any>): Zone {
   return {
     id,
     name: String(data.name ?? "Unnamed Zone"),
     color: String(data.color ?? "#3b82f6"),
     categoryId: String(data.categoryId ?? ""),
-    createdAt: data.createdAt?.toDate?.()?.toISOString?.() ?? null,
-    updatedAt: data.updatedAt?.toDate?.()?.toISOString?.() ?? null,
+    createdAt: data.createdAt instanceof Date ? data.createdAt.toISOString() : data.createdAt ?? null,
+    updatedAt: data.updatedAt instanceof Date ? data.updatedAt.toISOString() : data.updatedAt ?? null,
   };
 }
 
 export async function listZones(categoryId: string) {
-  const db = getAdminFirestore();
-  const collection = db.collection("zones");
-  const snap = await collection.where("categoryId", "==", categoryId).get();
+  const db = await getMongoDatabase();
+  const collection = db.collection<any>("zones");
+  const snap = await collection.find({ categoryId }).toArray();
 
-  if (categoryId === "competition" && snap.empty) {
-    const batch = db.batch();
+  if (categoryId === "competition" && snap.length === 0) {
     const ts = new Date();
-    for (const zone of DEFAULT_COMP_ZONES) {
-      const ref = collection.doc();
-      batch.set(ref, {
+    await collection.insertMany(DEFAULT_COMP_ZONES.map((zone) => {
+      const id = crypto.randomUUID();
+      return {
+        _id: id,
+        _firestorePath: `zones/${id}`,
         name: zone.name,
         color: zone.color,
         categoryId,
         createdAt: ts,
         updatedAt: ts,
-      });
-    }
-    await batch.commit();
-    const seeded = await collection.where("categoryId", "==", categoryId).get();
-    return seeded.docs.map((doc) => toZone(doc.id, doc.data()));
+      };
+    }));
+    const seeded = await collection.find({ categoryId }).toArray();
+    return seeded.map((doc) => toZone(String(doc._id), doc));
   }
 
-  return snap.docs.map((doc) => toZone(doc.id, doc.data()));
+  return snap.map((doc) => toZone(String(doc._id), doc));
 }

@@ -46,15 +46,16 @@ You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-re
 
 ## Backend Environment
 
-The Hono API runs in the same repo and expects these variables for auth and Firebase Admin access:
+The Hono API runs in the same repo and expects these variables for MongoDB, auth, and Firebase Storage:
 
+- `MONGODB_CONNECTION_STRING` for the `default` MongoDB database
 - `FIREBASE_PROJECT_ID`
 - `FIREBASE_WEB_API_KEY`
 - `FIREBASE_SERVICE_ACCOUNT_JSON` or `FIREBASE_CLIENT_EMAIL` + `FIREBASE_PRIVATE_KEY`
 - `FIREBASE_STORAGE_BUCKET` if you use image uploads
 - `CORS_ORIGIN` if your frontend host is not `http://localhost:5173`
 
-Without the Firebase project ID and admin credentials, the auth and Firestore-backed routes return a structured `503 AUTH_NOT_CONFIGURED` response instead of crashing the server.
+Without the MongoDB connection string, data routes return a structured `503 DATABASE_NOT_CONFIGURED` response. Firebase credentials are still required for the current authentication and upload routes.
 import reactX from "eslint-plugin-react-x";
 import reactDom from "eslint-plugin-react-dom";
 

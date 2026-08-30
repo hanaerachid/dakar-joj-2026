@@ -77,10 +77,6 @@ export function getAdminAuth() {
   return getAdminApp().auth();
 }
 
-export function getAdminFirestore() {
-  return getAdminApp().firestore();
-}
-
 export function getAdminStorage() {
   return getAdminApp().storage();
 }

@@ -4,6 +4,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(8787),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   CORS_ORIGIN: z.string().default("http://localhost:5173"),
+  MONGODB_CONNECTION_STRING: z.string().min(1).optional(),
   FIREBASE_PROJECT_ID: z.string().min(1).optional(),
   FIREBASE_STORAGE_BUCKET: z.string().optional(),
   FIREBASE_WEB_API_KEY: z.string().min(1).optional(),

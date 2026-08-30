@@ -1,5 +1,6 @@
 import type { Context, Next } from "hono";
-import { getAdminAuth, getAdminFirestore } from "../firebase/admin.js";
+import { getAdminAuth } from "../firebase/admin.js";
+import { getMongoDatabase } from "../mongodb/client.js";
 import { env } from "../config/env.js";
 import { parseCookie } from "../lib/http.js";
 import type { SessionUser } from "../../shared/contracts.js";
@@ -8,8 +9,10 @@ async function getSessionUser(token: string): Promise<SessionUser | null> {
   try {
     const decoded = await getAdminAuth().verifySessionCookie(token, true);
     const userRecord = await getAdminAuth().getUser(decoded.uid);
-    const profileSnap = await getAdminFirestore().collection("users").doc(decoded.uid).get();
-    const role = (profileSnap.data()?.role as string | undefined) ?? "user";
+    const profile = await (await getMongoDatabase())
+      .collection<any>("users")
+      .findOne({ _id: decoded.uid });
+    const role = (profile?.role as string | undefined) ?? "user";
 
     return {
       uid: userRecord.uid,
