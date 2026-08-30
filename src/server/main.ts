@@ -14,6 +14,7 @@ import { zonesRoutes } from "./features/zones/zones.routes.js";
 import { placesRoutes } from "./features/places/places.routes.js";
 import { contentRoutes } from "./features/content/content.routes.js";
 import { uploadRoutes } from "./features/uploads/upload.routes.js";
+import { attachSessionUser } from "./middleware/auth.js";
 import { fail } from "./http/response.js";
 import { HttpError } from "./http/errors.js";
 import {
@@ -53,6 +54,25 @@ const importResultsSchema = z.object({
     }),
   ),
 });
+
+const v2Routes = new OpenAPIHono();
+v2Routes.use("*", attachSessionUser);
+v2Routes.use("*", async (c, next) => {
+  if (c.req.method === "GET") {
+    await next();
+    return;
+  }
+
+  const user = c.get("user");
+  if (!user) {
+    return fail(c, 401, "UNAUTHORIZED", "Authentication required for this endpoint");
+  }
+
+  await next();
+});
+v2Routes.route("/zones", zonesRoutes);
+v2Routes.route("/places", placesRoutes);
+v2Routes.route("/", contentRoutes);
 
 const loginSchema = z.object({
   email: z.string().email().openapi({
@@ -214,13 +234,14 @@ app.openAPIRegistry.registerPath({
 app.route("/api/v1/auth", authRoutes);
 app.route("/api/v1/zones", zonesRoutes);
 app.route("/api/v1/places", placesRoutes);
-app.route("/api/v1", contentRoutes);
 app.route("/api/v1/uploads", uploadRoutes);
+app.route("/api/v2", v2Routes);
 
 app.openAPIRegistry.registerPath({
   method: "get",
-  path: "/api/v1/news",
-  summary: "List published news",
+  path: "/api/v2/news",
+  summary: "List published news (v2)",
+  security: [],
   request: {
     query: z.object({
       status: z.string().optional().openapi({
@@ -247,8 +268,9 @@ app.openAPIRegistry.registerPath({
 
 app.openAPIRegistry.registerPath({
   method: "get",
-  path: "/api/v1/news/{id}",
-  summary: "Get a news item",
+  path: "/api/v2/news/{id}",
+  summary: "Get a news item (v2)",
+  security: [],
   request: {
     params: z.object({ id: z.string() }),
   },
@@ -260,8 +282,9 @@ app.openAPIRegistry.registerPath({
 
 app.openAPIRegistry.registerPath({
   method: "get",
-  path: "/api/v1/events",
-  summary: "List events",
+  path: "/api/v2/events",
+  summary: "List events (v2)",
+  security: [],
   request: {
     query: z.object({
       status: z.string().optional().openapi({
@@ -288,8 +311,9 @@ app.openAPIRegistry.registerPath({
 
 app.openAPIRegistry.registerPath({
   method: "get",
-  path: "/api/v1/events/{id}",
-  summary: "Get an event",
+  path: "/api/v2/events/{id}",
+  summary: "Get an event (v2)",
+  security: [],
   request: {
     params: z.object({ id: z.string() }),
   },
@@ -301,8 +325,9 @@ app.openAPIRegistry.registerPath({
 
 app.openAPIRegistry.registerPath({
   method: "get",
-  path: "/api/v1/torch",
-  summary: "Get the torch path",
+  path: "/api/v2/torch",
+  summary: "List torch entries (v2)",
+  security: [],
   responses: {
     200: {
       description: "Torch path",
@@ -712,12 +737,141 @@ app.openAPIRegistry.registerPath({
   },
 });
 
-app.doc("/api/v1/openapi.json", {
+app.openAPIRegistry.registerPath({
+  method: "get",
+  path: "/api/v2/places",
+  summary: "List places (v2)",
+  security: [],
+  request: {
+    query: z.object({
+      categoryId: categoryIdSchema.optional(),
+      mainCategoryId: mainCategoryIdSchema.optional(),
+      zoneId: zoneIdSchema.nullable().optional(),
+      scope: scopeSchema.nullable().optional(),
+    }),
+  },
+  responses: {
+    200: {
+      description: "Places list",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(z.array(placeSchema)),
+        },
+      },
+    },
+  },
+});
+
+app.openAPIRegistry.registerPath({
+  method: "post",
+  path: "/api/v2/places",
+  summary: "Create place (v2)",
+  security: [{ apiKeyAuth: [] }],
+  request: {
+    body: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: placeInputSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      description: "Created place",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(placeSchema),
+        },
+      },
+    },
+    401: {
+      description: "Authentication required",
+      content: { "application/json": { schema: apiErrorSchema } },
+    },
+  },
+});
+
+app.openAPIRegistry.registerComponent("securitySchemes", "apiKeyAuth", {
+  type: "apiKey",
+  in: "header",
+  name: "x-api-key",
+});
+
+const generateVersionedOpenApiDocument = (
+  fullDocument: ReturnType<typeof app.getOpenAPIDocument>,
+  prefix: string,
+  version: string,
+  title: string,
+) => {
+  const document = structuredClone(fullDocument ?? {});
+  document.info = { ...(document.info ?? {}), title, version };
+  const filteredPaths = Object.fromEntries(
+    Object.entries(document.paths ?? {}).filter(([path]) => path.startsWith(prefix)),
+  );
+  document.paths = filteredPaths;
+
+  const usedSecuritySchemes = new Set<string>();
+  for (const route of Object.values(document.paths ?? {})) {
+    for (const operation of Object.values(route as Record<string, unknown>)) {
+      const security = (operation as { security?: Array<Record<string, string[]>> } | null)?.security;
+      if (!Array.isArray(security)) continue;
+      for (const requirement of security) {
+        for (const schemeName of Object.keys(requirement ?? {})) {
+          usedSecuritySchemes.add(schemeName);
+        }
+      }
+    }
+  }
+
+  const securitySchemes = document.components?.securitySchemes ?? {};
+  document.components = {
+    ...(document.components ?? {}),
+    securitySchemes: Object.fromEntries(
+      Object.entries(securitySchemes).filter(([schemeName]) =>
+        usedSecuritySchemes.has(schemeName),
+      ),
+    ),
+  };
+
+  if (Object.keys(document.components.securitySchemes ?? {}).length === 0) {
+    delete document.components.securitySchemes;
+  }
+  if (document.components && Object.keys(document.components).length === 0) {
+    delete document.components;
+  }
+
+  return document;
+};
+
+const fullOpenApiDocument = app.getOpenAPIDocument({
   openapi: "3.0.3",
   info: { title: "API Docs", version: "1.0.0" },
 });
 
+const v1OpenApiDocument = generateVersionedOpenApiDocument(
+  fullOpenApiDocument,
+  "/api/v1",
+  "1.0.0",
+  "API v1 Docs",
+);
+const v2OpenApiDocument = generateVersionedOpenApiDocument(
+  fullOpenApiDocument,
+  "/api/v2",
+  "2.0.0",
+  "API v2 Docs",
+);
+
+app.get("/api/v1/openapi.json", (c) => c.json(v1OpenApiDocument));
+app.get("/api/v2/openapi.json", (c) => c.json(v2OpenApiDocument));
+app.get("/docs/v1/openapi.json", (c) => c.json(v1OpenApiDocument));
+app.get("/docs/v2/openapi.json", (c) => c.json(v2OpenApiDocument));
+
 app.get("/api/v1/docs", swaggerUI({ url: "/api/v1/openapi.json" }));
+app.get("/api/v2/docs", swaggerUI({ url: "/api/v2/openapi.json" }));
+app.get("/docs/v1", swaggerUI({ url: "/docs/v1/openapi.json" }));
+app.get("/docs/v2", swaggerUI({ url: "/docs/v2/openapi.json" }));
 
 serve({ fetch: app.fetch, port: env.PORT });
 
