@@ -46,7 +46,7 @@ You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-re
 
 ## Backend Environment
 
-The Hono API runs in the same repo and expects these variables for MongoDB, auth, and Firebase Storage:
+The Hono API runs in the same repo and expects these variables for MongoDB, auth, Firebase Storage, and route proxies:
 
 - `MONGODB_CONNECTION_STRING` for the `default` MongoDB database
 - `FIREBASE_PROJECT_ID`
@@ -54,8 +54,37 @@ The Hono API runs in the same repo and expects these variables for MongoDB, auth
 - `FIREBASE_SERVICE_ACCOUNT_JSON` or `FIREBASE_CLIENT_EMAIL` + `FIREBASE_PRIVATE_KEY`
 - `FIREBASE_STORAGE_BUCKET` if you use image uploads
 - `CORS_ORIGIN` if your frontend host is not `http://localhost:5173`
+- `ORS_API_KEY` for the OpenRouteService itinerary proxy
+- `ORS_BASE_URL` (optional override, defaults to `https://api.openrouteservice.org`)
 
 Without the MongoDB connection string, data routes return a structured `503 DATABASE_NOT_CONFIGURED` response. Firebase credentials are still required for the current authentication and upload routes.
+
+## Itinerary proxy API
+
+The server exposes a v2 itinerary endpoint that proxies requests to OpenRouteService while enforcing quota-safe behavior:
+
+- `POST /api/v2/itinerary`
+- Body follows the ORS routing format, for example:
+
+```json
+{
+  "coordinates": [
+    [2.3488, 48.8534],
+    [2.3321, 48.8361]
+  ],
+  "profile": "driving-car"
+}
+```
+
+The proxy will:
+
+- validate the request shape and coordinate count
+- cache repeated equivalent searches for five minutes
+- enforce a local per-minute quota before calling ORS
+- return a structured API error when the ORS key is missing, the quota is reached, or the upstream request fails
+
+This endpoint is documented in the generated OpenAPI specs under `/api/v2/docs` and `/docs/v2`.
+
 import reactX from "eslint-plugin-react-x";
 import reactDom from "eslint-plugin-react-dom";
 

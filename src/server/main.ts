@@ -14,6 +14,7 @@ import { zonesRoutes } from "./features/zones/zones.routes.js";
 import { placesRoutes } from "./features/places/places.routes.js";
 import { contentRoutes } from "./features/content/content.routes.js";
 import { uploadRoutes } from "./features/uploads/upload.routes.js";
+import { itineraryRoutes } from "./features/itinerary/itinerary.routes.js";
 import { attachSessionUser } from "./middleware/auth.js";
 import { fail } from "./http/response.js";
 import { HttpError } from "./http/errors.js";
@@ -57,22 +58,53 @@ const importResultsSchema = z.object({
 
 const v2Routes = new OpenAPIHono();
 v2Routes.use("*", attachSessionUser);
-v2Routes.use("*", async (c, next) => {
-  if (c.req.method === "GET") {
-    await next();
-    return;
-  }
-
-  const user = c.get("user");
-  if (!user) {
-    return fail(c, 401, "UNAUTHORIZED", "Authentication required for this endpoint");
-  }
-
-  await next();
-});
 v2Routes.route("/zones", zonesRoutes);
 v2Routes.route("/places", placesRoutes);
 v2Routes.route("/", contentRoutes);
+
+const itineraryCoordinateSchema = z
+  .tuple([z.number(), z.number()])
+  .openapi({
+    example: [2.3488, 48.8534],
+    description: "Longitude and latitude pair.",
+  });
+
+const itineraryRequestBodySchema = z
+  .object({
+    coordinates: z
+      .array(itineraryCoordinateSchema)
+      .min(2)
+      .max(60)
+      .openapi({
+        description: "Pairs of [longitude, latitude] coordinates from origin to destination.",
+        example: [
+          [2.3488, 48.8534],
+          [2.3321, 48.8361],
+        ],
+      }),
+    profile: z
+      .enum([
+        "driving-car",
+        "driving-hgv",
+        "cycling-regular",
+        "cycling-mountain",
+        "cycling-road",
+        "cycling-electric",
+        "foot-walking",
+        "foot-hiking",
+        "wheelchair",
+      ])
+      .default("driving-car")
+      .openapi({
+        description: "ORS routing profile to use.",
+        example: "driving-car",
+      }),
+    format: z.enum(["json", "geojson"]).default("json").openapi({
+      description: "Response format expected from ORS.",
+      example: "json",
+    }),
+  })
+  .passthrough();
 
 const loginSchema = z.object({
   email: z.string().email().openapi({
@@ -236,6 +268,46 @@ app.route("/api/v1/zones", zonesRoutes);
 app.route("/api/v1/places", placesRoutes);
 app.route("/api/v1/uploads", uploadRoutes);
 app.route("/api/v2", v2Routes);
+app.route("/api/v2/itinerary", itineraryRoutes);
+
+app.openAPIRegistry.registerPath({
+  method: "post",
+  path: "/api/v2/itinerary",
+  summary: "Get an itinerary proxied to OpenRouteService",
+  security: [],
+  request: {
+    body: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: itineraryRequestBodySchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Route result returned by ORS",
+      content: {
+        "application/json": {
+          schema: z.any(),
+        },
+      },
+    },
+    400: {
+      description: "Invalid itinerary payload",
+      content: { "application/json": { schema: apiErrorSchema } },
+    },
+    429: {
+      description: "ORS quota exceeded for the current window",
+      content: { "application/json": { schema: apiErrorSchema } },
+    },
+    500: {
+      description: "ORS proxy error",
+      content: { "application/json": { schema: apiErrorSchema } },
+    },
+  },
+});
 
 app.openAPIRegistry.registerPath({
   method: "get",

@@ -16,6 +16,8 @@ const envSchema = z.object({
   SESSION_EXPIRES_DAYS: z.coerce.number().int().positive().default(5),
   CLERK_PUBLISHABLE_KEY: z.string().optional(),
   CLERK_SECRET_KEY: z.string().optional(),
+  ORS_API_KEY: z.string().optional(),
+  ORS_BASE_URL: z.string().url().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
