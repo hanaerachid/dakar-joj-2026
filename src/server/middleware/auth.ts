@@ -5,6 +5,11 @@ import { env } from "../config/env.js";
 import { parseCookie } from "../lib/http.js";
 import { normalizeRole } from "../../auth/roles.js";
 import type { SessionUser } from "../../shared/contracts.js";
+import { createClerkClient, verifyToken } from "@clerk/backend";
+
+const clerkClient = env.CLERK_SECRET_KEY
+  ? createClerkClient({ secretKey: env.CLERK_SECRET_KEY })
+  : null;
 
 async function getSessionUser(token: string): Promise<SessionUser | null> {
   try {
@@ -53,6 +58,27 @@ async function getApiKeyUser(apiKey: string): Promise<SessionUser | null> {
   }
 }
 
+async function getClerkUser(token: string): Promise<SessionUser | null> {
+  if (!env.CLERK_SECRET_KEY) return null;
+
+  try {
+    const claims = await verifyToken(token, { secretKey: env.CLERK_SECRET_KEY });
+    const clerkUser = await clerkClient?.users.getUser(claims.sub);
+    const metadata = clerkUser?.publicMetadata ??
+      (claims as { public_metadata?: { role?: unknown } }).public_metadata;
+
+    return {
+      uid: claims.sub,
+      email: clerkUser?.primaryEmailAddress?.emailAddress ?? null,
+      displayName: clerkUser?.fullName ?? null,
+      photoURL: clerkUser?.imageUrl ?? null,
+      role: normalizeRole(metadata?.role),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function attachSessionUser(c: Context, next: Next) {
   const cookie = parseCookie(
     c.req.header("cookie"),
@@ -65,7 +91,9 @@ export async function attachSessionUser(c: Context, next: Next) {
   const token = cookie ?? bearer ?? null;
 
   if (token) {
-    const user = await getSessionUser(token);
+    const user = bearer
+      ? (await getClerkUser(bearer)) ?? (await getSessionUser(token))
+      : await getSessionUser(token);
     if (user) c.set("user", user);
   }
 

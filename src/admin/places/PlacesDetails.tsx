@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { deletePlace, duplicatePlace, getPlace, updatePlace } from "../../lib/api/places";
-import { uploadImage as uploadImageRequest } from "../../lib/api/uploads";
 import { SITES_META, type VenueSport } from "../../data/sitesMeta";
 import { Icon } from "@iconify/react";
 import PlacePreview from "../../components/admin/places/PlacePreview";
@@ -131,7 +130,7 @@ export function PlaceDetailsPage() {
   const [rating, setRating] = useState<number | "">("");
   const [tags, setTags] = useState<string>("");
   const [pointColor, setPointColor] = useState("#2962FF");
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState("");
 
   // branding/meta
   const [brandTitle, setBrandTitle] = useState("");
@@ -150,10 +149,6 @@ export function PlaceDetailsPage() {
   // competition-only
   const [sports, setSports] = useState<VenueSport[]>([]);
 
-  // file upload
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [uploadPct, setUploadPct] = useState<number>(0);
 
   const canSave = !!placeId && !!name && lat !== "" && lng !== "" && !saving;
 
@@ -193,7 +188,7 @@ export function PlaceDetailsPage() {
         setRating(d.rating ?? "");
         setTags((d.tags || []).join(", "));
         setPointColor(d.pointColor || "#2962FF");
-        setImageUrl(d.imageUrl || null);
+        setImageUrl(d.imageUrl || "");
         setBrandTitle(d.brandTitle || "");
         setBrandSubtitle(d.brandSubtitle || "");
         setLocationLabel(d.locationLabel || "");
@@ -223,36 +218,11 @@ export function PlaceDetailsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zoneParam, placeId]);
 
-  /* ---------- Preview image ---------- */
-  useEffect(() => {
-    if (!file) return setPreview(null);
-    const url = URL.createObjectURL(file);
-    setPreview(url);
-    return () => URL.revokeObjectURL(url);
-  }, [file]);
-
-  /* ---------- Upload ---------- */
-  async function uploadImage(folderHint: string | null, placeName: string) {
-    if (!file) return null;
-    void placeName;
-    const folder = folderHint || categoryId || "unassigned";
-    const result = await uploadImageRequest(file, `places/${folder}`);
-    setUploadPct(100);
-    return result.url;
-  }
-
   /* ---------- Save ---------- */
   async function onSave() {
     setSaving(true);
     setToast(null);
     try {
-      const newImage = file
-        ? await uploadImage(
-          zoneIdInDoc || (isRoot(zoneParam) ? null : zoneParam!),
-          name,
-        )
-        : null;
-
       await updatePlace(placeId, {
         name,
         name_fr: nameFr || null,
@@ -266,7 +236,7 @@ export function PlaceDetailsPage() {
           .map((t) => t.trim())
           .filter(Boolean),
         pointColor: pointColor || null,
-        imageUrl: newImage !== null ? newImage : imageUrl || null,
+        imageUrl: imageUrl.trim() || null,
         brandTitle: brandTitle || null,
         brandSubtitle: brandSubtitle || null,
         locationLabel: locationLabel || null,
@@ -281,14 +251,11 @@ export function PlaceDetailsPage() {
         zoneId: isRoot(zoneParam) ? null : zoneParam!,
 
         // competition extras
-        sports: categoryId === "competition" ? sports : null,
+        sports: categoryId === "competition" ? sports : [],
         sportCount: categoryId === "competition" ? sports.length : 0,
 
       });
 
-      setFile(null);
-      setPreview(null);
-      setUploadPct(0);
       setToast({ kind: "success", msg: "Changes saved." });
     } catch (e) {
       console.error(e);
@@ -603,45 +570,27 @@ export function PlaceDetailsPage() {
               </span>
             </div>
 
-            <Field id="image" label="Cover image">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Field id="imageUrl" label="Cover image URL">
+              <div className="flex flex-col gap-3">
                 <input
-                  id="image"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                  id="imageUrl"
+                  type="url"
+                  placeholder="https://example.com/image.jpg"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  className="w-full rounded-xl border border-border bg-input px-3 py-2 text-sm shadow-sm outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                 />
-                {file && (
-                  <div className="text-xs text-gray-600">
-                    {uploadPct > 0 && uploadPct < 100
-                      ? `Uploading ${uploadPct}%…`
-                      : "Ready to upload"}
-                  </div>
-                )}
-                {imageUrl && !file && (
+                {imageUrl && (
                   <Button
                     variant="ghost"
                     type="button"
-                    onClick={() => setImageUrl(null)}
+                    onClick={() => setImageUrl("")}
                   >
                     Remove current
                   </Button>
                 )}
               </div>
-              {file && (
-                <div className="text-xs text-gray-600">
-                  {uploadPct > 0 && uploadPct < 100
-                    ? `Uploading ${uploadPct}%…`
-                    : "Ready to upload"}
-                </div>
-              )}
-              {preview ? (
-                <img
-                  src={preview}
-                  alt="preview"
-                  className="object-cover mt-2 max-h-44 w-auto rounded-3xl border shadow-sm"
-                />
-              ) : imageUrl ? (
+              {imageUrl ? (
                 <img
                   src={imageUrl}
                   alt="cover"
@@ -699,7 +648,7 @@ export function PlaceDetailsPage() {
               <PlacePreview
                 gradientFrom={gradientFrom}
                 gradientTo={gradientTo}
-                preview={preview ?? imageUrl ?? null}
+                preview={imageUrl || null}
                 brandTitle={brandTitle}
                 brandSubtitle={brandSubtitle}
                 locationLabel={locationLabel}

@@ -200,6 +200,7 @@ app.use(
   cors({
     origin: corsOrigins.length > 0 ? corsOrigins : ["http://localhost:5173"],
     credentials: true,
+    allowHeaders: ["Content-Type", "Authorization", "X-API-Key"],
   }),
 );
 

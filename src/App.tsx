@@ -1,6 +1,6 @@
 // src/App.tsx
 import { Routes, Route, Navigate, Outlet, Link } from "react-router-dom";
-import { ClerkProvider } from "@clerk/clerk-react";
+import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import MapPage from "./pages/map/MapPage";
 import AdminRoute from "./components/auth/AdminRoute";
 import AddPlaceFull from "./admin/places/AddPlaceFull";
@@ -15,6 +15,18 @@ import { ModalProvider } from "./components/modal-provider";
 import { PanelProvider } from "./components/panel-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ArrowLeft, Plus } from "lucide-react";
+import { setApiAuthTokenProvider } from "./lib/apiClient";
+
+function ClerkApiAuthBridge() {
+  const { getToken } = useAuth();
+
+  useEffect(() => {
+    setApiAuthTokenProvider(getToken);
+    return () => setApiAuthTokenProvider(null);
+  }, [getToken]);
+
+  return null;
+}
 
 function AdminShell() {
   return (
@@ -116,6 +128,7 @@ export default function App() {
 
   return (
     <ClerkProvider publishableKey={clerkPublishableKey} afterSignOutUrl="/">
+      <ClerkApiAuthBridge />
       {appRoutes}
     </ClerkProvider>
   );

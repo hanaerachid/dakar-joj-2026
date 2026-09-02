@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { listZones, createPlace } from "../../lib/api/places";
-import { uploadImage as uploadImageRequest } from "../../lib/api/uploads";
 import { SITES_META, type VenueSport } from "../../data/sitesMeta";
 import PlacePreview from "@/components/admin/places/PlacePreview";
 import BrandingFields from "@/components/admin/places/BrandingFields";
@@ -64,10 +63,8 @@ export default function AddPlaceFull() {
   const [website, setWebsite] = useState("");
   const [socialHandle, setSocialHandle] = useState("");
 
-  // image upload
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [uploadPct, setUploadPct] = useState<number>(0);
+  // image URL
+  const [imageUrl, setImageUrl] = useState("");
 
   // UX state
   const [saving, setSaving] = useState(false);
@@ -170,14 +167,6 @@ export default function AddPlaceFull() {
     void loadZonesForCategory(categoryId);
   }, [categoryId]);
 
-  // preview URL
-  useEffect(() => {
-    if (!file) return setPreview(null);
-    const url = URL.createObjectURL(file);
-    setPreview(url);
-    return () => URL.revokeObjectURL(url);
-  }, [file]);
-
   const canSave = !!name && lat !== "" && lng !== "" && !saving;
 
   // const gradientStyle = useMemo(
@@ -187,24 +176,11 @@ export default function AddPlaceFull() {
   //   [gradientFrom, gradientTo],
   // );
 
-  async function uploadImage(zone: string, placeName: string) {
-    if (!file) return null;
-    const ext = (file.name.split(".").pop() || "png").toLowerCase();
-    const safeName = placeName.trim().toLowerCase().replace(/\s+/g, "-");
-    const folder = zone || categoryId || "unassigned";
-    void ext;
-    void safeName;
-    const result = await uploadImageRequest(file, `places/${folder}`);
-    setUploadPct(100);
-    return result.url;
-  }
-
   async function onSave() {
     if (!canSave) return;
     setSaving(true);
     setToast(null);
     try {
-      const imageUrl = await uploadImage(zoneId, name);
       const docRef = await createPlace({
         name,
         name_fr: nameFr || null,
@@ -218,7 +194,7 @@ export default function AddPlaceFull() {
           .map((t) => t.trim())
           .filter(Boolean),
         pointColor: pointColor || null,
-        imageUrl: imageUrl || null,
+        imageUrl: imageUrl.trim() || null,
         brandTitle: brandTitle || null,
         brandSubtitle: brandSubtitle || null,
         locationLabel: locationLabel || null,
@@ -227,7 +203,7 @@ export default function AddPlaceFull() {
         gradientTo: gradientTo || null,
         website: website || null,
         socialHandle: socialHandle || null,
-        sports: categoryId === "competition" ? sports : null,
+        sports: categoryId === "competition" ? sports : [],
         sportCount: categoryId === "competition" ? sports.length : 0,
 
         // helpful refs
@@ -258,9 +234,7 @@ export default function AddPlaceFull() {
       setShortCode("");
       setWebsite("");
       setSocialHandle("");
-      setFile(null);
-      setPreview(null);
-      setUploadPct(0);
+      setImageUrl("");
       setSports([]);
       setSportsTouched(false);
     } catch (e) {
@@ -382,10 +356,8 @@ export default function AddPlaceFull() {
               setGradientFrom={setGradientFrom}
               gradientTo={gradientTo}
               setGradientTo={setGradientTo}
-              file={file}
-              setFile={setFile}
-              uploadPct={uploadPct}
-              preview={preview}
+              imageUrl={imageUrl}
+              setImageUrl={setImageUrl}
             />
           </Section>
 
@@ -435,9 +407,7 @@ export default function AddPlaceFull() {
                 setShortCode("");
                 setWebsite("");
                 setSocialHandle("");
-                setFile(null);
-                setPreview(null);
-                setUploadPct(0);
+                setImageUrl("");
                 setSports([]);
                 setSportsTouched(false);
               }}
@@ -457,7 +427,7 @@ export default function AddPlaceFull() {
               <PlacePreview
                 gradientFrom={gradientFrom}
                 gradientTo={gradientTo}
-                preview={preview}
+                preview={imageUrl || null}
                 brandTitle={brandTitle}
                 brandSubtitle={brandSubtitle}
                 locationLabel={locationLabel}

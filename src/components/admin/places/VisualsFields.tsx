@@ -7,10 +7,8 @@ type Props = {
   gradientTo: string;
   setGradientTo: (v: string) => void;
 
-  file: File | null;
-  setFile: (f: File | null) => void;
-  uploadPct: number;
-  preview: string | null;
+  imageUrl: string;
+  setImageUrl: (v: string) => void;
 };
 
 /**
@@ -22,10 +20,8 @@ export default function VisualsFields({
   setGradientFrom,
   gradientTo,
   setGradientTo,
-  file,
-  setFile,
-  uploadPct,
-  preview,
+  imageUrl,
+  setImageUrl,
 }: Props) {
   const gradientStyle = {
     background: `linear-gradient(90deg, ${gradientFrom}, ${gradientTo})`,
@@ -72,29 +68,22 @@ export default function VisualsFields({
         <span className="text-xs text-muted-foreground">Live gradient preview</span>
       </div>
 
-      {/* Cover image */}
+      {/* Cover image URL */}
       <Field className="grid gap-1.5">
-        <FieldLabel htmlFor="image">
+        <FieldLabel htmlFor="imageUrl">
           Cover image
         </FieldLabel>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <input
-            id="image"
-            type="file"
-            accept="image/*"
-            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          />
-          {file && (
-            <div className="text-xs text-gray-600">
-              {uploadPct > 0 && uploadPct < 100
-                ? `Uploading ${uploadPct}%…`
-                : "Ready to upload"}
-            </div>
-          )}
-        </div>
-        {preview && (
+        <input
+          id="imageUrl"
+          type="url"
+          placeholder="https://example.com/image.jpg"
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          className="w-full rounded-xl border border-border bg-input px-3 py-2 text-sm shadow-sm outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+        />
+        {imageUrl && (
           <img
-            src={preview}
+            src={imageUrl}
             alt="preview"
             className="object-cover mt-2 max-h-44 w-auto rounded-xl border shadow-sm"
           />
