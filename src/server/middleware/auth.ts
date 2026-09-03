@@ -79,6 +79,44 @@ async function getClerkUser(token: string): Promise<SessionUser | null> {
   }
 }
 
+async function getClerkApiKeyUser(apiKey: string): Promise<SessionUser | null> {
+  if (!clerkClient || !apiKey) return null;
+
+  try {
+    const state = await clerkClient.authenticateRequest(
+      new Request("http://localhost", {
+        headers: { authorization: `Bearer ${apiKey}` },
+      }),
+      { acceptsToken: "api_key" },
+    );
+
+    if (!state.isAuthenticated || state.tokenType !== "api_key") {
+      return null;
+    }
+
+    const auth = state.toAuth();
+    if (auth.tokenType !== "api_key" || !auth.userId) {
+      return null;
+    }
+
+    const clerkUser = await clerkClient.users.getUser(auth.userId);
+    const profile = await (await getMongoDatabase())
+      .collection<any>("users")
+      .findOne({ _id: auth.userId });
+    const metadata = clerkUser.publicMetadata;
+
+    return {
+      uid: auth.userId,
+      email: clerkUser.primaryEmailAddress?.emailAddress ?? null,
+      displayName: clerkUser.fullName ?? null,
+      photoURL: clerkUser.imageUrl ?? null,
+      role: normalizeRole(metadata?.role ?? profile?.role),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function attachSessionUser(c: Context, next: Next) {
   const cookie = parseCookie(
     c.req.header("cookie"),
@@ -92,13 +130,16 @@ export async function attachSessionUser(c: Context, next: Next) {
 
   if (token) {
     const user = bearer
-      ? (await getClerkUser(bearer)) ?? (await getSessionUser(token))
+      ? (await getClerkApiKeyUser(bearer)) ??
+        (await getClerkUser(bearer)) ??
+        (await getSessionUser(token))
       : await getSessionUser(token);
     if (user) c.set("user", user);
   }
 
   if (!c.get("user") && apiKey) {
-    const user = await getApiKeyUser(apiKey);
+    const user =
+      (await getApiKeyUser(apiKey)) ?? (await getClerkApiKeyUser(apiKey));
     if (user) c.set("user", user);
   }
 
