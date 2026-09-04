@@ -562,7 +562,7 @@ async function addClusterLayers(
     const node = renderVenuePopup({
       title,
       titleFr,
-      zone: p["zoneName"] || categoryId,
+      zone: p["categoryId"] || categoryId,
       categoryId: p["categoryId"] || categoryId,
       info: infoEn,
       infoFr,
