@@ -69,7 +69,7 @@ export default function BrandingFields({
         </FieldLabel>
         <TextInput
           id="locationLabel"
-          placeholder="Diamniadio"
+          placeholder="Location label"
           value={locationLabel}
           onChange={(e) => setLocationLabel(e.target.value)}
         />

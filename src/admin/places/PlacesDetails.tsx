@@ -406,7 +406,7 @@ export function PlaceDetailsPage() {
               <Field id="locationLabel" label="Location label">
                 <TextInput
                   id="locationLabel"
-                  placeholder="Diamniadio"
+                  placeholder="Location label"
                   value={locationLabel}
                   onChange={(e) => setLocationLabel(e.target.value)}
                 />
