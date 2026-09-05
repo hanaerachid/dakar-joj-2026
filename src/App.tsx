@@ -1,6 +1,7 @@
 // src/App.tsx
 import { Routes, Route, Navigate, Outlet, Link } from "react-router-dom";
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
+import { enUS, frFR, esES } from "@clerk/localizations";
 import MapPage from "./pages/map/MapPage";
 import AdminRoute from "./components/auth/AdminRoute";
 import AddPlaceFull from "./admin/places/AddPlaceFull";
@@ -16,6 +17,14 @@ import { PanelProvider } from "./components/panel-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ArrowLeft, Plus } from "lucide-react";
 import { setApiAuthTokenProvider } from "./lib/apiClient";
+import { useTranslation } from "react-i18next";
+
+const localizations = {
+  en: enUS,
+  fr: frFR,
+  es: esES,
+} as const;
+type SupportedLanguage = keyof typeof localizations;
 
 function ClerkApiAuthBridge() {
   const { getToken } = useAuth();
@@ -77,6 +86,9 @@ function AdminShell() {
 export default function App() {
   const [role, setRole] = useState<string | undefined>(undefined);
   const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+  const { i18n } = useTranslation();
+  const language = i18n.language.split("-")[0] as SupportedLanguage;
+  const localization = localizations[language] ?? localizations.en;
 
   useEffect(() => {
     initAuth((user, r) => {
@@ -127,7 +139,11 @@ export default function App() {
   }
 
   return (
-    <ClerkProvider publishableKey={clerkPublishableKey} afterSignOutUrl="/">
+    <ClerkProvider
+      localization={localization}
+      publishableKey={clerkPublishableKey}
+      afterSignOutUrl="/"
+    >
       <ClerkApiAuthBridge />
       {appRoutes}
     </ClerkProvider>
