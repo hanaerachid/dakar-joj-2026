@@ -2,6 +2,7 @@
 import { Routes, Route, Navigate, Outlet, Link } from "react-router-dom";
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { enUS, frFR, esES } from "@clerk/localizations";
+import { shadcn } from "@clerk/ui/themes";
 import MapPage from "./pages/map/MapPage";
 import AdminRoute from "./components/auth/AdminRoute";
 import AddPlaceFull from "./admin/places/AddPlaceFull";
@@ -141,6 +142,9 @@ export default function App() {
   return (
     <ClerkProvider
       localization={localization}
+      appearance={{
+        theme: shadcn,
+      }}
       publishableKey={clerkPublishableKey}
       afterSignOutUrl="/"
     >
