@@ -101,7 +101,18 @@
     "airport": "Airport",
     "bus": "Bus Station",
     "ferry": "Ferry",
-    "railway": "Railway Station"
+    "railway": "Railway Station",
+    "sports": "Sports",
+    "housing": "Housing",
+    "food_and_drink": "Food and Drink",
+    "mobility": "Mobility",
+    "shopping_and_crafts": "Shopping and Crafts",
+    "culture_and_heritage": "Culture and Heritage",
+    "health": "Health",
+    "security": "Security",
+    "services": "Services",
+    "religion": "Religion",
+    "other": "Other"
   },
   "auth": {
     "modal": {

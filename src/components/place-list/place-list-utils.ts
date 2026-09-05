@@ -164,4 +164,4 @@ export const MAIN_CATEGORIES = [
   { id: "services", label: "Services", categories: ["bank", "atm", "firestation", "embassy", "consulate"] },
   { id: "religion", label: "Religion", categories: ["church", "mosque"] },
   { id: "other", label: "Other", categories: ["other"] },
-] as const;
+];

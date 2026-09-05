@@ -32,7 +32,8 @@ export interface CategoryConfig {
   id: string;
   label: string;
   mainCategoryId?: string;
-  sources: SiteConfig[];
+  sources?: SiteConfig[];
+  categories?: string[];
   hint?: string;
 }
 
@@ -125,6 +126,12 @@ const PlacesListContent = ({ setPanelOpen }: any) => {
     [t, i18n.language],
   );
 
+  const translatedMainCategories = useMemo(
+    () =>
+      withTranslatedCategoryLabels(MAIN_CATEGORIES,t,),
+    [t, i18n.language],
+  );
+
   const activeCategory = useMemo(
     () =>
       translatedCategories.find((c) => c.id === openCatId) ??
@@ -134,8 +141,8 @@ const PlacesListContent = ({ setPanelOpen }: any) => {
   );
   const activeMainCategory = useMemo(
     () =>
-      MAIN_CATEGORIES.find((main) => main.id === openMainCategoryId) ??
-      MAIN_CATEGORIES[0],
+      translatedMainCategories.find((main) => main.id === openMainCategoryId) ??
+      translatedMainCategories[0],
     [openMainCategoryId],
   );
   const [openZones, setOpenZones] = useState<Record<string, boolean>>({});
@@ -468,7 +475,7 @@ const PlacesListContent = ({ setPanelOpen }: any) => {
   return (
     <PlacesCategoryList
       CATEGORIES={translatedCategories}
-      MAIN_CATEGORIES={MAIN_CATEGORIES}
+      MAIN_CATEGORIES={translatedMainCategories}
       openMainCategoryId={openMainCategoryId}
       setOpenMainCategoryId={setOpenMainCategoryId}
       mainCategoryChecked={mainCategoryChecked}
