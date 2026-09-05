@@ -4,9 +4,7 @@ import { MapManager } from "../../core/MapManager";
 import type { Feature, Point, GeoJsonProperties } from "geojson";
 import { AnimatedButton } from "../buttons/AnimatedButton";
 import {
-  getUnassignedFeatureCollection,
-  getZoneFeatureCollection,
-  getZonesForCategory,
+  getMainCategoryFeatureCollection,
 } from "../../data/firestore/firestorePlaces";
 import { PlacesCategoryList } from "./PlacesCategoryList";
 import {
@@ -15,7 +13,7 @@ import {
   stopBounceSelected,
 } from "../../core/layers/categoryPoints";
 import mapboxgl from "mapbox-gl";
-import { CATEGORIES } from "./place-list-utils";
+import { CATEGORIES, MAIN_CATEGORIES } from "./place-list-utils";
 import { useTranslation } from "react-i18next";
 import { withTranslatedCategoryLabels } from "./categoryTranslations";
 import { ChevronDown, ChevronRight, Layers2 } from "lucide-react";
@@ -33,6 +31,7 @@ export interface SiteConfig {
 export interface CategoryConfig {
   id: string;
   label: string;
+  mainCategoryId?: string;
   sources: SiteConfig[];
   hint?: string;
 }
@@ -117,6 +116,9 @@ export const PlacesList = () => {
 const PlacesListContent = ({ setPanelOpen }: any) => {
   const { t, i18n } = useTranslation();
   const mapManager = MapManager.getInstance();
+  const [openMainCategoryId, setOpenMainCategoryId] = useState<string | null>(
+    MAIN_CATEGORIES[MAIN_CATEGORIES.length - 1].id,
+  );
   const [openCatId, setOpenCatId] = useState<string | null>(CATEGORIES[0].id);
   const translatedCategories = useMemo(
     () => withTranslatedCategoryLabels(CATEGORIES, t),
@@ -130,9 +132,16 @@ const PlacesListContent = ({ setPanelOpen }: any) => {
       CATEGORIES[0],
     [openCatId, translatedCategories],
   );
+  const activeMainCategory = useMemo(
+    () =>
+      MAIN_CATEGORIES.find((main) => main.id === openMainCategoryId) ??
+      MAIN_CATEGORIES[0],
+    [openMainCategoryId],
+  );
   const [openZones, setOpenZones] = useState<Record<string, boolean>>({});
 
   const [venues, setVenues] = useState<LoadedVenue[]>([]);
+  const [mainCategoryVenues, setMainCategoryVenues] = useState<LoadedVenue[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedTitle, setSelectedTitle] = useState<string | null>(null);
@@ -151,77 +160,52 @@ const PlacesListContent = ({ setPanelOpen }: any) => {
     return by;
   }, [venues]);
 
+  const mainCategoryChecked = useMemo(
+    () =>
+      Object.fromEntries(
+        MAIN_CATEGORIES.map((main) => [
+          main.id,
+          main.categories.length > 0 &&
+            main.categories.every((categoryId) => checkedCats[categoryId]),
+        ]),
+      ),
+    [checkedCats],
+  );
+
+  useEffect(() => {
+    const filtered = mainCategoryVenues.filter((venue) => {
+      const categoryId = getFeatureCategoryId(venue.properties);
+      if (!categoryId || categoryId === activeCategory.id) return true;
+      if (activeCategory.id !== "competition") return false;
+      return Number(venue.properties?.sportCount ?? 0) > 0 ||
+        (Array.isArray(venue.properties?.sports) && venue.properties.sports.length > 0);
+    });
+    setVenues(filtered);
+    setOpenZones(
+      Object.fromEntries(
+        [...new Set(filtered.map((venue) => (venue.properties?.zone as string) ?? "Unknown"))]
+          .map((zone) => [zone, true]),
+      ),
+    );
+  }, [activeCategory.id, mainCategoryVenues]);
+
   useEffect(() => {
     let cancelled = false;
 
-    async function fetchForCategory(cat: CategoryConfig) {
+    async function fetchForMainCategory(mainCategoryId: string) {
       setLoading(true);
       setLoadError(null);
-      setVenues([]);
+      setMainCategoryVenues([]);
 
       try {
-        const sources = await getZonesForCategory(cat.id); // zones that belong to this category (may be [])
-
-        const all: LoadedVenue[] = [];
-
-        // 1) ZONED places — filter features to THIS category only
-        for (const site of sources) {
-          try {
-            const zoneId = site.file.replace("firestore://", "");
-            const { fc, color } = await getZoneFeatureCollection(zoneId);
-            const features = (fc.features || []) as VenueFeature[];
-
-            features
-              .filter((f) => {
-                const catProp = getFeatureCategoryId(f.properties);
-                if (!catProp) {
-                  // legacy records without categoryId — since we loaded this zone
-                  // via getZonesForCategory(cat.id), treat them as this category
-                  return true;
-                }
-                if (catProp === cat.id) return true;
-
-                // Heuristic for competition data:
-                if (cat.id === "competition") {
-                  const sc = Number(f.properties?.sportCount ?? 0);
-                  const hasSportsArr =
-                    Array.isArray(f.properties?.sports) &&
-                    f.properties!.sports.length > 0;
-                  return sc > 0 || hasSportsArr;
-                }
-
-                return false;
-              })
-              .forEach((f) => {
-                f.properties = { ...f.properties, zone: site.name };
-                all.push({ ...f, zoneColor: site.color || color });
-              });
-          } catch (err) {
-            console.error(`Failed to load ${site.name}:`, err);
-          }
-        }
-
-        // 2) UNASSIGNED places (API already takes cat, but filter defensively)
-        const { fc: unFc, color: unColor } =
-          await getUnassignedFeatureCollection(cat.id);
-        const unFeatures = (unFc.features || []) as VenueFeature[];
-        unFeatures.forEach((f) => {
-          const zoneLabel = (f.properties?.zone as string) || "Unassigned";
-          f.properties = { ...f.properties, zone: zoneLabel };
-          all.push({ ...f, zoneColor: unColor });
-        });
+        const { fc, color } = await getMainCategoryFeatureCollection(mainCategoryId);
+        const all = ((fc.features || []) as VenueFeature[]).map((feature) => ({
+          ...feature,
+          zoneColor: color,
+        }));
 
         if (cancelled) return;
-
-        setVenues(all);
-
-        // expand all zones initially
-        const init: Record<string, boolean> = {};
-        const zones = new Set(
-          all.map((v) => (v.properties?.zone as string) ?? "Unknown"),
-        );
-        zones.forEach((z) => (init[z] = true));
-        setOpenZones(init);
+        setMainCategoryVenues(all);
       } catch (e: any) {
         if (!cancelled) setLoadError(e?.message ?? "Failed to load venues.");
       } finally {
@@ -229,11 +213,11 @@ const PlacesListContent = ({ setPanelOpen }: any) => {
       }
     }
 
-    fetchForCategory(activeCategory);
+    fetchForMainCategory(activeMainCategory.id);
     return () => {
       cancelled = true;
     };
-  }, [activeCategory]);
+  }, [activeMainCategory.id]);
   // re-apply emphasis on hot reload / map mount
   useEffect(() => {
     const map = mapManager.getMap();
@@ -409,6 +393,19 @@ const PlacesListContent = ({ setPanelOpen }: any) => {
     }));
   }
 
+  function handleMainCategoryCheck(checked: boolean, mainCategoryId: string) {
+    const mainCategory = MAIN_CATEGORIES.find((main) => main.id === mainCategoryId);
+    if (!mainCategory) return;
+    mainCategory.categories.forEach((categoryId) => {
+      setCategoryVisibility(categoryId, checked);
+      applyCategoryEmphasis(categoryId, checked);
+    });
+    setCheckedCats((prev) => ({
+      ...prev,
+      ...Object.fromEntries(mainCategory.categories.map((categoryId) => [categoryId, checked])),
+    }));
+  }
+
   // Hit-test near [lng,lat] on the category's symbol layers and pull a usable id
   function findFeatureIdAt(
     catId: string,
@@ -471,6 +468,11 @@ const PlacesListContent = ({ setPanelOpen }: any) => {
   return (
     <PlacesCategoryList
       CATEGORIES={translatedCategories}
+      MAIN_CATEGORIES={MAIN_CATEGORIES}
+      openMainCategoryId={openMainCategoryId}
+      setOpenMainCategoryId={setOpenMainCategoryId}
+      mainCategoryChecked={mainCategoryChecked}
+      handleMainCategoryCheck={handleMainCategoryCheck}
       openCatId={openCatId}
       activeCategory={activeCategory}
       setOpenCatId={setOpenCatId}

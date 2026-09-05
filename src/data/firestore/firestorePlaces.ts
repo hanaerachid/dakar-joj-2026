@@ -132,6 +132,31 @@ export async function getZoneFeatureCollection(zoneId: string) {
   return { color, fc: { type: "FeatureCollection", features } as const };
 }
 
+export async function getMainCategoryFeatureCollection(mainCategoryId: string) {
+  const places = await listPlaces({ mainCategoryId, scope: "all" });
+  const features: Feature<Point, GeoJsonProperties>[] = places
+    .map((raw) => {
+      const { lat, lng } = toLatLng(raw);
+      if (typeof lat !== "number" || typeof lng !== "number") return null;
+      const props = buildProps(
+        { ...raw, id: raw.id },
+        raw.zone || raw.zoneId || "Unassigned",
+        raw.zoneId ?? null,
+      );
+      return {
+        type: "Feature",
+        geometry: { type: "Point", coordinates: [lng, lat] },
+        properties: props,
+      } as Feature<Point, GeoJsonProperties>;
+    })
+    .filter(Boolean) as Feature<Point, GeoJsonProperties>[];
+
+  return {
+    color: "#3b82f6",
+    fc: { type: "FeatureCollection", features },
+  };
+}
+
 /**
  * Load all unzoned places from top-level /places for a category
  * (categoryId == X and zoneId == null)

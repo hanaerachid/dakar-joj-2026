@@ -10,11 +10,13 @@ export async function listZones(categoryId: string) {
 
 export async function listPlaces(params: {
   categoryId?: string;
+  mainCategoryId?: string;
   zoneId?: string | null;
   scope?: "all" | "zone" | "root";
 }) {
   const query = new URLSearchParams();
   if (params.categoryId) query.set("categoryId", params.categoryId);
+  if (params.mainCategoryId) query.set("mainCategoryId", params.mainCategoryId);
   if (params.zoneId !== undefined && params.zoneId !== null) query.set("zoneId", params.zoneId);
   if (params.scope) query.set("scope", params.scope);
   const response = await apiRequest<{ success: true; data: Place[] }>(`/api/v1/places?${query.toString()}`);

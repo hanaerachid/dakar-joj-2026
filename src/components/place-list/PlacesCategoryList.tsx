@@ -9,6 +9,11 @@ import { Empty, EmptyContent, EmptyDescription } from "../ui/empty";
 
 type Props = {
   CATEGORIES: any[];
+  MAIN_CATEGORIES: readonly any[];
+  openMainCategoryId: string | null;
+  setOpenMainCategoryId: (value: string | null) => void;
+  mainCategoryChecked: Record<string, boolean>;
+  handleMainCategoryCheck: (checked: boolean, mainCategoryId: string) => void;
   openCatId: string | null;
   activeCategory: any;
   setOpenCatId: (v: string | null) => void;
@@ -39,33 +44,40 @@ type Props = {
   selectedTitle: string | null;
 };
 
-export function PlacesCategoryList({
-  CATEGORIES,
-  openCatId,
-  activeCategory,
-  setOpenCatId,
-  checkedCats,
-  handleCategoryCheck,
-  venues,
-  Chevron,
-  collapseVariants,
-  loading,
-  loadError,
-  grouped,
-  openZones,
-  setOpenZones,
-  handleClick,
-  selectedTitle,
-}: Props) {
+export function PlacesCategoryList(props: Props) {
+  const {
+    CATEGORIES,
+    MAIN_CATEGORIES,
+    openMainCategoryId,
+    setOpenMainCategoryId,
+    mainCategoryChecked,
+    handleMainCategoryCheck,
+    openCatId,
+    activeCategory,
+    setOpenCatId,
+    checkedCats,
+    handleCategoryCheck,
+    venues,
+    Chevron,
+    collapseVariants,
+    loading,
+    loadError,
+    grouped,
+    openZones,
+    setOpenZones,
+    handleClick,
+    selectedTitle,
+  } = props;
+
   return (
     <ul className="space-y-2">
-      {CATEGORIES.map((cat) => {
-        const isOpen = openCatId === cat.id;
-        const isActive = cat.id === activeCategory.id;
-
+      {MAIN_CATEGORIES.map((main) => {
+        const children = CATEGORIES.filter((category) => main.categories.includes(category.id));
+        const mainOpen = openMainCategoryId === main.id;
+        const mainEnabled = !!mainCategoryChecked[main.id];
         return (
           <motion.li
-            key={cat.id}
+            key={main.id}
             layout
             className="rounded-xl border border-border bg-background/90 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow"
           >
@@ -73,57 +85,55 @@ export function PlacesCategoryList({
             <div
               role="button"
               tabIndex={0}
-              aria-expanded={isOpen}
+              aria-expanded={mainOpen}
               className="w-full flex items-center gap-3 px-3.5 py-2.5 text-start rounded-xl cursor-pointer select-none"
-              onClick={() => setOpenCatId(isOpen ? null : cat.id)}
+              onClick={() => { const nextOpen = !mainOpen; setOpenMainCategoryId(nextOpen ? main.id : null); if (nextOpen && children.length) setOpenCatId(children[0].id); }}
               onKeyDown={(e) => {
-                const t = e.target as HTMLElement;
-                if (
-                  t.tagName === "INPUT" ||
-                  t.tagName === "TEXTAREA" ||
-                  t.isContentEditable
-                )
-                  return;
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  setOpenCatId(isOpen ? null : cat.id);
+                  const nextOpen = !mainOpen;
+                  setOpenMainCategoryId(nextOpen ? main.id : null);
+                  if (nextOpen && children.length) setOpenCatId(children[0].id);
                 }
               }}
             >
               {/* Checkbox + label */}
               <Checkbox
-                checked={!!checkedCats[cat.id]}
-                onCheckedChange={(checked) => {
-                  handleCategoryCheck(checked === true, cat.id);
-                }}
-                onClick={(e) => e.stopPropagation()}
-                onPointerDown={(e) => e.stopPropagation()}
-                onKeyDownCapture={(e) => e.stopPropagation()}
-                aria-label={`Toggle ${cat.label}`}
-                id={cat.id}
+                checked={mainEnabled}
+                disabled={!children.length}
+                onCheckedChange={(checked) =>
+                  handleMainCategoryCheck(checked === true, main.id)
+                }
+                onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}
+                aria-label={`Toggle ${main.label}`}
+                id={`main-${main.id}`}
               />
               <Label
                 className="flex items-center gap-2.5"
                 onClick={(e) => e.stopPropagation()}
-                htmlFor={cat.id}
-              ><span className="font-medium text-foreground">{cat.label}</span></Label>
-
-              {/* Count pill when active */}
-              {isActive && (
-                <span className="ml-auto inline-flex items-center rounded-full bg-card px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                  {venues.length}
+                htmlFor={`main-${main.id}`}
+              >
+                <span
+                  className="font-medium text-foreground"
+                >
+                  {main.label}
                 </span>
-              )}
+              </Label>
+              <span
+                className="ml-auto text-xs text-muted-foreground"
+              >
+                {children.length}
+              </span>
 
               {/* Chevron */}
               <div className="ml-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-card text-muted-foreground">
-                <Chevron open={isOpen} />
+                <Chevron open={mainOpen} />
               </div>
             </div>
 
             {/* Body */}
             <AnimatePresence initial={false}>
-              {isOpen && (
+              {mainOpen && (
                 <motion.div
                   variants={collapseVariants}
                   initial="closed"
@@ -131,145 +141,113 @@ export function PlacesCategoryList({
                   exit="closed"
                   className="overflow-hidden"
                 >
-                  <div className="px-3.5 pb-3.5">
-                    {/* Loading */}
-                    {loading && (
-                      <div className="py-4 flex items-center gap-2 text-muted-foreground">
-                        <Spinner />
-                        <span className="text-sm">Loading…</span>
-                      </div>
-                    )}
-
-                    {/* Error */}
-                    {loadError && (
-                      <Alert variant="destructive" className="py-3 text-sm max-w-md">
-                        <AlertCircleIcon />
-                        <AlertDescription>
-                          {loadError}
-                        </AlertDescription>
-                      </Alert>
-                    )}
-
-                    {/* Empty */}
-                    {!loading && !loadError && venues.length === 0 && (
-                      <Empty className="py-3 text-sm text-muted-foreground">
-                        <EmptyContent>
-                          <EmptyDescription>
-                            {cat.hint ?? "No items yet."}
-                          </EmptyDescription>
-                        </EmptyContent>
-                      </Empty>
-                    )}
-
-                    {/* Zones + Places */}
-                    {!loading && !loadError && venues.length > 0 && (
-                      <ul className="space-y-2">
-                        {Object.entries(grouped).map(([zone, list]) => {
-                          const color =
-                            (list[0] as any)?.zoneColor ?? "#3b82f6";
-                          const zoneOpen = !!openZones[zone];
-
-                          return (
-                            <motion.li
-                              key={zone}
-                              layout
-                              className="rounded-lg border border-border bg-card"
+                  <div className="px-3.5 pb-3.5 space-y-2">
+                    {children.map((category) => {
+                      const categoryOpen = openCatId === category.id;
+                      const active = category.id === activeCategory.id;
+                      return (
+                        <motion.li
+                          key={category.id}
+                          layout
+                          className="list-none rounded-lg border border-border bg-card"
+                        >
+                          <div
+                            role="button"
+                            tabIndex={0}
+                            aria-expanded={categoryOpen}
+                            className="w-full flex items-center gap-3 px-3 py-2 text-start cursor-pointer"
+                            onClick={() => {
+                              setOpenCatId(categoryOpen ? null : category.id);
+                              if (!categoryOpen) setOpenMainCategoryId(main.id);
+                            }}
+                          >
+                            <Checkbox
+                              checked={!!checkedCats[category.id]}
+                              disabled={!mainEnabled}
+                              onCheckedChange={(checked) => handleCategoryCheck(checked === true, category.id)}
+                              onClick={(event) => event.stopPropagation()}
+                              onPointerDown={(event) => event.stopPropagation()}
+                              aria-label={`Toggle ${category.label}`}
+                              id={category.id}
+                            />
+                            <Label
+                              onClick={(event) => event.stopPropagation()}
+                              htmlFor={category.id}
                             >
-                              {/* Zone header */}
-                              <button
-                                className="w-full flex items-center gap-2.5 px-3 py-2 text-start hover:bg-card/20 rounded-lg transition-colors"
-                                onClick={() =>
-                                  setOpenZones((prev) => ({
-                                    ...prev,
-                                    [zone]: !zoneOpen,
-                                  }))
-                                }
-                              >
-                                <div className="flex items-center gap-2.5">
-                                  <span
-                                    className="inline-block h-2.5 w-2.5 rounded-full ring-2 ring-white"
-                                    style={{ backgroundColor: color }}
-                                  />
-                                </div>
-                                <span className="font-medium text-foreground">
-                                  {zone}
-                                </span>
-                                <span className="ml-auto inline-flex items-center rounded-full bg-card px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                                  {list.length}
-                                </span>
-                                <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-card text-muted-foreground">
-                                  <Chevron open={zoneOpen} />
-                                </div>
-                              </button>
-
-                              {/* Places */}
-                              <AnimatePresence initial={false}>
-                                {zoneOpen && (
-                                  <motion.div
-                                    variants={collapseVariants}
-                                    initial="closed"
-                                    animate="open"
-                                    exit="closed"
-                                    className="overflow-hidden"
+                              {category.label}
+                            </Label>
+                            {active && (
+                              <span className="ml-auto text-xs text-muted-foreground">
+                                {venues.length}
+                              </span>
+                            )}
+                            <Chevron open={categoryOpen} />
+                          </div>
+                          <AnimatePresence initial={false}>
+                            {categoryOpen && <motion.div variants={collapseVariants} initial="closed" animate="open" exit="closed" className="overflow-hidden"><div className="px-3 pb-3">
+                              {loading && <div className="py-4 flex items-center gap-2 text-muted-foreground"><Spinner /><span className="text-sm">Loading...</span></div>}
+                              {loadError && <Alert variant="destructive" className="py-3 text-sm"><AlertCircleIcon /><AlertDescription>{loadError}</AlertDescription></Alert>}
+                              {!loading && !loadError && !venues.length && <Empty className="py-3 text-sm"><EmptyContent><EmptyDescription>{category.hint ?? "No items yet."}</EmptyDescription></EmptyContent></Empty>}
+                              {!loading && !loadError && !!venues.length && <ul className="space-y-2">{Object.entries(grouped).map(([zone, list]) => {
+                                const zoneOpen = !!openZones[zone];
+                                return (
+                                  <motion.li
+                                    key={zone}
+                                    layout
+                                    className="rounded-lg border border-border bg-card"
                                   >
-                                    <ul className="px-2.5 pb-2 space-y-1.5">
-                                      {list.map((feature: any, idx: number) => {
-                                        const title =
-                                          (feature?.properties
-                                            ?.Name as string) ||
-                                          (feature?.properties
-                                            ?.title as string) ||
-                                          (feature?.properties
-                                            ?.name as string) ||
-                                          "Untitled";
-
-                                        return (
-                                          <li key={`${zone}-${idx}`}>
-                                            <button
-                                              onClick={() => {
-                                                const [lng, lat] = feature
-                                                  .geometry.coordinates as [
-                                                    number,
-                                                    number,
-                                                  ];
-                                                const id =
-                                                  (feature.properties
-                                                    ?.id as string) ??
-                                                  (feature.id as string) ??
-                                                  (feature.properties
-                                                    ?.docId as string) ??
-                                                  (feature.properties
-                                                    ?.placeId as string) ??
-                                                  undefined;
-
-                                                handleClick(
-                                                  lng,
-                                                  lat,
-                                                  title,
-                                                  id,
-                                                );
-                                              }}
-                                              className={`w-full flex items-center gap-2 rounded-md px-2.5 py-2 text-start text-sm transition-colors hover:bg-primary/20 ${selectedTitle === title
-                                                  ? "bg-primary/70 font-semibold"
-                                                  : "bg-card/90"
-                                                }`}
-                                            >
-                                              <span className="truncate text-foreground">
-                                                {title}
-                                              </span>
-                                            </button>
-                                          </li>
-                                        );
-                                      })}
-                                    </ul>
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                            </motion.li>
-                          );
-                        })}
-                      </ul>
-                    )}
+                                    <button
+                                      className="w-full flex items-center gap-2.5 px-3 py-2 text-start"
+                                      onClick={() => setOpenZones((previous) => ({ ...previous, [zone]: !zoneOpen }))}
+                                    >
+                                      <span className="h-2.5 w-2.5 rounded-full bg-primary" />
+                                      <span className="font-medium">
+                                        {zone}
+                                      </span>
+                                      <span className="ml-auto text-xs text-muted-foreground">
+                                        {list.length}
+                                      </span>
+                                      <Chevron open={zoneOpen} />
+                                    </button>
+                                    <AnimatePresence initial={false}>
+                                      {zoneOpen &&
+                                        <motion.div
+                                          variants={collapseVariants}
+                                          initial="closed"
+                                          animate="open"
+                                          exit="closed">
+                                          <ul className="px-2.5 pb-2 space-y-1.5">
+                                            {list.map((feature: any, index) => {
+                                              const title = feature?.properties?.Name || feature?.properties?.title || feature?.properties?.name || "Untitled";
+                                              return (
+                                                <li key={`${zone}-${index}`}>
+                                                  <button
+                                                    onClick={() => {
+                                                      const [lng, lat] = feature.geometry.coordinates as [number, number];
+                                                      const id = feature.properties?.id ?? feature.id ?? feature.properties?.docId ?? feature.properties?.placeId;
+                                                      handleClick(lng, lat, title, id);
+                                                    }}
+                                                    className={`w-full rounded-md px-2.5 py-2 text-start text-sm ${selectedTitle === title ? "bg-primary/70 font-semibold" : "bg-card/90"}`}
+                                                  >
+                                                    {title}
+                                                  </button>
+                                                </li>
+                                              );
+                                            })}
+                                          </ul>
+                                        </motion.div>}
+                                    </AnimatePresence>
+                                  </motion.li>
+                                );
+                              })}
+                              </ul>
+                              }
+                            </div>
+                            </motion.div>}
+                          </AnimatePresence>
+                        </motion.li>
+                      );
+                    })}
                   </div>
                 </motion.div>
               )}

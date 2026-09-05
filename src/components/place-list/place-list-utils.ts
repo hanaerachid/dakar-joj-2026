@@ -1,13 +1,41 @@
 import type { CategoryConfig } from "./PlacesList";
 
 export const CATEGORIES: CategoryConfig[] = [
-  { id: "competition", label: "Competition Sites", sources: [] },
-  { id: "hotels", label: "Hotels", sources: [] },
-  { id: "restaurants", label: "Restaurants", sources: [] },
-  { id: "artworks", label: "Artworks", sources: [] },
-  { id: "hospitals", label: "Hospitals", sources: [] },
-  { id: "transport", label: "Transportation", sources: [] },
-  { id: "police", label: "Police", sources: [] },
+  {
+    id: "competition",
+    label: "Competition Sites",
+    sources: []
+  },
+  {
+    id: "hotels",
+    label: "Hotels",
+    sources: []
+  },
+  {
+    id: "restaurants",
+    label: "Restaurants",
+    sources: []
+  },
+  {
+    id: "artworks",
+    label: "Artworks",
+    sources: []
+  },
+  {
+    id: "hospitals",
+    label: "Hospitals",
+    sources: []
+  },
+  {
+    id: "transport",
+    label: "Transportation",
+    sources: [] 
+  },
+  {
+    id: "police",
+    label: "Police",
+    sources: []
+  },
   {
     id: "attraction",
     label: "Attraction",
@@ -123,3 +151,17 @@ export const CATEGORIES: CategoryConfig[] = [
     hint: "Railway locations will be listed here.",
   },
 ];
+
+export const MAIN_CATEGORIES = [
+  { id: "sports", label: "Sports", categories: ["competition"] },
+  { id: "housing", label: "Housing", categories: ["hotels"] },
+  { id: "food_and_drink", label: "Food & Drink", categories: ["restaurants"] },
+  { id: "mobility", label: "Mobility", categories: ["transport", "airport", "bus", "ferry", "railway"] },
+  { id: "shopping_and_crafts", label: "Shopping & Crafts", categories: [] },
+  { id: "culture_and_heritage", label: "Culture & Heritage", categories: ["artworks", "attraction", "castle", "gallery", "memorial", "monument", "museum", "viewpoints", "zoo"] },
+  { id: "health", label: "Health", categories: ["hospitals"] },
+  { id: "security", label: "Security", categories: ["police"] },
+  { id: "services", label: "Services", categories: ["bank", "atm", "firestation", "embassy", "consulate"] },
+  { id: "religion", label: "Religion", categories: ["church", "mosque"] },
+  { id: "other", label: "Other", categories: ["other"] },
+] as const;
