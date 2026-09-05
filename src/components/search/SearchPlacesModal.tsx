@@ -11,18 +11,7 @@ import {
   TabsTrigger
 } from "@/components/ui/tabs"
 import { useModalContext } from "@/components/modal-provider";
-
-export interface SiteConfig {
-  name: string;
-  file: string; // firestore://<zoneId>
-  color: string;
-}
-export interface CategoryConfig {
-  id: string;
-  label: string;
-  sources: SiteConfig[];
-  hint?: string;
-}
+import type { CategoryConfig } from "@/types/config";
 
 export const SearchPlaces = ({
   categories,

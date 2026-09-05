@@ -13,17 +13,18 @@ import {
   getZonesForCategory,
 } from "../../data/firestore/firestorePlaces";
 import { useTranslation } from "react-i18next";
+import { Field } from "@/components/ui/field";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Empty, EmptyDescription } from "@/components/ui/empty";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group"
-import { Field } from "@/components/ui/field";
 // import { Kbd } from "@/components/ui/kbd"
-import { SearchIcon } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Empty, EmptyDescription } from "../ui/empty";
+import { SearchIcon } from "lucide-react";
+import type { CategoryConfig } from "@/types/config";
 
 // —— types & helpers ——
 type VenueFeature = Feature<Point, GeoJsonProperties>;
@@ -33,18 +34,6 @@ type LoadedVenue = VenueFeature & {
   __catLabel: string;
   __zone: string;
 };
-
-export interface SiteConfig {
-  name: string;
-  file: string;
-  color: string;
-}
-export interface CategoryConfig {
-  id: string;
-  label: string;
-  sources: SiteConfig[];
-  hint?: string;
-}
 
 function getFeatureCategoryId(props: GeoJsonProperties | undefined): string {
   const p = props || {};
