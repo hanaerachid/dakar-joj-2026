@@ -15,6 +15,13 @@ import {
   EmptyHeader,
 } from "@/components/ui/empty"
 import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FileUp, Plus } from "lucide-react";
 
@@ -59,7 +66,7 @@ async function fetchZones(categoryId: string) {
 /* --------------- Page --------------- */
 export function PlacesListPage() {
   const navigate = useNavigate();
-  const [categoryId, setCategoryId] = useState("competition");
+  const [categoryId, setCategoryId] = useState<string>("competition");
   const [zones, setZones] = useState<Zone[]>([]);
   const [zoneId, setZoneId] = useState(""); // "" => root-only; ALL_ZONES => all zoned + root
   const [zonesLoading, setZonesLoading] = useState(false);
@@ -207,40 +214,69 @@ export function PlacesListPage() {
 
           <Field>
             <FieldLabel htmlFor="category">Category</FieldLabel>
-            <select
-              id="category"
+            <Select
               value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-              className="h-10 w-full rounded-2xl border border-foreground/30 bg-background/80 px-3 text-sm shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+              onValueChange={(value) => {
+                if (value !== null) {
+                  setCategoryId(value);
+                }
+              }}
             >
+              <SelectTrigger
+                id="category"
+                className="w-full"
+              >
+                <SelectValue>
+                  {CATEGORIES.find((c) => c.id === categoryId)?.label}
+                </SelectValue>
+              </SelectTrigger>
+
+              <SelectContent>
               {CATEGORIES.map((c) => (
-                <option key={c.id} value={c.id}>
+                <SelectItem key={c.id} value={c.id}>
                   {c.label}
-                </option>
+                </SelectItem>
               ))}
-            </select>
+              </SelectContent>
+            </Select>
           </Field>
 
           <Field>
             <FieldLabel htmlFor="zone">Zone</FieldLabel>
-            <select
-              id="zone"
-              disabled={zonesLoading || zones.length === 0}
+            <Select
               value={zoneId}
-              onChange={(e) => setZoneId(e.target.value)}
-              className="h-10 w-full rounded-2xl border border-foreground/30 bg-background/80 px-3 text-sm shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100 disabled:opacity-60"
+              onValueChange={(value) => {
+                if (value !== null) {
+                  setZoneId(value);
+                }
+              }}
+              disabled={zonesLoading || zones.length === 0}
             >
-              {/* All zones option when zones exist */}
-              {zones.length > 0 && (
-                <option value={ALL_ZONES}>(All zones)</option>
-              )}
-              {zones.map((z) => (
-                <option key={z.id} value={z.id}>
-                  {z.name}
-                </option>
-              ))}
-              {/* Root-only fallback when there are no zones (disabled select anyway) */}
-            </select>
+              <SelectTrigger
+                id="zone"
+                className="w-full"
+              >
+                <SelectValue>
+                  {zoneId === ALL_ZONES
+                    ? "(All zones)"
+                    : zones.find((z) => z.id === zoneId)?.name}
+                </SelectValue>
+              </SelectTrigger>
+
+              <SelectContent>
+                {zones.length > 0 && (
+                  <SelectItem value={ALL_ZONES}>
+                    (All zones)
+                  </SelectItem>
+                )}
+
+                {zones.map((z) => (
+                  <SelectItem key={z.id} value={z.id}>
+                    {z.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <FieldDescription>
               {
                 zonesLoading
@@ -254,15 +290,32 @@ export function PlacesListPage() {
 
           <Field>
             <FieldLabel htmlFor="sort">Sort by</FieldLabel>
-            <select
-              id="sort"
+            <Select
               value={sort}
-              onChange={(e) => setSort(e.target.value as any)}
-              className="h-10 w-full rounded-2xl border border-foreground/30 bg-background/80 px-3 text-sm shadow-sm focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+              onValueChange={(value) => {
+                if (value !== null) {
+                  setSort(value as any);
+                }
+              }}
             >
-              <option value="updated">Last updated</option>
-              <option value="name">Name (A→Z)</option>
-            </select>
+              <SelectTrigger
+                id="sort"
+                className="w-full"
+              >
+                <SelectValue>
+                  {sort === "updated" ? "Last updated" : "Name (A→Z)"}
+                </SelectValue>
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem value="updated">
+                  Last updated
+                </SelectItem>
+                <SelectItem value="name">
+                  Name (A→Z)
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </Field>
         </div>
       </Section>

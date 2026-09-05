@@ -1,4 +1,13 @@
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 
 type Zone = { id: string; name: string; color: string; categoryId: string };
 
@@ -31,69 +40,88 @@ export default function CategoryZoneFields({
         <FieldLabel htmlFor="category" >
           Category
         </FieldLabel>
-        <select
-          id="category"
+        <Select
           value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-          className="bg-input h-10 w-full rounded-xl border px-3 text-sm shadow-sm focus:border-gray-300 focus:ring-2 focus:ring-black/10"
+          onValueChange={(value) => {
+            if (value !== null) {
+              setCategoryId(value);
+            }
+          }}
         >
-          {CATEGORIES.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.label}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger
+            id="category"
+            className="w-full"
+          >
+            <SelectValue>
+              {CATEGORIES.find((c) => c.id === categoryId)?.label}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {CATEGORIES.map((c) => (
+              <SelectItem key={c.id} value={c.id}>
+                {c.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </Field>
 
       <Field>
         <FieldLabel htmlFor="zone" >
           Zone
         </FieldLabel>
-        <select
-          id="zone"
+        <Select
           disabled={zonesLoading}
           value={zoneId}
-          onChange={(e) => setZoneId(e.target.value)}
-          className="bg-input h-10 w-full rounded-xl border px-3 text-sm shadow-sm focus:border-gray-300 focus:ring-2 focus:ring-black/10 disabled:opacity-60"
+          onValueChange={(value) => {
+            if (value !== null) {
+              setZoneId(value)
+            }
+          }}
         >
-          <option value="">(No zone)</option>
+          <SelectTrigger
+            id="zone"
+            className="w-full"
+          >
+            <SelectValue>
+              {zonesPrimary.find((z) => z.id === zoneId)?.name}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">(No zone)</SelectItem>
+            {/* Primary zones (for the selected category) */}
+            {zonesPrimary.length > 0 && (
+              <SelectGroup>
+                <SelectLabel>Zones for this category</SelectLabel>
+                {zonesPrimary.map((z) => (
+                  <SelectItem key={z.id} value={z.id}>
+                    {z.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            )}
 
-          {/* Primary zones (for the selected category) */}
-          {zonesPrimary.length > 0 && (
-            <>
-              <option value="" disabled>
-                — Zones for this category —
-              </option>
-              {zonesPrimary.map((z) => (
-                <option key={z.id} value={z.id}>
-                  {z.name}
-                </option>
-              ))}
-            </>
-          )}
-
-          {/* Fallback zones from Competition */}
-          {zonesFallback.length > 0 && (
-            <>
-              <option value="" disabled>
-                — Competition zones —
-              </option>
-              {zonesFallback.map((z) => (
-                <option key={z.id} value={z.id}>
-                  {z.name}
-                </option>
-              ))}
-            </>
-          )}
-        </select>
+            {/* Fallback zones from Competition */}
+            {zonesFallback.length > 0 && (
+              <SelectGroup>
+                <SelectLabel>Competition zones</SelectLabel>
+                {zonesFallback.map((z) => (
+                  <SelectItem key={z.id} value={z.id}>
+                    {z.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            )}
+          </SelectContent>
+        </Select>
         <FieldDescription>
-        {
-          zonesLoading
-            ? "Loading zones…"
-            : hasFallback
-            ? "No zones in this category — showing Competition zones so you can still attach one."
-            : "Optional. You can save without a zone."
-        }
+          {
+            zonesLoading
+              ? "Loading zones…"
+              : hasFallback
+                ? "No zones in this category — showing Competition zones so you can still attach one."
+                : "Optional. You can save without a zone."
+          }
         </FieldDescription>
       </Field>
     </div>
