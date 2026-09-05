@@ -1,7 +1,6 @@
 // src/components/search/GlobalPlacesTab.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MapManager } from "../../core/MapManager";
-import { MAPBOX_ACCESS_TOKEN } from "../../utils/mapConfig";
 import { X, SearchIcon, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
@@ -16,12 +15,25 @@ import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "@/comp
 import { Spinner } from "@/components/ui/spinner";
 import { Alert, AlertDescription } from "../ui/alert";
 
-type MbFeature = {
-  id: string;
-  place_name: string;
-  text: string;
-  center: [number, number];
-  context?: Array<{ id: string; text: string }>;
+type Feature = {
+  place_id: number;
+  display_name: string;
+  lat: string;
+  lon: string;
+  type?: string;
+  category?: string;
+  address?: {
+    road?: string;
+    house_number?: string;
+    neighbourhood?: string;
+    suburb?: string;
+    city?: string;
+    town?: string;
+    village?: string;
+    state?: string;
+    country?: string;
+    country_code?: string;
+  };
 };
 
 export function GlobalPlacesTab({
@@ -33,8 +45,8 @@ export function GlobalPlacesTab({
   onQueryChange: (q: string) => void;
   onPicked: () => void;
 }) {
-  const { t } = useTranslation();
-  const [results, setResults] = useState<MbFeature[]>([]);
+  const { t, i18n } = useTranslation();
+  const [results, setResults] = useState<Feature[]>([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -46,14 +58,21 @@ export function GlobalPlacesTab({
   const map = mgr.getMap();
   const proximity = useMemo(() => {
     const c = map?.getCenter();
-    return c ? `${c.lng},${c.lat}` : undefined;
+
+    if (!c) return undefined;
+
+    return {
+      lat: c.lat,
+      lon: c.lng,
+    };
   }, [map]);
 
-  // Debounced search against Mapbox Geocoding API
+  // Debounced search against Geocoding API
   useEffect(() => {
     if (!query?.trim()) {
       setResults([]);
       setErr(null);
+      setLoading(false);
       return;
     }
 
@@ -67,26 +86,42 @@ export function GlobalPlacesTab({
 
       try {
         const url = new URL(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-            query,
-          )}.json`,
-        );
-        url.searchParams.set("access_token", MAPBOX_ACCESS_TOKEN);
-        url.searchParams.set("autocomplete", "true");
-        url.searchParams.set("limit", "8");
-        url.searchParams.set("language", navigator.language || "en");
-        // global search (no country filter); but bias near map center if we have one
-        if (proximity) url.searchParams.set("proximity", proximity);
-        // show mostly useful types; tweak as you wish
-        url.searchParams.set(
-          "types",
-          "poi,address,place,locality,neighborhood",
+          "https://nominatim.openstreetmap.org/search",
         );
 
-        const res = await fetch(url.toString(), { signal: ctrl.signal });
+        url.searchParams.set("q", query.trim());
+        url.searchParams.set("format", "jsonv2");
+        url.searchParams.set("limit", "8");
+        url.searchParams.set("accept-language", i18n.language || "en",);
+        url.searchParams.set("addressdetails", "1");
+
+        if (proximity) {
+          const delta = 1.0;
+          const left = proximity.lon - delta;
+          const right = proximity.lon + delta;
+          const top = proximity.lat + delta;
+          const bottom = proximity.lat - delta;
+
+          url.searchParams.set(
+            "viewbox",
+            `${left},${top},${right},${bottom}`,
+          );
+
+          // Don't strictly restrict results to the viewbox.
+          url.searchParams.set("bounded", "0");
+        }
+
+        const res = await fetch(url.toString(), {
+          signal: ctrl.signal,
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        setResults((data.features || []) as MbFeature[]);
+
+        setResults(data || []);
       } catch (e: any) {
         if (e.name !== "AbortError") {
           setErr("Unable to search right now.");
@@ -103,8 +138,12 @@ export function GlobalPlacesTab({
     };
   }, [query, proximity]);
 
-  const handlePick = (f: MbFeature) => {
-    const center = f.center as [number, number];
+  const handleZoomTo = (f: Feature) => {
+    const center: [number, number] = [
+      Number(f.lon),
+      Number(f.lat),
+    ];
+
     const m = map || mgr.getMap();
     if (center && m) {
       m.flyTo({ center, zoom: 14, speed: 1.2 });
@@ -177,10 +216,10 @@ export function GlobalPlacesTab({
               {/* List */}
               {results.map((f) => (
                 <Item
-                  key={f.id}
+                  key={f.place_id}
                   variant="default"
                   size="xs"
-                  onClick={() => handlePick(f)}
+                  onClick={() => handleZoomTo(f)}
                   className="w-full hover:bg-background/50 cursor-pointer"
                 >
                   <ItemMedia className="h-9 w-9 bg-muted-background">
@@ -188,10 +227,10 @@ export function GlobalPlacesTab({
                   </ItemMedia>
                   <ItemContent className="min-w-0">
                     <ItemTitle className="text-sm font-medium truncate">
-                      {f.text}
+                      {f.display_name.split(",")[0]}
                     </ItemTitle>
                     <ItemDescription className="text-xs line-clamp-2">
-                      {f.place_name}
+                      {f.display_name}
                     </ItemDescription>
                   </ItemContent>
                 </Item>
@@ -200,9 +239,9 @@ export function GlobalPlacesTab({
           )}
         </div>
 
-        {/* Mapbox credit (required by TOS) */}
+        {/* Attribution */}
         <div className="px-3 py-2 text-xs text-muted-foreground text-end">
-          Powered by Mapbox
+          © OpenStreetMap contributors
         </div>
       </div>
     </div>
