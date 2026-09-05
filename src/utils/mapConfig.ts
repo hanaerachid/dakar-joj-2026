@@ -8,5 +8,4 @@ export const getInitialZoom = (): number => {
   return isMobile ? MOBILE_INITIAL_ZOOM : INITIAL_ZOOM;
 };
 
-export const MAPBOX_ACCESS_TOKEN =
-  "pk.eyJ1IjoiZnJhbmNpc2VoZW1iYTIwMjIiLCJhIjoiY2w0eDV3eWI3MDJ5MTNibnRjcGZvY3RreiJ9.bsWdoYU3jS88zOXzBy1MPQ";
+export const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || "";
