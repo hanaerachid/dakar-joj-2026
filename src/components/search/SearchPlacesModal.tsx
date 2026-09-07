@@ -43,8 +43,8 @@ export const SearchPlaces = ({
   return (
     <AnimatedButton
       icon={Search}
-      title="Search Places"
-      tooltip="Search"
+      title={t("actions.search", "Search Places")}
+      tooltip={t("actions.search", "Search Places")}
       isOpen={modalOpen}
       onClick={openPanel}
     />

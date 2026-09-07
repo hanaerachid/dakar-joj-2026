@@ -3,6 +3,19 @@
   "description": "Dakar Jeux Olympiques de la Jeunesse",
   "hello": "Hello, {{name}}!",
 
+  "actions": {
+    "closepanel": "Fermer le panneau",
+    "openpanel": "Ouvrir le panneau",
+    "basemaps": "Changer de fond de carte",
+    "search": "Rechercher des lieux",
+    "locateme": "Me localiser",
+    "resetview": "Réinitialiser la vue",
+    "clearroute": "Effacer l’itinéraire",
+    "share": "Partager la carte"
+  },
+  "zoom_in": "Zoomer",
+  "zoom_out": "Dézoomer",
+
   "search.title": "Rechercher des lieux",
   "search.tab.global": "Rechercher partout",
   "search.tab.local": "Lieux configurés",

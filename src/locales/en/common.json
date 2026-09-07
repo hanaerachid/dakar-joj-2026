@@ -3,6 +3,19 @@
   "description": "Youth Olympic Games",
   "hello": "Hello, {{name}}!",
 
+  "actions": {
+    "closepanel": "Close Panel",
+    "openpanel": "Open Panel",
+    "basemaps": "Change Base Map",
+    "search": "Search Places",
+    "locateme": "Locate Me",
+    "resetview": "Reset View",
+    "clearroute": "Clear Route",
+    "share": "Share Map"
+  },
+  "zoom_in": "Zoom In",
+  "zoom_out": "Zoom Out",
+
   "search.title": "Search Places",
   "search.tab.global": "Search Anywhere",
   "search.tab.local": "Configured Locations",

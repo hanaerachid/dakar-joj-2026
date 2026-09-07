@@ -17,10 +17,6 @@ type IconType = string | LucideIcon;
 interface AnimatedButtonProps {
   isOpen?: boolean;
   onClick: () => void;
-  openTitle?: string;
-  closeTitle?: string;
-  openIcon?: IconType;
-  closeIcon?: IconType;
   icon?: IconType;
   title?: string;
   className?: string;
@@ -31,8 +27,6 @@ interface AnimatedButtonProps {
 export function AnimatedButton({
   isOpen,
   onClick,
-  openTitle = "Close Panel",
-  closeTitle = "Open Panel",
   icon,
   title,
   className = "",
@@ -40,7 +34,7 @@ export function AnimatedButton({
   tooltip,
 }: Readonly<AnimatedButtonProps>) {
   const ResolvedIcon = icon || "";
-  const resolvedTitle = title || (isOpen ? openTitle : closeTitle);
+  const resolvedTitle = title || "";
   const tip = tooltip || resolvedTitle;
 
   return (

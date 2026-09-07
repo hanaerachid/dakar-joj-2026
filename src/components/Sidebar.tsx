@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { CATEGORIES } from "./place-list/place-list-utils";
 import { Map, MapPinHouse, RouteOff, Share2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { useTranslation } from "react-i18next";
 
 type SidebarProps = {
   longitude: number;
@@ -26,6 +27,7 @@ export function Sidebar({
   zoom,
   onClearRoute,
 }: SidebarProps) {
+  const { t } = useTranslation();
   const [layersOpen, setLayersOpen] = useState(false);
 
   const handleShare = async () => {
@@ -79,8 +81,8 @@ export function Sidebar({
         {/* Top group */}
         <AnimatedButton
           icon={Map}
-          title="Map Layers"
-          tooltip="Layers"
+          title={t("actions.basemaps", "Change basemap")}
+          tooltip={t("actions.basemaps", "Change basemap")}
           onClick={() => setLayersOpen(true)}
         />
         {/* Utility group */}
@@ -93,8 +95,8 @@ export function Sidebar({
         <LocateMeButton />
         <AnimatedButton
           icon={MapPinHouse}
-          title="Reset View"
-          tooltip="Reset View"
+          title={t("actions.resetview", "Reset View")}
+          tooltip={t("actions.resetview", "Reset View")}
           onClick={onReset}
         />
         {/* thin divider */}
@@ -102,14 +104,14 @@ export function Sidebar({
         {/* Bottom group */}
         <AnimatedButton
           icon={RouteOff}
-          title="Reset View"
-          tooltip="Reset View"
+          title={t("actions.clearroute", "Clear Route")}
+          tooltip={t("actions.clearroute", "Clear Route")}
           onClick={onClearRoute}
         />
         <AnimatedButton
           icon={Share2}
-          title="Share Map"
-          tooltip="Share"
+          title={t("actions.share", "Share Map")}
+          tooltip={t("actions.share", "Share Map")}
           onClick={handleShare}
         />
       </div>

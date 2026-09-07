@@ -3,8 +3,10 @@ import mapboxgl from "mapbox-gl";
 import { MapManager } from "./MapManager";
 import { AnimatedButton } from "../components/buttons/AnimatedButton";
 import { Locate } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function LocateMeButton({ className = "" }: { className?: string }) {
+  const { t } = useTranslation();
   const mgr = MapManager.getInstance();
   const markerRef = useRef<mapboxgl.Marker | null>(null);
 
@@ -51,7 +53,7 @@ export function LocateMeButton({ className = "" }: { className?: string }) {
     <>
       <AnimatedButton
         icon={Locate}
-        title="Locate Me"
+        title={t("actions.locateme", "Locate Me")}
         onClick={handleClick}
         className={className}
       />

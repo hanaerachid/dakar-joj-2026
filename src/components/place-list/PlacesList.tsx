@@ -66,6 +66,7 @@ function getFeatureCategoryId(props: GeoJsonProperties | undefined): string {
 }
 
 export const PlacesList = () => {
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const { isOpen, setIsOpen, setPanelContent } = usePanelContext();
   const {
@@ -109,6 +110,7 @@ export const PlacesList = () => {
     <AnimatedButton
       icon={Layers2}
       isOpen={isOpen}
+      title={isOpen ? t("actions.closepanel", "Close Panel") : t("actions.openpanel", "Open Panel")}
       onClick={openPanel}
     />
   );
