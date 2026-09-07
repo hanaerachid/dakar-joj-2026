@@ -20,6 +20,8 @@ import { ChevronDown, ChevronRight, Layers2 } from "lucide-react";
 import { usePanelContext } from "@/components/panel-provider";
 import { useModalContext } from "@/components/modal-provider";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { SidePanel } from "@/components/side-panel/core";
+import { useStateContext } from "@/components/state-provider";
 
 type VenueFeature = Feature<Point, GeoJsonProperties>;
 const DEFAULT_VISIBLE_CATS = new Set<string>(["competition"]);
@@ -68,7 +70,9 @@ function getFeatureCategoryId(props: GeoJsonProperties | undefined): string {
 export const PlacesList = () => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
-  const { isOpen, setIsOpen, setPanelContent } = usePanelContext();
+  const { isOpen, setIsOpen, setPanelContent,} = usePanelContext();
+  const {activeTab, setActiveTab } = useStateContext();
+
   const {
     isOpen: panelOpen,
     setIsOpen: setPanelOpen,
@@ -77,30 +81,32 @@ export const PlacesList = () => {
 
   const openPanel = () => {
     if (!isMobile) {
-      if (isOpen) {
+      if (isOpen && activeTab === "explorer") {
         setIsOpen(false);
         return;
       }
+      setActiveTab("explorer");
       setPanelContent({
         title: null,
         size: "sm",
-        children: <PlacesListContent setPanelOpen={setPanelOpen} />,
+        children: <SidePanel />,
       });
       setIsOpen(true);
     }
 
     if (isMobile) {
-      if (panelOpen) {
+      if (panelOpen && activeTab === "explorer") {
         setPanelOpen(false);
         return;
       }
+      setActiveTab("explorer");
       setModalContent({
         title: null,
         onClose: () => setPanelOpen(false),
         panelClassName: "sm:max-w-md",
         contentClassName: "relative h-[80vh] sm:h-[680px] px-0 py-0",
         size: "sm",
-        children: <PlacesListContent setPanelOpen={setPanelOpen} />,
+        children: <SidePanel />,
       });
       setPanelOpen(true);
     }
@@ -109,14 +115,14 @@ export const PlacesList = () => {
   return (
     <AnimatedButton
       icon={Layers2}
-      isOpen={isOpen}
+      isOpen={isOpen && activeTab === "explorer"}
       title={isOpen ? t("actions.closepanel", "Close Panel") : t("actions.openpanel", "Open Panel")}
       onClick={openPanel}
     />
   );
 }
 
-const PlacesListContent = ({ setPanelOpen }: any) => {
+export const PlacesListContent = ({ setPanelOpen }: any) => {
   const { t, i18n } = useTranslation();
   const mapManager = MapManager.getInstance();
   const [openMainCategoryId, setOpenMainCategoryId] = useState<string | null>(
@@ -231,10 +237,33 @@ const PlacesListContent = ({ setPanelOpen }: any) => {
   useEffect(() => {
     const map = mapManager.getMap();
     if (!map) return;
-    Object.entries(checkedCats).forEach(([catId, isChecked]) => {
-      setCategoryVisibility(catId, isChecked); // 👈 ensure visibility matches UI
-      applyCategoryEmphasis(catId, isChecked);
-    });
+
+    const applyVisibility = () => {
+      if (!map.isStyleLoaded()) return;
+      Object.entries(checkedCats).forEach(([catId, isChecked]) => {
+        setCategoryVisibility(catId, isChecked);
+        applyCategoryEmphasis(catId, isChecked);
+      });
+    };
+
+    if (map.isStyleLoaded()) {
+      applyVisibility();
+      return;
+    }
+
+    const onStyleReady = () => {
+      if (!map.isStyleLoaded()) return;
+      applyVisibility();
+      map.off("load", onStyleReady);
+      map.off("style.load", onStyleReady);
+    };
+    map.on("load", onStyleReady);
+    map.on("style.load", onStyleReady);
+
+    return () => {
+      map.off("load", onStyleReady);
+      map.off("style.load", onStyleReady);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapManager]);
 
@@ -276,7 +305,7 @@ const PlacesListContent = ({ setPanelOpen }: any) => {
 
   function getCategoryLayerIds(catId: string): string[] {
     const map = mapManager.getMap();
-    if (!map) return [];
+    if (!map || !map.isStyleLoaded()) return [];
     const prefix = layerPrefixFor(catId);
     const style = map.getStyle();
     const layers = style?.layers || [];
@@ -289,7 +318,7 @@ const PlacesListContent = ({ setPanelOpen }: any) => {
   // NEW: only symbol layers for a category (the ones that have the feature ids)
   function getCategorySymbolLayerIds(catId: string): string[] {
     const map = mapManager.getMap();
-    if (!map) return [];
+    if (!map || !map.isStyleLoaded()) return [];
     const prefix = layerPrefixFor(catId);
     const style = map.getStyle();
     const layers = style?.layers || [];

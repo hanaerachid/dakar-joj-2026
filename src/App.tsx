@@ -16,6 +16,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ModalProvider } from "./components/modal-provider";
 import { PanelProvider } from "./components/panel-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { StateProvider } from "@/components/state-provider";
 import { ArrowLeft, Plus } from "lucide-react";
 import { setApiAuthTokenProvider } from "./lib/apiClient";
 import { useTranslation } from "react-i18next";
@@ -102,6 +103,7 @@ export default function App() {
   const appRoutes = (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <TooltipProvider>
+      <StateProvider>
         <ModalProvider>
           <Routes>
             <Route
@@ -131,6 +133,7 @@ export default function App() {
             <Route path="*" element={<MapPage />} />
           </Routes>
         </ModalProvider>
+      </StateProvider>
       </TooltipProvider>
     </ThemeProvider>
   );

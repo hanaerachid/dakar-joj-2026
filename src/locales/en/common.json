@@ -15,6 +15,10 @@
   },
   "zoom_in": "Zoom In",
   "zoom_out": "Zoom Out",
+  "tabs": {
+    "explorer": "Explorer",
+    "search": "Search"
+  },
 
   "search.title": "Search Places",
   "search.tab.global": "Search Anywhere",

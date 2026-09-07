@@ -1,4 +1,4 @@
-import type { CategoryConfig } from "./PlacesList";
+import type { CategoryConfig } from "@/types/config";
 
 export const CATEGORIES: CategoryConfig[] = [
   {

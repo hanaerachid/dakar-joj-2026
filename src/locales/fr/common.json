@@ -15,6 +15,10 @@
   },
   "zoom_in": "Zoomer",
   "zoom_out": "Dézoomer",
+  "tabs": {
+    "explorer": "Explorer",
+    "search": "Rechercher"
+  },
 
   "search.title": "Rechercher des lieux",
   "search.tab.global": "Rechercher partout",

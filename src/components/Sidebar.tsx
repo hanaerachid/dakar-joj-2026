@@ -7,7 +7,6 @@ import { BasemapSwitcherModal } from "../core/BasemapSwitcherModal";
 import { ZoomPill } from "../core/ZoomPill";
 import { LocateMeButton } from "../core/LocateMeButton";
 import { toast } from "sonner";
-import { CATEGORIES } from "./place-list/place-list-utils";
 import { Map, MapPinHouse, RouteOff, Share2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
@@ -89,7 +88,7 @@ export function Sidebar({
         <PlacesList /> {/* keeps its own popover; button fits the dock */}
         {/* thin divider */}
         <Separator className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
-        <SearchPlaces categories={CATEGORIES} />
+        <SearchPlaces />
         {/* Zoom */}
         <ZoomPill />
         <LocateMeButton />

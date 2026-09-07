@@ -10,34 +10,63 @@ import {
   TabsList,
   TabsTrigger
 } from "@/components/ui/tabs"
+import { SidePanel } from "../side-panel/core";
+import { usePanelContext } from "@/components/panel-provider";
 import { useModalContext } from "@/components/modal-provider";
-import type { CategoryConfig } from "@/types/config";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useStateContext } from "@/components/state-provider";
+import { CATEGORIES } from "../place-list/place-list-utils";
 
-export const SearchPlaces = ({
-  categories,
-}: {
-  categories: CategoryConfig[];
-}) => {
+export const SearchPlaces = () => {
   const { t } = useTranslation();
 
   const {
+    activeTab,
+    setActiveTab,
+  } = useStateContext();
+
+  const {
+    isOpen: panelOpen,
+    setIsOpen: setPanelOpen,
+    setPanelContent: setPanelContent,
+  } = usePanelContext();
+
+  const isMobile = useIsMobile();
+  const {
     isOpen: modalOpen,
     setIsOpen: setModalOpen,
-    setModalContent: setModalContent,
+    setModalContent,
   } = useModalContext();
 
   const openPanel = () => {
-    if (modalOpen) {
+    if (!isMobile && panelOpen && activeTab === "search") {
+      setPanelOpen(false);
+      return;
+    }
+    if (isMobile && modalOpen && activeTab === "search") {
       setModalOpen(false);
       return;
     }
-    setModalContent({
-      title: t("search.title"),
-      onClose: () => setModalOpen(false),
-      size: "lg",
-      children: <SearchPlacesModal setModalOpen={setModalOpen} categories={categories} />,
-    });
-    setModalOpen(true);
+
+    setActiveTab("search");
+    setActiveTab("search");
+    if (isMobile) {
+      setModalContent({
+        title: null,
+        onClose: () => setModalOpen(false),
+        size: "lg",
+        children: <SidePanel />,
+      });
+      setModalOpen(true);
+    } else {
+      setPanelContent({
+        title: null,
+        onClose: () => setPanelOpen(false),
+        size: "lg",
+        children: <SidePanel />,
+      });
+      setPanelOpen(true);
+    }
   }
 
   return (
@@ -45,21 +74,20 @@ export const SearchPlaces = ({
       icon={Search}
       title={t("actions.search", "Search Places")}
       tooltip={t("actions.search", "Search Places")}
-      isOpen={modalOpen}
+      isOpen={panelOpen && activeTab === "search"}
       onClick={openPanel}
     />
   )
 }
 
 export const SearchPlacesModal = ({
-  setModalOpen,
-  categories,
+  setPanelOpen,
 }: {
-  setModalOpen: (open: boolean) => void;
-  categories: CategoryConfig[];
+  setPanelOpen: (open: boolean) => void;
 }) => {
   // default = "Search Anywhere"
   const { t } = useTranslation();
+  const categories = CATEGORIES;
 
   // keep per-tab state here so it survives open/close
   const [globalQuery, setGlobalQuery] = useState("");
@@ -76,7 +104,7 @@ export const SearchPlacesModal = ({
         <GlobalPlacesTab
           query={globalQuery}
           onQueryChange={setGlobalQuery}
-          onPicked={() => setModalOpen(false)}
+          onPicked={() => setPanelOpen(false)}
         />
       </TabsContent>
       <TabsContent value="local">
@@ -84,7 +112,7 @@ export const SearchPlacesModal = ({
           categories={categories}
           query={localQuery}
           onQueryChange={setLocalQuery}
-          onPicked={() => setModalOpen(false)}
+          onPicked={() => setPanelOpen(false)}
         />
       </TabsContent>
     </Tabs>
