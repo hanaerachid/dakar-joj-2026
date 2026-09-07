@@ -17,7 +17,9 @@
   "tabs": {
     "home": "Home",
     "explorer": "Explorer",
-    "search": "Search"
+    "search": "Search",
+    "news": "News",
+    "stats": "Chiffres"
   },
   "home": {
     "start_with": "Start with…",
@@ -29,7 +31,29 @@
     "registerplace": "List my venue",
     "days": "days",
     "event_is_here": "The event is here!",
-    "countdown_description": "The first Youth Olympic Games on African soil. Dakar, Diamniadio and Saly."
+    "countdown_description": "The first Youth Olympic Games on African soil. Dakar, Diamniadio and Saly.",
+    "quick_access": "Quick Access",
+    "my_agenda": "My Agenda",
+    "maps": "Maps",
+    "torch": "Torch",
+    "news": "News"
+  },
+  "news": {
+    "news": "News",
+    "latest": "Latest from the official YOG site and online press.",
+    "thegamesjournal": "The Games Journal",
+    "competition_sites": "Competition Sites",
+    "competition_sports": "Competition Sports",
+    "competition_sports_engagement": "+ 10 engagement sports",
+    "delegations": "Delegations (NOCs)",
+    "athletes": "Athletes",
+    "cities": "Host Cities",
+    "cities_list": "Dakar · Diamniadio · Saly",
+    "capacity": "Estimated Capacity"
+  },
+  "stats": {
+    "stats": "Chiffres",
+    "gamesinnumers": "The Games in numbers"
   },
   "search.title": "Search Places",
   "search.tab.global": "Search Anywhere",

@@ -17,7 +17,9 @@
   "tabs": {
     "home": "Accueil",
     "explorer": "Explorer",
-    "search": "Rechercher"
+    "search": "Rechercher",
+    "news": "Actu",
+    "stats": "Stats"
   },
   "home": {
     "start_with": "Je commence par…",
@@ -29,7 +31,29 @@
     "registerplace": "Inscrire mon établissement",
     "days": "jours",
     "event_is_here": "L’événement est ici !",
-    "countdown_description": "Les premiers Jeux Olympiques de la Jeunesse en terre africaine. Dakar, Diamniadio et Saly."
+    "countdown_description": "Les premiers Jeux Olympiques de la Jeunesse en terre africaine. Dakar, Diamniadio et Saly.",
+    "quick_access": "Accès rapide",
+    "my_agenda": "Mon agenda",
+    "maps": "Cartes",
+    "torch": "Flamme",
+    "news": "Actualités"
+  },
+  "news": {
+    "news": "Actualités",
+    "latest": "Derniers articles du site officiel des JOJ et de la presse en ligne.",
+    "thegamesjournal": "Le journal des Jeux"
+  },
+  "stats": {
+    "stats": "Stats",
+    "gamesinnumers": "La compétition en chiffres",
+    "competition_sites": "Sites de compétition",
+    "competition_sports": "Sports de compétition",
+    "competition_sports_engagement": "+ 10 sports d'engagement",
+    "delegations": "Délégations (CNO)",
+    "athletes": "Athlètes attendus",
+    "cities": "Villes hôtes",
+    "cities_list": "Dakar · Diamniadio · Saly",
+    "capacity": "Capacité d'accueil estimée"
   },
   "search.title": "Rechercher des lieux",
   "search.tab.global": "Rechercher partout",

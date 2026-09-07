@@ -8,6 +8,8 @@ import { useTranslation } from "react-i18next";
 import { PlacesListContent as ExplorerContent } from "../place-list/PlacesList";
 import { SearchPlacesModal as SearchContent } from "../search/SearchPlacesModal";
 import { HomeContent } from "../home";
+import { NewsContent } from "../news";
+import { StatsContent } from "../stats";
 import { usePanelContext } from "@/components/panel-provider";
 import { useModalContext } from "@/components/modal-provider";
 import { useStateContext } from "@/components/state-provider";
@@ -40,6 +42,8 @@ export const SidePanel = () => {
           <TabsTrigger value="home">{t("tabs.home", "Home")}</TabsTrigger>
           <TabsTrigger value="explorer">{t("tabs.explorer", "Explorer")}</TabsTrigger>
           <TabsTrigger value="search">{t("tabs.search", "Search")}</TabsTrigger>
+          <TabsTrigger value="news">{t("tabs.news", "News")}</TabsTrigger>
+          <TabsTrigger value="stats">{t("tabs.stats", "Stats")}</TabsTrigger>
         </TabsList>
         <div className="min-h-0 flex-1 overflow-y-auto">
           <TabsContent value="home">
@@ -50,6 +54,12 @@ export const SidePanel = () => {
           </TabsContent>
           <TabsContent value="search">
             <SearchContent setPanelOpen={closePanel} />
+          </TabsContent>
+          <TabsContent value="news">
+            <NewsContent />
+          </TabsContent>
+          <TabsContent value="stats">
+            <StatsContent />
           </TabsContent>
         </div>
       </Tabs>
