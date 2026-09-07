@@ -27,7 +27,7 @@ export default function MapPage() {
     const map = mapManager.initMap(mapContainerRef.current);
 
     const openExplorer = () => {
-      setActiveTab("explorer");
+      setActiveTab("home");
 
       if (!isMobile) {
         setPanelContent({

@@ -2,7 +2,6 @@
   "title": "Africa welcomes, Dakar celebrates",
   "description": "Youth Olympic Games",
   "hello": "Hello, {{name}}!",
-
   "actions": {
     "closepanel": "Close Panel",
     "openpanel": "Open Panel",
@@ -16,14 +15,25 @@
   "zoom_in": "Zoom In",
   "zoom_out": "Zoom Out",
   "tabs": {
+    "home": "Home",
     "explorer": "Explorer",
     "search": "Search"
   },
-
+  "home": {
+    "start_with": "Start with…",
+    "agenda": "Attend the events",
+    "agendainfo": "Programme, sites, agenda",
+    "discover": "Discover Senegal",
+    "localservices": "Must-sees, hotels, restaurants",
+    "business": "I am a business",
+    "registerplace": "List my venue",
+    "days": "days",
+    "event_is_here": "The event is here!",
+    "countdown_description": "The first Youth Olympic Games on African soil. Dakar, Diamniadio and Saly."
+  },
   "search.title": "Search Places",
   "search.tab.global": "Search Anywhere",
   "search.tab.local": "Configured Locations",
-
   "search.placeholder.global": "Search any place in the world…",
   "search.tip.global": "Tip: search cities, landmarks, addresses… then we’ll fly the map there.",
   "local.search.placeholder": "Search by name, zone, or category…",
@@ -32,7 +42,6 @@
   "local.noMatches": "No matches.",
   "local.untitled": "Untitled",
   "local.zone.unassigned": "Unassigned",
-
   "basemap.modal.title": "Map Layers",
   "basemap.option.mapbox_streets.label": "Mapbox Streets",
   "basemap.option.mapbox_streets.desc": "Default road map with labels.",
