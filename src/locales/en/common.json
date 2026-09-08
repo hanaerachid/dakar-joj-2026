@@ -18,6 +18,7 @@
     "home": "Home",
     "explorer": "Explorer",
     "search": "Search",
+    "events": "Schedule",
     "news": "News",
     "stats": "Chiffres",
     "business": "Business"
@@ -43,6 +44,11 @@
     "news": "News",
     "latest": "Latest from the official YOG site and online press.",
     "thegamesjournal": "The Games Journal"
+  },
+  "events": {
+    "events": "Events",
+    "live_and_upcoming": "Live and upcoming",
+    "plan_your_games": "Plan your Games"
   },
   "stats": {
     "stats": "Chiffres",

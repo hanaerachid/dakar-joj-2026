@@ -18,6 +18,7 @@
     "home": "Accueil",
     "explorer": "Explorer",
     "search": "Rechercher",
+    "events": "Programme",
     "news": "Actu",
     "stats": "Stats",
     "business": "Espace Pro"
@@ -43,6 +44,11 @@
     "news": "Actualités",
     "latest": "Derniers articles du site officiel des JOJ et de la presse en ligne.",
     "thegamesjournal": "Le journal des Jeux"
+  },
+  "events": {
+    "events": "Événements",
+    "live_and_upcoming": "En direct & à venir",
+    "plan_your_games": "Planifiez vos Jeux"
   },
   "stats": {
     "stats": "Stats",

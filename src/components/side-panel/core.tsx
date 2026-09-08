@@ -10,6 +10,7 @@ import { SearchPlacesModal as SearchContent } from "../search/SearchPlacesModal"
 import { HomeContent } from "../home";
 import { NewsContent } from "../news";
 import { StatsContent } from "../stats";
+import { EventsContent } from "../events";
 import { BusinessContent } from "../business";
 import { usePanelContext } from "@/components/panel-provider";
 import { useModalContext } from "@/components/modal-provider";
@@ -43,6 +44,7 @@ export const SidePanel = () => {
           <TabsTrigger className="shrink-0 whitespace-nowrap" value="home">{t("tabs.home", "Home")}</TabsTrigger>
           <TabsTrigger className="shrink-0 whitespace-nowrap" value="explorer">{t("tabs.explorer", "Explorer")}</TabsTrigger>
           <TabsTrigger className="shrink-0 whitespace-nowrap" value="search">{t("tabs.search", "Search")}</TabsTrigger>
+          <TabsTrigger className="shrink-0 whitespace-nowrap" value="events">{t("tabs.events", "Schedule")}</TabsTrigger>
           <TabsTrigger className="shrink-0 whitespace-nowrap" value="stats">{t("tabs.stats", "Stats")}</TabsTrigger>
           <TabsTrigger className="shrink-0 whitespace-nowrap" value="news">{t("tabs.news", "News")}</TabsTrigger>
           <TabsTrigger className="shrink-0 whitespace-nowrap" value="business">{t("tabs.business", "Business")}</TabsTrigger>
@@ -56,6 +58,9 @@ export const SidePanel = () => {
           </TabsContent>
           <TabsContent value="search">
             <SearchContent setPanelOpen={closePanel} />
+          </TabsContent>
+          <TabsContent value="events">
+            <EventsContent />
           </TabsContent>
           <TabsContent value="news">
             <NewsContent />
