@@ -19,7 +19,8 @@
     "explorer": "Explorer",
     "search": "Rechercher",
     "news": "Actu",
-    "stats": "Stats"
+    "stats": "Stats",
+    "business": "Espace Pro"
   },
   "home": {
     "start_with": "Je commence par…",
@@ -54,6 +55,20 @@
     "cities": "Villes hôtes",
     "cities_list": "Dakar · Diamniadio · Saly",
     "capacity": "Capacité d'accueil estimée"
+  },
+  "business": {
+    "businesses": "Professionnels",
+    "listbusiness": "Référencez votre établissement",
+    "business_description": "Hôtels, restaurants, boutiques, concessions automobiles, musées, galeries… Rejoignez la carte officielle des visiteurs des Jeux.",
+    "selectplan": "Nos plans",
+    "discover": "Découverte",
+    "your_profile_on_the_map": "Votre profil sur la carte",
+    "show": "Visibilité",
+    "photos_and_best_position": "Photos et meilleure position",
+    "premium": "Premium",
+    "maximum_visibility": "Visibilité maximale",
+    "free": "Gratuit",
+    "month": "mois"
   },
   "search.title": "Rechercher des lieux",
   "search.tab.global": "Rechercher partout",

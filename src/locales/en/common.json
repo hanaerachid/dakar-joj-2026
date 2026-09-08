@@ -19,7 +19,8 @@
     "explorer": "Explorer",
     "search": "Search",
     "news": "News",
-    "stats": "Chiffres"
+    "stats": "Chiffres",
+    "business": "Business"
   },
   "home": {
     "start_with": "Start with…",
@@ -41,7 +42,11 @@
   "news": {
     "news": "News",
     "latest": "Latest from the official YOG site and online press.",
-    "thegamesjournal": "The Games Journal",
+    "thegamesjournal": "The Games Journal"
+  },
+  "stats": {
+    "stats": "Chiffres",
+    "gamesinnumers": "The Games in numbers",
     "competition_sites": "Competition Sites",
     "competition_sports": "Competition Sports",
     "competition_sports_engagement": "+ 10 engagement sports",
@@ -51,9 +56,19 @@
     "cities_list": "Dakar · Diamniadio · Saly",
     "capacity": "Estimated Capacity"
   },
-  "stats": {
-    "stats": "Chiffres",
-    "gamesinnumers": "The Games in numbers"
+  "business": {
+    "businesses": "Businesses",
+    "listbusiness": "List your business",
+    "business_description": "Hotels, restaurants, shops, car dealerships, museums, galleries — join the official visitor map.",
+    "selectplan": "Our plans",
+    "discover": "Discover",
+    "your_profile_on_the_map": "Your profile on the map",
+    "show": "Show",
+    "photos_and_best_position": "Photos and best position",
+    "premium": "Premium",
+    "maximum_visibility": "Maximum visibility",
+    "free": "Free",
+    "month": "month"
   },
   "search.title": "Search Places",
   "search.tab.global": "Search Anywhere",

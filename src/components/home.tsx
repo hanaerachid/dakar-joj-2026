@@ -112,7 +112,10 @@ export const HomeContent = () => {
               </ItemDescription>
             </ItemContent>
           </Item>
-          <Item size="sm" variant="outline">
+          <Item size="sm" variant="outline"
+            className="hover:bg-muted cursor-pointer"
+            onClick={() => setActiveTab("business")}
+          >
             <ItemMedia variant="icon" >
               <BriefcaseBusiness />
             </ItemMedia>

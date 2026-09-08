@@ -10,6 +10,7 @@ import { SearchPlacesModal as SearchContent } from "../search/SearchPlacesModal"
 import { HomeContent } from "../home";
 import { NewsContent } from "../news";
 import { StatsContent } from "../stats";
+import { BusinessContent } from "../business";
 import { usePanelContext } from "@/components/panel-provider";
 import { useModalContext } from "@/components/modal-provider";
 import { useStateContext } from "@/components/state-provider";
@@ -37,13 +38,14 @@ export const SidePanel = () => {
       >
         <TabsList
           variant="line"
-          className="sticky top-0 z-10"
+          className="sticky top-0 z-10 w-full justify-start overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          <TabsTrigger value="home">{t("tabs.home", "Home")}</TabsTrigger>
-          <TabsTrigger value="explorer">{t("tabs.explorer", "Explorer")}</TabsTrigger>
-          <TabsTrigger value="search">{t("tabs.search", "Search")}</TabsTrigger>
-          <TabsTrigger value="news">{t("tabs.news", "News")}</TabsTrigger>
-          <TabsTrigger value="stats">{t("tabs.stats", "Stats")}</TabsTrigger>
+          <TabsTrigger className="shrink-0 whitespace-nowrap" value="home">{t("tabs.home", "Home")}</TabsTrigger>
+          <TabsTrigger className="shrink-0 whitespace-nowrap" value="explorer">{t("tabs.explorer", "Explorer")}</TabsTrigger>
+          <TabsTrigger className="shrink-0 whitespace-nowrap" value="search">{t("tabs.search", "Search")}</TabsTrigger>
+          <TabsTrigger className="shrink-0 whitespace-nowrap" value="stats">{t("tabs.stats", "Stats")}</TabsTrigger>
+          <TabsTrigger className="shrink-0 whitespace-nowrap" value="news">{t("tabs.news", "News")}</TabsTrigger>
+          <TabsTrigger className="shrink-0 whitespace-nowrap" value="business">{t("tabs.business", "Business")}</TabsTrigger>
         </TabsList>
         <div className="min-h-0 flex-1 overflow-y-auto">
           <TabsContent value="home">
@@ -60,6 +62,9 @@ export const SidePanel = () => {
           </TabsContent>
           <TabsContent value="stats">
             <StatsContent />
+          </TabsContent>
+          <TabsContent value="business">
+            <BusinessContent />
           </TabsContent>
         </div>
       </Tabs>

@@ -60,7 +60,7 @@ export function Panel({
         >
           <DrawerContent
             className={cn(`
-            z-150 my-24 bg-background/80 backdrop-blur-md shadow-lg
+            z-150 my-18 bg-background/80 backdrop-blur-md shadow-lg
             `, SIZE_MAP[size],
             )}
           >
