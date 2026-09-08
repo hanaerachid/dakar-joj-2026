@@ -86,7 +86,10 @@ export const HomeContent = () => {
           {t("home.start_with", "Start with...")}
         </h2>
         <ItemGroup className="gap-2" >
-          <Item size="sm" variant="outline">
+          <Item size="sm" variant="outline"
+            className="hover:bg-muted cursor-pointer"
+            onClick={() => setActiveTab("events")}
+          >
             <ItemMedia variant="icon" >
               <Calendars />
             </ItemMedia>
@@ -135,7 +138,10 @@ export const HomeContent = () => {
           {t("home.quick_access", "Quick access")}
         </h2>
         <ItemGroup className="grid grid-cols-2 gap-2" >
-          <Item size="xs" variant="muted">
+          <Item size="xs" variant="muted"
+            className="hover:bg-muted cursor-pointer"
+            onClick={() => setActiveTab("events")}
+          >
             <ItemMedia variant="icon" >
               <Calendar />
             </ItemMedia>
