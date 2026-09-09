@@ -1,4 +1,5 @@
 import type { CategoryConfig } from "@/types/config";
+import { Car, Landmark, Cross, Siren, Store, Mosque, CircleEllipsis, ShoppingCart, House, Utensils, Trophy } from "lucide-react";
 
 export const CATEGORIES: CategoryConfig[] = [
   {
@@ -29,7 +30,7 @@ export const CATEGORIES: CategoryConfig[] = [
   {
     id: "transport",
     label: "Transportation",
-    sources: [] 
+    sources: []
   },
   {
     id: "police",
@@ -153,15 +154,70 @@ export const CATEGORIES: CategoryConfig[] = [
 ];
 
 export const MAIN_CATEGORIES = [
-  { id: "sports", label: "Sports", categories: ["competition"] },
-  { id: "housing", label: "Housing", categories: ["hotels"] },
-  { id: "food_and_drink", label: "Food & Drink", categories: ["restaurants"] },
-  { id: "mobility", label: "Mobility", categories: ["transport", "airport", "bus", "ferry", "railway"] },
-  { id: "shopping_and_crafts", label: "Shopping & Crafts", categories: [] },
-  { id: "culture_and_heritage", label: "Culture & Heritage", categories: ["artworks", "attraction", "castle", "gallery", "memorial", "monument", "museum", "viewpoints", "zoo"] },
-  { id: "health", label: "Health", categories: ["hospitals"] },
-  { id: "security", label: "Security", categories: ["police"] },
-  { id: "services", label: "Services", categories: ["bank", "atm", "firestation", "embassy", "consulate"] },
-  { id: "religion", label: "Religion", categories: ["church", "mosque"] },
-  { id: "other", label: "Other", categories: ["other"] },
+  {
+    id: "sports",
+    label: "Sports",
+    icon: Trophy,
+    categories: ["competition"]
+  },
+  {
+    id: "housing",
+    icon: House,
+    label: "Housing",
+    categories: ["hotels"]
+  },
+  {
+    id: "food_and_drink",
+    icon: Utensils,
+    label: "Food & Drink",
+    categories: ["restaurants"]
+  },
+  {
+    id: "mobility",
+    icon: Car,
+    label: "Mobility",
+    categories: ["transport", "airport", "bus", "ferry", "railway"]
+  },
+  {
+    id: "shopping_and_crafts",
+    icon: ShoppingCart,
+    label: "Shopping & Crafts",
+    categories: []
+  },
+  {
+    id: "culture_and_heritage",
+    icon: Landmark,
+    label: "Culture & Heritage",
+    categories: ["artworks", "attraction", "castle", "gallery", "memorial", "monument", "museum", "viewpoints", "zoo"]
+  },
+  {
+    id: "health",
+    icon: Cross,
+    label: "Health",
+    categories: ["hospitals"]
+  },
+  {
+    id: "security",
+    icon: Siren,
+    label: "Security",
+    categories: ["police"]
+  },
+  {
+    id: "services",
+    icon: Store,
+    label: "Services",
+    categories: ["bank", "atm", "firestation", "embassy", "consulate"]
+  },
+  {
+    id: "religion",
+    icon: Mosque,
+    label: "Religion",
+    categories: ["church", "mosque"]
+  },
+  {
+    id: "other",
+    icon: CircleEllipsis,
+    label: "Other",
+    categories: ["other"]
+  },
 ];
