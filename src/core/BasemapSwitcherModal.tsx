@@ -1,10 +1,9 @@
-// src/core/BasemapSwitcherModal.tsx
+// src/core/BasemapSwitcherContent.tsx
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Asterisk, CarFront, CircleCheck, Map, MoonStar, Mountain, Satellite, Sun, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MapManager } from "./MapManager";
-import { Modal } from "../components/common/Modal";
 import {
   Item,
   ItemContent,
@@ -13,6 +12,8 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item"
+import { useModalContext } from "@/components/modal-provider";
+import { AnimatedButton } from "@/components/buttons/AnimatedButton";
 
 type BasemapId =
   | "mapbox-streets"
@@ -96,8 +97,54 @@ const isBasemapId = (value: string | null): value is BasemapId => {
   return OPTIONS.some((option) => option.id === value);
 };
 
-export function BasemapSwitcherModal({
-  isOpen,
+export const BaseMapSwitcher = () => {
+  const { t } = useTranslation();
+  const [layersOpen, setLayersOpen] = useState(false);
+
+  const {
+    isOpen,
+    setIsOpen,
+    setModalContent,
+  } = useModalContext();
+
+  const openModal = () => {
+    if (isOpen) {
+      setIsOpen(false);
+      return;
+    }
+    setModalContent({
+      title: t("basemap.modal.title", "Map Layers"),
+      size: "md",
+      children: (
+        <BasemapSwitcherContent
+          isOpen={layersOpen}
+          onClose={() => setLayersOpen(false)}
+        />
+      ),
+      footer: (
+        <div className="text-xs text-foreground/50">
+          {t(
+            "basemap.tip",
+            "Tip: you can change the basemap at any time. Your custom layers will reload automatically.",
+          )}
+        </div>
+      ),
+      onClose: () => setIsOpen(false),
+    });
+    setIsOpen(true);
+  }
+
+  return (
+    <AnimatedButton
+      icon={Map}
+      isOpen={isOpen}
+      title={t("actions.basemaps", "Change basemap")}
+      onClick={openModal}
+    />
+  );
+}
+
+export function BasemapSwitcherContent({
   onClose,
 }: {
   isOpen: boolean;
@@ -118,60 +165,46 @@ export function BasemapSwitcherModal({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={t("basemap.modal.title", "Map Layers")}
-      size="md"
-      footer={
-        <div className="text-xs text-foreground/50">
-          {t(
-            "basemap.tip",
-            "Tip: you can change the basemap at any time. Your custom layers will reload automatically.",
-          )}
-        </div>
-      }
-    >
-      <ItemGroup>
-        {OPTIONS.map((opt) => {
-          const selected = opt.id === active;
-          return (
-            <Item
-              variant="default"
-              size="xs"
-              key={opt.id}
-              onClick={() => apply(opt.id)}
-              className={cn(
-                "w-full transition",
-                selected
-                  ? "bg-accent shadow ring-1 ring-foreground/5"
-                  : "c",
-              )}
-              aria-pressed={selected}
+
+    <ItemGroup>
+      {OPTIONS.map((opt) => {
+        const selected = opt.id === active;
+        return (
+          <Item
+            variant="default"
+            size="xs"
+            key={opt.id}
+            onClick={() => apply(opt.id)}
+            className={cn(
+              "w-full transition",
+              selected
+                ? "bg-accent shadow ring-1 ring-foreground/5"
+                : "c",
+            )}
+            aria-pressed={selected}
+          >
+            <ItemMedia
+              variant="icon"
+              className="rounded-lg bg-background/5 w-9 h-9"
             >
-              <ItemMedia
-                variant="icon"
-                className="rounded-lg bg-background/5 w-9 h-9"
-              >
-                <opt.icon className="w-5 h-5" />
-              </ItemMedia>
-              <ItemContent>
-                <ItemTitle className="truncate">
-                  {t(opt.labelKey, opt.labelFallback)}
-                </ItemTitle>
-                <ItemDescription className="text-xs truncate">
-                  {t(opt.descKey, opt.descFallback)}
-                </ItemDescription>
-              </ItemContent>
-              <ItemContent>
-                {selected && (
-                  <CircleCheck className="text-primary" />
-                )}
-              </ItemContent>
-            </Item>
-          );
-        })}
-      </ItemGroup>
-    </Modal>
+              <opt.icon className="w-5 h-5" />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle className="truncate">
+                {t(opt.labelKey, opt.labelFallback)}
+              </ItemTitle>
+              <ItemDescription className="text-xs truncate">
+                {t(opt.descKey, opt.descFallback)}
+              </ItemDescription>
+            </ItemContent>
+            <ItemContent>
+              {selected && (
+                <CircleCheck className="text-primary" />
+              )}
+            </ItemContent>
+          </Item>
+        );
+      })}
+    </ItemGroup>
   );
 }

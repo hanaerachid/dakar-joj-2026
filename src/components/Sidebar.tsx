@@ -1,13 +1,12 @@
 // src/components/Sidebar.tsx
-import { useState } from "react";
 import { AnimatedButton } from "./buttons/AnimatedButton";
 import { PlacesList } from "./place-list/PlacesList";
 import { SearchPlaces } from "./search/SearchPlacesModal";
-import { BasemapSwitcherModal } from "../core/BasemapSwitcherModal";
+import { BaseMapSwitcher } from "../core/BasemapSwitcherModal";
 import { ZoomPill } from "../core/ZoomPill";
 import { LocateMeButton } from "../core/LocateMeButton";
 import { toast } from "sonner";
-import { Map, MapPinHouse, RouteOff, Share2 } from "lucide-react";
+import { MapPinHouse, RouteOff, Share2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
 
@@ -27,7 +26,6 @@ export function Sidebar({
   onClearRoute,
 }: SidebarProps) {
   const { t } = useTranslation();
-  const [layersOpen, setLayersOpen] = useState(false);
 
   const handleShare = async () => {
     try {
@@ -78,12 +76,7 @@ export function Sidebar({
       "
       >
         {/* Top group */}
-        <AnimatedButton
-          icon={Map}
-          title={t("actions.basemaps", "Change basemap")}
-          tooltip={t("actions.basemaps", "Change basemap")}
-          onClick={() => setLayersOpen(true)}
-        />
+        <BaseMapSwitcher />
         {/* Utility group */}
         <PlacesList /> {/* keeps its own popover; button fits the dock */}
         {/* thin divider */}
@@ -114,13 +107,6 @@ export function Sidebar({
           onClick={handleShare}
         />
       </div>
-
-      {/* Modals */}
-
-      <BasemapSwitcherModal
-        isOpen={layersOpen}
-        onClose={() => setLayersOpen(false)}
-      />
     </div>
   );
 }
