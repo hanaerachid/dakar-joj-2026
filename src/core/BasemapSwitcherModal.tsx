@@ -90,6 +90,12 @@ const OPTIONS: {
     },
   ];
 
+const BASEMAP_STORAGE_KEY = "active-basemap";
+
+const isBasemapId = (value: string | null): value is BasemapId => {
+  return OPTIONS.some((option) => option.id === value);
+};
+
 export function BasemapSwitcherModal({
   isOpen,
   onClose,
@@ -98,7 +104,11 @@ export function BasemapSwitcherModal({
   onClose: () => void;
 }) {
   const { t } = useTranslation();
-  const [active, setActive] = useState<BasemapId>("mapbox-streets");
+  const [active, setActive] = useState<BasemapId>(() => {
+    const saved = localStorage.getItem(BASEMAP_STORAGE_KEY);
+    return isBasemapId(saved) ? saved : "mapbox-streets";
+  });
+
   const mgr = MapManager.getInstance();
 
   const apply = async (id: BasemapId) => {

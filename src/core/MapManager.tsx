@@ -31,6 +31,13 @@ const MAPBOX_STYLE_URLS: Record<BasemapId, string> = {
   "mapbox-navigation-day": "mapbox://styles/mapbox/navigation-day-v1",
   "mapbox-navigation-night": "mapbox://styles/mapbox/navigation-night-v1",
 };
+
+const BASEMAP_STORAGE_KEY = "active-basemap";
+
+const isBasemapId = (value: string | null): value is BasemapId => {
+  return value !== null && value in MAPBOX_STYLE_URLS;
+};
+
 const DEFAULT_VISIBLE_CATS = new Set<string>(["competition"]);
 
 const CATEGORY_PREFIX: Record<string, string> = {
@@ -139,9 +146,15 @@ export class MapManager {
   initMap(container: HTMLDivElement): MapboxMap {
     if (this.map) return this.map;
 
+    const savedBasemap = localStorage.getItem(BASEMAP_STORAGE_KEY);
+
+    const initialBasemap: BasemapId = isBasemapId(savedBasemap)
+      ? savedBasemap
+      : "mapbox-streets";
+
     this.map = new mapboxgl.Map({
       container,
-      style: "mapbox://styles/mapbox/streets-v11",
+      style: MAPBOX_STYLE_URLS[initialBasemap],
       center: INITIAL_CENTER,
       zoom: getInitialZoom(),
     });
@@ -267,6 +280,8 @@ export class MapManager {
 
   async setBasemap(id: BasemapId) {
     if (!this.map) return;
+
+    localStorage.setItem(BASEMAP_STORAGE_KEY, id);
 
     // 1) remember current view
     const center = this.map.getCenter();
