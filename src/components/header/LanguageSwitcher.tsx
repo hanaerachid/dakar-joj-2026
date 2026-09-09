@@ -1,6 +1,12 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Lang = "fr" | "en";
 
@@ -16,7 +22,6 @@ const normalizeLang = (lang?: string): Lang => {
 
 type Language = {
   code: Lang;
-  icon: string;
   label: string;
   aria: string;
 };
@@ -25,14 +30,12 @@ const languages: Language[] =
   [
     {
       code: "fr",
-      icon: "emojione:flag-for-france",
-      label: "FR",
+      label: "Français",
       aria: "Switch to French",
     },
     {
       code: "en",
-      icon: "circle-flags:uk",
-      label: "EN",
+      label: "English",
       aria: "Switch to English",
     },
   ];
@@ -50,29 +53,24 @@ export function LanguageSwitcher({ value, onChange }: Props) {
   };
 
   return (
-    <ToggleGroup
-      value={[activeLang]}
-      onValueChange={(values) => {
-        const lang = values[0];
-        if (lang) {
-          handleSelect(lang as Lang);
-        }
-      }}
-      className="p-0.5"
+    <Select
+      value={activeLang}
+      onValueChange={(value) => handleSelect(value as Lang)}
     >
-      {languages.map((lang) => (
-        <ToggleGroupItem
-          key={lang.code}
-          value={lang.code}
-          aria-label={lang.aria}
-          className="flex items-center gap-2 px-3 py-2 data-[state=on]:bg-primary data-[state=on]:text-white"
-        >
-          <Icon icon={lang.icon} className="h-4 w-4" />
-          <span className="text-xs uppercase">
+      <SelectTrigger
+        aria-label="Select language"
+      >
+        <Globe className="h-5 w-5" />
+        <SelectValue className="sr-only" />
+      </SelectTrigger>
+
+      <SelectContent>
+        {languages.map((lang) => (
+          <SelectItem key={lang.code} value={lang.code}>
             {lang.label}
-          </span>
-        </ToggleGroupItem>
-      ))}
-    </ToggleGroup>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
