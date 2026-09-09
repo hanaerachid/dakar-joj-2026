@@ -6,8 +6,16 @@ import {
   UserButton,
 } from "@clerk/clerk-react";
 import { useRole } from "../../auth/hooks/useRole";
-import { UserShield } from "lucide-react";
+import { ChevronDown, UserShield } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 
 export function ClerkAuthControls() {
   const hasClerkConfig = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
@@ -21,18 +29,33 @@ export function ClerkAuthControls() {
   return (
     <>
       <SignedOut>
-        <div className="flex items-center gap-2">
-          <SignInButton mode="modal">
-            <button className="rounded-full border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground transition hover:bg-accent">
-              {t("auth.login.submit", "Log in")}
-            </button>
-          </SignInButton>
+        <ButtonGroup>
           <SignUpButton mode="modal">
-            <button className="rounded-full bg-foreground px-3 py-1.5 text-sm font-medium text-background transition hover:opacity-90">
-              {t("auth.register.submit", "Register")}
-            </button>
+            <Button className="rounded-s-full">
+              {t("auth.register.submit", "Sign up")}
+            </Button>
           </SignUpButton>
-        </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button
+                size="icon"
+                className="rounded-e-full"
+                aria-label={t("auth.accountOptions", "Account options")}
+              >
+                <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <SignInButton mode="modal">
+                <DropdownMenuItem
+                  onSelect={(e) => e.preventDefault()}
+                >
+                  {t("auth.login.submit", "Log in")}
+                </DropdownMenuItem>
+              </SignInButton>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </ButtonGroup>
       </SignedOut>
 
       <SignedIn>
