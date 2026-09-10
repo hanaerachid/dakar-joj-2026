@@ -216,7 +216,14 @@ export function PlacesCategoryList(props: Props) {
                                             animate="open"
                                             exit="closed">
                                             <ul className="px-2.5 pb-2 space-y-1.5">
-                                              {list.map((feature: any, index) => {
+                                              {[...list]
+                                                .sort((a: any, b: any) => {
+                                                  const titleA = a?.properties?.Name || a?.properties?.title || a?.properties?.name || "Untitled";
+                                                  const titleB = b?.properties?.Name || b?.properties?.title || b?.properties?.name || "Untitled";
+
+                                                  return titleA.localeCompare(titleB);
+                                                })
+                                                .map((feature: any, index) => {
                                                 const title = feature?.properties?.Name || feature?.properties?.title || feature?.properties?.name || "Untitled";
                                                 return (
                                                   <li key={`${zone}-${index}`}>
