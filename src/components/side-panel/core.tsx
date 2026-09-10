@@ -57,7 +57,7 @@ export const SidePanel = () => {
             <ExplorerContent setPanelOpen={closePanel} />
           </TabsContent>
           <TabsContent value="search">
-            <SearchContent setPanelOpen={closePanel} />
+            <SearchContent />
           </TabsContent>
           <TabsContent value="events">
             <EventsContent />
