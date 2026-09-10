@@ -137,7 +137,6 @@ export const BaseMapSwitcher = () => {
   return (
     <AnimatedButton
       icon={Map}
-      isOpen={isOpen}
       title={t("actions.basemaps", "Change basemap")}
       onClick={openModal}
     />
