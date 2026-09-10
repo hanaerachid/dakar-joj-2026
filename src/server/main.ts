@@ -13,6 +13,7 @@ import { authRoutes } from "./features/auth/auth.routes.js";
 import { zonesRoutes } from "./features/zones/zones.routes.js";
 import { placesRoutes } from "./features/places/places.routes.js";
 import { contentRoutes } from "./features/content/content.routes.js";
+import { torchRoutes } from "./features/torch/torch.routes.js";
 import { uploadRoutes } from "./features/uploads/upload.routes.js";
 import { itineraryRoutes } from "./features/itinerary/itinerary.routes.js";
 import { attachSessionUser } from "./middleware/auth.js";
@@ -24,7 +25,7 @@ import {
   placeInputSchema,
   newsSchema,
   eventSchema,
-  torchSchema,
+  torchStopSchema,
   sessionUserSchema,
   zoneSchema,
 } from "../shared/contracts.js";
@@ -60,6 +61,7 @@ const v2Routes = new OpenAPIHono();
 v2Routes.use("*", attachSessionUser);
 v2Routes.route("/zones", zonesRoutes);
 v2Routes.route("/places", placesRoutes);
+v2Routes.route("/torch", torchRoutes);
 v2Routes.route("/", contentRoutes);
 
 const itineraryCoordinateSchema = z
@@ -399,14 +401,13 @@ app.openAPIRegistry.registerPath({
 app.openAPIRegistry.registerPath({
   method: "get",
   path: "/api/v2/torch",
-  summary: "List torch entries (v2)",
-  security: [],
+  summary: "List all torch stops",
   responses: {
     200: {
-      description: "Torch path",
+      description: "Array of torch stops",
       content: {
         "application/json": {
-          schema: apiSuccessSchema(z.array(torchSchema)),
+          schema: apiSuccessSchema(z.array(torchStopSchema)),
         },
       },
     },

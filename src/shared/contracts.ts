@@ -175,26 +175,27 @@ export const eventSchema = z
   })
   .passthrough();
 
-export const torchSchema = z
-  .object({
-    id: z.string().optional(),
-    legacyFirestoreId: z.string().nullable().optional(),
-    title: z.string().nullable().optional(),
-    name: z.string().nullable().optional(),
-    description: z.string().nullable().optional(),
-    body: z.string().nullable().optional(),
-    status: z.string().nullable().optional(),
-    imageUrl: z.string().nullable().optional(),
-    city: z.string().nullable().optional(),
-    country: z.string().nullable().optional(),
-    location: z.any().nullable().optional(),
-    startDate: z.string().datetime().nullable().optional(),
-    endDate: z.string().datetime().nullable().optional(),
-    publishedAt: z.string().datetime().nullable().optional(),
-    createdAt: z.string().datetime().nullable().optional(),
-    updatedAt: z.string().datetime().nullable().optional(),
-  })
-  .passthrough();
+export const geoJsonPointSchema = z.object({
+  type: z.literal("Point"),
+  coordinates: z.tuple([z.number(), z.number()]), // [longitude, latitude]
+});
+
+export const torchStopMetadataSchema = z.object({
+  phase: z.string().optional(),
+  description: z.string().optional(),
+  isMajorStop: z.boolean().optional(),
+});
+
+export const torchStopSchema = z.object({
+  _id: z.string(),
+  name: z.string(),
+  region: z.string(),
+  location: geoJsonPointSchema,
+  tourDate: z.string().datetime(), // Serialized as ISO string for API consumers
+  metadata: torchStopMetadataSchema.optional(),
+});
+
+export type TorchStop = z.infer<typeof torchStopSchema>;
 
 export const uploadResponseSchema = z.object({
   url: z.string().url(),

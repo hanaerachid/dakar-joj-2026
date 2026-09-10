@@ -4,7 +4,7 @@ import { getContentItem, listContentCollection } from "./content.service.js";
 
 export const contentRoutes = new Hono();
 
-const getList = async (c: any, collection: "news" | "events" | "torch") => {
+const getList = async (c: any, collection: "news" | "events") => {
   const requestedStatus = c.req.query("status");
   const status = requestedStatus === "all" ? undefined : requestedStatus ?? "published";
   const limit = c.req.query("limit") ? Number(c.req.query("limit")) : undefined;
@@ -28,5 +28,3 @@ contentRoutes.get("/events/:id", async (c) => {
   if (!item) return fail(c, 404, "NOT_FOUND", "Event not found");
   return ok(c, item);
 });
-
-contentRoutes.get("/torch", async (c) => getList(c, "torch"));
