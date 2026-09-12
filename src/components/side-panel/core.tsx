@@ -5,9 +5,9 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import { useTranslation } from "react-i18next";
-import { PlacesListContent as ExplorerContent } from "../place-list/PlacesList";
-import { SearchPlacesModal as SearchContent } from "../search/SearchPlacesModal";
+// import { SearchPlacesModal as SearchContent } from "../search/SearchPlacesModal";
 import { HomeContent } from "../home";
+import { ExplorerContent } from "../explorer";
 import { NewsContent } from "../news";
 import { StatsContent } from "../stats";
 import { EventsContent } from "../events";
@@ -43,7 +43,6 @@ export const SidePanel = () => {
         >
           <TabsTrigger className="shrink-0 whitespace-nowrap" value="home">{t("tabs.home", "Home")}</TabsTrigger>
           <TabsTrigger className="shrink-0 whitespace-nowrap" value="explorer">{t("tabs.explorer", "Explorer")}</TabsTrigger>
-          <TabsTrigger className="shrink-0 whitespace-nowrap" value="search">{t("tabs.search", "Search")}</TabsTrigger>
           <TabsTrigger className="shrink-0 whitespace-nowrap" value="events">{t("tabs.events", "Schedule")}</TabsTrigger>
           <TabsTrigger className="shrink-0 whitespace-nowrap" value="stats">{t("tabs.stats", "Stats")}</TabsTrigger>
           <TabsTrigger className="shrink-0 whitespace-nowrap" value="news">{t("tabs.news", "News")}</TabsTrigger>
@@ -55,9 +54,6 @@ export const SidePanel = () => {
           </TabsContent>
           <TabsContent value="explorer">
             <ExplorerContent setPanelOpen={closePanel} />
-          </TabsContent>
-          <TabsContent value="search">
-            <SearchContent />
           </TabsContent>
           <TabsContent value="events">
             <EventsContent />

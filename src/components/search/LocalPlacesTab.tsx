@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Feature, Point, GeoJsonProperties } from "geojson";
-import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { MapManager } from "../../core/MapManager";
 import {
@@ -21,15 +20,9 @@ import {
   ItemTitle
 } from "@/components/ui/item";
 import { Empty, EmptyDescription } from "@/components/ui/empty";
-import { Field } from "@/components/ui/field";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group"
 // import { Kbd } from "@/components/ui/kbd"
 import { Spinner } from "@/components/ui/spinner";
-import type { CategoryConfig } from "@/types/config";
+import { useStateContext } from "../state-provider";
 
 // —— types & helpers ——
 type VenueFeature = Feature<Point, GeoJsonProperties>;
@@ -120,61 +113,89 @@ function openPopupForCategory(
 
 // —— component ——
 export function LocalPlacesTab({
-  categories,
+  title,
   query,
-  onQueryChange,
+  // onQueryChange,
 }: {
-  categories: CategoryConfig[];
+  title: string;
   query: string;
-  onQueryChange: (q: string) => void;
+  // onQueryChange: (q: string) => void;
 }) {
   const { t } = useTranslation();
+  const { isSearchOpen } = useStateContext();
   const mapManager = MapManager.getInstance();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const dataLoadedRef = useRef(false);
   const [venues, setVenues] = useState<LoadedVenue[]>([]);
-
   // load once, first time this tab is shown
   useEffect(() => {
+    if (!isSearchOpen) return;
+
+    const search = query.trim();
+
+    // Input is focused, but user hasn't typed anything yet.
+    if (!search) {
+      setVenues([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     if (dataLoadedRef.current) return;
 
     let cancelled = false;
-    async function loadAll() {
+
+    const loadAll = async () => {
       setLoading(true);
       setError(null);
-      const all: LoadedVenue[] = [];
 
       try {
         const { fc } = await loadAllPlaces();
+
+        if (cancelled) return;
+
         const features = (fc.features || []) as VenueFeature[];
-        features.forEach((f) => {
+
+        const all: LoadedVenue[] = features.map((f) => {
           const categoryId = f.properties?.categoryId;
           const zone = f.properties?.zone;
-          all.push({
+
+          return {
             ...f,
             properties: { ...f.properties },
-            __catId: typeof categoryId === "string" ? categoryId : undefined,
-            __zone: typeof zone === "string" ? zone : undefined,
-          });
+            __catId:
+              typeof categoryId === "string"
+                ? categoryId
+                : undefined,
+            __zone:
+              typeof zone === "string"
+                ? zone
+                : undefined,
+          };
         });
 
-        if (!cancelled) {
-          setVenues(all);
-          dataLoadedRef.current = true;
-        }
+        setVenues(all);
+        dataLoadedRef.current = true;
       } catch (e: any) {
-        if (!cancelled) setError(e?.message ?? t("local.error.loadPlaces"));
+        if (!cancelled) {
+          setError(
+            e?.message ?? t("local.error.loadPlaces")
+          );
+        }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
-    }
+    };
 
     loadAll();
+
     return () => {
       cancelled = true;
     };
-  }, [categories]);
+  }, [isSearchOpen, query, t]);
 
   const filtered = useMemo(() => {
     const t = query.trim().toLowerCase();
@@ -208,27 +229,9 @@ export function LocalPlacesTab({
 
   return (
     <div className="space-y-3">
-      {/* Search input */}
-      <Field className="py-2">
-        <InputGroup className="flex items-center gap-2">
-          <InputGroupAddon>
-            <Search className="w-4 h-4 text-gray-400" />
-          </InputGroupAddon>
-          <InputGroupInput
-            value={query}
-            onChange={(e) => onQueryChange(e.target.value)}
-            placeholder={t("local.search.placeholder")}
-            className="w-full bg-transparent outline-none text-sm placeholder:text-gray-400"
-            autoFocus
-          />
-          {/* 
-          <InputGroupAddon align="inline-end">
-            <Kbd>⌘K</Kbd>
-          </InputGroupAddon>
-          */}
-        </InputGroup>
-      </Field>
-
+      <h2 className="text-xs text-muted-foreground uppercase">
+        {title}
+      </h2>
       {/* Results */}
       {loading ? (
         <div className="flex justify-center items-center gap-2 text-muted-foreground">
@@ -248,7 +251,7 @@ export function LocalPlacesTab({
           </EmptyDescription>
         </Empty>
       ) : (
-        <ItemGroup className="max-h-[60vh] overflow-y-auto">
+        <ItemGroup className="overflow-y-auto">
           {filtered.map((v, index) => {
             const name =
               (v.properties?.Name as string) ||
@@ -260,17 +263,21 @@ export function LocalPlacesTab({
             const color = getMainCategoryColor(mainCategory);
             return (
               <Item key={index}
-                variant="outline"
-                size="sm"
+                variant="default"
+                size="xs"
                 onClick={() => handleSelect(v)}
                 className="hover:bg-primary/10 transition cursor-pointer"
               >
-                <ItemMedia variant="icon">
+                <ItemMedia
+                  variant="icon"
+                  className="h-9 w-9"                >
                   <Icon style={{ color: color }} />
                 </ItemMedia>
                 <ItemContent>
-                  <ItemTitle>{name}</ItemTitle>
-                  <ItemDescription >
+                  <ItemTitle className="text-sm font-medium">
+                    {name}
+                  </ItemTitle>
+                  <ItemDescription className="text-xs line-clamp-2">
                     {getLocalizedCategory(v.__catId as any, t)}
                   </ItemDescription>
                 </ItemContent>

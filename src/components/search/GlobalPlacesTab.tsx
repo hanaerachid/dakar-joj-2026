@@ -1,17 +1,10 @@
 // src/components/search/GlobalPlacesTab.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MapManager } from "../../core/MapManager";
-import { X, SearchIcon, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "@/components/ui/input-group"
 import { Empty, EmptyDescription } from "@/components/ui/empty";
-import { Field, FieldDescription } from "@/components/ui/field";
-import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "@/components/ui/item";
+import { Item, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { Spinner } from "@/components/ui/spinner";
 import { Alert, AlertDescription } from "../ui/alert";
 
@@ -37,20 +30,19 @@ type Feature = {
 };
 
 export function GlobalPlacesTab({
+  title,
   query,
-  onQueryChange,
+  // onQueryChange,
 }: {
+  title: string;
   query: string;
-  onQueryChange: (q: string) => void;
+  // onQueryChange: (q: string) => void;
 }) {
   const { t, i18n } = useTranslation();
   const [results, setResults] = useState<Feature[]>([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
-
-  const placeholder = t("search.placeholder.global");
-  const tipText = t("search.tip.global");
 
   const mgr = MapManager.getInstance();
   const map = mgr.getMap();
@@ -150,40 +142,12 @@ export function GlobalPlacesTab({
 
   return (
     <div className="space-y-3">
-      {/* Input */}
-      <Field className="py-2">
-        <InputGroup className="flex items-center gap-2">
-          <InputGroupAddon>
-            <SearchIcon className="w-4 h-4 text-muted-foreground" />
-          </InputGroupAddon>
-          <InputGroupInput
-            value={query}
-            onChange={(e) => onQueryChange(e.currentTarget.value)}
-            placeholder={placeholder}
-            className="w-full bg-transparent outline-none text-sm placeholder:text-muted-foreground"
-            autoFocus
-          />
-          {!!query && (
-            <InputGroupButton
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => onQueryChange("")}
-              aria-label="Clear"
-            >
-              <X />
-            </InputGroupButton>
-          )}
-        </InputGroup>
-        {!query && (
-          <FieldDescription>
-            {tipText}
-          </FieldDescription>
-        )}
-      </Field>
-
+      <h2 className="text-xs text-muted-foreground uppercase">
+        {title}
+      </h2>
       {/* Results (inside modal) */}
       <div className="rounded-xl overflow-hidden">
-        <div className="max-h-72 overflow-auto space-y-4 rounded-xl">
+        <div className="overflow-auto space-y-4 rounded-xl">
           {/* States */}
 
           {query && loading && (
@@ -201,15 +165,15 @@ export function GlobalPlacesTab({
             </Alert>
           )}
 
-          {query && !loading && !err && results.length === 0 && (
+          {results.length === 0 && (
             <Empty>
               <EmptyDescription className="text-sm text-muted-foreground">
-                No results.
+                {t("global.noMatches")}
               </EmptyDescription>
             </Empty>
           )}
           {results.length > 0 && !loading && (
-            <div className="space-y-1">
+            <ItemGroup className="overflow-y-auto">
               {/* List */}
               {results.map((f) => (
                 <Item
@@ -217,13 +181,16 @@ export function GlobalPlacesTab({
                   variant="default"
                   size="xs"
                   onClick={() => handleZoomTo(f)}
-                  className="w-full hover:bg-background/50 cursor-pointer"
+                  className="hover:bg-primary/10 transition cursor-pointer"
                 >
-                  <ItemMedia className="h-9 w-9 bg-muted-background">
+                  <ItemMedia
+                    variant="icon"
+                    className="h-9 w-9 bg-muted-background"
+                  >
                     <MapPin />
                   </ItemMedia>
-                  <ItemContent className="min-w-0">
-                    <ItemTitle className="text-sm font-medium truncate">
+                  <ItemContent>
+                    <ItemTitle className="text-sm font-medium">
                       {f.display_name.split(",")[0]}
                     </ItemTitle>
                     <ItemDescription className="text-xs line-clamp-2">
@@ -232,7 +199,7 @@ export function GlobalPlacesTab({
                   </ItemContent>
                 </Item>
               ))}
-            </div>
+            </ItemGroup>
           )}
         </div>
 

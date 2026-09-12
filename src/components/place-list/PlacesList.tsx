@@ -71,7 +71,7 @@ export const PlacesList = () => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const { isOpen, setIsOpen, setPanelContent,} = usePanelContext();
-  const {activeTab, setActiveTab } = useStateContext();
+  const {activeTab, setActiveTab, isSearchOpen, setIsSearchOpen } = useStateContext();
 
   const {
     isOpen: panelOpen,
@@ -81,7 +81,7 @@ export const PlacesList = () => {
 
   const openPanel = () => {
     if (!isMobile) {
-      if (isOpen && activeTab === "explorer") {
+      if (isOpen && !isSearchOpen && activeTab === "explorer") {
         setIsOpen(false);
         return;
       }
@@ -95,14 +95,17 @@ export const PlacesList = () => {
     }
 
     if (isMobile) {
-      if (panelOpen && activeTab === "explorer") {
+      if (panelOpen && !isSearchOpen && activeTab === "explorer") {
         setPanelOpen(false);
         return;
       }
       setActiveTab("explorer");
       setModalContent({
         title: null,
-        onClose: () => setPanelOpen(false),
+        onClose: () => {
+          setPanelOpen(false);
+          setIsSearchOpen(false)
+        },
         panelClassName: "sm:max-w-md",
         contentClassName: "relative h-[80vh] sm:h-[680px] px-0 py-0",
         size: "sm",
@@ -115,7 +118,7 @@ export const PlacesList = () => {
   return (
     <AnimatedButton
       icon={Layers2}
-      isOpen={isOpen && activeTab === "explorer"}
+      isOpen={isOpen && activeTab === "explorer" && !isSearchOpen}
       title={isOpen ? t("actions.closepanel", "Close Panel") : t("actions.openpanel", "Open Panel")}
       onClick={openPanel}
     />
