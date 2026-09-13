@@ -1,7 +1,7 @@
 import mapboxgl, { type Map } from "mapbox-gl";
 import { createRoot } from "react-dom/client";
 import { Flame } from "lucide-react";
-import { destroyPopup, renderVenuePopup } from "../../components/popupRenderer";
+import { destroyPopup, renderPopup } from "../../components/popupRenderer";
 
 export type TorchStop = {
 	_id: string;
@@ -111,8 +111,9 @@ function addTorchMarker(
 
 		let popup: mapboxgl.Popup | null = null;
 
-		const popupNode = renderVenuePopup({
+		const popupNode = renderPopup({
 			title: stop.name || "Unknown Stop",
+			date: stop.tourDate,
 			zone: stop.region,
 			info: stop.metadata?.description || "",
 			coordinates: stop.location.coordinates,

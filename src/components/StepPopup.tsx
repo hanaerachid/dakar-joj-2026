@@ -1,5 +1,16 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { ManeuverIcon } from "./maneuverIcons";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { Road } from "lucide-react";
 
 export type StepPopupProps = {
   instruction: string;
@@ -39,47 +50,61 @@ export function StepPopup({
   maneuver,
 }: StepPopupProps) {
   return (
-    <div className="w-[190px] sm:w-[240px] rounded-xl border border-gray-200 bg-white/80 backdrop-blur p-2 sm:p-3 shadow-lg">
-      <div className="flex flex-col items-start gap-2">
-        <div className="shrink-0 mt-0.5">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-500/15 grid place-items-center">
-            {/* <span className="text-xs font-bold text-emerald-600">→</span> */}
-            <ManeuverIcon
-              type={maneuver?.type}
-              modifier={maneuver?.modifier}
-              exit={maneuver?.exit}
-              className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-700"
+    <Card className="w-[190px] sm:w-[240px] backdrop-blur">
+      <CardHeader>
+        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/25 grid place-items-center">
+          {/* <span className="text-xs font-bold text-emerald-600">→</span> */}
+          <ManeuverIcon
+            type={maneuver?.type}
+            modifier={maneuver?.modifier}
+            exit={maneuver?.exit}
+            className="w-3 h-3 sm:w-4 sm:h-4 text-primary"
+          />
+        </div>
+        <CardTitle className="text-[12px] sm:text-sm font-semibold leading-snug">
+          {instruction}
+        </CardTitle>
+      </CardHeader>
+      {name && (
+        <CardContent>
+          <CardDescription>
+            <div className="flex items-center gap-1">
+              <Road className="w-3 h-3" />
+              <span className="font-medium">{name}</span>
+            </div>
+          </CardDescription>
+        </CardContent>
+      )}
+      <CardFooter className="sm:text-xs">
+        <div className="flex items-center justify-between gap-1">
+          <Badge
+            variant="outline"
+            className="font-medium"
+          >
+            {fmtKm(distance)}
+          </Badge>
+          <Badge
+            variant="outline"
+            className="font-medium"
+          >
+            {fmtMin(duration)}
+          </Badge>
+          <Badge
+            variant="default"
+            className={cn(
+              "flex items-center gap-1 capitalize",
+              badgeColor[congestion]
+            )}
+            title="Traffic"
+          >
+            <Icon
+              icon="emojione-v1:vertical-traffic-light"
+              className="w-3.5 h-3.5"
             />
-          </div>
+            {congestionLabel[congestion]}
+          </Badge>
         </div>
-        <div className="flex-1">
-          <div className="text-[12px] sm:text-sm font-semibold text-gray-900 leading-snug">
-            {instruction}
-          </div>
-          {name && (
-            <div className="text-[10.5px] sm:text-xs text-gray-600 mt-0.5">
-              Road: <span className="font-medium">{name}</span>
-            </div>
-          )}
-          <div className="mt-2 flex items-center justify-between text-[10.5px] sm:text-xs">
-            <div className="text-gray-700">
-              <span className="font-medium">{fmtKm(distance)}</span>
-              <span className="mx-1.5 text-gray-400">•</span>
-              <span className="font-medium">{fmtMin(duration)}</span>
-            </div>
-            <span
-              className={`px-2 py-0.5 rounded-full flex items-center gap-1 capitalize ${badgeColor[congestion]}`}
-              title="Traffic"
-            >
-              <Icon
-                icon="emojione-v1:vertical-traffic-light"
-                className="w-3.5 h-3.5"
-              />
-              {congestionLabel[congestion]}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   );
 }

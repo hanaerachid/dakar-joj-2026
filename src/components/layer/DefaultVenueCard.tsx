@@ -1,6 +1,18 @@
 import React, { useState } from "react";
+import { Clock9, Ruler, Star, X } from "lucide-react";
 import { ManeuverIcon } from "../maneuverIcons";
 import { useTranslation } from "react-i18next";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components//ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Item, ItemGroup, ItemMedia, ItemContent, ItemTitle, ItemDescription } from "../ui/item";
 
 type RouteStep = {
   instruction: string;
@@ -23,9 +35,9 @@ type Props = {
   info: string;
   infoFr?: string;
   imageUrl?: string;
-  address: string;
-  rating: number;
-  tags: string[];
+  address: string | undefined;
+  date: string | undefined;
+  tags: string[] | undefined;
   route: RouteSummary;
   onGetDirections: () => void;
   onClose: () => void;
@@ -39,7 +51,7 @@ const DefaultVenueCard: React.FC<Props> = ({
   infoFr,
   imageUrl,
   address,
-  rating,
+  date,
   tags,
   route,
   onGetDirections,
@@ -54,152 +66,175 @@ const DefaultVenueCard: React.FC<Props> = ({
   const [infoExpanded, setInfoExpanded] = useState(false);
 
   return (
-    <div
-      className="w-[86vw] max-w-[300px] sm:w-[350px] rounded-2xl shadow-xl border border-gray-300/80 backdrop-blur-lg bg-white/80"
-      style={{
-        fontFamily: "Inter, sans-serif",
-        border: "1px solid rgba(200, 200, 200, 0.5)",
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-      }}
+    <Card
+      size="sm"
+      className="relative w-[82vw] max-w-[320px] sm:w-[450px] sm:max-w-none shadow-xl pt-0 overflow-hidden"
     >
-      {imageUrl ? (
-        <div className="relative">
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        onClick={onClose}
+        className="absolute end-4 top-4 w-8 h-8 flex items-center justify-center z-20"
+        aria-label={t("layer.actions.close")}
+      >
+        <X />
+      </Button>
+      <CardHeader className="p-0 gap-0">
+        {/* Optional hero image */}
+        {imageUrl ? (
           <img
             src={imageUrl}
             alt={title}
-            className="w-full h-28 sm:h-36 object-cover rounded-t-2xl"
+            className="w-full object-cover"
           />
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
-            <h3 className="text-white text-[15px] sm:text-lg font-semibold leading-tight">
-              {title}
-            </h3>
+        ) : null}
+
+        {/* Header: icon + zone tag */}
+        <div
+          className="px-3 pt-2.5 sm:pt-4 flex items-center justify-between"
+        >
+          <div className="flex items-center gap-3">
+            <div className="leading-tight">
+              <div className="text-xs uppercase opacity-90 tracking-wide">
+                {zone === "Unassigned" ? "" : zone}
+              </div>
+              <h3 className="flex-1 text-base sm:text-lg font-semibold">{title}</h3>
+              {date && (
+                <Badge className="text-[11px] sm:text-sm bg-yellow-400 text-black px-2 py-2 rounded-full">
+                  <Star className="w-3.5 h-3.5 text-black" /> {new Date(date).toLocaleDateString(lang, { year: "numeric", month: "short", day: "numeric" })}
+                </Badge>
+              )}
+            </div>
           </div>
         </div>
-      ) : (
-        <div className="px-2.5 sm:px-4 pt-3">
-          <h3 className="text-[15px] sm:text-lg font-semibold leading-tight text-gray-900">
-            {title}
-          </h3>
-        </div>
-      )}
-
-      <div className="p-2.5 sm:p-4 text-gray-900 text-[12.5px] sm:text-sm">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-[12.5px] sm:text-sm font-medium text-gray-700">
-            <strong>{t("layer.default.zoneLabel")}:</strong> {zone}
-          </span>
-          <span className="text-[11px] sm:text-sm bg-yellow-400 text-black px-2 py-0.5 rounded-full">
-            ⭐ {rating.toFixed(1)}
-          </span>
-        </div>
-
-        <p
-          className="text-[12.5px] sm:text-sm text-gray-800 leading-snug mb-1"
-          style={
-            infoExpanded
-              ? undefined
-              : {
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
+      </CardHeader>
+      <Separator />
+      {/* Body */}
+      <CardContent>
+        <div>
+          {infoText && (
+            <>
+              <CardDescription
+                className="font-sans text-[11px] sm:text-sm leading-snug text-foreground"
+                style={
+                  infoExpanded
+                    ? undefined
+                    : {
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }
                 }
-          }
-        >
-          {infoText}
-        </p>
-        {infoText && (
-          <button
-            type="button"
-            onClick={() => setInfoExpanded((v) => !v)}
-            className="mb-2 text-[11.5px] sm:text-xs font-semibold text-blue-700 hover:text-blue-800"
-          >
-            {infoExpanded ? "See less" : "See more"}
-          </button>
-        )}
-        <p className="text-[11.5px] sm:text-xs text-gray-600 mb-2">
-          <strong>{t("layer.default.addressLabel")}:</strong> {address}
-        </p>
+              >
+                {infoText}
+              </CardDescription>
+              <Button
+                type="button"
+                variant="link"
+                size="xs"
+                onClick={() => setInfoExpanded((v) => !v)}
+                className="mb-2 text-[11px] font-semibold text-blue-700 hover:text-blue-800"
+              >
+                {infoExpanded ? "See less" : "See more"}
+              </Button>
+            </>
+          )}
 
-        <div className="flex flex-wrap gap-1 mb-2">
-          {tags.map((tag, idx) => (
-            <span
-              key={idx}
-              className="text-xs bg-gray-200/70 px-2 py-0.5 rounded-full text-gray-700"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+          {address && <p className="font-sans text-xs sm:text-sm mt-1 text-muted-foreground">{address}</p>}
 
-        {/* Route summary (conditionally rendered) */}
-        {route && (
-          <div className="mb-2 text-xs text-gray-700 bg-gray-100 rounded px-2 py-1">
-            <div>
-              <strong>{t("layer.route.distanceLabel")}:</strong>{" "}
-              {(route.distance / 1000).toFixed(2)}{" "}
-              {t("layer.route.unit.kilometer")}
-            </div>
-            <div>
-              <strong>{t("layer.route.timeLabel")}:</strong>{" "}
-              {Math.round(route.duration / 60)}{" "}
-              {t("layer.route.unit.minute")}
-            </div>
-
-            <ul className="mt-1 space-y-1">
-              {route.steps.slice(0, 4).map((s, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <span className="mt-[2px] inline-grid place-items-center w-5 h-5 rounded-full bg-emerald-500/15">
-                    <ManeuverIcon
-                      type={s.maneuver?.type}
-                      modifier={s.maneuver?.modifier}
-                      exit={s.maneuver?.exit}
-                      className="w-3.5 h-3.5 text-emerald-700"
-                    />
-                  </span>
-                  <span className="text-[13px] leading-snug">
-                    {s.instruction}{" "}
-                    <span className="text-gray-500">
-                      ({(s.distance / 1000).toFixed(1)}{" "}
-                      {t("layer.route.unit.kilometer")})
-                    </span>
-                  </span>
-                </li>
+          {!!tags?.length && (
+            <div className="flex flex-wrap gap-1 mt-3">
+              {tags.map((tag, idx) => (
+                <Badge
+                  key={idx}
+                  variant="secondary"
+                  className="text-xs px-2 px-2 py-0.5 rounded-full"
+                >
+                  {tag}
+                </Badge>
               ))}
+            </div>
+          )}
+
+          {/* Route summary (conditionally rendered) */}
+          {route && (
+            <>
+              <div className="mb-2 flex flex-wrap gap-1">
+                <Badge
+                  variant="outline"
+                >
+                  <Ruler className="w-3 h-3" />
+                  {(route.distance / 1000).toFixed(2)}{" "}
+                  {t("layer.route.unit.kilometer")}
+                </Badge>
+                <Badge
+                  variant="outline"
+                >
+                  <Clock9 className="w-3 h-3" />
+                  {Math.round(route.duration / 60)}{" "}
+                  {t("layer.route.unit.minute")}
+                </Badge>
+              </div>
+
+              <ItemGroup className="overflow-y-auto max-h-40 sm:max-h-56">
+                {route.steps.slice(0, 4).map((s, i) => (
+                  <Item key={i} size="xs">
+                    <ItemMedia
+                      variant="icon"
+                      className="w-5 h-5 rounded-full bg-primary/25"
+                    >
+                      <ManeuverIcon
+                        type={s.maneuver?.type}
+                        modifier={s.maneuver?.modifier}
+                        exit={s.maneuver?.exit}
+                        className="w-3.5 h-3.5 text-primary"
+                      />
+                    </ItemMedia>
+                    <ItemContent>
+                      <ItemTitle className="text-sm leading-snug">
+                        {s.instruction}
+                      </ItemTitle>
+                    </ItemContent>
+                    <ItemContent>
+                      <ItemDescription className="text-xs text-muted-foreground">
+                        ({(s.distance / 1000).toFixed(1)}{" "}
+                        {t("layer.route.unit.kilometer")})
+                      </ItemDescription>
+                    </ItemContent>
+                  </Item>
+                ))}
+              </ItemGroup>
               {route.steps.length > 4 && (
-                <li className="text-[13px] text-gray-500 italic">
+                <span className="text-xs text-muted-foreground">
                   {t("layer.route.remainingSteps", {
                     count: route.steps.length - 4,
                   })}
-                </li>
+                </span>
               )}
-            </ul>
-          </div>
-        )}
-
-        <button
+            </>
+          )}
+        </div>
+      </CardContent>
+      <CardFooter className="flex gap-2">
+        <Button
+          variant="default"
           onClick={onGetDirections}
-          className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white text-[12.5px] sm:text-sm px-3 py-1.5 rounded-3xl transition"
+          className="flex-1"
         >
           {t("layer.actions.getDirections")}
-        </button>
+        </Button>
         {route && (
-          <button
+          <Button
+            variant="outline"
             onClick={onClear}
-            className="flex-.5 rounded-3xl bg-white hover:bg-gray-100 font-semibold text-[12.5px] sm:text-sm px-3.5 w-fit py-1.5 transition"
+            className="w-fit transition"
           >
             {t("layer.actions.clearRoute")}
-          </button>
+          </Button>
         )}
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 bg-white/80 hover:bg-white rounded-full w-7 h-7 flex items-center justify-center shadow"
-          aria-label={t("layer.actions.close")}
-        >
-          ✕
-        </button>
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   );
 };
 

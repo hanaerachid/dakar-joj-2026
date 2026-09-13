@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../i18n";
 import { VenuePopup } from "./layer/VenuePopup";
+import { Popup } from "./layer/Popup";
 
 type PopupContext = {
   container: HTMLDivElement;
@@ -42,6 +43,32 @@ export function renderVenuePopup(
     root.render(
       <I18nextProvider i18n={i18n}>
         <VenuePopup {...props} />
+      </I18nextProvider>,
+    );
+  };
+
+  render();
+
+  activePopup = {
+    container,
+    root,
+    render,
+  };
+
+  return container;
+}
+
+export function renderPopup(
+  props: Parameters<typeof Popup>[0],
+): HTMLDivElement {
+  cleanupActivePopup();
+  const container = document.createElement("div");
+  const root = createRoot(container);
+
+  const render = () => {
+    root.render(
+      <I18nextProvider i18n={i18n}>
+        <Popup {...props} />
       </I18nextProvider>,
     );
   };
