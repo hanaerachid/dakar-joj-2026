@@ -36,7 +36,8 @@ type Props = {
   infoFr?: string;
   imageUrl?: string;
   address: string | undefined;
-  date: string | undefined;
+  date?: string | undefined;
+  rating?: number | undefined;
   tags: string[] | undefined;
   route: RouteSummary;
   onGetDirections: () => void;
@@ -52,6 +53,7 @@ const DefaultVenueCard: React.FC<Props> = ({
   imageUrl,
   address,
   date,
+  rating,
   tags,
   route,
   onGetDirections,
@@ -99,6 +101,11 @@ const DefaultVenueCard: React.FC<Props> = ({
                 {zone === "Unassigned" ? "" : zone}
               </div>
               <h3 className="flex-1 text-base sm:text-lg font-semibold">{title}</h3>
+              {rating && (
+                <Badge className="text-[11px] sm:text-sm bg-yellow-400 text-black px-2 py-2 rounded-full">
+                  <Star className="w-3.5 h-3.5 text-black" /> {rating.toFixed(1)}
+                </Badge>
+              )}
               {date && (
                 <Badge className="text-[11px] sm:text-sm bg-yellow-400 text-black px-2 py-2 rounded-full">
                   <Star className="w-3.5 h-3.5 text-black" /> {new Date(date).toLocaleDateString(lang, { year: "numeric", month: "short", day: "numeric" })}

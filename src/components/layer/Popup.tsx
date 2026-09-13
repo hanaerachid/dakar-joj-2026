@@ -16,7 +16,7 @@ export interface PopupProps {
   infoFr?: string;
   imageUrl?: string;
   address?: string;
-  date?: number;
+  date?: string;
   tags?: string[] | string;
   coordinates?: [number, number];
   onClose: () => void;
