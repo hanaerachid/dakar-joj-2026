@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
 import { useStateContext } from "./state-provider";
+import { MapManager } from "../core/MapManager";
 
 export default function Countdown({ targetedDate }: { targetedDate: Date }) {
   const { t } = useTranslation();
@@ -55,6 +56,7 @@ export const HomeContent = () => {
   const {
     setActiveTab,
   } = useStateContext();
+  const mapManager = MapManager.getInstance();
 
   return (
     <div className="flex flex-col gap-4 py-4">
@@ -161,9 +163,19 @@ export const HomeContent = () => {
               </ItemTitle>
             </ItemContent>
           </Item>
-          <Item size="xs" variant="muted">
+          <Item
+            size="xs"
+            variant="muted"
+            className={cn(
+              "hover:bg-muted cursor-pointer",
+              mapManager.isTorchVisible() ? "bg-muted" : ""
+            )}
+            onClick={() => void mapManager.toggleTorch()}
+          >
             <ItemMedia variant="icon" >
-              <Flame />
+              <Flame className={cn(
+                mapManager.isTorchVisible() ? "text-[#FFA500]" : ""
+              )}/>
             </ItemMedia>
             <ItemContent>
               <ItemTitle>

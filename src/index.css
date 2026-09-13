@@ -1,1 +1,48 @@
 @import "tailwindcss";
+
+.torch-stop-marker {
+	position: relative;
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 42px;
+	color: #fff7cc;
+	filter: drop-shadow(0 3px 4px rgb(124 45 18 / 0.35));
+	cursor: pointer;
+}
+
+.torch-stop-marker::before {
+	content: "";
+	position: absolute;
+	inset: 2px 2px 7px;
+	border: 2px solid #fff7cc;
+	border-radius: 55% 55% 50% 50%;
+	background: linear-gradient(145deg, #facc15, #f97316 55%, #c2410c);
+	transform: rotate(45deg);
+	box-shadow: 0 0 0 3px rgb(249 115 22 / 0.2), 0 0 14px rgb(249 115 22 / 0.55);
+}
+
+.torch-stop-marker__icon,
+.torch-stop-marker__number {
+	position: relative;
+	z-index: 1;
+}
+
+.torch-stop-marker__icon {
+	margin-top: -7px;
+}
+
+.torch-stop-marker__number {
+	position: absolute;
+	bottom: 0;
+	display: grid;
+	place-items: center;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 4px;
+	border: 2px solid #fff7cc;
+	border-radius: 999px;
+	background: #9a3412;
+	color: white;
+	font: 700 10px/1 ui-monospace, monospace;
+}

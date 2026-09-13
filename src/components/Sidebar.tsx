@@ -6,9 +6,11 @@ import { BaseMapSwitcher } from "../core/BasemapSwitcherModal";
 import { ZoomPill } from "../core/ZoomPill";
 import { LocateMeButton } from "../core/LocateMeButton";
 import { toast } from "sonner";
-import { House, RouteOff, Share2 } from "lucide-react";
+import { Flame, House, RouteOff, Share2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
+import { useStateContext } from "./state-provider";
+import { MapManager } from "@/core/MapManager";
 
 type SidebarProps = {
   longitude: number;
@@ -26,6 +28,16 @@ export function Sidebar({
   onClearRoute,
 }: SidebarProps) {
   const { t } = useTranslation();
+  const { torchVisible, setTorchVisible } = useStateContext();
+  const mapManager = MapManager.getInstance();
+
+  const handleToggleTorch = async () => {
+    try {
+      setTorchVisible(await mapManager.toggleTorch());
+    } catch {
+      setTorchVisible(false);
+    }
+  };
 
   const handleShare = async () => {
     try {
@@ -85,6 +97,13 @@ export function Sidebar({
         {/* Zoom */}
         <ZoomPill />
         <LocateMeButton />
+        <AnimatedButton
+          icon={Flame}
+          title={t("actions.torch", "Torch route")}
+          tooltip={t("actions.torch", "Show torch route")}
+          onClick={handleToggleTorch}
+          isOpen={torchVisible}
+        />
         <AnimatedButton
           icon={House}
           title={t("actions.resetview", "Reset View")}

@@ -18,6 +18,9 @@ type ProviderState = {
   isSearchOpen: boolean
   setIsSearchOpen: (open: boolean) => void
   searchInputRef: React.RefObject<HTMLInputElement | null>;
+
+  torchVisible: boolean
+  setTorchVisible: (visible: boolean) => void
 }
 
 const initialState: ProviderState = {
@@ -27,6 +30,9 @@ const initialState: ProviderState = {
   isSearchOpen: false,
   setIsSearchOpen: () => null,
   searchInputRef: { current: null },
+
+  torchVisible: false,
+  setTorchVisible: () => null,
 };
 
 export const StateContext = createContext<ProviderState>(initialState);
@@ -40,6 +46,8 @@ export function StateProvider({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
+  const [torchVisible, setTorchVisible] = useState(false);
+
   const value = {
     activeTab,
     setActiveTab,
@@ -47,6 +55,9 @@ export function StateProvider({
     isSearchOpen,
     setIsSearchOpen,
     searchInputRef,
+
+    torchVisible,
+    setTorchVisible,
   };
 
   return (

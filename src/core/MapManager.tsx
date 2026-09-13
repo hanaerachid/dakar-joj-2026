@@ -11,6 +11,12 @@ import {
 import type { RouteDetails, RouteSummary } from "./map/types";
 import { DUMMY_COORDS, USE_DUMMY_LOCATION } from "../config/map.constants";
 import { clearRoute, drawRoute } from "../services/directions";
+import {
+  addTorchOverlay,
+  clearTorchOverlay,
+  fetchTorchStops,
+  type TorchStop,
+} from "./layers/torch";
 
 type BasemapId =
   | "mapbox-streets"
@@ -79,6 +85,9 @@ export class MapManager {
     from: [number, number];
     to: [number, number];
   } | null = null;
+  private torchStops: TorchStop[] = [];
+  private torchVisible = false;
+  private torchRequestId = 0;
 
   hasRoute() {
     return !!this.lastRouteEndpoints;
@@ -275,7 +284,40 @@ export class MapManager {
       }),
     ]);
 
+    if (this.torchVisible && this.torchStops.length > 0) {
+      addTorchOverlay(this.map, this.torchStops);
+    }
+
     // if you add label/overlay ordering, you can insert layers before a ref layer id here
+  }
+
+  isTorchVisible() {
+    return this.torchVisible;
+  }
+
+  async toggleTorch() {
+    if (!this.map) return false;
+
+    const requestId = ++this.torchRequestId;
+    this.torchVisible = !this.torchVisible;
+    if (!this.torchVisible) {
+      clearTorchOverlay(this.map);
+      return false;
+    }
+
+    try {
+      const stops = await fetchTorchStops();
+      if (requestId !== this.torchRequestId || !this.torchVisible) {
+        return this.torchVisible;
+      }
+      this.torchStops = stops;
+      addTorchOverlay(this.map, this.torchStops);
+      return true;
+    } catch (error) {
+      this.torchVisible = false;
+      console.error("Unable to load torch stops", error);
+      throw error;
+    }
   }
 
   async setBasemap(id: BasemapId) {
@@ -382,6 +424,7 @@ export class MapManager {
 
   destroyMap() {
     if (this.map) {
+      clearTorchOverlay(this.map);
       this.map.remove();
       this.map = null;
       this.geocoder = null;
