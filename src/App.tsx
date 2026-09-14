@@ -8,6 +8,7 @@ import AdminRoute from "./components/auth/AdminRoute";
 import AddPlaceFull from "./admin/places/AddPlaceFull";
 import { PlacesListPage } from "./admin/places/PlacesList";
 import { PlaceDetailsPage } from "./admin/places/PlacesDetails";
+import { TorchPage } from "./pages/torch/TorchPage";
 import "./App.css";
 import { useEffect, useState } from "react";
 import { initAuth } from "./auth/nitAuth";
@@ -76,6 +77,17 @@ function AdminShell() {
       >
         <NavigationMenu>
           <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuLink
+                // className={navigationMenuTriggerStyle()}
+                render={<Link
+                  to="/admin/torch"
+                  className="inline-flex items-center gap-2 py-2"
+                />}
+              >
+                {t("torch_stops", "Torch Stops")}
+              </NavigationMenuLink>
+            </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink
                 // className={navigationMenuTriggerStyle()}
@@ -149,6 +161,7 @@ export default function App() {
                 </AdminRoute>
               }
             >
+              <Route path="torch" element={<TorchPage />} />
               <Route index element={<Navigate to="places" replace />} />
               <Route path="places" element={<PlacesListPage />} />
               <Route path="places/import" element={<BulkPlacesImport />} />
