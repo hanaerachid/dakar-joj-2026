@@ -1,18 +1,31 @@
 // src/pages/torch/TorchPage.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { listTorchStops, deleteTorchStop } from "../../lib/api/torchstops";
+import { ArrowLeft, Plus } from "lucide-react";
+import {
+  listTorchStops,
+  deleteTorchStop,
+  createTorchStop
+} from "../../lib/api/torchstops";
 import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
 // import { Badge } from "@/components/ui/badge";
 // import { Input } from "@/components/ui/input";
 // import { Section } from "@/components/common/Section";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
 import {
   Empty,
   EmptyContent,
   EmptyDescription,
   EmptyHeader,
-} from "@/components/ui/empty"
+} from "@/components/ui/empty";
 // import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
 // import {
 //   Select,
@@ -22,16 +35,10 @@ import {
 //   SelectValue,
 // } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus } from "lucide-react";
+import BasicDetails from "@/components/admin/BasicDetails";
+import LocationDetails from "@/components/admin/LocationDetails";
 
 /* ---------------- Types ---------------- */
-export type Zone = {
-  id: string;
-  name: string;
-  color: string;
-  categoryId: string;
-};
-
 export type TorchStop = {
   _id: string;
   name: string;
@@ -341,6 +348,173 @@ export function TorchPage() {
               </Card>
             );
           })}
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------------------------------
+   AddTorchPage component
+--------------------------------------------- */
+export function AddTorchPage() {
+  const navigate = useNavigate();
+
+  // base fields
+  const [name, setName] = useState("");
+  const [phase, setPhase] = useState("");
+  const [isMajorStop, setIsMajorStop] = useState(false);
+  const [tourDate, setTourDate] = useState<Date | undefined>(undefined);
+  const [lat, setLat] = useState<number | "">("");
+  const [lng, setLng] = useState<number | "">("");
+  const [region, setRegion] = useState("");
+  const [info, setInfo] = useState("");
+
+  // UX state
+  const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState<{
+    kind: "success" | "error";
+    msg: string;
+  } | null>(null);
+
+  const canSave = !!name && lat !== "" && lng !== "" && !saving;
+
+  // const gradientStyle = useMemo(
+  //   () => ({
+  //     background: `linear-gradient(90deg, ${gradientFrom}, ${gradientTo})`,
+  //   }),
+  //   [gradientFrom, gradientTo],
+  // );
+
+  async function onSave() {
+    if (!canSave) return;
+    setSaving(true);
+    setToast(null);
+    try {
+      const docRef = await createTorchStop({
+        name,
+        region: region || "",
+        location: {
+          type: "Point",
+          coordinates: [Number(lat), Number(lng)]
+        },
+        tourDate: tourDate || new Date(),
+        metadata: {
+          phase: phase || "",
+          description: info || "",
+          isMajorStop: isMajorStop,
+        },
+      });
+
+      setToast({ kind: "success", msg: "Torch stop created 🎉" });
+      console.info("Torch stop created:", docRef);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      // reset form
+      setName("");
+      setIsMajorStop(false);
+      setTourDate(undefined);
+      setPhase("");
+      setLat(0);
+      setLng(0);
+      setInfo("");
+    } catch (e) {
+      console.error(e);
+      setToast({
+        kind: "error",
+        msg: "Failed to create torch stop. Check your permissions/rules and try again.",
+      });
+    } finally {
+      setSaving(false);
+      setTimeout(() => setToast(null), 4000);
+    }
+  }
+
+  return (
+    <div className="mx-auto max-w-6xl p-4 md:p-6">
+      {/* Header */}
+      <div className="mb-5 flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft />
+            Back
+          </Button>
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">Add a Torch Stop</h2>
+            <p className="mt-1 text-sm text-foreground/70">
+              Create a new torch stop and add it to the map.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Toast */}
+      {toast && (
+        <div
+          className={`mb-4 rounded-xl border px-4 py-3 text-sm shadow-sm ${toast.kind === "success"
+            ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+            : "border-rose-200 bg-rose-50 text-rose-900"
+            }`}
+        >
+          {toast.msg}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        {/* Form column - left */}
+        <div className="lg:col-span-8 space-y-6">
+
+          {/* Basic Details */}
+          <BasicDetails
+            name={name}
+            setName={setName}
+            isMajorStop={isMajorStop}
+            setIsMajorStop={setIsMajorStop}
+            tourDate={tourDate}
+            setTourDate={setTourDate}
+            phase={phase}
+            setPhase={setPhase}
+            info={info}
+            setInfo={setInfo}
+          />
+
+          {/* Location Details */}
+          <LocationDetails
+            lat={lat}
+            setLat={setLat}
+            lng={lng}
+            setLng={setLng}
+            region={region}
+            setRegion={setRegion}
+          />
+
+          {/* Actions */}
+          <ButtonGroup className="flex items-center gap-3 pt-2">
+            <Button
+              variant="default"
+              onClick={onSave} disabled={!canSave}>
+              {saving ? "Saving…" : "Create torch stop"}
+            </Button>
+            <Button
+              variant="ghost"
+              type="button"
+              onClick={() => {
+                setName("");
+                setRegion("");
+                setPhase("");
+                setIsMajorStop(false);
+                setTourDate(undefined);
+                setLat("");
+                setLng("");
+                setInfo("");
+              }}
+            >
+              Reset
+            </Button>
+          </ButtonGroup>
+        </div>
       </div>
     </div>
   );
