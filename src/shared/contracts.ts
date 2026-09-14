@@ -187,7 +187,7 @@ export const torchStopMetadataSchema = z.object({
 });
 
 export const torchStopSchema = z.object({
-  _id: z.string(),
+  _id: z.string().optional(),
   name: z.string(),
   region: z.string(),
   location: geoJsonPointSchema,

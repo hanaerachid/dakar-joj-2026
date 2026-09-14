@@ -414,6 +414,105 @@ app.openAPIRegistry.registerPath({
   },
 });
 
+// Get Torch Stop
+app.openAPIRegistry.registerPath({
+  method: "get",
+  path: "/api/v2/torch/{id}",
+  summary: "Get a torch stop by ID",
+  request: {
+    params: z.object({ id: z.string() }),
+  },
+  responses: {
+    200: { description: "Torch stop", content: { "application/json": { schema: apiSuccessSchema(torchStopSchema) } } },
+    404: { description: "Torch stop not found", content: { "application/json": { schema: apiErrorSchema } } },
+  },
+});
+
+// Create Torch Stop
+app.openAPIRegistry.registerPath({
+  method: "post",
+  path: "/api/v2/torch",
+  summary: "Create torch stop",
+  security: [{ apiKeyAuth: [] }],
+  request: {
+    body: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: torchStopSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      description: "Created torch stop",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(torchStopSchema),
+        },
+      },
+    },
+  },
+});
+
+// Update Torch Stop
+app.openAPIRegistry.registerPath({
+  method: "patch",
+  path: "/api/v2/torch/{id}",
+  summary: "Update torch stop",
+  security: [{ apiKeyAuth: [] }],
+  request: {
+    params: z.object({
+      id: z.string().openapi({
+        description: "Torch stop ID",
+        example: "xxxxxxxxxxxxxxxxxxxx",
+      }),
+    }),
+    body: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: torchStopSchema.partial(),
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Updated torch stop",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(torchStopSchema),
+        },
+      },
+    },
+  },
+});
+
+// Delete Torch Stop
+app.openAPIRegistry.registerPath({
+  method: "delete",
+  path: "/api/v2/torch/{id}",
+  summary: "Delete torch stop",
+  security: [{ apiKeyAuth: [] }],
+  request: {
+    params: z.object({
+      id: z.string(),
+    }),
+  },
+  responses: {
+    200: {
+      description: "Deletion confirmation",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(z.object({ deleted: z.literal(true) })),
+        },
+      },
+    },
+  },
+});
+
 app.openAPIRegistry.registerPath({
   method: "get",
   path: "/api/v1/auth/me",
