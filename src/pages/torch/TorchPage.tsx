@@ -117,7 +117,6 @@ export function TorchPage() {
           <div className="flex items-center gap-2">
             <Button
               variant="default"
-              disabled
               onClick={() => navigate("/admin/torch/new")}
               className="inline-flex items-center gap-2"
             >
