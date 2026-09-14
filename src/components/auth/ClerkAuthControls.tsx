@@ -63,7 +63,7 @@ export function ClerkAuthControls() {
           <UserButton.MenuItems>
             {!loading && role === "admin" && (
               <UserButton.Link
-                label={t("admin", "Admin")}
+                label={t("admin_panel", "Admin Panel")}
                 labelIcon={<UserShield className="w-4 h-4" />}
                 href="/admin"
               />

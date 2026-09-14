@@ -2,6 +2,10 @@
   "title": "Africa welcomes, Dakar celebrates",
   "description": "Youth Olympic Games",
   "hello": "Hello, {{name}}!",
+  "back_to_map": "Back to map",
+  "admin_panel": "Admin Panel",
+  "places": "Places",
+  "new_place": "New place",
   "actions": {
     "closepanel": "Close Panel",
     "openpanel": "Open Panel",

@@ -2,6 +2,10 @@
   "title": "L'Afrique accueille, Dakar célèbre",
   "description": "Dakar Jeux Olympiques de la Jeunesse",
   "hello": "Hello, {{name}}!",
+  "back_to_map": "Retour à la carte",
+  "admin_panel": "Panneau d'administration",
+  "places": "Lieux",
+  "new_place": "Nouveau lieu",
   "actions": {
     "closepanel": "Fermer le panneau",
     "openpanel": "Ouvrir le panneau",

@@ -13,13 +13,20 @@ import { useEffect, useState } from "react";
 import { initAuth } from "./auth/nitAuth";
 import BulkPlacesImport from "./admin/places/BulkPlacesImport";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ModalProvider } from "./components/modal-provider";
-import { PanelProvider } from "./components/panel-provider";
+import { ModalProvider } from "@/components/modal-provider";
+import { PanelProvider } from "@/components/panel-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { StateProvider } from "@/components/state-provider";
 import { ArrowLeft, Plus } from "lucide-react";
 import { setApiAuthTokenProvider } from "./lib/apiClient";
 import { useTranslation } from "react-i18next";
+import { HeaderBar } from "@/components/header/HeaderBar";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+} from "@/components/ui/navigation-menu"
 
 const localizations = {
   en: enUS,
@@ -40,48 +47,67 @@ function ClerkApiAuthBridge() {
 }
 
 function AdminShell() {
+  const { t } = useTranslation();
   return (
-    <div className="w-full h-[100dvh] bg-background overflow-auto">
-      <div
-        className="sticky top-0 z-20 w-full mx-auto gap-2 sm:gap-4
-          bg-background backdrop-blur-sm supports-[backdrop-filter]:bg-background/70
-          px-2 sm:px-4 py-1.5 sm:py-2 shadow-md"
+    <>
+      <HeaderBar
+        showLogo={false}
+        backButton={
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  // className={navigationMenuTriggerStyle()}
+                  render={<Link
+                    to="/"
+                    className="inline-flex items-center gap-2 py-2"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    {t("back_to_map", "Back to Map")}
+                  </Link>}
+                >
+                  Places
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+        }
+        title={t("admin_panel", "Admin Panel")}
       >
-        <div className="flex items-center gap-2">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 rounded px-3 py-1 hover:bg-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
-          >
-            <ArrowLeft className="h-4 w-4" />
-              <span>
-            Back to Map
-              </span>
-          </Link>
-
-          <div className="ml-auto flex gap-2">
-            <Link
-              to="/admin/places"
-              className="rounded px-3 py-1 hover:bg-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
-            >
-              Places
-            </Link>
-
-            <Link
-              to="/admin/places/new"
-              className="inline-flex items-center gap-2 rounded-full bg-foreground text-background uppercase font-semibold text-sm px-3 py-1 hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-black/30"
-            >
-              <Plus className="h-4 w-4" />
-              <span>
-              New place
-              </span>
-            </Link>
-          </div>
-        </div>
-      </div>
-      <div className="p-2">
+        <NavigationMenu>
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuLink
+                // className={navigationMenuTriggerStyle()}
+                render={<Link
+                  to="/admin/places"
+                  className="inline-flex items-center gap-2 py-2"
+                />}
+              >
+                {t("places", "Places")}
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink
+                // className={navigationMenuTriggerStyle()}
+                render={
+                  <Link
+                    to="/admin/places/new"
+                    className="inline-flex items-center gap-2 py-2"
+                  />
+                }
+              >
+                <Plus className="h-4 w-4" />
+                {t("new_place", "New place")}
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+      </HeaderBar>
+      <div className="pt-12">
         <Outlet />
       </div>
-    </div>
+    </>
   );
 }
 
