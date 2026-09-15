@@ -394,7 +394,7 @@ export function AddTorchPage() {
         region: region || "",
         location: {
           type: "Point",
-          coordinates: [Number(lat), Number(lng)]
+          coordinates: [Number(lng), Number(lat)]
         },
         tourDate: tourDate || new Date(),
         metadata: {
