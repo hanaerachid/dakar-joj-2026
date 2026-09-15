@@ -1,9 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Button } from "@/components/ui/button";
-import { XIcon } from "lucide-react";
+import { InputGroup, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
+import { Item, ItemContent, ItemGroup, ItemTitle } from "@/components/ui/item";
 
 // Quick default marker fix for bundlers (Vite/CRA) that don't auto-load Leaflet images
 const defaultIcon = new L.Icon({
@@ -25,6 +31,10 @@ type Props = {
   initialLng?: number;
 };
 
+export type LocationPickerHandle = {
+  useLocation: () => Promise<void>;
+};
+
 type SearchResult = {
   display_name: string;
   lat: string;
@@ -44,13 +54,13 @@ function ClickHandler({
   return null;
 }
 
-export default function LocationPickerModal({
+const LocationPickerModal = forwardRef<LocationPickerHandle, Props>(function LocationPickerModal({
   isOpen,
   onClose,
   onSelect,
   initialLat,
   initialLng,
-}: Props) {
+}, ref) {
   // Senegal focus (Dakar-ish): 14.6928, -17.4467
   const DEFAULT = useMemo(() => ({ lat: 14.6928, lng: -17.4467, zoom: 6 }), []);
   const [lat, setLat] = useState<number>(initialLat ?? DEFAULT.lat);
@@ -111,6 +121,10 @@ export default function LocationPickerModal({
     onClose();
   }
 
+  useImperativeHandle(ref, () => ({
+    useLocation: handleUseThisLocation,
+  }), [lat, lng, onClose, onSelect, pickedAddress]);
+
   function setPos(newLat: number, newLng: number) {
     setLat(newLat);
     setLng(newLng);
@@ -120,80 +134,63 @@ export default function LocationPickerModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-background/50 backdrop-blur-sm"
-        onClick={onClose}
-        aria-hidden
-      />
-
-      {/* Modal */}
-      <div className="relative z-[101] w-full max-w-3xl overflow-hidden rounded-2xl bg-background/90 backdrop-blur-md shadow-2xl ring-1 ring-black/10">
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4">
-          <h3 className="text-base font-semibold text-foreground/90">
-            Pick location on map
-          </h3>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="focus:outline-none focus:ring-2 focus:ring-zinc-300"
-            onClick={onClose}
-            aria-label="Close"
+      <div className="w-full overflow-hidden">
+      {/* Search */}
+      <div className="pb-2">
+        <InputGroup>
+          <InputGroupInput
+            type="search"
+            placeholder="Search in Senegal (stadium, address, landmark)…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") geocode(query);
+            }}
+          />
+          <InputGroupButton
+            variant="default"
+            onClick={() => geocode(query)}
+            disabled={loading}
           >
-            <XIcon />
-          </Button>
-        </div>
+            {loading ? "Searching…" : "Search"}
+          </InputGroupButton>
+        </InputGroup>
 
-        {/* Search */}
-        <div className="px-5 pb-2">
-          <div className="flex gap-2">
-            <input
-              className="h-10 w-full rounded-full bg-background/80 px-4 text-sm shadow-sm outline-none ring-1 ring-zinc-200 transition focus:ring-2 focus:ring-zinc-300"
-              placeholder="Search in Senegal (stadium, address, landmark)…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") geocode(query);
-              }}
-            />
-            <Button
-              className="shrink-0 rounded-full px-4 text-sm h-10 shadow-sm transition"
-              onClick={() => geocode(query)}
-              disabled={loading}
-            >
-              {loading ? "Searching…" : "Search"}
-            </Button>
-          </div>
+        {results.length > 0 && (
+          <ItemGroup
+            className="mt-2 max-h-44 overflow-auto"
+          >
+            {results.map((r, i) => {
+              const latNum = parseFloat(r.lat);
+              const lonNum = parseFloat(r.lon);
+              return (
+                <Item
+                  variant="outline"
+                  className="cursor-pointer"
+                  key={i}
+                  onClick={() => {
+                    setLat(latNum);
+                    setLng(lonNum);
+                    setPickedAddress(r.display_name);
+                    setResults([]);
+                  }}
+                >
+                  <ItemContent>
+                    <ItemTitle>
 
-          {results.length > 0 && (
-            <div className="mt-2 max-h-44 overflow-auto rounded-xl bg-background/90 backdrop-blur ring-1 ring-zinc-200 shadow-sm divide-y divide-zinc-100">
-              {results.map((r, i) => {
-                const latNum = parseFloat(r.lat);
-                const lonNum = parseFloat(r.lon);
-                return (
-                  <button
-                    key={i}
-                    className="w-full text-left px-3 py-2 text-sm"
-                    onClick={() => {
-                      setLat(latNum);
-                      setLng(lonNum);
-                      setPickedAddress(r.display_name);
-                      setResults([]);
-                    }}
-                  >
-                    {r.display_name}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
+                      {r.display_name}
+                    </ItemTitle>
+                  </ItemContent>
+                </Item>
+              );
+            })}
+          </ItemGroup>
+        )}
+      </div>
 
         {/* Map */}
-        <div className="px-5 pb-4">
-          <div className="h-[420px] w-full overflow-hidden rounded-2xl ring-1 ring-zinc-200 shadow-sm">
+        <div className="pb-4">
+          <div className="h-[420px] w-full overflow-hidden rounded-xl">
             <MapContainer
               center={[lat, lng]}
               zoom={zoom}
@@ -219,29 +216,15 @@ export default function LocationPickerModal({
               />
             </MapContainer>
           </div>
-          <div className="mt-3 text-xs text-foreground/70">
+          <div className="mt-3 text-xs text-muted-foreground">
             Tip: Click on the map or drag the marker to fine-tune the position.
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-2 px-5 pb-5">
-          <Button
-            variant="outline"
-            className="rounded-full px-4 py-2 text-sm ring-1 ring-zinc-200"
-            onClick={onClose}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="default"
-            className="rounded-full px-4 py-2 text-sm shadow-sm"
-            onClick={handleUseThisLocation}
-          >
-            Use this location
-          </Button>
-        </div>
       </div>
-    </div>
   );
-}
+});
+
+LocationPickerModal.displayName = "LocationPickerModal";
+
+export default LocationPickerModal;

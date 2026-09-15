@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Icon } from "@iconify/react";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { TextInput } from "../../common/TextInput";
@@ -6,9 +7,11 @@ import { ColorInput } from "../../common/ColorInput";
 import { Section } from "../../common/Section";
 import type { VenueSport } from "../../../data/sitesMeta";
 import LocationPickerModal from "../../../core/map/LocationPickerModal";
-import { useState } from "react";
 import LocationPickerButton from "../../../core/map/LocationPickerButton";
 import { Badge } from "@/components/ui/badge";
+import { useModalContext } from "@/components/modal-provider";
+import { Button } from "@/components/ui/button";
+import type { LocationPickerHandle } from "../../../core/map/LocationPickerModal";
 
 type Props = {
   name: string;
@@ -72,7 +75,51 @@ export default function BasicDetailsFields(props: Props) {
     uniqSports,
   } = props;
 
-  const [mapOpen, setMapOpen] = useState(false);
+  const {
+    isOpen,
+    setIsOpen,
+    setModalContent,
+  } = useModalContext();
+  const pickerRef = useRef<LocationPickerHandle>(null);
+
+  const openModal = () => {
+    if (isOpen) {
+      setIsOpen(false);
+      return;
+    }
+    setModalContent({
+      title: "Select location",
+      size: "lg",
+      children: (
+        <LocationPickerModal
+          ref={pickerRef}
+          isOpen={true}
+          onClose={() => setIsOpen(false)}
+          initialLat={typeof lat === "number" ? lat : undefined}
+          initialLng={typeof lng === "number" ? lng : undefined}
+          onSelect={(selLat, selLng, selectedAddress) => {
+            setLat(selLat);
+            setLng(selLng);
+            if (selectedAddress) {
+              setAddress(selectedAddress);
+            }
+          }}
+        />
+      ),
+      footer: (
+        <>
+          <Button variant="ghost" onClick={() => setIsOpen(false)}>
+            Close
+          </Button>
+          <Button onClick={() => pickerRef.current?.useLocation()}>
+            Use this location
+          </Button>
+        </>
+      ),
+      onClose: () => setIsOpen(false),
+    });
+    setIsOpen(true);
+  }
 
   return (
     <>
@@ -118,7 +165,7 @@ export default function BasicDetailsFields(props: Props) {
                 placeholder="14.6928"
                 value={lat as any}
                 onChange={(e) =>
-                  setLat(e.target.value === "" ? "" : parseFloat(e.target.value))
+                  setLat(e.target.value === "" ? NaN : parseFloat(e.target.value))
                 }
               />
             </Field>
@@ -135,14 +182,14 @@ export default function BasicDetailsFields(props: Props) {
                 value={lng as any}
                 onChange={(e) =>
                   setLng(
-                    e.target.value === "" ? "" : parseFloat(e.target.value),
+                    e.target.value === "" ? NaN : parseFloat(e.target.value),
                   )
                 }
                 className="flex-1"
               />
             </Field>
           </div>
-          <LocationPickerButton onClick={() => setMapOpen(true)} />
+          <LocationPickerButton onClick={() => openModal()} />
         </div>
 
         <Field>
@@ -283,19 +330,6 @@ export default function BasicDetailsFields(props: Props) {
           )}
         </Section>
       )}
-
-      {/* Modal lives here so the component stays self-contained */}
-      <LocationPickerModal
-        isOpen={mapOpen}
-        onClose={() => setMapOpen(false)}
-        initialLat={typeof lat === "number" ? lat : undefined}
-        initialLng={typeof lng === "number" ? lng : undefined}
-        onSelect={(selLat, selLng, addr) => {
-          setLat(selLat);
-          setLng(selLng);
-          if (addr && !address) setAddress(addr);
-        }}
-      />
     </>
   );
 }
