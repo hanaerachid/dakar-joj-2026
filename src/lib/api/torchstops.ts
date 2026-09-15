@@ -7,6 +7,11 @@ export async function listTorchStops() {
   return response.data;
 }
 
+export async function getTorchStop(id: string | undefined) {
+  const response = await apiRequest<{ success: true; data: TorchStop }>(`/api/v2/torch/${id}`);
+  return response.data;
+}
+
 export async function createTorchStop(payload: {
   name: string;
   region: string;
@@ -28,7 +33,15 @@ export async function createTorchStop(payload: {
   return response.data;
 }
 
-export async function deleteTorchStop(id: string) {
+export async function updateTorchStop(id: string | undefined, payload: unknown) {
+  const response = await apiRequest<{ success: true; data: TorchStop }>(`/api/v2/torch/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+  return response.data;
+}
+
+export async function deleteTorchStop(id: string | undefined) {
   return apiRequest<{ success: true; data: { deleted: true } }>(`/api/v2/torch/${id}`, {
     method: "DELETE",
   });

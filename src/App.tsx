@@ -8,7 +8,7 @@ import AdminRoute from "./components/auth/AdminRoute";
 import AddPlaceFull from "./admin/places/AddPlaceFull";
 import { PlacesListPage } from "./admin/places/PlacesList";
 import { PlaceDetailsPage } from "./admin/places/PlacesDetails";
-import { TorchPage, AddTorchPage } from "./pages/torch/TorchPage";
+import { TorchPage, AddTorchPage, EditTorchPage } from "./pages/torch/TorchPage";
 import "./App.css";
 import { useEffect, useState } from "react";
 import { initAuth } from "./auth/nitAuth";
@@ -163,6 +163,7 @@ export default function App() {
             >
               <Route path="torch" element={<TorchPage />} />
               <Route path="torch/new" element={<AddTorchPage />} />
+              <Route path="torch/:torchStopId" element={<EditTorchPage />} />
               <Route index element={<Navigate to="places" replace />} />
               <Route path="places" element={<PlacesListPage />} />
               <Route path="places/import" element={<BulkPlacesImport />} />

@@ -1,11 +1,13 @@
 // src/pages/torch/TorchPage.tsx
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Plus } from "lucide-react";
 import {
   listTorchStops,
   deleteTorchStop,
-  createTorchStop
+  createTorchStop,
+  getTorchStop,
+  updateTorchStop,
 } from "../../lib/api/torchstops";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -37,6 +39,14 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import BasicDetails from "@/components/admin/BasicDetails";
 import LocationDetails from "@/components/admin/LocationDetails";
+import { Spinner } from "@/components/ui/spinner";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Section } from "@/components/common/Section";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { TextInput } from "@/components/common/TextInput";
+import { TextArea } from "@/components/common/TextArea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { DatePicker } from "@/components/date-picker";
 
 /* ---------------- Types ---------------- */
 export type TorchStop = {
@@ -331,7 +341,6 @@ export function TorchPage() {
                   <div className="flex items-center gap-2">
                     <Button
                       variant="link"
-                      disabled
                       onClick={() => navigate(`/admin/torch/${item._id}`)}
                     >
                       <span>View / Edit</span>
@@ -413,6 +422,7 @@ export function AddTorchPage() {
       setIsMajorStop(false);
       setTourDate(undefined);
       setPhase("");
+      setRegion("");
       setLat(0);
       setLng(0);
       setInfo("");
@@ -517,4 +527,265 @@ export function AddTorchPage() {
       </div>
     </div>
   );
+}
+
+export function EditTorchPage() {
+  const navigate = useNavigate();
+  const params = useParams();
+  const torchStopId = params.torchStopId;
+
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState<{
+    kind: "success" | "error";
+    msg: string;
+  } | null>(null);
+
+  const [name, setName] = useState("");
+  const [lat, setLat] = useState<number | "">("");
+  const [lng, setLng] = useState<number | "">("");
+  const [description, setDescription] = useState("");
+  const [phase, setPhase] = useState("");
+  const [isMajorStop, setIsMajorStop] = useState(false);
+  const [tourDate, setTourDate] = useState<Date | undefined>(undefined);
+  const [region, setRegion] = useState("");
+
+  const canSave = !!torchStopId && !!name && lat !== "" && lng !== "" && !saving;
+
+  /* ---------- Load ---------- */
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const snap = await getTorchStop(torchStopId);
+        if (!snap) {
+          setToast({ kind: "error", msg: "Torch stop not found." });
+          return;
+        }
+        const d = snap as TorchStop;
+
+        setName(d.name || "");
+        setLat(d.location.coordinates?.[1] ?? "");
+        setLng(d.location.coordinates?.[0] ?? "");
+        setDescription(d.metadata?.description || "");
+        setPhase(d.metadata?.phase || "");
+        setIsMajorStop(d.metadata?.isMajorStop || false);
+        setTourDate(d.tourDate ? new Date(d.tourDate) : undefined);
+        setRegion(d.region || "");
+
+      } finally {
+        setLoading(false);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [torchStopId]);
+
+  /* ---------- Save ---------- */
+  async function onSave() {
+    setSaving(true);
+    setToast(null);
+    try {
+      await updateTorchStop(torchStopId, {
+        name,
+        location: {
+          type: "Point",
+          coordinates: [Number(lng), Number(lat)]
+        },
+        metadata: {
+          description: description || null,
+          phase: phase || null,
+          isMajorStop: isMajorStop,
+        },
+        tourDate: tourDate || null,
+        region: region || null,
+      });
+
+      setToast({ kind: "success", msg: "Changes saved." });
+    } catch (e) {
+      console.error(e);
+      setToast({
+        kind: "error",
+        msg: "Failed to save changes.",
+      });
+    } finally {
+      setSaving(false);
+      setTimeout(() => setToast(null), 4000);
+    }
+  }
+
+  /* ---------- Delete / Duplicate ---------- */
+  async function onDelete() {
+    if (!confirm("Delete this place? This cannot be undone.")) return;
+    await deleteTorchStop(torchStopId);
+    navigate("/admin/torch");
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center gap-2 mx-auto max-w-5xl p-6 text-sm text-foreground/70">
+        <Spinner />
+        Loading…
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-6xl p-4 md:p-6">
+      {/* Top bar */}
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft />
+            Back
+          </Button>
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">Edit place</h2>
+            <p className="mt-1 text-sm text-foreground/70">
+              Update details, visuals, links
+              {/* {isRoot(zoneParam) ? "" : " — zone-scoped"}. */}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="destructive" onClick={onDelete}>
+            Delete
+          </Button>
+          <Button onClick={onSave} disabled={!canSave}>
+            {saving ? "Saving…" : "Save changes"}
+          </Button>
+        </div>
+      </div>
+
+      {toast && (
+        <Alert
+          className="mb-4"
+          variant={toast?.kind === "success" ? "default" : "destructive"}
+        >
+          <AlertDescription>
+            {toast?.msg}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        {/* Left column */}
+        <div className="lg:col-span-8 space-y-6">
+          <Section title="Basic details">
+            <div className="grid gap-4 sm:grid-cols-1">
+              <Field>
+                <FieldLabel htmlFor="name">Stop name</FieldLabel>
+                <TextInput
+                  required
+                  id="name"
+                  placeholder="e.g. Iba Mar Diop Stadium"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </Field>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-1">
+              <Field>
+                <FieldLabel htmlFor="phase">
+                  Stop phase
+                </FieldLabel>
+                <TextInput
+                  id="phase"
+                  placeholder="e.g. Phase 1"
+                  value={phase}
+                  onChange={(e) => setPhase(e.target.value)}
+                />
+              </Field>
+            </div>
+
+            <Field>
+              <FieldLabel htmlFor="info">
+                Description
+              </FieldLabel>
+              <TextArea
+                id="info"
+                placeholder="Historic multi-use stadium in Dakar."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+              <FieldDescription>Short description shown in the card/popup.</FieldDescription>
+            </Field>
+            <Field orientation="horizontal">
+              <Checkbox
+                id="isMajorStop"
+                checked={isMajorStop}
+                onCheckedChange={(checked) => setIsMajorStop(!!checked)}
+              />
+              <FieldLabel htmlFor="isMajorStop">
+                Major Stop
+              </FieldLabel>
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="tourDate">
+                Tour Date
+              </FieldLabel>
+              <DatePicker
+                // id="tourDate"
+                date={tourDate}
+                setDate={setTourDate}
+              />
+            </Field>
+          </Section>
+
+          <Section title="Location details">
+            <div className="grid gap-4 sm:grid-cols-1">
+              <Field>
+                <FieldLabel htmlFor="region">
+                  Stop region
+                </FieldLabel>
+                <TextInput
+                  id="region"
+                  placeholder="e.g. Dakar"
+                  value={region}
+                  onChange={(e) => setRegion(e.target.value)}
+                />
+              </Field>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field>
+                <FieldLabel htmlFor="lng">Latitude</FieldLabel>
+                <TextInput
+                  required
+                  id="lat"
+                  type="number"
+                  step="any"
+                  placeholder="14.6928"
+                  value={lat as any}
+                  onChange={(e) =>
+                    setLat(
+                      e.target.value === "" ? "" : parseFloat(e.target.value),
+                    )
+                  }
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="lng">Longitude</FieldLabel>
+                <TextInput
+                  required
+                  id="lng"
+                  type="number"
+                  step="any"
+                  placeholder="-17.4467"
+                  value={lng as any}
+                  onChange={(e) =>
+                    setLng(
+                      e.target.value === "" ? "" : parseFloat(e.target.value),
+                    )
+                  }
+                />
+              </Field>
+            </div>
+          </Section>
+        </div>
+      </div>
+    </div>
+  )
 }

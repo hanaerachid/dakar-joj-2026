@@ -67,7 +67,8 @@ export async function getTorchStopById(id: string) {
 export async function createTorchStop(input: any) {
   const db = await getMongoDatabase();
   const document = buildCreateDocument(input);
-  await db.collection<TorchStopDocument>("torchstops").insertOne(document);
+  const { _id, ...safeBody } = document as any;
+  await db.collection<TorchStopDocument>("torchstops").insertOne(safeBody);
   return getTorchStopById(String(document._id));
 }
 
