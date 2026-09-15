@@ -1,5 +1,14 @@
 import { useTranslation } from "react-i18next";
-import { BriefcaseBusiness, Calendar, Calendars, Flame, Map, Newspaper, Star } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  Calendar,
+  Calendars,
+  ChevronRight,
+  Flame,
+  Map,
+  Newspaper,
+  Star
+} from "lucide-react";
 import {
   Item,
   ItemContent,
@@ -58,6 +67,68 @@ export const HomeContent = () => {
   } = useStateContext();
   const mapManager = MapManager.getInstance();
 
+  const STARTERS = [
+    {
+      title: t("home.agenda"),
+      description: t("home.agendainfo"),
+      available: true,
+      color: "#00915a",
+      icon: Calendars,
+      onClick: () => setActiveTab("events"),
+    },
+    {
+      title: t("home.discover"),
+      description: t("home.localservices"),
+      available: false,
+      color: "#b98703",
+      icon: Star,
+      onClick: () => setActiveTab("discover"),
+    },
+    {
+      title: t("home.business"),
+      description: t("home.registerplace"),
+      available: true,
+      color: "#e03a2f",
+      icon: BriefcaseBusiness,
+      onClick: () => setActiveTab("business"),
+    },
+  ]
+
+  const SHORTCUTS = [
+    {
+      title: t("home.my_agenda", "My Agenda"),
+      available: true,
+      icon: Calendar,
+      color: "#FFA500",
+      active: false,
+      onClick: () => setActiveTab("events"),
+    },
+    {
+      title: t("home.maps", "Maps"),
+      available: false,
+      icon: Map,
+      color: "#FFA500",
+      active: false,
+      onClick: () => null,
+    },
+    {
+      title: t("home.torch", "Torch"),
+      available: true,
+      icon: Flame,
+      color: "#FFA500",
+      active: mapManager.isTorchVisible(),
+      onClick: () => void mapManager.toggleTorch(),
+    },
+    {
+      title: t("home.news", "News"),
+      available: true,
+      icon: Newspaper,
+      color: "#FFA500",
+      active: false,
+      onClick: () => setActiveTab("news"),
+    },
+  ]
+
   return (
     <div className="flex flex-col gap-4 py-4">
       <div className="flex flex-col gap-4">
@@ -65,7 +136,7 @@ export const HomeContent = () => {
           size="sm"
           className={cn(
             "backdrop-blur-sm bg-gradient-to-b from-[#f2b705]/10 to-[#f2b705]/5",
-            "relative before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[linear-gradient(90deg,#008751_0%,#FCD116_52%,#CE1126_100%)] before:content-['']"
+            "overflow-hidden relative before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[linear-gradient(90deg,#008751_0%,#FCD116_52%,#CE1126_100%)] before:content-['']"
           )}
         >
           <CardHeader>
@@ -87,52 +158,44 @@ export const HomeContent = () => {
         <h2 className="text-xs text-muted-foreground uppercase">
           {t("home.start_with", "Start with...")}
         </h2>
-        <ItemGroup className="gap-2" >
-          <Item size="sm" variant="outline"
-            className="hover:bg-muted cursor-pointer"
-            onClick={() => setActiveTab("events")}
-          >
-            <ItemMedia variant="icon" >
-              <Calendars />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>
-                {t("home.agenda")}
-              </ItemTitle>
-              <ItemDescription>
-                {t("home.agendainfo")}
-              </ItemDescription>
-            </ItemContent>
-          </Item>
-          <Item size="sm" variant="outline">
-            <ItemMedia variant="icon" >
-              <Star />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>
-                {t("home.discover")}
-              </ItemTitle>
-              <ItemDescription>
-                {t("home.localservices")}
-              </ItemDescription>
-            </ItemContent>
-          </Item>
-          <Item size="sm" variant="outline"
-            className="hover:bg-muted cursor-pointer"
-            onClick={() => setActiveTab("business")}
-          >
-            <ItemMedia variant="icon" >
-              <BriefcaseBusiness />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>
-                {t("home.business")}
-              </ItemTitle>
-              <ItemDescription>
-                {t("home.registerplace")}
-              </ItemDescription>
-            </ItemContent>
-          </Item>
+        <ItemGroup>
+          {STARTERS.map((item, index) => (
+            <>
+              <Item
+                key={index} size="sm"
+                variant={item.available ? "outline" : "muted"}
+                className={cn(
+                  item.available ? "group hover:bg-primary/25 cursor-pointer" : "cursor-not-allowed"
+                )}
+                onClick={item.onClick}
+              >
+                <ItemMedia
+                  className={cn("rounded-lg w-8 h-8")}
+                  style={{ backgroundColor: item.color }}
+                  variant="icon"
+                >
+                  <item.icon
+                    className={cn("w-6 h-6")}
+                  />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>
+                    {item.title}
+                  </ItemTitle>
+                  <ItemDescription>
+                    {item.description}
+                  </ItemDescription>
+                </ItemContent>
+                {item.available && (
+                  <ItemContent className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ItemDescription>
+                      <ChevronRight className="w-4 h-4" />
+                    </ItemDescription>
+                  </ItemContent>
+                )}
+              </Item>
+            </>
+          ))}
         </ItemGroup>
       </div>
       <div className="flex flex-col gap-4">
@@ -140,62 +203,27 @@ export const HomeContent = () => {
           {t("home.quick_access", "Quick access")}
         </h2>
         <ItemGroup className="grid grid-cols-2 gap-2" >
-          <Item size="xs" variant="muted"
-            className="hover:bg-muted cursor-pointer"
-            onClick={() => setActiveTab("events")}
-          >
-            <ItemMedia variant="icon" >
-              <Calendar />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>
-                {t("home.my_agenda", "My Agenda")}
-              </ItemTitle>
-            </ItemContent>
-          </Item>
-          <Item size="xs" variant="muted">
-            <ItemMedia variant="icon" >
-              <Map />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>
-                {t("home.maps", "Maps")}
-              </ItemTitle>
-            </ItemContent>
-          </Item>
-          <Item
-            size="xs"
-            variant="muted"
-            className={cn(
-              "hover:bg-muted cursor-pointer",
-              mapManager.isTorchVisible() ? "bg-muted" : ""
-            )}
-            onClick={() => void mapManager.toggleTorch()}
-          >
-            <ItemMedia variant="icon" >
-              <Flame className={cn(
-                mapManager.isTorchVisible() ? "text-[#FFA500]" : ""
-              )}/>
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>
-                {t("home.torch", "Torch")}
-              </ItemTitle>
-            </ItemContent>
-          </Item>
-          <Item size="xs" variant="muted"
-            className="hover:bg-muted cursor-pointer"
-            onClick={() => setActiveTab("news")}
-          >
-            <ItemMedia variant="icon" >
-              <Newspaper />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>
-                {t("home.news", "News")}
-              </ItemTitle>
-            </ItemContent>
-          </Item>
+
+          {SHORTCUTS.map((item, index) => (
+            <Item
+              key={index}
+              size="xs"
+              variant={item.available ? "outline" : "muted"}
+              className={item.available ? "hover:bg-primary/25 cursor-pointer" : "cursor-not-allowed"}
+              onClick={item.onClick}
+            >
+              <ItemMedia variant="icon" >
+                <item.icon
+                  style={{ color: item.active ? item.color : undefined }}
+                />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle>
+                  {item.title}
+                </ItemTitle>
+              </ItemContent>
+            </Item>
+          ))}
         </ItemGroup>
       </div>
     </div>

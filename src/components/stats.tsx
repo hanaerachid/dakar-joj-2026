@@ -56,7 +56,9 @@ export const StatsContent = () => {
       <div className="flex flex-col gap-4">
         <ItemGroup className="grid grid-cols-2 gap-2" >
           {stats.map((item, index) => (
-            <Item key={index} size="sm" variant="muted">
+            <Item key={index} size="sm" variant="muted"
+              className="overflow-hidden relative before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[linear-gradient(90deg,#008751_0%,#FCD116_52%,#CE1126_100%)] before:content-['']"
+            >
               <ItemContent>
                 <ItemDescription className="flex items-center gap-2">
                   <span className="text-3xl font-semibold">{item.value}</span>
