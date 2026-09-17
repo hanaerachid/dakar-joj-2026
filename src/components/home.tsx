@@ -24,7 +24,7 @@ import {
   CardTitle,
   CardFooter
 } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 
 import { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";

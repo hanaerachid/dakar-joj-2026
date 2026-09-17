@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Asterisk, CarFront, CircleCheck, Map, MoonStar, Mountain, Satellite, Sun, type LucideIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import { MapManager } from "./MapManager";
 import {
   Item,

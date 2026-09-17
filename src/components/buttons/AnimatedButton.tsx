@@ -8,7 +8,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { cn } from "@/utils/utils";
+import { cn } from "cn";
 
 const MotionButton = motion(Button)
 

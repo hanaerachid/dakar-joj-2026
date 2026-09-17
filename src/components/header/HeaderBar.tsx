@@ -2,7 +2,7 @@ import { LogoBrand } from "./LogoBrand";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ProfileMenu } from "../ProfileMenu";
 import { ModeToggle } from "@/components/mode-toggle";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 
 type Props = {
   title?: string;
