@@ -1,4 +1,5 @@
 // src/App.tsx
+import { useEffect } from "react";
 import { Routes, Route, Navigate, Outlet, Link } from "react-router-dom";
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { enUS, frFR, esES } from "@clerk/localizations";
@@ -9,9 +10,8 @@ import AddPlaceFull from "./admin/places/AddPlaceFull";
 import { PlacesListPage } from "./admin/places/PlacesList";
 import { PlaceDetailsPage } from "./admin/places/PlacesDetails";
 import { TorchPage, AddTorchPage, EditTorchPage } from "./pages/torch/TorchPage";
+import { BusinessCreate } from "./pages/business";
 import "./App.css";
-import { useEffect, useState } from "react";
-import { initAuth } from "./auth/nitAuth";
 import BulkPlacesImport from "./admin/places/BulkPlacesImport";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModalProvider } from "@/components/modal-provider";
@@ -124,19 +124,10 @@ function AdminShell() {
 }
 
 export default function App() {
-  const [role, setRole] = useState<string | undefined>(undefined);
   const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
   const { i18n } = useTranslation();
   const language = i18n.language.split("-")[0] as SupportedLanguage;
   const localization = localizations[language] ?? localizations.en;
-
-  useEffect(() => {
-    initAuth((user, r) => {
-      console.log("[initAuth] user:", user?.uid, "role:", r);
-      console.log("[initAuth] role:", role);
-      setRole(r);
-    });
-  }, []);
 
   const appRoutes = (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -152,6 +143,8 @@ export default function App() {
                 </PanelProvider>
               }
             />
+
+            <Route path="/business/create" element={<BusinessCreate />} />
 
             <Route
               path="/admin"

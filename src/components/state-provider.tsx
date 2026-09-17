@@ -4,8 +4,10 @@ import {
   createContext,
   useContext,
   useState,
-  useRef
+  useRef,
+  useEffect
 } from "react";
+import { initAuth } from "../auth/nitAuth";
 
 type ProviderProps = {
   children: React.ReactNode
@@ -47,6 +49,16 @@ export function StateProvider({
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [torchVisible, setTorchVisible] = useState(false);
+  const [role, setRole] = useState<string | undefined>(undefined);
+
+
+  useEffect(() => {
+    initAuth((user, r) => {
+      console.log("[initAuth] user:", user?.uid, "role:", r);
+      console.log("[initAuth] role:", role);
+      setRole(r);
+    });
+  }, []);
 
   const value = {
     activeTab,
