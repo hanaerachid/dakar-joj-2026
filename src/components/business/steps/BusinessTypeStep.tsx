@@ -8,7 +8,9 @@ import { BUSINESS_CATEGORIES } from "../business-create.config";
 import { Item, ItemContent, ItemGroup, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { cn } from "cn";
 
-export function BusinessTypeStep() {
+export function BusinessTypeStep(
+  { title }: { title?: string },
+) {
   const { watch, setValue } =
     useFormContext<BusinessCreateValues>();
   const { t } = useTranslation();
@@ -17,14 +19,13 @@ export function BusinessTypeStep() {
 
   return (
     <>
-      <CardHeader>
-        <CardTitle>
-          {t(
-            "businessCreate.type.title",
-            "What type of business do you want to list?",
-          )}
-        </CardTitle>
-      </CardHeader>
+      {title &&
+        <CardHeader>
+          <CardTitle className="font-bold">
+            {title}
+          </CardTitle>
+        </CardHeader>
+      }
       <CardContent className="space-y-6">
         <ItemGroup className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {Object.entries(BUSINESS_CATEGORIES).map(

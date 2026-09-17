@@ -5,12 +5,14 @@ import { useTranslation } from "react-i18next";
 import type { BusinessCreateValues } from "../business-create.schema";
 import { BUSINESS_PLANS } from "../business-create.config";
 
-import { FileField, TextField } from "@/components/common/Field";
+import { FileField, /*TextField*/ } from "@/components/common/Field";
 import { Button } from "@/components/ui/button";
-import { CardContent } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 
-export function BusinessMediaStep() {
+export function BusinessMediaStep(
+  { title }: { title?: string },
+) {
   const { /* control, */ watch, setValue } =
     useFormContext<BusinessCreateValues>();
   const { t } = useTranslation();
@@ -50,6 +52,13 @@ export function BusinessMediaStep() {
 
   return (
     <>
+      {title &&
+        <CardHeader>
+          <CardTitle className="font-bold">
+            {title}
+          </CardTitle>
+        </CardHeader>
+      }
       <CardContent className="space-y-6">
         <FieldSet>
           <FieldLegend className="font-semibold flex items-center justify-between">
@@ -129,7 +138,7 @@ export function BusinessMediaStep() {
             )}
           </FieldGroup>
         </FieldSet>
-
+        {/* 
         <FieldSet>
           <FieldLegend className="font-semibold">
             {t(
@@ -151,6 +160,7 @@ export function BusinessMediaStep() {
             />
           </FieldGroup>
         </FieldSet>
+        */}
       </CardContent>
     </>
   );

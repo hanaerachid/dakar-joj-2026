@@ -19,8 +19,10 @@ import {
 } from "@/components/ui/item";
 
 export function BusinessPlanStep({
+  title,
   onPlanChange,
 }: {
+  title?: string;
   onPlanChange: (
     plan: BusinessCreateValues["pack"],
   ) => void;
@@ -41,14 +43,13 @@ export function BusinessPlanStep({
 
   return (
     <>
-      <CardHeader>
-        <CardTitle className="font-semibold">
-          {t(
-            "businessCreate.plan.title",
-            "Choose your visibility plan",
-          )}
-        </CardTitle>
-      </CardHeader>
+      {title &&
+        <CardHeader>
+          <CardTitle className="font-semibold">
+            {title}
+          </CardTitle>
+        </CardHeader>
+      }
       <CardContent className="space-y-6">
 
         <ItemGroup className="grid gap-3 sm:grid-cols-2">
@@ -131,7 +132,6 @@ export function BusinessPlanStep({
               category.label,
             )}
           />
-
 
           <SummaryRow
             label={t(

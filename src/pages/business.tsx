@@ -62,11 +62,11 @@ export function BusinessCreate() {
   // const plan = watch("pack");
 
   const stepTitle = [
-    t("businessCreate.steps.type", "Business type"),
-    t("businessCreate.steps.identity", "Business identity"),
+    t("businessCreate.steps.type", "What type of business do you want to list?"),
+    t("businessCreate.steps.identity", "Business identity and contact information"),
     t("businessCreate.steps.details", "Business details"),
-    t("businessCreate.steps.media", "Photos & pricing"),
-    t("businessCreate.steps.plan", "Subscription"),
+    t("businessCreate.steps.media", "Photos & media"),
+    t("businessCreate.steps.plan", "Choose your visibility plan"),
   ][step];
 
   const next = async () => {
@@ -163,23 +163,25 @@ export function BusinessCreate() {
     }
   };
 
-  const renderStep = () => {
+  const renderStep = (
+    { stepTitle }: { stepTitle?: string }
+  ) => {
     switch (step) {
       case 0:
-        return <BusinessTypeStep />;
+        return <BusinessTypeStep title={stepTitle} />;
 
       case 1:
-        return <BusinessIdentityStep />;
+        return <BusinessIdentityStep title={stepTitle} />;
 
       case 2:
-        return <BusinessDetailsStep />;
+        return <BusinessDetailsStep title={stepTitle} />;
 
       case 3:
-        return <BusinessMediaStep />;
+        return <BusinessMediaStep title={stepTitle} />;
 
       case 4:
         return (
-          <BusinessPlanStep
+          <BusinessPlanStep title={stepTitle}
             onPlanChange={changePlan}
           />
         );
@@ -221,13 +223,10 @@ export function BusinessCreate() {
                 value={((step + 1) / FORM_STEPS.length) * 100}
               />
 
-              <p className="text-sm text-muted-foreground">
-                {stepTitle}
-              </p>
             </div>
 
             <Card>
-              {renderStep()}
+              {renderStep({stepTitle})}
               <CardFooter className="flex justify-between gap-3">
                 <Button
                   type="button"

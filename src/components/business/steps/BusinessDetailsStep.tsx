@@ -11,10 +11,12 @@ import {
   SelectField,
   MultiSelectField,
 } from "@/components/common/Field";
-import { CardContent } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 
-export function BusinessDetailsStep() {
+export function BusinessDetailsStep(
+  { title }: { title?: string },
+) {
   const { watch, /*control*/ } =
     useFormContext<BusinessCreateValues>();
   const { t } = useTranslation();
@@ -26,6 +28,13 @@ export function BusinessDetailsStep() {
 
   return (
     <>
+      {title &&
+        <CardHeader>
+          <CardTitle className="font-bold">
+            {title}
+          </CardTitle>
+        </CardHeader>
+      }
       <CardContent className="space-y-6">
         <FieldSet>
           <FieldLegend className="font-semibold">

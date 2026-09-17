@@ -5,19 +5,20 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TextField } from "@/components/common/Field";
 
-export function BusinessIdentityStep() {
+export function BusinessIdentityStep(
+  { title }: { title?: string },
+) {
   const { t } = useTranslation();
 
   return (
     <>
-      <CardHeader>
-        <CardTitle>
-          {t(
-            "businessCreate.identity.title",
-            "Business identity and contact",
-          )}
-        </CardTitle>
-      </CardHeader>
+      {title &&
+        <CardHeader>
+          <CardTitle className="font-bold">
+            {title}
+          </CardTitle>
+        </CardHeader>
+      }
       <CardContent className="space-y-6">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
