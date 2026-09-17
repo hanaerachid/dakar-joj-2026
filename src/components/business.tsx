@@ -2,28 +2,22 @@ import { useTranslation } from "react-i18next";
 import {
   ItemGroup,
 } from "@/components/ui/item";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
+import { PRICING_PLANS } from "./pricing/pricingplans.config";
 
 export const BusinessContent = () => {
   const { t } = useTranslation();
-  const plans = [
-    {
-      title: t("business.discover", "Discover"),
-      value: t("business.free", "Free"),
-      subtitle: t("business.your_profile_on_the_map", "Votre fiche sur la carte"),
-    },
-    {
-      title: t("business.show", "Show"),
-      value: `25 000 F/${t("business.month", "month")}`,
-      subtitle: t("business.photos_and_best_position", "Photos et meilleure position"),
-    },
-    {
-      title: t("business.premium", "Premium"),
-      value: `60 000 F/${t("business.month", "month")}`,
-      subtitle: t("business.maximum_visibility", "Visibilité maximale"),
-    },
-  ]
 
+  const formatPrice = (price: number) =>
+    price === 0
+      ? t("businessCreate.plan.free", "Free")
+      : `${price.toLocaleString()} FCFA`;
 
   return (
     <div className="flex flex-col gap-4 py-4">
@@ -43,27 +37,32 @@ export const BusinessContent = () => {
           {t("business.selectplan", "Choose your plan")}
         </h2>
         <ItemGroup className="flex flex-col gap-2" >
-          {plans.map((item, index) => (
-            <Card key={index} size="sm">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between gap-1">
-                  <span
-                    className="text-lg text-muted-foreground font-bold uppercase"
-                  >
-                    {item.title}
-                  </span>
-                  <span className="text-xs text-[#f2b705] font-semibold">{item.value}</span>
-                </CardTitle>
-                <CardDescription className="flex items-center gap-2">
-                  {item.subtitle}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+          {Object.entries(PRICING_PLANS).map(
+            ([key, item]) => {
+              return (
+                <Card key={key} size="sm">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between gap-1">
+                      <span
+                        className="text-lg text-muted-foreground font-bold uppercase"
+                      >
+                        {item.label}
+                      </span>
+                      <span className="text-xs text-[#f2b705] font-semibold">
+                        {formatPrice(item.price)}
+                      </span>
+                    </CardTitle>
+                    <CardDescription className="flex items-center gap-2">
+                      {item.desc}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p>
+                    </p>
+                  </CardContent>
+                </Card>
+              )
+            })}
         </ItemGroup>
       </div>
     </div>

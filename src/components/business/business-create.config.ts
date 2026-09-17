@@ -1,13 +1,40 @@
-import { Car, Hotel, House, Palette, ShoppingBag, Utensils } from "lucide-react";
+import { type LucideComponent, Car, Hotel, House, Palette, ShoppingBag, Utensils } from "lucide-react";
 
-export const BUSINESS_CATEGORIES = {
+export type FieldOption = {
+  label: string;
+  value: string;
+};
+
+export type BaseField = {
+  name: string;
+  type?: "text" | "number" | "select" | "multi";
+  label: string;
+  unit?: string;
+};
+
+export type OptionsField = BaseField & {
+  type: 'multi' | 'select';
+  options?: FieldOption[];
+}
+
+export type CategoryField = BaseField | OptionsField;
+
+export type BusinessCat = {
+  icon: typeof LucideComponent;
+  label: string;
+  fields: CategoryField[];
+};
+
+export type BusinessCategories = Record<string, BusinessCat>;
+
+export const BUSINESS_CATEGORIES: BusinessCategories = {
   hotel: {
     icon: Hotel,
     label: "Hotel",
     fields: [
-      { name: "chambres", type: "number", label: "Number of rooms", unit: "rooms" },
+      { name: "chambres", type: "number", label: "Number of rooms" },
       { name: "pricePerNight", type: "number", label: "Price per night", unit: "FCFA" },
-      { name: "capacity", type: "number", label: "Guest capacity", unit: "rooms" },
+      { name: "capacity", type: "number", label: "Guest capacity" },
       {
         name: "equip",
         type: "multi",

@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group";
 
 type FileFieldProps<T extends FieldValues> = {
   name: FieldPath<T>;
@@ -50,6 +51,7 @@ type TextFieldProps<T extends FieldValues> = {
   label: string;
   placeholder?: string;
   type?: string;
+  suffix?: string;
 };
 
 type MultiSelectFieldProps<T extends FieldValues> = {
@@ -146,6 +148,7 @@ export function TextField<T extends FieldValues>({
   label,
   placeholder,
   type = "text",
+  suffix,
 }: TextFieldProps<T>) {
   const { control } = useFormContext<T>();
 
@@ -156,15 +159,19 @@ export function TextField<T extends FieldValues>({
       render={({ field, fieldState }) => (
         <Field>
           <FieldLabel htmlFor={name}>{label}</FieldLabel>
-
-          <Input
-            {...field}
-            id={name}
-            type={type}
-            placeholder={placeholder}
-            value={field.value ?? ""}
-            aria-invalid={!!fieldState.error}
-          />
+          <InputGroup>
+            <InputGroupInput
+              {...field}
+              id={name}
+              type={type}
+              placeholder={placeholder}
+              value={field.value ?? ""}
+              aria-invalid={!!fieldState.error}
+            />
+            <InputGroupAddon align="inline-end" >
+              {suffix}
+            </InputGroupAddon>
+          </InputGroup>
 
           {fieldState.error && (
             <FieldError className="text-sm">

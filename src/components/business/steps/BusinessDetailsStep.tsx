@@ -85,7 +85,11 @@ export function BusinessDetailsStep(
                     key={field.name}
                     name={fieldName}
                     label={label}
-                    options={[...field.options]}
+                    options={
+                      "options" in field && field.options
+                        ? [...field.options]
+                        : []
+                    }
                   />
                 );
               }
@@ -96,8 +100,13 @@ export function BusinessDetailsStep(
                     key={field.name}
                     name={fieldName}
                     label={label}
-                    options={[...field.options]}
-                  />);
+                    options={
+                      "options" in field && field.options
+                        ? [...field.options]
+                        : []
+                    }
+                  />
+                );
               }
 
               return (
@@ -107,6 +116,7 @@ export function BusinessDetailsStep(
                   name={fieldName}
                   label={label}
                   placeholder={field.label}
+                  suffix={field.unit}
                 />
               );
             })}

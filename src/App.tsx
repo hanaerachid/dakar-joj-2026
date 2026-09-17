@@ -10,6 +10,7 @@ import AddPlaceFull from "./admin/places/AddPlaceFull";
 import { PlacesListPage } from "./admin/places/PlacesList";
 import { PlaceDetailsPage } from "./admin/places/PlacesDetails";
 import { TorchPage, AddTorchPage, EditTorchPage } from "./pages/torch/TorchPage";
+import { PricingPage } from "./pages/pricing";
 import { BusinessCreate } from "./pages/business";
 import "./App.css";
 import BulkPlacesImport from "./admin/places/BulkPlacesImport";
@@ -144,6 +145,7 @@ export default function App() {
               }
             />
 
+            <Route path="/pricing" element={<PricingPage />} />
             <Route path="/business/create" element={<BusinessCreate />} />
 
             <Route
