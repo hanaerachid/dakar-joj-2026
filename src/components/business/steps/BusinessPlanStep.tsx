@@ -118,7 +118,7 @@ export function BusinessPlanStep({
               "businessCreate.summary.business",
               "Business",
             )}
-            value={values.nom || "—"}
+            value={values.name || "—"}
           />
 
           <SummaryRow
@@ -132,13 +132,6 @@ export function BusinessPlanStep({
             )}
           />
 
-          <SummaryRow
-            label={t(
-              "businessCreate.summary.neighborhood",
-              "Neighborhood",
-            )}
-            value={values.quartier || "—"}
-          />
 
           <SummaryRow
             label={t(

@@ -50,7 +50,7 @@ export function BusinessMediaStep() {
 
   return (
     <>
-      <CardContent>
+      <CardContent className="space-y-6">
         <FieldSet>
           <FieldLegend className="font-semibold flex items-center justify-between">
             <span>
@@ -100,6 +100,7 @@ export function BusinessMediaStep() {
             </div>
           </FieldGroup>
         </FieldSet>
+
         <FieldSet>
           <FieldLegend className="font-semibold">
             {t(
@@ -128,6 +129,7 @@ export function BusinessMediaStep() {
             )}
           </FieldGroup>
         </FieldSet>
+
         <FieldSet>
           <FieldLegend className="font-semibold">
             {t(
@@ -137,13 +139,13 @@ export function BusinessMediaStep() {
           </FieldLegend>
           <FieldGroup>
             <TextField
-              name="prixNote"
+              name="priceTag"
               label={t(
-                "businessCreate.media.pricingNote",
+                "businessCreate.media.pricing_tag",
                 "Pricing note",
               )}
               placeholder={t(
-                "businessCreate.media.pricingPlaceholder",
+                "businessCreate.media.pricing_tag_placeholder",
                 "e.g. Special event rates",
               )}
             />

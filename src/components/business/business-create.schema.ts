@@ -23,7 +23,7 @@ export const businessCreateSchema = z.object({
     "galerie",
   ]),
 
-  nom: z.string().trim().min(1, "Name is required"),
+  name: z.string().trim().min(1, "Name is required"),
 
   tel: optionalText,
   wa: optionalText,
@@ -31,10 +31,9 @@ export const businessCreateSchema = z.object({
   website: optionalText,
   social: optionalText,
 
-  quartier: optionalText,
-  adresse: optionalText,
+  address: optionalText,
   desc: optionalText,
-  horaires: optionalText,
+  openHours: optionalText,
 
   spec: businessSpecSchema.default({}),
 
@@ -48,7 +47,7 @@ export const businessCreateSchema = z.object({
     "sponsor",
   ]),
 
-  prixNote: optionalText,
+  priceTag: optionalText,
 }).superRefine((data, ctx) => {
   if (!data.tel.trim() && !data.email.trim()) {
     ctx.addIssue({
@@ -94,18 +93,17 @@ export type BusinessCreateValues = z.infer<
 
 export const defaultBusinessValues: BusinessCreateValues = {
   cat: "hotel",
-  nom: "",
+  name: "",
   tel: "",
   wa: "",
   email: "",
   website: "",
   social: "",
-  quartier: "",
-  adresse: "",
+  address: "",
   desc: "",
-  horaires: "",
+  openHours: "",
   spec: {},
   photos: [],
   pack: "discover",
-  prixNote: "",
+  priceTag: "",
 };

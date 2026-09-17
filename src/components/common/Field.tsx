@@ -7,7 +7,7 @@ import {
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import {
   Select,
   SelectContent,
@@ -268,9 +268,9 @@ export function FileField<T extends FieldValues>({
           />
 
           {!multiple && field.value && (
-            <p className="text-sm text-muted-foreground">
+            <FieldDescription className="text-sm text-muted-foreground">
               {field.value.name}
-            </p>
+            </FieldDescription>
           )}
 
           {fieldState.error && (

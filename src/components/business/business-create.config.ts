@@ -5,9 +5,9 @@ export const BUSINESS_CATEGORIES = {
     icon: Hotel,
     label: "Hotel",
     fields: [
-      { name: "chambres", type: "number", label: "Number of rooms" },
-      { name: "prixNuit", type: "number", label: "Price per night" },
-      { name: "capacite", type: "number", label: "Guest capacity" },
+      { name: "chambres", type: "number", label: "Number of rooms", unit: "rooms" },
+      { name: "pricePerNight", type: "number", label: "Price per night", unit: "FCFA" },
+      { name: "capacity", type: "number", label: "Guest capacity", unit: "rooms" },
       {
         name: "equip",
         type: "multi",
@@ -30,8 +30,8 @@ export const BUSINESS_CATEGORIES = {
     label: "Furnished apartment",
     fields: [
       { name: "pieces", type: "number", label: "Number of rooms" },
-      { name: "prixNuit", type: "number", label: "Price per night" },
-      { name: "capacite", type: "number", label: "Sleeping capacity" },
+      { name: "pricePerNight", type: "number", label: "Price per night" },
+      { name: "capacity", type: "number", label: "Sleeping capacity" },
       {
         name: "equip",
         type: "multi",

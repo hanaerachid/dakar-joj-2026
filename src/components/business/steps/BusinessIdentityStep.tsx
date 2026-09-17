@@ -22,9 +22,9 @@ export function BusinessIdentityStep() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <TextField
-              name="nom"
+              name="name"
               label={t(
-                "businessCreate.fields.nom",
+                "businessCreate.fields.name",
                 "Business name",
               )}
               placeholder="e.g. Teranga Plaza"
@@ -32,6 +32,7 @@ export function BusinessIdentityStep() {
           </div>
 
           <TextField
+            type="tel"
             name="tel"
             label={t(
               "businessCreate.fields.tel",
@@ -50,6 +51,7 @@ export function BusinessIdentityStep() {
           />
 
           <TextField
+            type="email"
             name="email"
             label={t(
               "businessCreate.fields.email",
@@ -59,6 +61,7 @@ export function BusinessIdentityStep() {
           />
 
           <TextField
+            type="url"
             name="website"
             label={t(
               "businessCreate.fields.website",

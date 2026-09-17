@@ -34,19 +34,11 @@ export function BusinessDetailsStep() {
               "Location",
             )}
           </FieldLegend>
-          <FieldGroup className="grid gap-4 sm:grid-cols-2">
+          <FieldGroup className="grid gap-4 sm:grid-cols-1">
             <TextField
-              name="quartier"
+              name="address"
               label={t(
-                "businessCreate.fields.quartier",
-                "Neighborhood / area",
-              )}
-              placeholder="Almadies, Plateau..."
-            />
-            <TextField
-              name="adresse"
-              label={t(
-                "businessCreate.fields.adresse",
+                "businessCreate.fields.address",
                 "Street address",
               )}
               placeholder="Street, avenue, landmark"
@@ -92,6 +84,7 @@ export function BusinessDetailsStep() {
               if (field.type === "multi") {
                 return (
                   <MultiSelectField
+                    key={field.name}
                     name={fieldName}
                     label={label}
                     options={[...field.options]}
@@ -101,6 +94,7 @@ export function BusinessDetailsStep() {
               return (
                 <TextField
                   key={field.name}
+                  type={field.type}
                   name={fieldName}
                   label={label}
                   placeholder={field.label}
@@ -125,9 +119,9 @@ export function BusinessDetailsStep() {
             />
 
             <TextField
-              name="horaires"
+              name="openHours"
               label={t(
-                "businessCreate.fields.horaires",
+                "businessCreate.fields.open_hours",
                 "Opening hours",
               )}
               placeholder="e.g. 8 AM – 10 PM"

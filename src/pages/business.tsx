@@ -27,12 +27,13 @@ import { BusinessIdentityStep } from "@/components/business/steps/BusinessIdenti
 import { BusinessDetailsStep } from "@/components/business/steps/BusinessDetailsStep";
 import { BusinessMediaStep } from "@/components/business/steps/BusinessMediaStep";
 import { BusinessPlanStep } from "@/components/business/steps/BusinessPlanStep";
+import { createBusinessListing } from "@/lib/api/submitBusinessListing";
 
 const STEP_FIELDS: Record<number, (keyof BusinessCreateValues)[]> = {
   0: ["cat"],
-  1: ["nom", "tel", "email"],
-  2: ["quartier", "adresse", "desc", "horaires", "spec"],
-  3: ["photos", "videoFile", "prixNote"],
+  1: ["name", "tel", "email"],
+  2: ["address", "desc", "openHours", "spec"],
+  3: ["photos", "videoFile", "priceTag"],
   4: ["pack"],
 };
 
@@ -137,20 +138,7 @@ export function BusinessCreate() {
         payload.append("video", videoFile);
       }
 
-      const response = await fetch(
-        "/api/v2/business/listings",
-        {
-          method: "POST",
-          body: payload,
-          // Add Authorization headers here if required.
-          // Do not set Content-Type manually for FormData.
-        },
-      );
-
-      if (!response.ok) {
-        const message = await response.text();
-        throw new Error(message || "Submission failed");
-      }
+      await createBusinessListing(payload);
 
       toast.success(
         t(
@@ -254,7 +242,10 @@ export function BusinessCreate() {
                 {step < FORM_STEPS.length - 1 ? (
                   <Button
                     type="button"
-                    onClick={next}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      void next();
+                    }}
                   >
                     {t("common.continue", "Continue")}
                   </Button>
