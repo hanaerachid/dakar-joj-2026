@@ -1,9 +1,9 @@
 import { apiRequest } from "../apiClient";
 
-export async function createBusinessListing(payload: FormData) {
-  const response = await apiRequest<{ success: true; data: any }>(`/api/business/listings`, {
+export async function createBusinessListing(payload: Record<string, any>) {
+  const response = await apiRequest<{ success: true; data: any }>(`/api/v2/business/listings`, {
     method: "POST",
-    body: payload,
+    body: JSON.stringify(payload),
   });
   return response.data;
 }

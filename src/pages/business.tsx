@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { HeaderBar } from "../components/header/HeaderBar";
+import { fileToBase64 } from "@/lib/fileConvert";
 
 import {
   businessCreateSchema,
@@ -116,28 +117,27 @@ export function BusinessCreate() {
     setSubmitting(true);
 
     try {
-      const payload = new FormData();
+      const { photos, videoFile, ...businessData } = values;
 
-      // Serialize the regular form data.
-      const {
-        photos,
-        videoFile,
-        ...businessData
-      } = values;
-
-      payload.append(
-        "business",
-        JSON.stringify(businessData),
+      // 1. Convert all photo files to Base64 strings in parallel
+      const base64Photos = await Promise.all(
+        photos.map((photo) => fileToBase64(photo))
       );
 
-      photos.forEach((photo) => {
-        payload.append("photos", photo);
-      });
-
+      // 2. Convert video file if it exists
+      let base64Video = null;
       if (videoFile) {
-        payload.append("video", videoFile);
+        base64Video = await fileToBase64(videoFile);
       }
 
+      // 3. Build a pure JavaScript object payload
+      const payload = {
+        ...businessData,
+        photos: base64Photos, // Now an array of Base64 strings
+        video: base64Video,   // A Base64 string or null
+      };
+
+      // 4. Send the pure JSON payload to your Hono server
       await createBusinessListing(payload);
 
       toast.success(

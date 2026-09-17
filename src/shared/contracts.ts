@@ -197,6 +197,45 @@ export const torchStopSchema = z.object({
 
 export type TorchStop = z.infer<typeof torchStopSchema>;
 
+export const businessListingSchema = z.object({
+  cat: z.string(),
+  name: z.string(),
+  tel: z.string(),
+  wa: z.string(),
+  email: z.string().email(),
+  website: z.string().url(),
+  social: z.string(),
+  address: z.string(),
+  desc: z.string(),
+  openHours: z.string(),
+  spec: z.object({
+    chambres: z.string().optional(),
+    pieces: z.string().optional(),
+    pricePerNight: z.string().optional(),
+    capacity: z.string().optional(),
+    equip: z.array(z.string()).optional(),
+    cuisine: z.array(z.string()).optional(),
+    service: z.string().optional(),
+    brands: z.string().optional(),
+    dailyPrice: z.string().optional(),
+    options: z.array(z.string()).optional(),
+    produits: z.string().optional(),
+    gamme: z.string().optional(),
+    expoType: z.string().optional(),
+    entryFees: z.string().optional(),
+    days: z.string().optional(),
+  }),
+  pack: z.string(),
+  priceTag: z.string().optional(),
+
+  // Add the base64 image field (optional or required depending on your needs)
+  image: z.string().regex(/^data:image\/(png|jpeg|jpg);base64,/, {
+    message: "Invalid image format. Must be a base64 Data URI (png/jpeg/jpg)",
+  }).optional(),
+});
+
+export type BusinessListing = z.infer<typeof businessListingSchema>;
+
 export const uploadResponseSchema = z.object({
   url: z.string().url(),
   path: z.string(),

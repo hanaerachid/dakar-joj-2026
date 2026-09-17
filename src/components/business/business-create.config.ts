@@ -93,26 +93,7 @@ export const BUSINESS_CATEGORIES: BusinessCategories = {
           { label: "Fast-food", value: "fast_food" }
         ],
       },
-      {
-        name: "gamme",
-        type: "select",
-        label: "Price range",
-        options: [
-          {
-            label: "€ Économique",
-            value: "economique"
-          },
-          {
-            label: "€€ Intermédiaire",
-            value: "intermediaire"
-          },
-          {
-            label: "€€€ Gastronomique",
-            value: "gastronomique"
-          },
-        ],
-      },
-      { name: "prixMoyen", type: "number", label: "Average price per cover" },
+      { name: "averagePrice", type: "number", label: "Average price per cover" },
       {
         name: "options",
         type: "multi",
@@ -143,8 +124,8 @@ export const BUSINESS_CATEGORIES: BusinessCategories = {
           { label: "Location & Vente", value: "location_et_vente" },
         ],
       },
-      { name: "marques", type: "text", label: "Brands offered" },
-      { name: "prixJour", type: "number", label: "Price per day" },
+      { name: "brands", type: "text", label: "Brands offered" },
+      { name: "dailyPrice", type: "number", label: "Price per day" },
       {
         name: "options",
         type: "multi",
@@ -192,9 +173,9 @@ export const BUSINESS_CATEGORIES: BusinessCategories = {
     icon: Palette,
     label: "Gallery / Museum",
     fields: [
-      { name: "typeExpo", type: "text", label: "Exhibition types" },
-      { name: "prixEntree", type: "number", label: "Entry price" },
-      { name: "jours", type: "text", label: "Opening days" },
+      { name: "expoType", type: "text", label: "Exhibition types" },
+      { name: "entryFees", type: "number", label: "Entry price" },
+      { name: "days", type: "text", label: "Opening days" },
     ],
   },
 } as const;

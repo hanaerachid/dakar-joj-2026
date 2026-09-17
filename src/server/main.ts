@@ -14,6 +14,7 @@ import { zonesRoutes } from "./features/zones/zones.routes.js";
 import { placesRoutes } from "./features/places/places.routes.js";
 import { contentRoutes } from "./features/content/content.routes.js";
 import { torchRoutes } from "./features/torch/torch.routes.js";
+import { listingRoutes } from "./features/business_listings/listings.routes.js";
 import { uploadRoutes } from "./features/uploads/upload.routes.js";
 import { itineraryRoutes } from "./features/itinerary/itinerary.routes.js";
 import { attachSessionUser } from "./middleware/auth.js";
@@ -28,6 +29,7 @@ import {
   torchStopSchema,
   sessionUserSchema,
   zoneSchema,
+  businessListingSchema,
 } from "../shared/contracts.js";
 
 const app = new OpenAPIHono();
@@ -62,6 +64,7 @@ v2Routes.use("*", attachSessionUser);
 v2Routes.route("/zones", zonesRoutes);
 v2Routes.route("/places", placesRoutes);
 v2Routes.route("/torch", torchRoutes);
+v2Routes.route("/business/listings", listingRoutes);
 v2Routes.route("/", contentRoutes);
 
 const itineraryCoordinateSchema = z
@@ -495,6 +498,122 @@ app.openAPIRegistry.registerPath({
   method: "delete",
   path: "/api/v2/torch/{id}",
   summary: "Delete torch stop",
+  security: [{ apiKeyAuth: [] }],
+  request: {
+    params: z.object({
+      id: z.string(),
+    }),
+  },
+  responses: {
+    200: {
+      description: "Deletion confirmation",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(z.object({ deleted: z.literal(true) })),
+        },
+      },
+    },
+  },
+});
+
+// Get All listings
+app.openAPIRegistry.registerPath({
+  method: "get",
+  path: "/api/v2/business/listings",
+  summary: "List all business listings",
+  responses: {
+    200: {
+      description: "Array of business listings",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(z.array(businessListingSchema)),
+        },
+      },
+    },
+  },
+});
+
+// Get Business Listing
+app.openAPIRegistry.registerPath({
+  method: "get",
+  path: "/api/v2/business/listings/{id}",
+  summary: "Get a business listing by ID",
+  request: {
+    params: z.object({ id: z.string() }),
+  },
+  responses: {
+    200: { description: "Business listing", content: { "application/json": { schema: apiSuccessSchema(businessListingSchema) } } },
+    404: { description: "Business listing not found", content: { "application/json": { schema: apiErrorSchema } } },
+  },
+});
+
+// Create Business Listing
+app.openAPIRegistry.registerPath({
+  method: "post",
+  path: "/api/v2/business/listings",
+  summary: "Create business listing",
+  security: [{ apiKeyAuth: [] }],
+  request: {
+    body: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: businessListingSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      description: "Created business listing",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(businessListingSchema),
+        },
+      },
+    },
+  },
+});
+
+// Update Business Listing
+app.openAPIRegistry.registerPath({
+  method: "patch",
+  path: "/api/v2/business/listings/{id}",
+  summary: "Update business listing",
+  security: [{ apiKeyAuth: [] }],
+  request: {
+    params: z.object({
+      id: z.string().openapi({
+        description: "Business listing ID",
+        example: "xxxxxxxxxxxxxxxxxxxx",
+      }),
+    }),
+    body: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: businessListingSchema.partial(),
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Updated business listing",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(businessListingSchema),
+        },
+      },
+    },
+  },
+});
+
+// Delete Business Listing
+app.openAPIRegistry.registerPath({
+  method: "delete",
+  path: "/api/v2/business/listings/{id}",
+  summary: "Delete business listing",
   security: [{ apiKeyAuth: [] }],
   request: {
     params: z.object({
