@@ -1,23 +1,30 @@
 import { useTranslation } from "react-i18next";
-import {
-  ItemGroup,
-} from "@/components/ui/item";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
+import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
 import { PRICING_PLANS } from "./pricing/pricingplans.config";
 
 export const BusinessContent = () => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
+  const { user } = useUser();
+  const currentPlan = user?.publicMetadata?.plan;
+  const planId: keyof typeof PRICING_PLANS =
+    typeof currentPlan === "string" && currentPlan in PRICING_PLANS
+      ? (currentPlan as keyof typeof PRICING_PLANS)
+      : "discover";
+  const plan = PRICING_PLANS[planId];
 
-  const formatPrice = (price: number) =>
-    price === 0
-      ? t("businessCreate.plan.free", "Free")
-      : `${price.toLocaleString()} FCFA`;
+  const { label, features, desc } = plan;
 
   return (
     <div className="flex flex-col gap-4 py-4">
@@ -34,36 +41,54 @@ export const BusinessContent = () => {
       </div>
       <div className="flex flex-col gap-4">
         <h2 className="text-xs text-muted-foreground uppercase">
-          {t("business.selectplan", "Choose your plan")}
+          {t("business.current_plan", "Choose your plan")}
         </h2>
-        <ItemGroup className="flex flex-col gap-2" >
-          {Object.entries(PRICING_PLANS).map(
-            ([key, item]) => {
-              return (
-                <Card key={key} size="sm">
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between gap-1">
-                      <span
-                        className="text-lg text-muted-foreground font-bold uppercase"
-                      >
-                        {item.label}
-                      </span>
-                      <span className="text-xs text-[#f2b705] font-semibold">
-                        {formatPrice(item.price)}
-                      </span>
-                    </CardTitle>
-                    <CardDescription className="flex items-center gap-2">
-                      {item.desc}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p>
-                    </p>
-                  </CardContent>
-                </Card>
-              )
-            })}
-        </ItemGroup>
+        <Card size="sm">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between gap-1">
+              <span
+                className="text-lg text-muted-foreground font-bold uppercase"
+              >
+                {label}
+              </span>
+            </CardTitle>
+            <CardDescription className="flex items-center gap-2">
+              {desc}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {features.map((feature, index) => (
+              <CardDescription
+                key={index}
+                className="flex justfiy-start gap-2 text-sm"
+              >
+                <Check className="w-4 h-4 text-primary" />
+                <span>
+                  {feature}
+                </span>
+              </CardDescription>
+            ))}
+          </CardContent>
+          <CardFooter>
+            {planId === "discover" ? (
+              <Button
+                variant="default"
+                className="w-full"
+                onClick={() => navigate("/pricing")}
+              >
+                Upgrade
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => navigate("/business")}
+              >
+                {t("business.manage_business", "Manage your business")}
+              </Button>
+            )}
+          </CardFooter>
+        </Card>
       </div>
     </div>
   );

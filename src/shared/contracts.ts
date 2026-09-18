@@ -198,6 +198,7 @@ export const torchStopSchema = z.object({
 export type TorchStop = z.infer<typeof torchStopSchema>;
 
 export const businessListingSchema = z.object({
+  _id: z.string().optional(),
   cat: z.string(),
   name: z.string(),
   tel: z.string(),

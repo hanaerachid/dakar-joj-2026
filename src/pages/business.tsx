@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm, FormProvider } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronLeft, MoreVertical, Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { HeaderBar } from "../components/header/HeaderBar";
 import { fileToBase64 } from "@/lib/fileConvert";
@@ -12,6 +13,7 @@ import {
   defaultBusinessValues,
   type BusinessCreateValues,
 } from "@/components/business/business-create.schema";
+import type { BusinessListing } from "@/shared/contracts";
 
 import {
   // BUSINESS_CATEGORIES,
@@ -19,16 +21,42 @@ import {
   FORM_STEPS,
 } from "@/components/business/business-create.config";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+} from "@/components/ui/empty";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { BusinessTypeStep } from "@/components/business/steps/BusinessTypeStep";
 import { BusinessIdentityStep } from "@/components/business/steps/BusinessIdentityStep";
 import { BusinessDetailsStep } from "@/components/business/steps/BusinessDetailsStep";
 import { BusinessMediaStep } from "@/components/business/steps/BusinessMediaStep";
 import { BusinessPlanStep } from "@/components/business/steps/BusinessPlanStep";
-import { createBusinessListing } from "@/lib/api/submitBusinessListing";
+import {
+  listBusinessListings,
+  createBusinessListing,
+  deleteBusinessListing,
+} from "@/lib/api/submitBusinessListing";
 
 const STEP_FIELDS: Record<number, (keyof BusinessCreateValues)[]> = {
   0: ["cat"],
@@ -37,6 +65,254 @@ const STEP_FIELDS: Record<number, (keyof BusinessCreateValues)[]> = {
   3: ["photos", "videoFile", "priceTag"],
   4: ["pack"],
 };
+
+export function BusinessPage() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [businessListings, setBusinessListings] = useState<BusinessListing[]>([]);
+  // const [search, setSearch] = useState("");
+  // const [sort, setSort] = useState<"updated" | "name">("updated");
+
+  async function loadBusinessListings() {
+    setLoading(true);
+    try {
+      let items: BusinessListing[] = [];
+
+      items = (await listBusinessListings()) as BusinessListing[];
+
+      // sort
+      items.sort((a: any, b: any) => {
+        // if (sort === "updated") {
+        //   const at = a.updatedAt?.toMillis ? a.updatedAt.toMillis() : 0;
+        //   const bt = b.updatedAt?.toMillis ? b.updatedAt.toMillis() : 0;
+        //   if (bt !== at) return bt - at;
+        // }
+        return (a.name || "").localeCompare(b.name || "");
+      });
+
+      setBusinessListings(items);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadBusinessListings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function handleDeleteBusinessListing(item: BusinessListing) {
+    if (!confirm("Delete this business listing? This cannot be undone.")) return;
+    try {
+      await deleteBusinessListing(item._id);
+      await loadBusinessListings();
+    } catch (error) {
+      console.error("Failed to delete business listing:", error);
+      toast.error("Failed to delete the business listing. Please try again.");
+    }
+  }
+
+  return (
+    <>
+      <HeaderBar
+        title={t("title")}
+        description={t("description")}
+      // onReset={handleReset}
+      />
+      <div className="mx-auto max-w-6xl pt-24 pb-8 space-y-6">
+        <Card>
+          <CardHeader>
+            <Badge variant="secondary">
+              Bonjour
+            </Badge>
+          </CardHeader>
+          <CardContent>
+            <CardTitle className="max-w-xl">
+              {t("business_hero_title", "Gérez vos établissements pour les Jeux.")}
+            </CardTitle>
+            <CardDescription className="max-w-xl">
+              {t("business_hero_description", "Des milliers de visiteurs chercheront où dormir, manger, se déplacer et faire leurs achats à Dakar. Publiez vos fiches sur la carte officielle et captez cette audience.")}
+            </CardDescription>
+          </CardContent>
+          <CardFooter>
+
+            <CardAction>
+              <Button>
+                <Plus />
+                {t("new_listing", "New business listing")}
+              </Button>
+            </CardAction>
+          </CardFooter>
+        </Card>
+
+        <div className="mb-6">
+          <div className="flex flex-wrap items-center justify-between gap-3 md:gap-4">
+            {/* Title + subtitle */}
+            <div className="min-w-0">
+              <h2 className="flex items-center gap-2 text-lg md:text-xl font-semibold tracking-tight text-foreground/90">
+                <span className="truncate">Business listings</span>
+              </h2>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-2">
+              <Button
+                variant="link"
+                onClick={() => navigate("/business/create")}
+                className="inline-flex items-center gap-2"
+              >
+                <Plus />
+                <span>{t("new_listing", "New business listing")}</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Cards */}
+        <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {loading && (
+            <div className="col-span-full grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {[...Array(6)].map((_, i) => (
+                <Skeleton
+                  key={i}
+                  className="overflow-hidden rounded-3xl"
+                >
+                  <Skeleton className="h-2 w-full bg-foreground/30" />
+                  <Skeleton className="h-44 w-full bg-foreground/20" />
+                  <Skeleton className="p-4 space-y-3">
+                    <Skeleton className="h-4 w-1/2 rounded bg-foreground/20" />
+                    <Skeleton className="h-3 w-2/3 rounded bg-foreground/20" />
+                    <Skeleton className="h-8 w-full rounded bg-foreground/20" />
+                  </Skeleton>
+                </Skeleton>
+              ))}
+            </div>
+          )}
+
+          {!loading && businessListings.length === 0 && (
+            <Empty className="col-span-full border border-foreground/30 p-8 text-foreground/50 shadow-sm">
+              <EmptyHeader>
+                <EmptyDescription className="text-center text-sm text-foreground/50">
+                  {t("not_found", "No business listings found")}
+                </EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button
+                  variant="default"
+                  disabled
+                  onClick={() => navigate("/business/create")}
+                  className="inline-flex items-center gap-2"
+                >
+                  <Plus />
+                  <span>{t("new_listing", "New business listing")}</span>
+                </Button>
+              </EmptyContent>
+            </Empty>
+          )}
+
+          {!loading &&
+            businessListings.map((item, index) => {
+              return (
+                <Card
+                  key={index}
+                  className="relative mx-auto w-full max-w-sm pt-0 overflow-hidden"
+                  size="sm"
+                >
+                  <Badge
+                    className="absolute start-4 top-4 z-20"
+                    variant="secondary"
+                  >
+                    {item.cat}
+                  </Badge>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      className="absolute end-4 top-4 z-20"
+                    >
+                      <Button
+                        variant="ghost" size="icon-sm"
+                        aria-label={t("more_actions", "More actions")}
+                        className="w-8 h-8 flex items-center justify-center"
+                      >
+                        <MoreVertical />
+                        <span className="sr-only">Open actions</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        variant="destructive"
+                        // disabled
+                        // aria-disabled
+                        onClick={() => handleDeleteBusinessListing(item)}
+                      >
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  <CardHeader className="p-0 gap-0">
+                    {/* image */}
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="flex items-center z-10 aspect-video w-full justify-center bg-background/50 text-foreground/30">
+                        {t("no_image", "No image")}
+                      </div>
+                    )}
+                  </CardHeader>
+
+                  {/* body */}
+                  <CardHeader>
+                    <CardTitle className="font-semibold leading-tight text-foreground/90">
+                      {item.name}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {item.desc && (
+                      <CardDescription>
+                        {item.desc}
+                      </CardDescription>
+                    )}
+
+                    {/* 
+                  {item.location && (
+                    <p className="text-xs text-foreground/50">
+                      {item.location.coordinates[0]?.toFixed?.(5)} •{" "}
+                      {item.location.coordinates[1]?.toFixed?.(5)}
+                    </p>
+                  )} */}
+
+                  </CardContent>
+                  <CardFooter className="w-full">
+                    {/* <div className="text-xs text-foreground/50">
+                    {item.updatedAt?.toDate
+                      ? new Date(item.updatedAt.toDate()).toLocaleString()
+                      : ""}
+                  </div> */}
+                    <Button
+                      className="w-full"
+                      variant="outline"
+                      disabled
+                    // onClick={() => navigate(`/business/listing/${item._id}`)}
+                    >
+                      <Pencil />
+                      <span>{t("edit", "Edit")}</span>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              );
+            })}
+        </div>
+      </div>
+    </>
+  );
+}
 
 export function BusinessCreate() {
   const { t } = useTranslation();
