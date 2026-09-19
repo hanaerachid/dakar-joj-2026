@@ -521,6 +521,7 @@ app.openAPIRegistry.registerPath({
   method: "get",
   path: "/api/v2/business/listings",
   summary: "List all business listings",
+  security: [{ apiKeyAuth: [] }],
   responses: {
     200: {
       description: "Array of business listings",
@@ -538,6 +539,7 @@ app.openAPIRegistry.registerPath({
   method: "get",
   path: "/api/v2/business/listings/{id}",
   summary: "Get a business listing by ID",
+  security: [{ apiKeyAuth: [] }],
   request: {
     params: z.object({ id: z.string() }),
   },

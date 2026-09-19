@@ -1,6 +1,7 @@
 import { type Filter, ObjectId } from "mongodb";
 import { getMongoDatabase } from "../../mongodb/client.js";
 import { businessListingSchema } from "../../../shared/contracts.js";
+import type { SessionUser } from "../../../shared/contracts.js";
 import type z from "zod";
 
 type BusinessListingDocument = { _id: string | ObjectId;[key: string]: any };
@@ -11,6 +12,25 @@ function idFilter(id: string) {
     return { _id: { $in: [id, new ObjectId(id)] } };
   }
   return { _id: id };
+}
+
+export type ListingActor = Pick<SessionUser, "uid" | "role">;
+
+export function buildListingFilter(
+  id: string,
+  actor: ListingActor,
+): Filter<BusinessListingDocument> {
+  const ownershipFilter = actor.role === "admin" ? {} : { ownerId: actor.uid };
+  return {
+    ...idFilter(id),
+    ...ownershipFilter,
+  } as Filter<BusinessListingDocument>;
+}
+
+export function buildListingListFilter(
+  actor: ListingActor,
+): Filter<BusinessListingDocument> {
+  return actor.role === "admin" ? {} : { ownerId: actor.uid };
 }
 
 function buildPayload(input: any, includeCreatedAt = true) {
@@ -34,11 +54,12 @@ function buildCreateDocument(input: any) {
   };
 }
 
-export async function listBusinessListings() {
+export async function listBusinessListings(actor: ListingActor) {
   const db = await getMongoDatabase();
   const collection = db.collection<BusinessListingDocument>("listings");
 
-  const docs = await collection.find({}).sort({ tourDate: 1 }).toArray();
+  const filter = buildListingListFilter(actor);
+  const docs = await collection.find(filter).sort({ tourDate: 1 }).toArray();
 
   return docs.map((doc) => ({
     ...doc,
@@ -47,13 +68,17 @@ export async function listBusinessListings() {
   }));
 }
 
-export async function getBusinessListingById(id: string) {
+export async function getBusinessListingById(id: string, actor: ListingActor) {
   const db = await getMongoDatabase();
   const collection = db.collection<BusinessListingDocument>("listings");
 
-  const filter: Filter<BusinessListingDocument> = ObjectId.isValid(id)
-    ? { _id: new ObjectId(id) }
+  const identifierFilter: Filter<BusinessListingDocument> = ObjectId.isValid(id)
+    ? { _id: { $in: [id, new ObjectId(id)] } }
     : ({ name: id } as any);
+  const filter = {
+    ...identifierFilter,
+    ...buildListingListFilter(actor),
+  } as Filter<BusinessListingDocument>;
 
   const doc = await collection.findOne(filter);
   if (!doc) return null;
@@ -65,19 +90,25 @@ export async function getBusinessListingById(id: string) {
   };
 }
 
-export async function createBusinessListing(input: any) {
+export async function createBusinessListing(input: any, actor: ListingActor) {
   const db = await getMongoDatabase();
-  const document = buildCreateDocument(input);
-  const { _id, ...safeBody } = document as any;
-  await db.collection<BusinessListingDocument>("listings").insertOne(safeBody);
-  return getBusinessListingById(String(document._id));
+  const document = {
+    ...buildCreateDocument(input),
+    ownerId: actor.uid,
+  };
+  await db.collection<BusinessListingDocument>("listings").insertOne(document);
+  return getBusinessListingById(String(document._id), actor);
 }
 
-export async function updateBusinessListing(id: string, input: BusinessListingPayload) {
+export async function updateBusinessListing(
+  id: string,
+  input: BusinessListingPayload,
+  actor: ListingActor,
+) {
   const db = await getMongoDatabase();
   const collection = db.collection<BusinessListingDocument>("listings");
 
-  const filter = idFilter(id);
+  const filter = buildListingFilter(id, actor);
   const payload = buildPayload(input, false);
 
   const fields = Object.keys(businessListingSchema.shape) as Array<
@@ -93,15 +124,15 @@ export async function updateBusinessListing(id: string, input: BusinessListingPa
     $set: { ...changed, updatedAt: new Date() },
   });
 
-  return getBusinessListingById(id);
+  return getBusinessListingById(id, actor);
 }
 
-export async function deleteBusinessListing(id: string) {
+export async function deleteBusinessListing(id: string, actor: ListingActor) {
   const db = await getMongoDatabase();
 
   const result = await db
     .collection<BusinessListingDocument>("listings")
-    .deleteOne(idFilter(id));
+    .deleteOne(buildListingFilter(id, actor));
 
   return result.deletedCount === 1;
 }
