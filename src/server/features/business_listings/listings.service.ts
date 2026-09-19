@@ -59,12 +59,11 @@ export async function listBusinessListings(actor: ListingActor) {
   const collection = db.collection<BusinessListingDocument>("listings");
 
   const filter = buildListingListFilter(actor);
-  const docs = await collection.find(filter).sort({ tourDate: 1 }).toArray();
+  const docs = await collection.find(filter).toArray();
 
   return docs.map((doc) => ({
     ...doc,
     _id: doc._id.toString(),
-    tourDate: doc.tourDate instanceof Date ? doc.tourDate.toISOString() : doc.tourDate,
   }));
 }
 
@@ -86,7 +85,6 @@ export async function getBusinessListingById(id: string, actor: ListingActor) {
   return {
     ...doc,
     _id: doc._id.toString(),
-    tourDate: doc.tourDate instanceof Date ? doc.tourDate.toISOString() : doc.tourDate,
   };
 }
 
