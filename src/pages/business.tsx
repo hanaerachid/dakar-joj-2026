@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm, FormProvider } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useUser } from "@clerk/clerk-react";
@@ -56,7 +56,9 @@ import { BusinessMediaStep } from "@/components/business/steps/BusinessMediaStep
 import { ReviewStep } from "@/components/business/steps/ReviewStep";
 import {
   listBusinessListings,
+  getBusinessListing,
   createBusinessListing,
+  updateBusinessListing,
   deleteBusinessListing,
 } from "@/lib/api/submitBusinessListing";
 import { Separator } from "@/components/ui/separator";
@@ -304,8 +306,7 @@ export function BusinessPage() {
                     <Button
                       className="w-full"
                       variant="outline"
-                      disabled
-                    // onClick={() => navigate(`/business/listing/${item._id}`)}
+                      onClick={() => navigate(`/business/listing/${item._id}`)}
                     >
                       <Pencil />
                       <span>{t("edit", "Edit")}</span>
@@ -537,4 +538,200 @@ export function BusinessCreate() {
       </div>
     </>
   );
+}
+
+export function BusinessEdit() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const params = useParams();
+  const listingId = params.id;
+
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const form = useForm({
+    resolver: zodResolver(businessCreateSchema),
+    defaultValues: defaultBusinessValues,
+    mode: "onTouched",
+    shouldUnregister: false,
+  });
+
+  const {
+    handleSubmit,
+    reset,
+  } = form;
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadListing() {
+      if (!listingId) {
+        setLoadError(t("businessEdit.notFound", "Business listing not found."));
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      setLoadError(null);
+
+      try {
+        const listing = (await getBusinessListing(listingId)) as BusinessListing;
+        if (!active) return;
+
+        reset({
+          ...defaultBusinessValues,
+          cat: listing.cat as BusinessCreateValues["cat"],
+          name: listing.name,
+          tel: listing.tel,
+          wa: listing.wa,
+          email: listing.email,
+          website: listing.website,
+          social: listing.social,
+          address: listing.address,
+          desc: listing.desc,
+          openHours: listing.openHours,
+          spec: listing.spec,
+          pack: listing.pack as BusinessCreateValues["pack"],
+          priceTag: listing.priceTag ?? "",
+        });
+      } catch (error) {
+        console.error("Failed to load business listing:", error);
+        if (active) {
+          setLoadError(
+            t(
+              "businessEdit.loadError",
+              "Unable to load this business listing. Please try again.",
+            ),
+          );
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
+    void loadListing();
+    return () => {
+      active = false;
+    };
+  }, [listingId, reset, t]);
+
+  const handleDelete = async () => {
+    if (!listingId || deleting) return;
+    if (!confirm(t("businessEdit.deleteConfirm", "Delete this business listing? This cannot be undone."))) return;
+
+    setDeleting(true);
+    try {
+      await deleteBusinessListing(listingId);
+      toast.success(t("businessEdit.deleteSuccess", "Business listing deleted."));
+      navigate("/business");
+    } catch (error) {
+      console.error("Failed to delete business listing:", error);
+      toast.error(t("businessEdit.deleteError", "Unable to delete the business listing. Please try again."));
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const onSubmit = async (values: BusinessCreateValues) => {
+    setSubmitting(true);
+
+    try {
+      const { photos, videoFile, ...businessData } = values;
+
+      // 1. Convert all photo files to Base64 strings in parallel
+      const base64Photos = await Promise.all(
+        photos.map((photo) => fileToBase64(photo))
+      );
+
+      // 2. Convert video file if it exists
+      let base64Video = null;
+      if (videoFile) {
+        base64Video = await fileToBase64(videoFile);
+      }
+
+      // 3. Build a pure JavaScript object payload
+      const payload: Record<string, unknown> = {
+        ...businessData,
+      };
+
+      // Leave existing remote media untouched unless replacement files were selected.
+      if (photos.length > 0) payload.photos = base64Photos;
+      if (videoFile) payload.video = base64Video;
+
+      // 4. Send the pure JSON payload to your Hono server
+      await updateBusinessListing(listingId , payload);
+
+      toast.success(
+        t(
+          "businessCreate.success",
+          "Your business has been submitted successfully.",
+        ),
+      );
+
+      // Replace this with your router navigation or
+      // success screen once your API response is defined.
+    } catch (error) {
+      console.error(error);
+
+      toast.error(
+        t(
+          "businessCreate.error",
+          "Unable to submit your business. Please try again.",
+        ),
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <>
+      <HeaderBar
+        title={t("title")}
+        description={t("description")}
+      />
+      <div className="pt-24 pb-8">
+        <div className="mx-auto w-full max-w-3xl">
+          {loading && <Skeleton className="h-[38rem] w-full" />}
+
+          {!loading && loadError && (
+            <Empty className="border p-8">
+              <EmptyHeader>
+                <EmptyDescription>{loadError}</EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          )}
+
+          {!loading && !loadError && (
+            <FormProvider {...form}>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t("businessEdit.title", "Edit business listing")}</CardTitle>
+                    <CardDescription>
+                      {t("businessEdit.description", "Update your listing information and save your changes.")}
+                    </CardDescription>
+                  </CardHeader>
+                  <BusinessTypeStep title={t("businessCreate.steps.type", "Business type")} />
+                  <BusinessIdentityStep title={t("businessCreate.steps.identity", "Business identity and contact information")} />
+                  <BusinessDetailsStep title={t("businessCreate.steps.details", "Business details")} />
+                  <BusinessMediaStep title={t("businessCreate.steps.media", "Photos & media")} />
+                  <CardFooter className="flex justify-between gap-3">
+                    <Button type="button" variant="destructive" onClick={() => void handleDelete()} disabled={submitting || deleting}>
+                      {deleting ? t("common.deleting", "Deleting...") : t("common.delete", "Delete")}
+                    </Button>
+                    <Button type="submit" disabled={submitting || deleting}>
+                      {submitting ? t("common.saving", "Saving...") : t("common.save", "Save changes")}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </form>
+            </FormProvider>
+          )}
+        </div>
+      </div>
+    </>
+  )
 }
