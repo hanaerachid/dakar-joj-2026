@@ -1,8 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { useUser } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import { cn } from "cn";
 import { Check } from "lucide-react";
-import { Button } from "@/components/common/Button";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -13,11 +15,13 @@ import {
 } from "@/components/ui/card";
 import { HeaderBar } from "../components/header/HeaderBar";
 import { PRICING_PLANS } from "../components/pricing/pricingplans.config";
-import { Badge } from "@/components/ui/badge";
 
 export function PricingPage() {
   const { t } = useTranslation();
   const { user } = useUser();
+  const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
+
   const currentPlan = user?.publicMetadata?.plan;
 
   const currentPlanId: keyof typeof PRICING_PLANS =
@@ -28,28 +32,55 @@ export function PricingPage() {
   const getPlanAction = (
     planId: keyof typeof PRICING_PLANS,
   ) => {
-    if (planId === currentPlanId) {
-      return {
-        label: t("pricing.current_plan", "Current Plan"),
-        disabled: true,
-        variant: "ghost" as const,
-      };
-    }
 
-    if (planId === "discover") {
+    if (isSignedIn) {
+      if (planId === currentPlanId && isSignedIn) {
+        return {
+          label: t("pricing.manage_business", "Open dashboard"),
+          action: () => navigate("/business"),
+          disabled: false,
+          variant: "default" as const,
+        };
+      }
+
+      if (planId === "discover") {
+        return {
+          label: t("pricing.downgrade_to_discover", "Downgrade to Discover"),
+          action: (e: any) => {
+            e.stopPropagation();
+            window.open(
+              `mailto:francisehemba2021@gmail.com?subject=Downgrade%20to%20${planId}%20Plan&body=Hello,%0D%0A%0D%0AI%20would%20like%20to%20downgrade%20to%20the%20${planId}%20plan.%0D%0A%0D%0AThank%20you!`
+            );
+          },
+          disabled: false,
+          variant: "ghost" as const,
+        };
+      }
+
+    }
+    if (!isSignedIn && planId === "discover") {
       return {
-        label: t("pricing.downgrade_to_discover", "Downgrade to Discover"),
-        disabled: true,
-        variant: "default" as const,
+        label: t("pricing.start", "Start"),
+        action: () => navigate("/business"),
+        disabled: false,
+        variant: "outline" as const,
       };
     }
 
     return {
-      label: t("pricing.upgrade", "Upgrade"),
-      disabled: true,
-      variant: "default" as const,
+      label: t("pricing.contact_us", "Contact us"),
+      action: (e: any) => {
+        e.stopPropagation();
+        window.open(
+          `mailto:francisehemba2021@gmail.com?subject=Upgrade%20to%20${planId}%20Plan&body=Hello,%0D%0A%0D%0AI%20would%20like%20to%20upgrade%20to%20the%20${planId}%20plan.%0D%0A%0D%0AThank%20you!`
+        );
+      },
+      disabled: false,
+      variant: "outline" as const,
     };
   };
+
+  const checkIsCurrentPlan = (planId: keyof typeof PRICING_PLANS) => (isSignedIn && planId === currentPlanId);
 
   const formatPrice = (price: number) =>
     price === 0
@@ -76,6 +107,7 @@ export function PricingPage() {
               ([key, item]) => {
                 const planId = key as keyof typeof PRICING_PLANS;
                 const action = getPlanAction(planId);
+                const isCurrentPlan = checkIsCurrentPlan(planId);
                 return (
                   <Card
                     key={key}
@@ -145,18 +177,22 @@ export function PricingPage() {
                         </CardDescription>
                       ))}
                     </CardContent>
-                    <CardFooter className="flex-col items-end w-full">
+                    <CardFooter className="w-full flex-col items-center gap-2">
+                      {isCurrentPlan && (
+                        <p className="text-xs text-muted-foreground">
+                          {t("pricing.current_plan", "Current Plan")}
+                        </p>
+                      )}
                       <Button
                         type="button"
                         disabled={action.disabled}
                         inert={action.disabled}
                         variant={action.variant}
-                        className="w-full"
-                      // onClick={() => {
-                      //   if (planId !== currentPlanId) {
-                      //     navigate(`/pricing/${planId}`);
-                      //   }
-                      // }}
+                        className={cn(
+                          "w-full",
+                          action.disabled ? "cursor-not-allowed" : "cursor-pointer"
+                        )}
+                        onClick={action.action}
                       >
                         {action.label}
                       </Button>

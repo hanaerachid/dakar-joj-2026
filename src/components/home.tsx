@@ -1,4 +1,6 @@
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@clerk/clerk-react";
 import {
   BriefcaseBusiness,
   Calendar,
@@ -11,6 +13,7 @@ import {
 } from "lucide-react";
 import {
   Item,
+  ItemActions,
   ItemContent,
   ItemDescription,
   ItemGroup,
@@ -30,9 +33,11 @@ import { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
 import { useStateContext } from "./state-provider";
 import { MapManager } from "../core/MapManager";
+import { Button } from "./ui/button";
 
 export default function Countdown({ targetedDate }: { targetedDate: Date }) {
   const { t } = useTranslation();
+
   const targetDate = targetedDate.getTime();
 
   const [timeLeft, setTimeLeft] = useState(targetDate - Date.now());
@@ -62,6 +67,9 @@ export default function Countdown({ targetedDate }: { targetedDate: Date }) {
 
 export const HomeContent = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { isSignedIn } = useAuth();
+
   const {
     setActiveTab,
   } = useStateContext();
@@ -74,7 +82,9 @@ export const HomeContent = () => {
       available: true,
       color: "#00915a",
       icon: Calendars,
-      onClick: () => setActiveTab("events"),
+      primaryAction: () => setActiveTab("events"),
+      secondaryAction: null,
+      secondaryActionLabel: null,
     },
     {
       title: t("home.discover"),
@@ -82,7 +92,9 @@ export const HomeContent = () => {
       available: false,
       color: "#b98703",
       icon: Star,
-      onClick: () => setActiveTab("discover"),
+      primaryAction: () => setActiveTab("discover"),
+      secondaryAction: null,
+      secondaryActionLabel: null,
     },
     {
       title: t("home.business"),
@@ -90,7 +102,9 @@ export const HomeContent = () => {
       available: true,
       color: "#e03a2f",
       icon: BriefcaseBusiness,
-      onClick: () => setActiveTab("business"),
+      primaryAction: () => setActiveTab("business"),
+      secondaryActionLabel: t("home.pricing", "See plans"),
+      secondaryAction: () => navigate("/pricing"),
     },
   ]
 
@@ -167,7 +181,7 @@ export const HomeContent = () => {
                 className={cn(
                   item.available ? "group hover:bg-primary/25 cursor-pointer" : "cursor-not-allowed"
                 )}
-                onClick={item.onClick}
+                onClick={item.primaryAction}
               >
                 <ItemMedia
                   className={cn("rounded-lg w-8 h-8")}
@@ -186,12 +200,26 @@ export const HomeContent = () => {
                     {item.description}
                   </ItemDescription>
                 </ItemContent>
-                {item.available && (
+                {!item.secondaryAction !== null && item.available && (
                   <ItemContent className="opacity-0 group-hover:opacity-100 transition-opacity">
                     <ItemDescription>
                       <ChevronRight className="w-4 h-4" />
                     </ItemDescription>
                   </ItemContent>
+                )}
+                {item.secondaryAction !== null && item.available && !isSignedIn && (
+                  <ItemActions>
+                    <Button
+                      className="cursor-pointer"
+                      variant="default"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        item.secondaryAction();
+                      }}
+                    >
+                      {item.secondaryActionLabel}
+                    </Button>
+                  </ItemActions>
                 )}
               </Item>
             </>

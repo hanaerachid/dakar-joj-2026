@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
+import { SignInButton, useAuth, useUser } from "@clerk/clerk-react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +16,7 @@ import { PRICING_PLANS } from "./pricing/pricingplans.config";
 export const BusinessContent = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isSignedIn } = useAuth();
   const { user } = useUser();
   const currentPlan = user?.publicMetadata?.plan;
   const planId: keyof typeof PRICING_PLANS =
@@ -40,9 +41,11 @@ export const BusinessContent = () => {
         </p>
       </div>
       <div className="flex flex-col gap-4">
-        <h2 className="text-xs text-muted-foreground uppercase">
-          {t("business.current_plan", "Choose your plan")}
-        </h2>
+        {isSignedIn ? (
+          <>
+            <h2 className="text-xs text-muted-foreground uppercase">
+              {t("business.current_plan", "Current plan")}
+            </h2>
         <Card size="sm">
           <CardHeader>
             <CardTitle className="flex items-center justify-between gap-1">
@@ -51,6 +54,14 @@ export const BusinessContent = () => {
               >
                 {label}
               </span>
+                  {planId === "discover" && (
+                    <Button
+                      variant="link"
+                      onClick={() => navigate("/pricing")}
+                    >
+                      Upgrade
+                    </Button>
+                  )}
             </CardTitle>
             <CardDescription className="flex items-center gap-2">
               {desc}
@@ -72,11 +83,11 @@ export const BusinessContent = () => {
           <CardFooter>
             {planId === "discover" ? (
               <Button
-                variant="default"
+                variant="outline"
                 className="w-full"
-                onClick={() => navigate("/pricing")}
+                onClick={() => navigate("/business")}
               >
-                Upgrade
+                {t("business.manage_business", "Manage your business")}
               </Button>
             ) : (
               <Button
@@ -89,6 +100,30 @@ export const BusinessContent = () => {
             )}
           </CardFooter>
         </Card>
+        </>
+        ) : (
+          <>
+            <Button
+              variant="default"
+              className="w-full"
+              onClick={() => navigate("/pricing")}
+            >
+              {t("business.pricing", "See plans")}
+            </Button>
+            <div className="flex items-center justify-start gap-2">
+              <h2 className="text-xs text-muted-foreground uppercase">
+                {t("business.already_registred", "Already have a business registered?")}
+              </h2>
+              <SignInButton mode="modal">
+                <Button
+                  variant="link"
+                >
+                  {t("auth.login.submit", "Log in")}
+                </Button>
+              </SignInButton>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
