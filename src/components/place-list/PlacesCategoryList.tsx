@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircleIcon } from "lucide-react";
 import { Label } from "@/components/ui/label";
@@ -6,9 +6,13 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
-import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "../ui/badge";
 import { Switch } from "../ui/switch";
+import { Skeleton } from "../ui/skeleton";
+import { useTranslation } from "react-i18next";
+import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import { Item, ItemContent, ItemGroup, ItemMedia, ItemTitle } from "../ui/item";
+import { cn } from "@/utils/utils";
 
 type Props = {
   CATEGORIES: any[];
@@ -35,8 +39,6 @@ type Props = {
   loadError: string | null;
 
   grouped: Record<string, any[]>;
-  openZones: Record<string, boolean>;
-  setOpenZones: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 
   handleClick: (
     lng: number,
@@ -66,11 +68,15 @@ export function PlacesCategoryList(props: Props) {
     loading,
     loadError,
     grouped,
-    openZones,
-    setOpenZones,
     handleClick,
     selectedTitle,
   } = props;
+
+  const { t } = useTranslation();
+  const [selectedZones, setSelectedZones] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    setSelectedZones(new Set(Object.keys(grouped)));
+  }, [grouped]);
 
   return (
     <Accordion multiple className="space-y-1.5">
@@ -183,73 +189,159 @@ export function PlacesCategoryList(props: Props) {
                               <Chevron open={categoryOpen} />
                             </div>
                             <AnimatePresence initial={false}>
-                              {categoryOpen && <motion.div variants={collapseVariants} initial="closed" animate="open" exit="closed" className="overflow-hidden"><div className="px-3 pb-3">
-                                {loading && <div className="py-4 flex items-center gap-2 text-muted-foreground"><Spinner /><span className="text-sm">Loading...</span></div>}
-                                {loadError && <Alert variant="destructive" className="py-3 text-sm"><AlertCircleIcon /><AlertDescription>{loadError}</AlertDescription></Alert>}
-                                {!loading && !loadError && !venues.length && <Empty className="py-3 text-sm"><EmptyContent><EmptyDescription>{category.hint ?? "No items yet."}</EmptyDescription></EmptyContent></Empty>}
-                                {!loading && !loadError && !!venues.length && <ul className="space-y-2">{Object.entries(grouped).map(([zone, list]) => {
-                                  const zoneOpen = !!openZones[zone];
-                                  return (
-                                    <motion.li
-                                      key={zone}
-                                      layout
-                                      className="rounded-lg border border-border bg-card"
-                                    >
-                                      <button
-                                        className="w-full flex items-center gap-2.5 px-3 py-2 text-start"
-                                        onClick={() => setOpenZones((previous) => ({ ...previous, [zone]: !zoneOpen }))}
-                                      >
-                                        <span className="h-2.5 w-2.5 rounded-full bg-primary" />
-                                        <span className="font-medium">
-                                          {zone}
-                                        </span>
-                                        <span className="ml-auto text-xs text-muted-foreground">
-                                          {list.length}
-                                        </span>
-                                        <Chevron open={zoneOpen} />
-                                      </button>
-                                      <AnimatePresence initial={false}>
-                                        {zoneOpen &&
-                                          <motion.div
-                                            variants={collapseVariants}
-                                            initial="closed"
-                                            animate="open"
-                                            exit="closed">
-                                            <ul className="px-2.5 pb-2 space-y-1.5">
-                                              {[...list]
+                              {categoryOpen && (
+                                <motion.div
+                                  variants={collapseVariants}
+                                  initial="closed"
+                                  animate="open"
+                                  exit="closed"
+                                  className="overflow-hidden"
+                                >
+                                  <div className="px-3 pb-3">
+
+                                    {!loading && !loadError && !venues.length && (
+                                      <Empty>
+                                        <EmptyContent>
+                                          <EmptyDescription>
+                                            {category.hint ?? t("items_appear_here", "Items appear here.")}
+                                          </EmptyDescription>
+                                        </EmptyContent>
+                                      </Empty>
+                                    )}
+
+                                    {loadError && (
+                                      <Alert variant="destructive">
+                                        <AlertCircleIcon />
+                                        <AlertDescription>{loadError}</AlertDescription>
+                                      </Alert>
+                                    )}
+
+                                    <div className="flex-col items-center space-y-1">
+                                      {loading &&
+                                        [...Array(3)].map((_, index) => (
+                                          <Skeleton key={index} className="min-h-10">
+                                          </Skeleton>
+                                        ))
+                                      }
+                                    </div>
+
+                                    {!loading && !loadError && !!venues.length && (
+                                      <div className="flex flex-col gap-2">
+
+                                        {/* Zone filters */}
+                                        <ToggleGroup multiple
+                                          value={[...selectedZones]}
+                                          onValueChange={(values) => {
+                                            setSelectedZones(new Set(values));
+                                          }}
+                                          className="flex flex-wrap justify-start gap-2"
+                                        >
+                                          {Object.entries(grouped).map(([zone, list]) => (
+                                            <ToggleGroupItem
+                                              key={zone}
+                                              value={zone}
+                                              variant="outline"
+                                              size="sm"
+                                              className={cn(
+                                                "inline-flex items-center gap-1",
+                                                selectedZones.has(zone) && "font-semibold"
+                                              )}
+                                            >
+                                              <span>{zone}</span>
+                                              <Badge variant="ghost">
+                                                {list.length}
+                                              </Badge>
+                                            </ToggleGroupItem>
+                                          ))}
+                                        </ToggleGroup>
+
+                                        {/* Filtered venues */}
+                                        <ItemGroup className="flex-col gap-2">
+                                          {Object.entries(grouped)
+                                            .filter(([zone]) => selectedZones.has(zone))
+                                            .flatMap(([zone, list]) =>
+                                              [...list]
                                                 .sort((a: any, b: any) => {
-                                                  const titleA = a?.properties?.Name || a?.properties?.title || a?.properties?.name || "Untitled";
-                                                  const titleB = b?.properties?.Name || b?.properties?.title || b?.properties?.name || "Untitled";
+                                                  const titleA =
+                                                    a?.properties?.Name ||
+                                                    a?.properties?.title ||
+                                                    a?.properties?.name ||
+                                                    "Untitled";
+
+                                                  const titleB =
+                                                    b?.properties?.Name ||
+                                                    b?.properties?.title ||
+                                                    b?.properties?.name ||
+                                                    "Untitled";
 
                                                   return titleA.localeCompare(titleB);
                                                 })
                                                 .map((feature: any, index) => {
-                                                const title = feature?.properties?.Name || feature?.properties?.title || feature?.properties?.name || "Untitled";
-                                                return (
-                                                  <li key={`${zone}-${index}`}>
-                                                    <button
+                                                  const title =
+                                                    feature?.properties?.Name ||
+                                                    feature?.properties?.title ||
+                                                    feature?.properties?.name ||
+                                                    "Untitled";
+
+                                                  return (
+                                                    <Item
+                                                      key={`${zone}-${index}`}
+                                                      variant="default"
+                                                      size="xs"
                                                       onClick={() => {
-                                                        const [lng, lat] = feature.geometry.coordinates as [number, number];
-                                                        const id = feature.properties?.id ?? feature.id ?? feature.properties?.docId ?? feature.properties?.placeId;
+                                                        const [lng, lat] =
+                                                          feature.geometry.coordinates as [number, number];
+
+                                                        const id =
+                                                          feature.properties?.id ??
+                                                          feature.id ??
+                                                          feature.properties?.docId ??
+                                                          feature.properties?.placeId;
+
                                                         handleClick(lng, lat, title, id);
                                                       }}
-                                                      className={`w-full rounded-md px-2.5 py-2 text-start text-sm ${selectedTitle === title ? "bg-primary/70 font-semibold" : "bg-card/90"}`}
+                                                      className={cn(
+                                                        "w-full cursor-pointer transition text-sm font-medium",
+                                                        (selectedTitle === title) ? "bg-primary/70 font-semibold" : "hover:bg-primary/10"
+                                                      )}
                                                     >
-                                                      {title}
-                                                    </button>
-                                                  </li>
-                                                );
-                                              })}
-                                            </ul>
-                                          </motion.div>}
-                                      </AnimatePresence>
-                                    </motion.li>
-                                  );
-                                })}
-                                </ul>
-                                }
-                              </div>
-                              </motion.div>}
+                                                      <ItemContent>
+                                                        <ItemTitle>
+                                                          {title}
+                                                        </ItemTitle>
+                                                      </ItemContent>
+                                                      {feature.properties?.imageUrl && (
+                                                        <ItemMedia variant="image">
+                                                          <img
+                                                            src={
+                                                              (feature.properties?.imageUrl as string) ||
+                                                              undefined
+                                                            }
+                                                            alt={title}
+                                                          />
+                                                        </ItemMedia>
+                                                      )}
+                                                    </Item>
+                                                  );
+                                                })
+                                            )}
+                                        </ItemGroup>
+
+                                        {/* Nothing selected */}
+                                        {selectedZones.size === 0 && (
+                                          <Empty>
+                                            <EmptyContent>
+                                              <EmptyDescription>
+                                                {t("select_zone", "Select a zone to show its items.")}
+                                              </EmptyDescription>
+                                            </EmptyContent>
+                                          </Empty>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                </motion.div>
+                              )}
                             </AnimatePresence>
                           </motion.li>
                         );

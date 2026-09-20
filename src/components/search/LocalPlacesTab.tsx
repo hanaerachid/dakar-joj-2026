@@ -270,7 +270,8 @@ export function LocalPlacesTab({
               >
                 <ItemMedia
                   variant="icon"
-                  className="h-9 w-9"                >
+                  className="h-9 w-9"
+                >
                   <Icon style={{ color: color }} />
                 </ItemMedia>
                 <ItemContent>

@@ -70,8 +70,8 @@ function getFeatureCategoryId(props: GeoJsonProperties | undefined): string {
 export const PlacesList = () => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
-  const { isOpen, setIsOpen, setPanelContent,} = usePanelContext();
-  const {activeTab, setActiveTab, isSearchOpen, setIsSearchOpen } = useStateContext();
+  const { isOpen, setIsOpen, setPanelContent, } = usePanelContext();
+  const { activeTab, setActiveTab, isSearchOpen, setIsSearchOpen } = useStateContext();
 
   const {
     isOpen: panelOpen,
@@ -139,7 +139,7 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
 
   const translatedMainCategories = useMemo(
     () =>
-      withTranslatedCategoryLabels(MAIN_CATEGORIES,t,),
+      withTranslatedCategoryLabels(MAIN_CATEGORIES, t,),
     [t, i18n.language],
   );
 
@@ -156,7 +156,6 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
       translatedMainCategories[0],
     [openMainCategoryId],
   );
-  const [openZones, setOpenZones] = useState<Record<string, boolean>>({});
 
   const [venues, setVenues] = useState<LoadedVenue[]>([]);
   const [mainCategoryVenues, setMainCategoryVenues] = useState<LoadedVenue[]>([]);
@@ -172,8 +171,8 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
   const grouped = useMemo(() => {
     const by: Record<string, LoadedVenue[]> = {};
     for (const v of venues) {
-      const zone = (v.properties?.zone as string) ?? "Unknown";
-      (by[zone] ||= []).push(v);
+      const location = (v.properties?.locationLabel as string) ?? "Unknown";
+      (by[location] ||= []).push(v);
     }
     return by;
   }, [venues]);
@@ -184,7 +183,7 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
         MAIN_CATEGORIES.map((main) => [
           main.id,
           main.categories.length > 0 &&
-            main.categories.every((categoryId) => checkedCats[categoryId]),
+          main.categories.every((categoryId) => checkedCats[categoryId]),
         ]),
       ),
     [checkedCats],
@@ -199,12 +198,6 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
         (Array.isArray(venue.properties?.sports) && venue.properties.sports.length > 0);
     });
     setVenues(filtered);
-    setOpenZones(
-      Object.fromEntries(
-        [...new Set(filtered.map((venue) => (venue.properties?.zone as string) ?? "Unknown"))]
-          .map((zone) => [zone, true]),
-      ),
-    );
   }, [activeCategory.id, mainCategoryVenues]);
 
   useEffect(() => {
@@ -525,8 +518,6 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
       loading={loading}
       loadError={loadError}
       grouped={grouped}
-      openZones={openZones}
-      setOpenZones={setOpenZones}
       handleClick={handleClick}
       selectedTitle={selectedTitle}
     />
