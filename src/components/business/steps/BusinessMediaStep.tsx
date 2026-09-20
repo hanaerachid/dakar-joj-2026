@@ -6,6 +6,7 @@ import type { BusinessCreateValues } from "../business-create.schema";
 import { BUSINESS_PLANS } from "../business-create.config";
 
 import { FileField, /*TextField*/ } from "@/components/common/Field";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
@@ -21,7 +22,7 @@ export function BusinessMediaStep(
   const photos = watch("photos") ?? [];
   const video = watch("videoFile");
 
-  const entitlement = BUSINESS_PLANS[plan] || undefined;
+  const entitlement = BUSINESS_PLANS[plan];
 
   // const addPhotos = (files: FileList | null) => {
   //   if (!files) return;
@@ -61,13 +62,13 @@ export function BusinessMediaStep(
       }
       <CardContent className="space-y-6">
         <FieldSet>
-          <FieldLegend className="font-semibold flex items-center justify-between">
-            <span>
+          <FieldLegend className="w-full font-semibold flex items-center justify-between gap-4">
+            <div className="flex-1">
               {t("businessCreate.media.photos", "Photos")}
-            </span>
-            <span className="text-sm text-muted-foreground">
-              {photos.length} / {entitlement?.photos ?? 0}
-            </span>
+            </div>
+            <Badge variant="ghost" className="shrink-0 text-sm text-muted-foreground">
+              {photos.length}
+            </Badge>
           </FieldLegend>
           <FieldGroup>
             <FileField
@@ -75,7 +76,7 @@ export function BusinessMediaStep(
               label="Photos"
               accept="image/*"
               multiple
-              disabled={photos.length >= (entitlement?.photos ?? 0)}
+              disabled={photos.length >= entitlement.photos}
             // onFilesChange={addPhotos}
             />
 

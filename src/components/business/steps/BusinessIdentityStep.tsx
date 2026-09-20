@@ -1,14 +1,19 @@
 
 import { useTranslation } from "react-i18next";
+import { useFormContext } from "react-hook-form";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TextField } from "@/components/common/Field";
+import { hasBusinessCapability } from "../business-plan";
+import type { BusinessCreateValues } from "../business-create.schema";
 
 export function BusinessIdentityStep(
   { title }: { title?: string },
 ) {
   const { t } = useTranslation();
+  const { watch } = useFormContext<BusinessCreateValues>();
+  const plan = watch("pack");
 
   return (
     <>
@@ -42,6 +47,7 @@ export function BusinessIdentityStep(
             placeholder="+221..."
           />
 
+          {hasBusinessCapability(plan, "whatsapp") && (
           <TextField
             name="wa"
             label={t(
@@ -50,6 +56,7 @@ export function BusinessIdentityStep(
             )}
             placeholder="221..."
           />
+          )}
 
           <TextField
             type="email"
@@ -61,6 +68,7 @@ export function BusinessIdentityStep(
             placeholder="contact@example.com"
           />
 
+          {hasBusinessCapability(plan, "website") && (
           <TextField
             type="url"
             name="website"
@@ -70,7 +78,9 @@ export function BusinessIdentityStep(
             )}
             placeholder="https://..."
           />
+          )}
 
+          {hasBusinessCapability(plan, "socialMedia") && (
           <div className="sm:col-span-2">
             <TextField
               name="social"
@@ -81,6 +91,7 @@ export function BusinessIdentityStep(
               placeholder="@business"
             />
           </div>
+          )}
         </div>
         <Alert variant="default">
           <AlertCircle />

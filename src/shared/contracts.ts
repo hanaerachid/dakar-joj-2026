@@ -215,7 +215,7 @@ export const businessListingSchema = z.object({
     pricePerNight: z.string().optional(),
     capacity: z.string().optional(),
     equip: z.array(z.string()).optional(),
-    cuisine: z.array(z.string()).optional(),
+    cuisine: z.string().optional(),
     service: z.string().optional(),
     brands: z.string().optional(),
     dailyPrice: z.string().optional(),

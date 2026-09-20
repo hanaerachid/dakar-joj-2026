@@ -1,5 +1,21 @@
 import { Award, CheckCircle, Crown, MapPin } from "lucide-react";
 
+export type BusinessCapability =
+  | "email"
+  | "website"
+  | "socialMedia"
+  | "whatsapp"
+  | "booking"
+  | "statistics"
+  | "banner"
+  | "sponsoredStory"
+  | "verified"
+  | "priority"
+  | "pinned"
+  | "featured"
+  | "advancedAnalytics"
+  | "dedicatedSupport";
+
 export const PRICING_PLANS = {
   discover: {
     label: "Découverte",
@@ -15,6 +31,7 @@ export const PRICING_PLANS = {
     price: 0,
     photos: 1,
     video: false,
+    capabilities: ["email"] as const satisfies BusinessCapability[],
   },
   essential: {
     label: "Essentiel",
@@ -22,13 +39,22 @@ export const PRICING_PLANS = {
     icon: CheckCircle,
     recommended: false,
     features: [
+      "All Discover features",
       "Up to 5 photos",
-      "Description & opening hours",
-      "Website + social media",
+      "Email, Website and social media",
       "Verified badge",
       "Priority in your category"
     ],
     price: 25_000,
+    photos: 5,
+    video: false,
+    capabilities: [
+      "email",
+      "website",
+      "socialMedia",
+      "verified",
+      "priority",
+    ] as const satisfies BusinessCapability[],
   },
   premium: {
     label: "Premium",
@@ -36,13 +62,27 @@ export const PRICING_PLANS = {
     icon: Crown,
     recommended: true,
     features: [
-      "Unlimited photos + 1 video",
+      "All Essential features",
+      "Unlimited photos",
       "Pinned at the top of the map",
       "WhatsApp / booking button",
       "View statistics",
       "Premium badge"
     ],
     price: 60_000,
+    photos: 99,
+    video: true,
+    capabilities: [
+      "email",
+      "website",
+      "socialMedia",
+      "whatsapp",
+      "booking",
+      "statistics",
+      "verified",
+      "priority",
+      "pinned",
+    ] as const satisfies BusinessCapability[],
   },
   sponsor: {
     label: "Sponsor Officiel",
@@ -57,6 +97,24 @@ export const PRICING_PLANS = {
       "Advanced analytics + dedicated support"
     ],
     price: 250_000,
+    photos: 99,
+    video: true,
+    capabilities: [
+      "email",
+      "website",
+      "socialMedia",
+      "whatsapp",
+      "booking",
+      "statistics",
+      "verified",
+      "priority",
+      "pinned",
+      "banner",
+      "featured",
+      "sponsoredStory",
+      "advancedAnalytics",
+      "dedicatedSupport",
+    ] as const satisfies BusinessCapability[],
   },
 };
 

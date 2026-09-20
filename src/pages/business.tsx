@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, FormProvider } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { useUser } from "@clerk/clerk-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeft, MoreVertical, Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -20,6 +21,7 @@ import {
   BUSINESS_PLANS,
   FORM_STEPS,
 } from "@/components/business/business-create.config";
+import { sanitizeBusinessValues } from "@/components/business/business-plan";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -51,12 +53,13 @@ import { BusinessTypeStep } from "@/components/business/steps/BusinessTypeStep";
 import { BusinessIdentityStep } from "@/components/business/steps/BusinessIdentityStep";
 import { BusinessDetailsStep } from "@/components/business/steps/BusinessDetailsStep";
 import { BusinessMediaStep } from "@/components/business/steps/BusinessMediaStep";
-import { BusinessPlanStep } from "@/components/business/steps/BusinessPlanStep";
+import { ReviewStep } from "@/components/business/steps/ReviewStep";
 import {
   listBusinessListings,
   createBusinessListing,
   deleteBusinessListing,
 } from "@/lib/api/submitBusinessListing";
+import { Separator } from "@/components/ui/separator";
 
 const STEP_FIELDS: Record<number, (keyof BusinessCreateValues)[]> = {
   0: ["cat"],
@@ -82,7 +85,7 @@ export function BusinessPage() {
       items = (await listBusinessListings()) as BusinessListing[];
 
       // sort
-      items.sort((a: any, b: any) => {
+      items.sort((a: BusinessListing, b: BusinessListing) => {
         // if (sort === "updated") {
         //   const at = a.updatedAt?.toMillis ? a.updatedAt.toMillis() : 0;
         //   const bt = b.updatedAt?.toMillis ? b.updatedAt.toMillis() : 0;
@@ -138,9 +141,13 @@ export function BusinessPage() {
           <CardFooter>
 
             <CardAction>
-              <Button>
+              <Button
+                variant="default"
+                onClick={() => navigate("/business/create")}
+                className="inline-flex items-center gap-2"
+              >
                 <Plus />
-                {t("new_listing", "New business listing")}
+                <span>{t("new_listing", "New business listing")}</span>
               </Button>
             </CardAction>
           </CardFooter>
@@ -200,7 +207,6 @@ export function BusinessPage() {
               <EmptyContent>
                 <Button
                   variant="default"
-                  disabled
                   onClick={() => navigate("/business/create")}
                   className="inline-flex items-center gap-2"
                 >
@@ -265,8 +271,8 @@ export function BusinessPage() {
                         {t("no_image", "No image")}
                       </div>
                     )}
+                  <Separator />
                   </CardHeader>
-
                   {/* body */}
                   <CardHeader>
                     <CardTitle className="font-semibold leading-tight text-foreground/90">
@@ -289,7 +295,7 @@ export function BusinessPage() {
                   )} */}
 
                   </CardContent>
-                  <CardFooter className="w-full">
+                  <CardFooter className="w-full flex-1">
                     {/* <div className="text-xs text-foreground/50">
                     {item.updatedAt?.toDate
                       ? new Date(item.updatedAt.toDate()).toLocaleString()
@@ -316,12 +322,19 @@ export function BusinessPage() {
 
 export function BusinessCreate() {
   const { t } = useTranslation();
+  const { user } = useUser();
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
 
+  const metadataPlan = user?.publicMetadata?.plan;
+  const selectedPlan =
+    typeof metadataPlan === "string" && metadataPlan in BUSINESS_PLANS
+      ? (metadataPlan as BusinessCreateValues["pack"])
+      : "discover";
+
   const form = useForm({
     resolver: zodResolver(businessCreateSchema),
-    defaultValues: defaultBusinessValues,
+    defaultValues: { ...defaultBusinessValues, pack: selectedPlan },
     mode: "onTouched",
     shouldUnregister: false,
   });
@@ -329,11 +342,16 @@ export function BusinessCreate() {
   const {
     handleSubmit,
     trigger,
-    // watch,
-    getValues,
     setValue,
-    formState: { /*errors*/ },
+    // watch,
   } = form;
+
+  useEffect(() => {
+    setValue("pack", selectedPlan, {
+      shouldDirty: false,
+      shouldValidate: true,
+    });
+  }, [selectedPlan, setValue]);
 
   // const category = watch("cat");
   // const plan = watch("pack");
@@ -343,7 +361,7 @@ export function BusinessCreate() {
     t("businessCreate.steps.identity", "Business identity and contact information"),
     t("businessCreate.steps.details", "Business details"),
     t("businessCreate.steps.media", "Photos & media"),
-    t("businessCreate.steps.plan", "Choose your visibility plan"),
+    t("businessCreate.steps.review", "Review your listing"),
   ][step];
 
   const next = async () => {
@@ -364,40 +382,19 @@ export function BusinessCreate() {
     setStep((current) => Math.max(current - 1, 0));
   };
 
-  const changePlan = (nextPlan: BusinessCreateValues["pack"]) => {
-    const entitlements = BUSINESS_PLANS[nextPlan];
-    const currentPhotos = getValues("photos") ?? [];
-
-    // Keep only the number of photos permitted by the new plan.
-    if (currentPhotos.length > entitlements.photos) {
-      setValue(
-        "photos",
-        currentPhotos?.slice(0, entitlements.photos),
-        { shouldValidate: true },
-      );
-    }
-
-    if (!entitlements.video) {
-      setValue("videoFile", undefined, {
-        shouldValidate: true,
-      });
-    }
-
-    setValue("pack", nextPlan, {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-  };
-
   const onSubmit = async (values: BusinessCreateValues) => {
     setSubmitting(true);
 
     try {
-      const { photos, videoFile, ...businessData } = values;
+      const sanitizedValues = sanitizeBusinessValues({
+        ...values,
+        pack: selectedPlan,
+      });
+      const { photos, videoFile, ...businessData } = sanitizedValues;
 
       // 1. Convert all photo files to Base64 strings in parallel
       const base64Photos = await Promise.all(
-        photos.map((photo) => fileToBase64(photo))
+        photos.map((photo: File) => fileToBase64(photo))
       );
 
       // 2. Convert video file if it exists
@@ -456,11 +453,7 @@ export function BusinessCreate() {
         return <BusinessMediaStep title={stepTitle} />;
 
       case 4:
-        return (
-          <BusinessPlanStep title={stepTitle}
-            onPlanChange={changePlan}
-          />
-        );
+        return <ReviewStep title={stepTitle} />;
 
       default:
         return null;

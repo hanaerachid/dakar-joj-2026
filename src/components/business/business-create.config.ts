@@ -1,4 +1,5 @@
 import { type LucideComponent, Car, Hotel, House, Palette, ShoppingBag, Utensils } from "lucide-react";
+import { PRICING_PLANS } from "../pricing/pricingplans.config";
 
 export type FieldOption = {
   label: string;
@@ -182,32 +183,7 @@ export const BUSINESS_CATEGORIES: BusinessCategories = {
 
 export type BusinessCategory = keyof typeof BUSINESS_CATEGORIES;
 
-export const BUSINESS_PLANS = {
-  discover: {
-    label: "Découverte",
-    price: 0,
-    photos: 1,
-    video: false,
-  },
-  essential: {
-    label: "Essentiel",
-    price: 10_000,
-    photos: 5,
-    video: false,
-  },
-  premium: {
-    label: "Premium",
-    price: 25_000,
-    photos: 20,
-    video: true,
-  },
-  sponsor: {
-    label: "Sponsor Officiel",
-    price: 75_000,
-    photos: 30,
-    video: true,
-  },
-} as const;
+export const BUSINESS_PLANS = PRICING_PLANS;
 
 export type BusinessPlan = keyof typeof BUSINESS_PLANS;
 
@@ -216,5 +192,5 @@ export const FORM_STEPS = [
   "identity",
   "details",
   "media",
-  "plan",
+  "review",
 ] as const;

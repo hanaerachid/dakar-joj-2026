@@ -70,7 +70,7 @@ export const businessCreateSchema = z.object({
 
   const plan = BUSINESS_PLANS[data.pack];
 
-  if (data.photos.length > plan.photos) {
+  if (plan.photos < 99 && data.photos.length > plan.photos) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["photos"],
