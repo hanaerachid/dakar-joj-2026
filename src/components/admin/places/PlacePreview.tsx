@@ -157,7 +157,7 @@ export default function PlacePreview({
         </CardTitle>
 
         {(shortCode || sportCount) && (
-          <span className="font-sans mt-1 text-xs tracking-widest text-white/70">
+          <span className="font-sans mt-1 text-xs tracking-widest text-muted-foreground">
             {shortCode ?? ""} {shortCode && " ///// "}{" "}
             {sportCount ? `${String(sportCount).padStart(2, "0")} Sports` : ""}
           </span>
@@ -173,7 +173,7 @@ export default function PlacePreview({
                 title={s.label}
               >
                 {"icon" in s && s.icon ? (
-                  <Icon icon={s.icon as string} className="w-6 h-6 text-white" />
+                  <Icon icon={s.icon as string} className="w-6 h-6" />
                 ) : (s as any).iconUrl ? (
                   <img
                     src={(s as any).iconUrl}
@@ -183,7 +183,7 @@ export default function PlacePreview({
                 ) : (
                   <div className="text-xs font-semibold" />
                 )}
-                <span className="text-[8px] uppercase text-center w-full text-white font-medium whitespace-nowrap overflow-hidden text-ellipsis">
+                <span className="text-[8px] uppercase text-center w-full font-medium whitespace-nowrap overflow-hidden text-ellipsis">
                   {s.label}
                 </span>
               </div>
@@ -192,7 +192,7 @@ export default function PlacePreview({
         ) : null}
 
         <CardDescription
-          className="font-sans text-[11px] sm:text-xs leading-snug text-white"
+          className="font-sans text-[11px] sm:text-xs leading-snug"
           style={
             infoExpanded
               ? undefined
@@ -215,7 +215,7 @@ export default function PlacePreview({
         >
           {infoExpanded ? "See less" : "See more"}
         </Button>
-        <p className="font-sans text-xs sm:text-sm mt-1 text-white/70">{address}</p>
+        <p className="font-sans text-xs sm:text-sm mt-1 text-muted-foreground">{address}</p>
 
         {/* Optional site tags */}
         {!!tagList?.length && (
@@ -223,7 +223,8 @@ export default function PlacePreview({
             {tagList.map((tag, idx) => (
               <Badge
                 key={idx}
-                className="text-xs bg-white/20 px-2 py-0.5 text-white/70"
+                variant="secondary"
+                className="text-xs px-2 py-0.5"
               >
                 {tag}
               </Badge>
@@ -233,7 +234,7 @@ export default function PlacePreview({
 
         {/* Footer links (optional) */}
         {(website || socialHandle) && (
-          <div className="flex items-center text-white mt-1 justify-between text-[11px] font-extralight">
+          <div className="flex items-center mt-1 justify-between text-[11px] font-extralight">
             {website && (
               <a
                 className="underline"
