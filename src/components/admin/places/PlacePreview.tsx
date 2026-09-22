@@ -2,11 +2,21 @@
 
 import { Icon } from "@iconify/react";
 import { useTranslation } from "react-i18next";
-import type { VenueSport } from "../../../data/sitesMeta";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { MapPin, XIcon } from "lucide-react";
+import type { VenueSport } from "../../../data/sitesMeta";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
+import { useState } from "react";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "cn";
 
 type Props = {
   // visuals
@@ -69,7 +79,7 @@ export default function PlacePreview({
   onClose,
   onGetDirections,
 }: Props) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const activeLang = i18n.resolvedLanguage || i18n.language || "en";
   const infoText = activeLang.startsWith("fr")
     ? (infoFr ?? "").trim() || info
@@ -77,6 +87,7 @@ export default function PlacePreview({
   const nameText = activeLang.startsWith("fr")
     ? (nameFr ?? "").trim() || name
     : name;
+  const [infoExpanded, setInfoExpanded] = useState(false);
   const [g0, g1] = normGradient(gradientFrom, gradientTo);
   const sportCount =
     categoryId === "competition"
@@ -88,9 +99,12 @@ export default function PlacePreview({
   return (
     <Card
       size="sm"
-      className="w-full shadow-xl border border-border relative overflow-hidden"
+      className={cn(
+        "w-full relative pt-0 overflow-hidden",
+        "border-2 border-transparent"
+      )}
       style={{
-        background: `linear-gradient(135deg, ${g0}, ${g1})`,
+        background: `linear-gradient(var(--card), var(--card)) padding-box, linear-gradient(135deg, ${g0}, ${g1}) border-box`
       }}
     >
       <Button
@@ -104,35 +118,37 @@ export default function PlacePreview({
       >
         <XIcon />
       </Button>
-      {/* Hero image */}
-      <div className="absolute inset-0 z-30 aspect-video bg-black/35" />
-      <img
-        src={preview ?? "/v-img/default.jpg"}
-        alt={nameText || "cover"}
-        className="relative z-20 aspect-video w-full object-cover"
-      />
-
       {/* Header gradient with brand + location pill */}
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="text-xs leading-tight ">
-            {brandTitle && <div className="font-semibold">{brandTitle}</div>}
-            {brandSubtitle && (
-              <div className="uppercase tracking-wide text-[8px]">
-                {brandSubtitle}
-              </div>
-            )}
+      <CardHeader className="relative p-0 inset-0 z-30 aspect-video" >
+        {/* Hero image */}
+        {preview ? (
+          <img
+            src={preview ?? "/v-img/default.jpg"}
+            alt={nameText || "cover"}
+            className="aspect-video w-full object-cover"
+          />
+        ) : (
+          <div className="flex items-center z-10 aspect-video w-full justify-center bg-background/10 text-muted-foreground">
+            {t("no_image", "No image")}
           </div>
-          {locationLabel && (
-            <Badge
-              style={{ color: `${g1}` }}
-              className="text-xs flex items-center justify-center bg-white/90 px-2 py-0.5 font-medium"
-            >
-              <MapPin /> {locationLabel}
-            </Badge>
+        )}
+        <div className="absolute bottom-4 start-4 text-xs leading-tight ">
+          {brandTitle && <div className="font-semibold">{brandTitle}</div>}
+          {brandSubtitle && (
+            <div className="uppercase tracking-wide text-[8px]">
+              {brandSubtitle}
+            </div>
           )}
         </div>
-
+        {locationLabel && (
+          <Badge
+            style={{ color: `${g1}` }}
+            className="absolute bottom-4 end-4 text-xs flex items-center justify-center bg-white/90 px-2 py-0.5 font-medium"
+          >
+            <MapPin /> {locationLabel}
+          </Badge>
+        )}
+        <Separator />
       </CardHeader>
       {/* Body */}
       <CardContent>
@@ -177,9 +193,28 @@ export default function PlacePreview({
 
         <CardDescription
           className="font-sans text-[11px] sm:text-xs leading-snug text-white"
+          style={
+            infoExpanded
+              ? undefined
+              : {
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+              }
+          }
         >
           {infoText}
         </CardDescription>
+        <Button
+          type="button"
+          variant="link"
+          size="xs"
+          onClick={() => setInfoExpanded((v) => !v)}
+          className="inline-flex h-auto p-0 text-xs"
+        >
+          {infoExpanded ? "See less" : "See more"}
+        </Button>
         <p className="font-sans text-xs sm:text-sm mt-1 text-white/70">{address}</p>
 
         {/* Optional site tags */}
