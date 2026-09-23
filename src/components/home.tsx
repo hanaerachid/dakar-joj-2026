@@ -174,9 +174,9 @@ export const HomeContent = () => {
         </h2>
         <ItemGroup>
           {STARTERS.map((item, index) => (
-            <>
               <Item
-                key={index} size="sm"
+              key={index}
+              size="sm"
                 variant={item.available ? "outline" : "muted"}
                 className={cn(
                   item.available ? "group hover:bg-primary/25 cursor-pointer" : "cursor-not-allowed"
@@ -222,7 +222,6 @@ export const HomeContent = () => {
                   </ItemActions>
                 )}
               </Item>
-            </>
           ))}
         </ItemGroup>
       </div>
@@ -231,7 +230,6 @@ export const HomeContent = () => {
           {t("home.quick_access", "Quick access")}
         </h2>
         <ItemGroup className="grid grid-cols-2 gap-2" >
-
           {SHORTCUTS.map((item, index) => (
             <Item
               key={index}

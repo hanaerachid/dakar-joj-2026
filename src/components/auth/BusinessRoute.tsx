@@ -1,15 +1,15 @@
-// src/auth/AdminRoute.tsx
+// src/auth/BusinessRoute.tsx
 import { Navigate, useLocation } from "react-router-dom";
-import { useRole } from "../../auth/hooks/useRole";
+import { useAuth } from "@clerk/clerk-react";
 import type { JSX } from "react";
 import { Card, CardContent, CardDescription } from "@/components/ui/card";
 
-export default function AdminRoute({ children }: { children: JSX.Element }) {
-  const { role, loading } = useRole();
+export default function BusinessRoute({ children }: { children: JSX.Element }) {
+  const { isSignedIn, isLoaded } = useAuth();
   const loc = useLocation();
   const redirectUrl = `${loc.pathname}${loc.search}${loc.hash}`;
-
-  if (loading)
+  
+  if (!isLoaded)
     return (
       <Card
         size="default"
@@ -22,7 +22,7 @@ export default function AdminRoute({ children }: { children: JSX.Element }) {
         </CardContent>
       </Card>
     );
-  if (role !== "admin")
+  if (!isSignedIn)
     return (
       <Navigate to={`/login?redirect=${encodeURIComponent(redirectUrl)}`} replace state={{ from: loc }} />
     );

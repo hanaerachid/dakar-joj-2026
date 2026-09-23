@@ -11,9 +11,18 @@ type Props = {
   children?: React.ReactNode;
   showLogo?: boolean;
   backButton?: React.ReactNode;
+  showLogin?: boolean;
 };
 
-export function HeaderBar({ showLogo = true, backButton, title, description, onReset, children }: Props) {
+export function HeaderBar({
+  showLogo = true,
+  showLogin = true,
+  backButton,
+  title,
+  description,
+  onReset,
+  children
+}: Props) {
 
   return (
     <div className="absolute top-0 start-0 end-0 z-20">
@@ -56,7 +65,9 @@ export function HeaderBar({ showLogo = true, backButton, title, description, onR
         <div className="flex items-center gap-2 shrink-0 sm:gap-3">
           <LanguageSwitcher />
           <ModeToggle />
+          {showLogin && (
           <ProfileMenu />
+          )}
         </div>
       </div>
     </div>

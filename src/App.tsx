@@ -6,11 +6,13 @@ import { enUS, frFR, esES } from "@clerk/localizations";
 import { shadcn } from "@clerk/ui/themes";
 import MapPage from "./pages/map/MapPage";
 import AdminRoute from "./components/auth/AdminRoute";
+import BusinessRoute from "./components/auth/BusinessRoute";
 import AddPlaceFull from "./admin/places/AddPlaceFull";
 import { PlacesListPage } from "./admin/places/PlacesList";
 import { PlaceDetailsPage } from "./admin/places/PlacesDetails";
 import { TorchPage, AddTorchPage, EditTorchPage } from "./pages/torch/TorchPage";
 import { PricingPage } from "./pages/pricing";
+import { LoginPage } from "./pages/login";
 import { BusinessCreate, BusinessPage, BusinessEdit } from "./pages/business";
 import "./App.css";
 import BulkPlacesImport from "./admin/places/BulkPlacesImport";
@@ -63,9 +65,14 @@ export default function App() {
               }
             />
 
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/pricing" element={<PricingPage />} />
 
-            <Route path="/business" element={<BusinessShell />} >
+            <Route path="/business" element={
+              <BusinessRoute>
+                <BusinessShell />
+              </BusinessRoute>
+            }>
               <Route index element={<Navigate to="listings" replace />} />
               <Route path="listings" element={<BusinessPage />} />
               <Route path="listings/:id" element={<BusinessEdit />} />
