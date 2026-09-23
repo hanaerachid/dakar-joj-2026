@@ -85,6 +85,7 @@ export function PricingPage() {
   const formatPrice = (price: number) =>
     price === 0
       ? t("businessCreate.plan.free", "Free")
+      : price === Infinity ? t("businessCreate.plan.custom", "Custom")
       : `${price.toLocaleString()} FCFA`;
 
   return (
@@ -153,16 +154,15 @@ export function PricingPage() {
                           item.desc,
                         )}
                       </CardDescription>
-                      <CardDescription className="text-2xl font-bold text-foreground">
-                        {formatPrice(item.price)}
-                        <div>
-
-                          {item.price > 0 && (
-                            <span className="text-sm font-normal text-muted-foreground">
-                              pour toute la saison
-                            </span>
-                          )}
-                        </div>
+                      <CardDescription>
+                        <span className="text-2xl font-bold text-foreground">
+                          {formatPrice(item.price)}
+                        </span>
+                        {item.price > 0 && item.price !== Infinity && (
+                          <span className="text-sm font-normal text-muted-foreground">
+                            {" "}pour toute la saison
+                          </span>
+                        )}
                       </CardDescription>
                     </CardContent>
                     <CardContent className="w-full">

@@ -9,7 +9,6 @@ export type BusinessCapability =
   | "booking"
   | "statistics"
   | "banner"
-  | "sponsoredStory"
   | "verified"
   | "priority"
   | "pinned"
@@ -20,20 +19,21 @@ export type BusinessCapability =
 export const PRICING_PLANS = {
   discover: {
     label: "Découverte",
-    desc: "Être présent sur la carte des JOJ.",
+    desc: "Showcase your business on the map with a basic listing.",
     icon: MapPin,
     recommended: false,
     features: [
       "Fiche sur la carte Dakar 2026",
       "1 listing",
+      "1 photo",
       "Position géolocalisée"
     ],
     limitations: [
-      "No photo",
+      "Temporary visibility during the Games",
       "No contact information"
     ],
     price: 0,
-    photos: 0,
+    photos: 1,
     videos: 0,
     capabilities: [] as const satisfies BusinessCapability[],
   },
@@ -46,13 +46,14 @@ export const PRICING_PLANS = {
       "All Discover features",
       "Add 1 photo",
       "Display your email address",
-      "Priority in your category"
+      "Priority in your category",
+      "Extended visibility (3 months)",
     ],
     limitations: [
       "No phone number",
       "No website",
       "No social media handles",
-      "No video"
+      "No videos",
     ],
     price: 5_000,
     photos: 1,
@@ -65,7 +66,7 @@ export const PRICING_PLANS = {
   },
   premium: {
     label: "Premium",
-    desc: "Get ahead and convert during the Games.",
+    desc: "Get the most out of your presence during the Games.",
     icon: Crown,
     recommended: true,
     features: [
@@ -78,7 +79,8 @@ export const PRICING_PLANS = {
       "2 videos",
       "Pinned at the top of the map",
       "View statistics",
-      "Premium badge"
+      "Premium badge",
+      "Extended visibility (6 months)",
     ],
     limitations: [],
     price: 10_000,
@@ -106,10 +108,10 @@ export const PRICING_PLANS = {
       "All Premium features",
       "Banner ad under the map",
       "Featured on homepage",
-      "Sponsored story",
-      "Advanced analytics + dedicated support"
+      "Advanced analytics",
+      "Dedicated support"
     ],
-    price: 250_000,
+    price: Infinity,
     photos: 99,
     videos: 99,
     capabilities: [
@@ -125,7 +127,6 @@ export const PRICING_PLANS = {
       "pinned",
       "banner",
       "featured",
-      "sponsoredStory",
       "advancedAnalytics",
       "dedicatedSupport",
     ] as const satisfies BusinessCapability[],

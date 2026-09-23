@@ -75,10 +75,11 @@ export function BusinessMediaStep(
               {t("businessCreate.media.photos", "Photos")}
             </div>
             <Badge variant="ghost" className="shrink-0 text-sm text-muted-foreground">
-              {photos.length}
+              {photos.length} {"/"} {entitlement.photos}
             </Badge>
           </FieldLegend>
           <FieldGroup>
+            {entitlement.photos && entitlement.photos > 0 ? (
             <FileField
               name="photos"
               label="Photos"
@@ -87,6 +88,14 @@ export function BusinessMediaStep(
               disabled={photos.length >= entitlement.photos}
             // onFilesChange={addPhotos}
             />
+            ) : (
+              <div className="rounded-lg bg-muted p-4 text-sm">
+                {t(
+                  "businessCreate.media.photoLocked",
+                  "Upgrade to upload Photos.",
+                )}
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {photos.map((file, index) => {
@@ -128,7 +137,7 @@ export function BusinessMediaStep(
             )}
             </div>
             <Badge variant="ghost" className="shrink-0 text-sm text-muted-foreground">
-              {videos.length}
+              {videos.length} {"/"} {entitlement.videos}
             </Badge>
           </FieldLegend>
           <FieldGroup>
@@ -148,7 +157,7 @@ export function BusinessMediaStep(
               <div className="rounded-lg bg-muted p-4 text-sm">
                 {t(
                   "businessCreate.media.videoLocked",
-                  "Video is available with Premium and Sponsor plans.",
+                  "Upgrade to upload videos.",
                 )}
               </div>
             )}
