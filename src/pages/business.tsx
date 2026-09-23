@@ -255,11 +255,11 @@ export function BusinessPage() {
 
                   <CardHeader className="p-0 gap-0">
                     {/* image */}
-                    {item.image ? (
+                    {item.photos && item.photos.length > 0 ? (
                       <img
-                        src={item.image}
+                        src={item.photos[0]}
                         alt={item.name}
-                        className="w-full object-cover"
+                        className="w-full aspect-video object-cover"
                         loading="lazy"
                       />
                     ) : (

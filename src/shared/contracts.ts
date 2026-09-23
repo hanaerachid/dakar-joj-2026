@@ -230,11 +230,13 @@ export const businessListingSchema = z.object({
   }),
   pack: z.string(),
   priceTag: z.string().optional(),
-
-  // Add the base64 image field (optional or required depending on your needs)
-  image: z.string().regex(/^data:image\/(png|jpeg|jpg);base64,/, {
+  photos: z.array(z.string().regex(/^data:image\/(png|jpeg|jpg|webp|gif);base64,/, {
     message: "Invalid image format. Must be a base64 Data URI (png/jpeg/jpg)",
-  }).optional(),
+  })).optional().default([]),
+  // Add the base64 image field (optional or required depending on your needs)
+  // image: z.string().regex(/^data:image\/(png|jpeg|jpg);base64,/, {
+  //   message: "Invalid image format. Must be a base64 Data URI (png/jpeg/jpg)",
+  // }).optional(),
 });
 
 export type BusinessListing = z.infer<typeof businessListingSchema>;
