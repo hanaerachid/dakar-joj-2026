@@ -39,7 +39,7 @@ export const businessCreateSchema = z.object({
   spec: businessSpecSchema.default({}),
 
   photos: z.array(z.instanceof(File)).default([]),
-  videoFile: z.instanceof(File).optional(),
+  videos: z.array(z.instanceof(File)).default([]),
 
   pack: z.enum([
     "discover",
@@ -61,11 +61,11 @@ export const businessCreateSchema = z.object({
     });
   }
 
-  if (data.videoFile && !plan.video) {
+  if (plan.videos < 99 && data.videos.length > plan.videos) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      path: ["videoFile"],
-      message: "Video requires Premium or Sponsor",
+      path: ["videos"],
+      message: `This plan allows up to ${plan.videos} videos`,
     });
   }
 });
@@ -89,6 +89,7 @@ export const defaultBusinessValues: BusinessCreateValues = {
   openHours: "",
   spec: {},
   photos: [],
+  videos: [],
   pack: "discover",
   priceTag: "",
 };

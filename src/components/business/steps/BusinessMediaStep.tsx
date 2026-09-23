@@ -20,7 +20,7 @@ export function BusinessMediaStep(
 
   const plan = watch("pack");
   const photos = watch("photos") ?? [];
-  const video = watch("videoFile");
+  const videos = watch("videos") ?? [];
 
   const entitlement = BUSINESS_PLANS[plan];
 
@@ -47,6 +47,14 @@ export function BusinessMediaStep(
     setValue(
       "photos",
       photos.filter((_, i) => i !== index),
+      { shouldValidate: true, shouldDirty: true },
+    );
+  };
+
+  const removeVideo = (index: number) => {
+    setValue(
+      "videos",
+      videos.filter((_, i) => i !== index),
       { shouldValidate: true, shouldDirty: true },
     );
   };
@@ -112,22 +120,29 @@ export function BusinessMediaStep(
         </FieldSet>
 
         <FieldSet>
-          <FieldLegend className="font-semibold">
-            {t(
+          <FieldLegend className="w-full font-semibold flex items-center justify-between gap-4">
+            <div className="flex-1">
+              {t(
               "businessCreate.media.video",
               "Presentation video",
             )}
+            </div>
+            <Badge variant="ghost" className="shrink-0 text-sm text-muted-foreground">
+              {videos.length}
+            </Badge>
           </FieldLegend>
           <FieldGroup>
-            {entitlement.video ? (
+            {entitlement.videos && entitlement.videos > 0 ? (
               <FileField
-                name="videoFile"
+                name="videos"
                 label={t(
                   "businessCreate.media.uploadVideo",
                   "Upload a video",
                 )}
                 accept="video/*"
-                value={video}
+                multiple
+                disabled={videos.length >= entitlement.videos}
+                // value={videos}
               />
             ) : (
               <div className="rounded-lg bg-muted p-4 text-sm">
@@ -137,6 +152,34 @@ export function BusinessMediaStep(
                 )}
               </div>
             )}
+
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {videos.map((file, index) => {
+                // const url = URL.createObjectURL(file);
+
+                return (
+                  <div
+                    key={`${file.name}-${index}`}
+                    className="space-y-2"
+                  >
+                    <p className="truncate text-sm text-muted-foreground" >
+                      {file.name}
+                    </p>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => removeVideo(index)}
+                    >
+                      {t("common.remove", "Remove")}
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+
           </FieldGroup>
         </FieldSet>
         {/* 

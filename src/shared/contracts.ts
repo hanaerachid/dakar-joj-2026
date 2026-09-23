@@ -197,6 +197,32 @@ export const torchStopSchema = z.object({
 
 export type TorchStop = z.infer<typeof torchStopSchema>;
 
+const photoSchema = z.union([
+  z.string().regex(
+    /^data:image\/(png|jpeg|jpg|webp|gif);base64,/,
+    {
+      message:
+        "Invalid image format. Must be a base64 Data URI (png/jpeg/jpg/webp/gif)",
+    }
+  ),
+  z.string().url({
+    message: "Invalid image URL",
+  }),
+]);
+
+const videoSchema = z.union([
+  z.string().regex(
+    /^data:video\/(mp4|webm|ogg);base64,/,
+    {
+      message:
+        "Invalid video format. Must be a base64 Data URI (mp4/webm/ogg)",
+    }
+  ),
+  z.string().url({
+    message: "Invalid video URL",
+  }),
+]);
+
 export const businessListingSchema = z.object({
   _id: z.string().optional(),
   cat: z.string(),
@@ -230,13 +256,8 @@ export const businessListingSchema = z.object({
   }),
   pack: z.string(),
   priceTag: z.string().optional(),
-  photos: z.array(z.string().regex(/^data:image\/(png|jpeg|jpg|webp|gif);base64,/, {
-    message: "Invalid image format. Must be a base64 Data URI (png/jpeg/jpg)",
-  })).optional().default([]),
-  // Add the base64 image field (optional or required depending on your needs)
-  // image: z.string().regex(/^data:image\/(png|jpeg|jpg);base64,/, {
-  //   message: "Invalid image format. Must be a base64 Data URI (png/jpeg/jpg)",
-  // }).optional(),
+  photos: z.array(photoSchema).optional().default([]),
+  videos: z.array(videoSchema).optional().default([]),
 });
 
 export type BusinessListing = z.infer<typeof businessListingSchema>;

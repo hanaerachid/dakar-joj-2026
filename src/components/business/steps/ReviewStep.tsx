@@ -36,7 +36,7 @@ export function ReviewStep({ title }: { title?: string }) {
         </ReviewGroup>
         <ReviewGroup title={t("businessCreate.review.media", "Media")}>
           <ReviewRow label="Photos" value={`${values.photos.length}`} />
-          <ReviewRow label="Video" value={values.videoFile?.name || "-"} />
+          <ReviewRow label="Videos" value={values.videos.length.toString() || "-"} />
         </ReviewGroup>
       </CardContent>
     </>

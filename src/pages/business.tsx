@@ -66,7 +66,7 @@ const STEP_FIELDS: Record<number, (keyof BusinessCreateValues)[]> = {
   0: ["cat"],
   1: ["name", "tel", "email"],
   2: ["longitude", "latitude", "address", "desc", "openHours", "spec"],
-  3: ["photos", "videoFile", "priceTag"],
+  3: ["photos", "videos", "priceTag"],
   4: ["pack"],
 };
 
@@ -384,24 +384,23 @@ export function BusinessCreate() {
         ...values,
         pack: selectedPlan,
       });
-      const { photos, videoFile, ...businessData } = sanitizedValues;
+      const { photos, videos, ...businessData } = sanitizedValues;
 
       // 1. Convert all photo files to Base64 strings in parallel
       const base64Photos = await Promise.all(
         photos.map((photo: File) => fileToBase64(photo))
       );
 
-      // 2. Convert video file if it exists
-      let base64Video = null;
-      if (videoFile) {
-        base64Video = await fileToBase64(videoFile);
-      }
+      // 1. Convert all video files to Base64 strings in parallel
+      const base64Videos = await Promise.all(
+        videos.map((video: File) => fileToBase64(video))
+      );
 
       // 3. Build a pure JavaScript object payload
       const payload = {
         ...businessData,
         photos: base64Photos, // Now an array of Base64 strings
-        video: base64Video,   // A Base64 string or null
+        videos: base64Videos, // Now an array of Base64 strings
       };
 
       // 4. Send the pure JSON payload to your Hono server
@@ -627,18 +626,17 @@ export function BusinessEdit() {
     setSubmitting(true);
 
     try {
-      const { photos, videoFile, ...businessData } = values;
+      const { photos, videos, ...businessData } = values;
 
       // 1. Convert all photo files to Base64 strings in parallel
       const base64Photos = await Promise.all(
         photos.map((photo) => fileToBase64(photo))
       );
 
-      // 2. Convert video file if it exists
-      let base64Video = null;
-      if (videoFile) {
-        base64Video = await fileToBase64(videoFile);
-      }
+      // 1. Convert all video files to Base64 strings in parallel
+      const base64Videos = await Promise.all(
+        videos.map((video) => fileToBase64(video))
+      );
 
       // 3. Build a pure JavaScript object payload
       const payload: Record<string, unknown> = {
@@ -647,7 +645,7 @@ export function BusinessEdit() {
 
       // Leave existing remote media untouched unless replacement files were selected.
       if (photos.length > 0) payload.photos = base64Photos;
-      if (videoFile) payload.video = base64Video;
+      if (videos.length > 0) payload.videos = base64Videos;
 
       // 4. Send the pure JSON payload to your Hono server
       await updateBusinessListing(listingId , payload);

@@ -21,6 +21,8 @@ export function sanitizeBusinessValues(values: BusinessCreateValues) {
     photos: Number.isFinite(plan.photos)
       ? (values.photos ?? []).slice(0, plan.photos)
       : values.photos ?? [],
-    videoFile: plan.video ? values.videoFile : undefined,
+    videos: Number.isFinite(plan.videos)
+      ? (values.videos ?? []).slice(0, plan.videos)
+      : values.videos ?? [],
   };
 }

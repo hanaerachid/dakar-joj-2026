@@ -34,7 +34,7 @@ export const PRICING_PLANS = {
     ],
     price: 0,
     photos: 0,
-    video: false,
+    videos: 0,
     capabilities: [] as const satisfies BusinessCapability[],
   },
   essential: {
@@ -56,7 +56,7 @@ export const PRICING_PLANS = {
     ],
     price: 5_000,
     photos: 1,
-    video: false,
+    videos: 0,
     capabilities: [
       "email",
       "verified",
@@ -83,7 +83,7 @@ export const PRICING_PLANS = {
     limitations: [],
     price: 10_000,
     photos: 99,
-    video: true,
+    videos: 2,
     capabilities: [
       "email",
       "phone",
@@ -111,7 +111,7 @@ export const PRICING_PLANS = {
     ],
     price: 250_000,
     photos: 99,
-    video: true,
+    videos: 99,
     capabilities: [
       "email",
       "phone",
