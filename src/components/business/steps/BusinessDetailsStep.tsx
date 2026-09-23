@@ -32,8 +32,7 @@ export function BusinessDetailsStep(
 
   const category = watch("cat");
   // const spec = watch("spec") ?? {};
-  const latitude = watch("latitude");
-  const longitude = watch("longitude");
+  const location = watch("location");
 
   const config = BUSINESS_CATEGORIES[category];
   const {
@@ -51,24 +50,17 @@ export function BusinessDetailsStep(
         <LocationPickerModal
           ref={pickerRef}
           isOpen={true}
-          initialLat={
-            typeof latitude === "number"
-              ? latitude
-              : undefined
-          }
           initialLng={
-            typeof longitude === "number"
-              ? longitude
-              : undefined
+            location?.coordinates?.[0]
+          }
+          initialLat={
+            location?.coordinates?.[1]
           }
           onClose={() => setIsOpen(false)}
           onSelect={(selectedLat, selectedLng, selectedAddress) => {
-            setValue("latitude", selectedLat, {
-              shouldDirty: true,
-              shouldValidate: true,
-            });
-
-            setValue("longitude", selectedLng, {
+            setValue("location", {
+              coordinates: [selectedLng, selectedLat],
+            }, {
               shouldDirty: true,
               shouldValidate: true,
             });
@@ -109,6 +101,7 @@ export function BusinessDetailsStep(
 
     setIsOpen(true);
   };
+
   return (
     <>
       {title &&
@@ -138,22 +131,22 @@ export function BusinessDetailsStep(
             />
             <FieldGroup className="grid gap-4 sm:grid-cols-2">
               <TextField
-                name="latitude"
-                label={t(
-                  "businessCreate.fields.latitude",
-                  "Latitude",
-                )}
-                placeholder="Latitude"
-                type="number"
-                suffix="°"
-              />
-              <TextField
-                name="longitude"
+                name="location.coordinates.0"
                 label={t(
                   "businessCreate.fields.longitude",
                   "Longitude",
                 )}
                 placeholder="Longitude"
+                type="number"
+                suffix="°"
+              />
+              <TextField
+                name="location.coordinates.1"
+                label={t(
+                  "businessCreate.fields.latitude",
+                  "Latitude",
+                )}
+                placeholder="Latitude"
                 type="number"
                 suffix="°"
               />

@@ -233,8 +233,9 @@ export const businessListingSchema = z.object({
   website: z.string().url().or(z.literal("")).optional(),
   social: z.string().optional(),
   address: z.string(),
-  longitude: z.number(),
-  latitude: z.number(),
+  location: z.object({
+    coordinates: z.tuple([z.number(), z.number()]),
+  }),
   desc: z.string(),
   openHours: z.string(),
   spec: z.object({

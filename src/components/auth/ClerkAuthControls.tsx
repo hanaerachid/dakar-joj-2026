@@ -36,15 +36,17 @@ export function ClerkAuthControls() {
             </Button>
           </SignUpButton>
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button
-                size="icon"
-                className="rounded-e-full"
-                aria-label={t("auth.accountOptions", "Account options")}
-              >
-                <ChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  size="icon"
+                  className="rounded-e-full"
+                  aria-label={t("auth.accountOptions", "Account options")}
+                >
+                  <ChevronDown />
+                </Button>
+              }
+            />
             <DropdownMenuContent align="end">
               <SignInButton mode="modal">
                 <DropdownMenuItem

@@ -46,6 +46,7 @@ import {
   EmptyHeader,
 } from "@/components/ui/empty";
 import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { BusinessTypeStep } from "@/components/business/steps/BusinessTypeStep";
@@ -60,12 +61,11 @@ import {
   updateBusinessListing,
   deleteBusinessListing,
 } from "@/lib/api/submitBusinessListing";
-import { Separator } from "@/components/ui/separator";
 
 const STEP_FIELDS: Record<number, (keyof BusinessCreateValues)[]> = {
   0: ["cat"],
   1: ["name", "tel", "email"],
-  2: ["longitude", "latitude", "address", "desc", "openHours", "spec"],
+  2: ["location", "address", "desc", "openHours", "spec"],
   3: ["photos", "videos", "priceTag"],
   4: ["pack"],
 };
@@ -106,6 +106,21 @@ export function BusinessPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Define function to get friendly category name (optional, based on your data structure)
+  const getFriendlyCategoryName = (category: string) => {
+    const categoryMap: Record<string, string> = {
+      "restaurant": "Restaurant",
+      "hotel": "Hotel",
+      "store": "Store",
+      "appart": "Appartement",
+      "resto": "Restaurant",
+      "concess": "Concession",
+      "boutique": "Boutique",
+      "galerie": "Galerie",
+    };
+    return categoryMap[category] || category;
+  };
+
   async function handleDeleteBusinessListing(item: BusinessListing) {
     if (!confirm("Delete this business listing? This cannot be undone.")) return;
     try {
@@ -118,7 +133,6 @@ export function BusinessPage() {
   }
 
   return (
-
       <div className="mx-auto max-w-6xl pt-24 pb-8 space-y-6">
         <Card>
           <CardHeader>
@@ -177,12 +191,8 @@ export function BusinessPage() {
           {loading && (
             <div className="col-span-full grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {[...Array(6)].map((_, i) => (
-                <Skeleton
-                  key={i}
-                  className="overflow-hidden rounded-3xl"
-                >
-                  <Skeleton className="h-2 w-full bg-foreground/30" />
-                  <Skeleton className="h-44 w-full bg-foreground/20" />
+                <Skeleton key={i} className="overflow-hidden rounded-3xl" >
+                  <Skeleton className="aspect-video w-full bg-foreground/20" />
                   <Skeleton className="p-4 space-y-3">
                     <Skeleton className="h-4 w-1/2 rounded bg-foreground/20" />
                     <Skeleton className="h-3 w-2/3 rounded bg-foreground/20" />
@@ -225,21 +235,22 @@ export function BusinessPage() {
                     className="absolute start-4 top-4 z-20"
                     variant="secondary"
                   >
-                    {item.cat}
+                    {getFriendlyCategoryName(item.cat)}
                   </Badge>
                   <DropdownMenu>
                     <DropdownMenuTrigger
                       className="absolute end-4 top-4 z-20"
-                    >
-                      <Button
-                        variant="ghost" size="icon-sm"
-                        aria-label={t("more_actions", "More actions")}
-                        className="w-8 h-8 flex items-center justify-center"
-                      >
-                        <MoreVertical />
-                        <span className="sr-only">Open actions</span>
-                      </Button>
-                    </DropdownMenuTrigger>
+                      render={
+                        <Button
+                          variant="ghost" size="icon-sm"
+                          aria-label={t("more_actions", "More actions")}
+                          className="w-8 h-8 flex items-center justify-center"
+                        >
+                          <MoreVertical />
+                          <span className="sr-only">Open actions</span>
+                        </Button>
+                      }
+                    />
 
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem
@@ -256,12 +267,15 @@ export function BusinessPage() {
                   <CardHeader className="p-0 gap-0">
                     {/* image */}
                     {item.photos && item.photos.length > 0 ? (
+                    <>
+                      <div className="absolute bg-gradient-to-b from-background/80 to-transparent w-full aspect-video object-cover"/>
                       <img
                         src={item.photos[0]}
                         alt={item.name}
                         className="w-full aspect-video object-cover"
                         loading="lazy"
                       />
+                    </>
                     ) : (
                       <div className="flex items-center z-10 aspect-video w-full justify-center bg-background/50 text-foreground/30">
                         {t("no_image", "No image")}
@@ -279,6 +293,11 @@ export function BusinessPage() {
                     {item.desc && (
                       <CardDescription>
                         {item.desc}
+                      </CardDescription>
+                    )}
+                    {item.address && (
+                      <CardDescription>
+                        {item.address}
                       </CardDescription>
                     )}
 
@@ -576,8 +595,7 @@ export function BusinessEdit() {
           website: listing.website,
           social: listing.social,
           address: listing.address,
-          longitude: listing.longitude,
-          latitude: listing.latitude,
+          location: listing.location,
           desc: listing.desc,
           openHours: listing.openHours,
           spec: listing.spec,
@@ -674,7 +692,6 @@ export function BusinessEdit() {
   };
 
   return (
-
       <div className="pt-24 pb-8">
         <div className="mx-auto w-full max-w-3xl">
           {loading && <Skeleton className="h-[38rem] w-full" />}

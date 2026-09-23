@@ -29,10 +29,8 @@ export const businessCreateSchema = z.object({
   email: z.string().optional().default(""),
   website: optionalText,
   social: optionalText,
-
   address: optionalText,
-  longitude: z.number().nullable().optional(),
-  latitude: z.number().nullable().optional(),
+  location: z.object({coordinates: z.tuple([z.number(),z.number(),]).optional()}),
   desc: optionalText,
   openHours: optionalText,
 
@@ -83,8 +81,9 @@ export const defaultBusinessValues: BusinessCreateValues = {
   website: "",
   social: "",
   address: "",
-  longitude: null,
-  latitude: null,
+  location: {
+    coordinates: undefined,
+  },
   desc: "",
   openHours: "",
   spec: {},
