@@ -2,8 +2,9 @@ import { Award, CheckCircle, Crown, MapPin } from "lucide-react";
 
 export type BusinessCapability =
   | "email"
+  | "phone"
   | "website"
-  | "socialMedia"
+  | "SNS"
   | "whatsapp"
   | "booking"
   | "statistics"
@@ -24,14 +25,17 @@ export const PRICING_PLANS = {
     recommended: false,
     features: [
       "Fiche sur la carte Dakar 2026",
-      "1 photo",
-      "E-mail",
+      "1 listing",
       "Position géolocalisée"
     ],
+    limitations: [
+      "No photo",
+      "No contact information"
+    ],
     price: 0,
-    photos: 1,
+    photos: 0,
     video: false,
-    capabilities: ["email"] as const satisfies BusinessCapability[],
+    capabilities: [] as const satisfies BusinessCapability[],
   },
   essential: {
     label: "Essentiel",
@@ -40,18 +44,21 @@ export const PRICING_PLANS = {
     recommended: false,
     features: [
       "All Discover features",
-      "Up to 5 photos",
-      "Email, Website and social media",
-      "Verified badge",
+      "Add 1 photo",
+      "Display your email address",
       "Priority in your category"
     ],
-    price: 25_000,
-    photos: 5,
+    limitations: [
+      "No phone number",
+      "No website",
+      "No social media handles",
+      "No video"
+    ],
+    price: 5_000,
+    photos: 1,
     video: false,
     capabilities: [
       "email",
-      "website",
-      "socialMedia",
       "verified",
       "priority",
     ] as const satisfies BusinessCapability[],
@@ -63,19 +70,25 @@ export const PRICING_PLANS = {
     recommended: true,
     features: [
       "All Essential features",
+      "3 listings",
+      "Add your phone number",
+      "Add your website",
+      "Add your social media handles",
       "Unlimited photos",
+      "2 videos",
       "Pinned at the top of the map",
-      "WhatsApp / booking button",
       "View statistics",
       "Premium badge"
     ],
-    price: 60_000,
+    limitations: [],
+    price: 10_000,
     photos: 99,
     video: true,
     capabilities: [
       "email",
+      "phone",
       "website",
-      "socialMedia",
+      "SNS",
       "whatsapp",
       "booking",
       "statistics",
@@ -101,8 +114,9 @@ export const PRICING_PLANS = {
     video: true,
     capabilities: [
       "email",
+      "phone",
       "website",
-      "socialMedia",
+      "SNS",
       "whatsapp",
       "booking",
       "statistics",
@@ -115,6 +129,7 @@ export const PRICING_PLANS = {
       "advancedAnalytics",
       "dedicatedSupport",
     ] as const satisfies BusinessCapability[],
+    limitations: []
   },
 };
 

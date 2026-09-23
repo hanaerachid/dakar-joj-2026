@@ -22,6 +22,8 @@ export function ReviewStep({ title }: { title?: string }) {
         <ReviewGroup title={t("businessCreate.review.business", "Business")}>
           <ReviewRow label="Name" value={values.name} />
           <ReviewRow label="Category" value={values.cat} />
+          <ReviewRow label="Longitude" value={values.longitude?.toString() || "-"} />
+          <ReviewRow label="Latitude" value={values.latitude?.toString() || "-"} />
           <ReviewRow label="Address" value={values.address || "-"} />
           <ReviewRow label="Description" value={values.desc || "-"} />
         </ReviewGroup>

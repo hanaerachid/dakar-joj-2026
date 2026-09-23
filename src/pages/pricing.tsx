@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import { cn } from "cn";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -94,7 +94,7 @@ export function PricingPage() {
         description={t("description")}
       />
       <div className="pt-24 pb-8">
-        <div className="mx-auto w-full max-w-6xl space-y-6">
+        <div className="mx-auto w-full max-w-7xl space-y-6">
           {/* Header */}
           <div className="mb-12 flex-col items-center items-start justify-between gap-3">
             <h2 className="text-xl text-center font-bold tracking-tight">Un pass unique pour toute la campagne</h2>
@@ -102,7 +102,7 @@ export function PricingPage() {
               Payez une fois : votre visibilité court jusqu'à la clôture des Jeux, le 13 novembre 2026. Plus vous vous engagez tôt, moins vous payez.
             </p>
           </div>
-          <div className="grid gap-3 grid-cols-1 sm:grid-cols-4">
+          <div className="grid gap-2 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
             {Object.entries(PRICING_PLANS).map(
               ([key, item]) => {
                 const planId = key as keyof typeof PRICING_PLANS;
@@ -111,6 +111,7 @@ export function PricingPage() {
                 return (
                   <Card
                     key={key}
+                    size="sm"
                     className={cn(
                       "flex-col items-start",
                       item.recommended && "bg-gradient-to-br dark:from-blue-500 dark:to-blue-900 from-blue-100 to-blue-500",
@@ -164,25 +165,7 @@ export function PricingPage() {
                         </div>
                       </CardDescription>
                     </CardContent>
-                    <CardContent className="flex-1">
-                      {item.features.map((feature, index) => (
-                        <CardDescription
-                          key={index}
-                          className="flex justfiy-start gap-2 text-sm text-foreground"
-                        >
-                          <Check className="w-4 h-4 text-primary" />
-                          <span>
-                            {feature}
-                          </span>
-                        </CardDescription>
-                      ))}
-                    </CardContent>
-                    <CardFooter className="w-full flex-col items-center gap-2">
-                      {isCurrentPlan && (
-                        <p className="text-xs text-muted-foreground">
-                          {t("pricing.current_plan", "Current Plan")}
-                        </p>
-                      )}
+                    <CardContent className="w-full">
                       <Button
                         type="button"
                         disabled={action.disabled}
@@ -196,6 +179,47 @@ export function PricingPage() {
                       >
                         {action.label}
                       </Button>
+                    </CardContent>
+                    <CardContent className="flex-1 divide-y divide-solid">
+                      {item.features.map((element, index) => (
+                        <CardDescription
+                          key={index}
+                          className={cn(
+                            "flex justfiy-start gap-2 py-2 text-sm text-foreground",
+                          )}
+                        >
+                          <Check className={cn(
+                            "w-4 h-4",
+                            item.recommended ? "text-foreground" : "text-primary"
+                          )} />
+                          <span>
+                            {element}
+                          </span>
+                        </CardDescription>
+                      ))}
+                      {item.limitations.map((element, index) => (
+                        <CardDescription
+                          key={index}
+                          className={cn(
+                            "flex justfiy-start gap-2 py-2 text-sm text-muted-foreground",
+                          )}
+                        >
+                          <X className={cn(
+                            "w-4 h-4",
+                            item.recommended ? "text-primary-foreground" : "text-destructive"
+                          )} />
+                          <span>
+                            {element}
+                          </span>
+                        </CardDescription>
+                      ))}
+                    </CardContent>
+                    <CardFooter className="w-full">
+                      {isCurrentPlan && (
+                        <p className="text-xs text-muted-foreground">
+                          {t("pricing.current_plan", "Current Plan")}
+                        </p>
+                      )}
                     </CardFooter>
                   </Card>
                 );

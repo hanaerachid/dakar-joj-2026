@@ -6,7 +6,6 @@ import { useUser } from "@clerk/clerk-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeft, MoreVertical, Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { HeaderBar } from "../components/header/HeaderBar";
 import { fileToBase64 } from "@/lib/fileConvert";
 
 import {
@@ -66,7 +65,7 @@ import { Separator } from "@/components/ui/separator";
 const STEP_FIELDS: Record<number, (keyof BusinessCreateValues)[]> = {
   0: ["cat"],
   1: ["name", "tel", "email"],
-  2: ["address", "desc", "openHours", "spec"],
+  2: ["longitude", "latitude", "address", "desc", "openHours", "spec"],
   3: ["photos", "videoFile", "priceTag"],
   4: ["pack"],
 };
@@ -119,12 +118,7 @@ export function BusinessPage() {
   }
 
   return (
-    <>
-      <HeaderBar
-        title={t("title")}
-        description={t("description")}
-      // onReset={handleReset}
-      />
+
       <div className="mx-auto max-w-6xl pt-24 pb-8 space-y-6">
         <Card>
           <CardHeader>
@@ -306,7 +300,7 @@ export function BusinessPage() {
                     <Button
                       className="w-full"
                       variant="outline"
-                      onClick={() => navigate(`/business/listing/${item._id}`)}
+                      onClick={() => navigate(`/business/listings/${item._id}`)}
                     >
                       <Pencil />
                       <span>{t("edit", "Edit")}</span>
@@ -317,7 +311,6 @@ export function BusinessPage() {
             })}
         </div>
       </div>
-    </>
   );
 }
 
@@ -462,12 +455,7 @@ export function BusinessCreate() {
   };
 
   return (
-    <>
-      <HeaderBar
-        title={t("title")}
-        description={t("description")}
-      // onReset={handleReset}
-      />
+
       <div className="pt-24 pb-8">
         <FormProvider {...form}>
           <form
@@ -536,7 +524,6 @@ export function BusinessCreate() {
           </form>
         </FormProvider>
       </div>
-    </>
   );
 }
 
@@ -590,6 +577,8 @@ export function BusinessEdit() {
           website: listing.website,
           social: listing.social,
           address: listing.address,
+          longitude: listing.longitude,
+          latitude: listing.latitude,
           desc: listing.desc,
           openHours: listing.openHours,
           spec: listing.spec,
@@ -687,11 +676,7 @@ export function BusinessEdit() {
   };
 
   return (
-    <>
-      <HeaderBar
-        title={t("title")}
-        description={t("description")}
-      />
+
       <div className="pt-24 pb-8">
         <div className="mx-auto w-full max-w-3xl">
           {loading && <Skeleton className="h-[38rem] w-full" />}
@@ -732,6 +717,5 @@ export function BusinessEdit() {
           )}
         </div>
       </div>
-    </>
   )
 }

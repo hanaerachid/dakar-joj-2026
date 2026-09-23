@@ -16,7 +16,7 @@ export function sanitizeBusinessValues(values: BusinessCreateValues) {
     ...values,
     email: capabilities.has("email") ? values.email ?? "" : "",
     website: capabilities.has("website") ? values.website ?? "" : "",
-    social: capabilities.has("socialMedia") ? values.social ?? "" : "",
+    social: capabilities.has("SNS") ? values.social ?? "" : "",
     wa: capabilities.has("whatsapp") ? values.wa ?? "" : "",
     photos: Number.isFinite(plan.photos)
       ? (values.photos ?? []).slice(0, plan.photos)

@@ -1,9 +1,15 @@
+import { useRef } from "react";
 
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 import type { BusinessCreateValues } from "../business-create.schema";
 import { BUSINESS_CATEGORIES } from "../business-create.config";
+import LocationPickerModal from "../../../core/map/LocationPickerModal";
+import LocationPickerButton from "../../../core/map/LocationPickerButton";
+import { useModalContext } from "@/components/modal-provider";
+import { Button } from "@/components/ui/button";
+import type { LocationPickerHandle } from "../../../core/map/LocationPickerModal";
 
 import {
   TextField,
@@ -13,19 +19,96 @@ import {
 } from "@/components/common/Field";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function BusinessDetailsStep(
   { title }: { title?: string },
 ) {
-  const { watch, /*control*/ } =
-    useFormContext<BusinessCreateValues>();
+  const {
+    watch,
+    setValue,
+  } = useFormContext<BusinessCreateValues>();
   const { t } = useTranslation();
 
   const category = watch("cat");
   // const spec = watch("spec") ?? {};
+  const latitude = watch("latitude");
+  const longitude = watch("longitude");
 
   const config = BUSINESS_CATEGORIES[category];
+  const {
+    setIsOpen,
+    setModalContent,
+  } = useModalContext();
+  const pickerRef = useRef<LocationPickerHandle>(null);
 
+  const openModal = () => {
+    setModalContent({
+      title: "Select location",
+      size: "lg",
+
+      children: (
+        <LocationPickerModal
+          ref={pickerRef}
+          isOpen={true}
+          initialLat={
+            typeof latitude === "number"
+              ? latitude
+              : undefined
+          }
+          initialLng={
+            typeof longitude === "number"
+              ? longitude
+              : undefined
+          }
+          onClose={() => setIsOpen(false)}
+          onSelect={(selectedLat, selectedLng, selectedAddress) => {
+            setValue("latitude", selectedLat, {
+              shouldDirty: true,
+              shouldValidate: true,
+            });
+
+            setValue("longitude", selectedLng, {
+              shouldDirty: true,
+              shouldValidate: true,
+            });
+
+            if (selectedAddress) {
+              setValue("address", selectedAddress, {
+                shouldDirty: true,
+                shouldValidate: true,
+              });
+            }
+
+            setIsOpen(false);
+          }}
+        />
+      ),
+
+      footer: (
+        <>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setIsOpen(false)}
+          >
+            Close
+          </Button>
+
+          <Button
+            type="button"
+            onClick={() => pickerRef.current?.useLocation()}
+          >
+            Use this location
+          </Button>
+        </>
+      ),
+
+      onClose: () => setIsOpen(false),
+    });
+
+    setIsOpen(true);
+  };
   return (
     <>
       {title &&
@@ -44,6 +127,7 @@ export function BusinessDetailsStep(
             )}
           </FieldLegend>
           <FieldGroup className="grid gap-4 sm:grid-cols-1">
+            <LocationPickerButton onClick={openModal} />
             <TextField
               name="address"
               label={t(
@@ -52,14 +136,36 @@ export function BusinessDetailsStep(
               )}
               placeholder="Street, avenue, landmark"
             />
-          </FieldGroup>
-          <FieldGroup>
-            <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+            <FieldGroup className="grid gap-4 sm:grid-cols-2">
+              <TextField
+                name="latitude"
+                label={t(
+                  "businessCreate.fields.latitude",
+                  "Latitude",
+                )}
+                placeholder="Latitude"
+                type="number"
+                suffix="°"
+              />
+              <TextField
+                name="longitude"
+                label={t(
+                  "businessCreate.fields.longitude",
+                  "Longitude",
+                )}
+                placeholder="Longitude"
+                type="number"
+                suffix="°"
+              />
+            </FieldGroup>
+            <Alert>
+              <AlertDescription>
               {t(
                 "businessCreate.details.mapHint",
                 "Your location will be precisely placed on the map during validation.",
               )}
-            </div>
+              </AlertDescription>
+            </Alert>
           </FieldGroup>
         </FieldSet>
 

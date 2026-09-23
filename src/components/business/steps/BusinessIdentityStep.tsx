@@ -1,8 +1,6 @@
 
 import { useTranslation } from "react-i18next";
 import { useFormContext } from "react-hook-form";
-import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TextField } from "@/components/common/Field";
 import { hasBusinessCapability } from "../business-plan";
@@ -37,6 +35,7 @@ export function BusinessIdentityStep(
             />
           </div>
 
+          {hasBusinessCapability(plan, "phone") && (
           <TextField
             type="tel"
             name="tel"
@@ -46,6 +45,7 @@ export function BusinessIdentityStep(
             )}
             placeholder="+221..."
           />
+          )}
 
           {hasBusinessCapability(plan, "whatsapp") && (
           <TextField
@@ -58,6 +58,7 @@ export function BusinessIdentityStep(
           />
           )}
 
+          {hasBusinessCapability(plan, "email") && (
           <TextField
             type="email"
             name="email"
@@ -67,6 +68,7 @@ export function BusinessIdentityStep(
             )}
             placeholder="contact@example.com"
           />
+          )}
 
           {hasBusinessCapability(plan, "website") && (
           <TextField
@@ -80,7 +82,7 @@ export function BusinessIdentityStep(
           />
           )}
 
-          {hasBusinessCapability(plan, "socialMedia") && (
+          {hasBusinessCapability(plan, "SNS") && (
           <div className="sm:col-span-2">
             <TextField
               name="social"
@@ -93,15 +95,6 @@ export function BusinessIdentityStep(
           </div>
           )}
         </div>
-        <Alert variant="default">
-          <AlertCircle />
-          <AlertDescription>
-            {t(
-              "businessCreate.identity.contactHint",
-              "Provide at least a phone number or an email address so visitors can contact you.",
-            )}
-          </AlertDescription>
-        </Alert>
       </CardContent>
     </>
   );

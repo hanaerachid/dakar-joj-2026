@@ -1,4 +1,3 @@
-
 import { z } from "zod";
 import { BUSINESS_PLANS } from "./business-create.config";
 
@@ -32,6 +31,8 @@ export const businessCreateSchema = z.object({
   social: optionalText,
 
   address: optionalText,
+  longitude: z.number().nullable().optional(),
+  latitude: z.number().nullable().optional(),
   desc: optionalText,
   openHours: optionalText,
 
@@ -49,24 +50,6 @@ export const businessCreateSchema = z.object({
 
   priceTag: optionalText,
 }).superRefine((data, ctx) => {
-  if (!data.tel.trim() && !data.email.trim()) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["tel"],
-      message: "Provide a phone number or email",
-    });
-  }
-
-  if (
-    data.email.trim() &&
-    !z.string().email().safeParse(data.email).success
-  ) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["email"],
-      message: "Invalid email address",
-    });
-  }
 
   const plan = BUSINESS_PLANS[data.pack];
 
@@ -100,6 +83,8 @@ export const defaultBusinessValues: BusinessCreateValues = {
   website: "",
   social: "",
   address: "",
+  longitude: null,
+  latitude: null,
   desc: "",
   openHours: "",
   spec: {},
