@@ -16,7 +16,7 @@ import mapboxgl from "mapbox-gl";
 import { CATEGORIES, MAIN_CATEGORIES } from "./place-list-utils";
 import { useTranslation } from "react-i18next";
 import { withTranslatedCategoryLabels } from "./categoryTranslations";
-import { ChevronDown, ChevronRight, Layers2 } from "lucide-react";
+import { Layers2 } from "lucide-react";
 import { usePanelContext } from "@/components/panel-provider";
 import { useModalContext } from "@/components/modal-provider";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -40,19 +40,6 @@ export interface CategoryConfig {
 }
 
 type LoadedVenue = VenueFeature & { zoneColor: string };
-
-const collapseVariants = {
-  closed: {
-    height: 0,
-    opacity: 0,
-    transition: { type: "tween" as const, duration: 0.2 },
-  },
-  open: {
-    height: "auto",
-    opacity: 1,
-    transition: { type: "tween" as const, duration: 0.25 },
-  },
-};
 
 // --- helpers to read category from feature props safely
 function getFeatureCategoryId(props: GeoJsonProperties | undefined): string {
@@ -128,10 +115,17 @@ export const PlacesList = () => {
 export const PlacesListContent = ({ setPanelOpen }: any) => {
   const { t, i18n } = useTranslation();
   const mapManager = MapManager.getInstance();
-  const [openMainCategoryId, setOpenMainCategoryId] = useState<string | null>(
-    MAIN_CATEGORIES[MAIN_CATEGORIES.length - 1].id,
-  );
-  const [openCatId, setOpenCatId] = useState<string | null>(CATEGORIES[0].id);
+  const {
+    openMainCategoryIds,
+    setOpenMainCategoryIds,
+    openCatIds,
+    setOpenCatIds,
+    activeMainCategoryId,
+    setActiveMainCategoryId,
+    activeCatId,
+    setActiveCatId,
+  } = useStateContext();
+
   const translatedCategories = useMemo(
     () => withTranslatedCategoryLabels(CATEGORIES, t),
     [t, i18n.language],
@@ -145,16 +139,16 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
 
   const activeCategory = useMemo(
     () =>
-      translatedCategories.find((c) => c.id === openCatId) ??
+      translatedCategories.find((c) => c.id === activeCatId) ??
       translatedCategories[0] ??
       CATEGORIES[0],
-    [openCatId, translatedCategories],
+    [activeCatId, translatedCategories],
   );
   const activeMainCategory = useMemo(
     () =>
-      translatedMainCategories.find((main) => main.id === openMainCategoryId) ??
+      translatedMainCategories.find((main) => main.id === activeMainCategoryId) ??
       translatedMainCategories[0],
-    [openMainCategoryId],
+    [activeMainCategoryId, translatedMainCategories],
   );
 
   const [venues, setVenues] = useState<LoadedVenue[]>([]);
@@ -183,7 +177,7 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
         MAIN_CATEGORIES.map((main) => [
           main.id,
           main.categories.length > 0 &&
-          main.categories.every((categoryId) => checkedCats[categoryId]),
+          main.categories.some((categoryId) => checkedCats[categoryId]),
         ]),
       ),
     [checkedCats],
@@ -267,7 +261,7 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
     // when category changes, stop current bounce
     const map = mapManager.getMap();
     if (map) stopBounceSelected(map);
-  }, [openCatId]);
+  }, [activeCatId]);
 
   // === layer helpers (prefixes must match your style layer ids) ===
   function layerPrefixFor(catId: string): string {
@@ -427,6 +421,11 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
     }));
   }
 
+  function handleCategoryOpen(mainCategoryId: string, categoryId: string) {
+    setActiveMainCategoryId(mainCategoryId);
+    setActiveCatId(categoryId);
+  }
+
   function handleMainCategoryCheck(checked: boolean, mainCategoryId: string) {
     const mainCategory = MAIN_CATEGORIES.find((main) => main.id === mainCategoryId);
     if (!mainCategory) return;
@@ -487,34 +486,21 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
     }
   }
 
-  const Chevron = ({ open }: { open: boolean }) => (
-    <>
-      {
-        open ? (
-          <ChevronDown className="h-4 w-4" />
-        ) : (
-          <ChevronRight className="h-4 w-4" />
-        )
-      }
-    </>
-  );
-
   return (
     <PlacesCategoryList
       CATEGORIES={translatedCategories}
       MAIN_CATEGORIES={translatedMainCategories}
-      openMainCategoryId={openMainCategoryId}
-      setOpenMainCategoryId={setOpenMainCategoryId}
+      openMainCategoryIds={openMainCategoryIds}
+      setOpenMainCategoryIds={setOpenMainCategoryIds}
       mainCategoryChecked={mainCategoryChecked}
       handleMainCategoryCheck={handleMainCategoryCheck}
-      openCatId={openCatId}
+      openCatIds={openCatIds}
       activeCategory={activeCategory}
-      setOpenCatId={setOpenCatId}
+      setOpenCatIds={setOpenCatIds}
       checkedCats={checkedCats}
+      handleCategoryOpen={handleCategoryOpen}
       handleCategoryCheck={handleCategoryCheck}
       venues={venues}
-      Chevron={Chevron}
-      collapseVariants={collapseVariants}
       loading={loading}
       loadError={loadError}
       grouped={grouped}

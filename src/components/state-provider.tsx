@@ -23,6 +23,15 @@ type ProviderState = {
 
   torchVisible: boolean
   setTorchVisible: (visible: boolean) => void
+
+  openMainCategoryIds: string[]
+  setOpenMainCategoryIds: React.Dispatch<React.SetStateAction<string[]>>
+  openCatIds: Record<string, string[]>
+  setOpenCatIds: React.Dispatch<React.SetStateAction<Record<string, string[]>>>
+  activeMainCategoryId: string
+  setActiveMainCategoryId: (id: string) => void
+  activeCatId: string
+  setActiveCatId: (id: string) => void
 }
 
 const initialState: ProviderState = {
@@ -35,6 +44,15 @@ const initialState: ProviderState = {
 
   torchVisible: false,
   setTorchVisible: () => null,
+
+  openMainCategoryIds: ["sports"],
+  setOpenMainCategoryIds: () => null,
+  openCatIds: { sports: ["competition"] },
+  setOpenCatIds: () => null,
+  activeMainCategoryId: "sports",
+  setActiveMainCategoryId: () => null,
+  activeCatId: "competition",
+  setActiveCatId: () => null,
 };
 
 export const StateContext = createContext<ProviderState>(initialState);
@@ -49,6 +67,12 @@ export function StateProvider({
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [torchVisible, setTorchVisible] = useState(false);
+  const [openMainCategoryIds, setOpenMainCategoryIds] = useState(["sports"]);
+  const [openCatIds, setOpenCatIds] = useState<Record<string, string[]>>({
+    sports: ["competition"],
+  });
+  const [activeMainCategoryId, setActiveMainCategoryId] = useState("sports");
+  const [activeCatId, setActiveCatId] = useState("competition");
   const [role, setRole] = useState<string | undefined>(undefined);
 
 
@@ -70,6 +94,15 @@ export function StateProvider({
 
     torchVisible,
     setTorchVisible,
+
+    openMainCategoryIds,
+    setOpenMainCategoryIds,
+    openCatIds,
+    setOpenCatIds,
+    activeMainCategoryId,
+    setActiveMainCategoryId,
+    activeCatId,
+    setActiveCatId,
   };
 
   return (
