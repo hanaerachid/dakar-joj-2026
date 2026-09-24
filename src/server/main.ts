@@ -403,6 +403,92 @@ app.openAPIRegistry.registerPath({
   },
 });
 
+// Create Event
+app.openAPIRegistry.registerPath({
+  method: "post",
+  path: "/api/v2/events",
+  summary: "Create event",
+  security: [{ apiKeyAuth: [] }],
+  request: {
+    body: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: eventSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      description: "Created event",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(eventSchema),
+        },
+      },
+    },
+  },
+});
+
+// Update Event
+app.openAPIRegistry.registerPath({
+  method: "patch",
+  path: "/api/v2/events/{id}",
+  summary: "Update event",
+  security: [{ apiKeyAuth: [] }],
+  request: {
+    params: z.object({
+      id: z.string().openapi({
+        description: "Event ID",
+        example: "xxxxxxxxxxxxxxxxxxxx",
+      }),
+    }),
+    body: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: eventSchema.partial(),
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Updated event",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(eventSchema),
+        },
+      },
+    },
+  },
+});
+
+// Delete Event
+app.openAPIRegistry.registerPath({
+  method: "delete",
+  path: "/api/v2/events/{id}",
+  summary: "Delete event",
+  security: [{ apiKeyAuth: [] }],
+  request: {
+    params: z.object({
+      id: z.string(),
+    }),
+  },
+  responses: {
+    200: {
+      description: "Deletion confirmation",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(z.object({ deleted: z.literal(true) })),
+        },
+      },
+    },
+  },
+});
+
+
 app.openAPIRegistry.registerPath({
   method: "get",
   path: "/api/v2/torch",
