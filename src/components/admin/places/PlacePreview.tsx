@@ -101,11 +101,7 @@ export default function PlacePreview({
       size="sm"
       className={cn(
         "w-full relative pt-0 overflow-hidden",
-        "border-2 border-transparent"
       )}
-      style={{
-        background: `linear-gradient(var(--card), var(--card)) padding-box, linear-gradient(135deg, ${g0}, ${g1}) border-box`
-      }}
     >
       <Button
         variant="ghost"
@@ -148,7 +144,12 @@ export default function PlacePreview({
             <MapPin /> {locationLabel}
           </Badge>
         )}
-        <Separator />
+        <Separator
+          className={cn("border-2 border-transparent")}
+          style={{
+            background: `linear-gradient(var(--card), var(--card)) padding-box, linear-gradient(135deg, ${g0}, ${g1}) border-box`,
+          }}
+        />
       </CardHeader>
       {/* Body */}
       <CardContent>

@@ -1,19 +1,26 @@
 // src/admin/places/PlacesListPage.tsx
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { deletePlace, listPlaces, listZones } from "../../lib/api/places";
 import { CATEGORIES } from "../../components/place-list/place-list-utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Section } from "@/components/common/Section";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Empty,
   EmptyContent,
   EmptyDescription,
   EmptyHeader,
-} from "@/components/ui/empty"
+} from "@/components/ui/empty";
 import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
 import {
   Select,
@@ -23,7 +30,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FileUp, Plus } from "lucide-react";
+import { FileUp, MoreVertical, Pencil, Plus } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useTranslation } from "react-i18next";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/utils/utils";
 
 /* ---------------- Types ---------------- */
 export type Zone = {
@@ -66,6 +82,7 @@ async function fetchZones(categoryId: string) {
 /* --------------- Page --------------- */
 export function PlacesListPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [categoryId, setCategoryId] = useState<string>("competition");
   const [zones, setZones] = useState<Zone[]>([]);
   const [zoneId, setZoneId] = useState(""); // "" => root-only; ALL_ZONES => all zoned + root
@@ -150,7 +167,7 @@ export function PlacesListPage() {
       (p) =>
         (p.name || "").toLowerCase().includes(q) ||
         (p.address || "").toLowerCase().includes(q) ||
-        (p.tags || []).some((t) => t.toLowerCase().includes(q)),
+        (p.tags || []).some((t) => t.toLowerCase().includes(q))
     );
   }, [places, search]);
 
@@ -201,7 +218,6 @@ export function PlacesListPage() {
       {/* Filters */}
       <Section title="Filters">
         <div className="grid gap-4 md:grid-cols-6">
-
           <Field className="md:col-span-3">
             <FieldLabel htmlFor="search">Search</FieldLabel>
             <Input
@@ -222,21 +238,18 @@ export function PlacesListPage() {
                 }
               }}
             >
-              <SelectTrigger
-                id="category"
-                className="w-full"
-              >
+              <SelectTrigger id="category" className="w-full">
                 <SelectValue>
                   {CATEGORIES.find((c) => c.id === categoryId)?.label}
                 </SelectValue>
               </SelectTrigger>
 
               <SelectContent>
-              {CATEGORIES.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.label}
-                </SelectItem>
-              ))}
+                {CATEGORIES.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </Field>
@@ -252,10 +265,7 @@ export function PlacesListPage() {
               }}
               disabled={zonesLoading || zones.length === 0}
             >
-              <SelectTrigger
-                id="zone"
-                className="w-full"
-              >
+              <SelectTrigger id="zone" className="w-full">
                 <SelectValue>
                   {zoneId === ALL_ZONES
                     ? "(All zones)"
@@ -265,9 +275,7 @@ export function PlacesListPage() {
 
               <SelectContent>
                 {zones.length > 0 && (
-                  <SelectItem value={ALL_ZONES}>
-                    (All zones)
-                  </SelectItem>
+                  <SelectItem value={ALL_ZONES}>(All zones)</SelectItem>
                 )}
 
                 {zones.map((z) => (
@@ -278,13 +286,11 @@ export function PlacesListPage() {
               </SelectContent>
             </Select>
             <FieldDescription>
-              {
-                zonesLoading
-                  ? "Loading zones…"
-                  : zones.length === 0
-                    ? "No zones for this category — showing root collection."
-                    : undefined
-              }
+              {zonesLoading
+                ? "Loading zones…"
+                : zones.length === 0
+                  ? "No zones for this category — showing root collection."
+                  : undefined}
             </FieldDescription>
           </Field>
 
@@ -298,22 +304,15 @@ export function PlacesListPage() {
                 }
               }}
             >
-              <SelectTrigger
-                id="sort"
-                className="w-full"
-              >
+              <SelectTrigger id="sort" className="w-full">
                 <SelectValue>
                   {sort === "updated" ? "Last updated" : "Name (A→Z)"}
                 </SelectValue>
               </SelectTrigger>
 
               <SelectContent>
-                <SelectItem value="updated">
-                  Last updated
-                </SelectItem>
-                <SelectItem value="name">
-                  Name (A→Z)
-                </SelectItem>
+                <SelectItem value="updated">Last updated</SelectItem>
+                <SelectItem value="name">Name (A→Z)</SelectItem>
               </SelectContent>
             </Select>
           </Field>
@@ -321,16 +320,12 @@ export function PlacesListPage() {
       </Section>
 
       {/* Cards */}
-      <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {loading && (
-          <div className="col-span-full grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="col-span-full grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             {[...Array(6)].map((_, i) => (
-              <Skeleton
-                key={i}
-                className="overflow-hidden rounded-3xl"
-              >
-                <Skeleton className="h-2 w-full bg-foreground/30" />
-                <Skeleton className="h-44 w-full bg-foreground/20" />
+              <Skeleton key={i} className="overflow-hidden rounded-3xl">
+                <Skeleton className="w-full aspect-video bg-foreground/20" />
                 <Skeleton className="p-4 space-y-3">
                   <Skeleton className="h-4 w-1/2 rounded bg-foreground/20" />
                   <Skeleton className="h-3 w-2/3 rounded bg-foreground/20" />
@@ -370,76 +365,114 @@ export function PlacesListPage() {
               <Card
                 key={p.id}
                 size="sm"
-                className="relative mx-auto w-full max-w-sm pt-0"
-                style={{
-                  background: `linear-gradient(90deg, ${p.gradientFrom || "#e5e7eb"
-                    }, ${p.gradientTo || "#d1d5db"})`,
-                }}
-              >
-
-                {/* image */}
-                <div className="absolute inset-0 z-30 aspect-video bg-black/35" />
-                {p.imageUrl ? (
-                  <img
-                    src={p.imageUrl}
-                    alt={p.name}
-                    className="relative z-20 aspect-video w-full object-cover"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="flex items-center z-20 aspect-video w-full justify-center bg-background/50 text-foreground/30">
-                    No image
-                  </div>
+                className={cn(
+                  "relative mx-auto w-full max-w-sm pt-0 overflow-hidden"
                 )}
+              >
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    className="absolute end-4 top-4 z-20"
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label={t("more_actions", "More actions")}
+                        className="w-8 h-8 flex items-center justify-center"
+                      >
+                        <MoreVertical />
+                        <span className="sr-only">Open actions</span>
+                      </Button>
+                    }
+                  />
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onClick={() => handleDeleteForPlace(p)}
+                    >
+                      {t("delete", "Delete")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <CardHeader className="p-0 gap-0">
+                  {/* image */}
+                  {p.imageUrl ? (
+                    <>
+                      <div className="absolute bg-gradient-to-b from-background/80 to-transparent w-full aspect-video object-cover" />
+                      <img
+                        src={p.imageUrl}
+                        alt={p.name}
+                        className="w-full aspect-video object-cover"
+                        loading="lazy"
+                      />
+                    </>
+                  ) : (
+                    <div className="flex items-center z-10 aspect-video w-full justify-center bg-background/50 text-foreground/30">
+                      {t("no_image", "No image")}
+                    </div>
+                  )}
+                  <Separator
+                    className={cn("border-2 border-transparent")}
+                    style={{
+                      background: `linear-gradient(var(--card), var(--card)) padding-box, linear-gradient(135deg, ${p.gradientFrom}, ${p.gradientTo}) border-box`,
+                    }}
+                  />
+                </CardHeader>
 
                 {/* body */}
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="inline-block h-2.5 w-2.5 rounded-full border border-border"
-                      style={{ background: p.pointColor || "#9ca3af" }}
-                    />
-                    <CardTitle className="font-semibold leading-tight text-foreground/90">
+                <CardHeader className="inline-block">
+                  <CardTitle className="inline-block relative">
+                    <span className=" font-semibold leading-tight text-foreground/90">
                       {p.name}
-                    </CardTitle>
-                  </div>
+                    </span>
+                    <svg
+                      className="absolute -bottom-0.5 w-full max-h-1.5"
+                      viewBox="0 0 55 5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      preserveAspectRatio="none"
+                    >
+                      <path
+                        style={{ fill: p.pointColor || "#9ca3af" }}
+
+                        d="M0.652466 4.00002C15.8925 2.66668 48.0351 0.400018 54.6853 2.00002"
+                        stroke-width="2"
+                      />
+                    </svg>
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {p.location && (
-                    <p className="text-xs text-foreground/50">
-                      {p.location.latitude?.toFixed?.(5)} •{" "}
-                      {p.location.longitude?.toFixed?.(5)}
-                    </p>
+                  {p.address && (
+                    <CardDescription className="text-sm">
+                      {p.address}
+                    </CardDescription>
                   )}
 
                   {p.tags && p.tags.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {p.tags.map((t, i) => (
-                        <Badge key={i}>{t}</Badge>
+                        <Badge variant="secondary" key={i}>
+                          {t}
+                        </Badge>
                       ))}
                     </div>
                   )}
                 </CardContent>
-                <CardFooter className="flex items-center justify-between">
+                <CardFooter className="flex-1 flex items-end justify-between">
                   <div className="text-xs text-foreground/50">
                     {p.updatedAt?.toDate
                       ? new Date(p.updatedAt.toDate()).toLocaleString()
                       : ""}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Link
-                      to={`/admin/places/${linkZone ?? "root"}/${p.id}`}
-                      className="text-sm font-medium text-foreground/90 underline-offset-2 hover:underline"
-                    >
-                      View / Edit
-                    </Link>
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleDeleteForPlace(p)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    onClick={() =>
+                      navigate(`/admin/places/${linkZone ?? "root"}/${p.id}`)
+                    }
+                  >
+                    <Pencil />
+                    <span>{t("edit", "Edit")}</span>
+                  </Button>
                 </CardFooter>
               </Card>
             );
