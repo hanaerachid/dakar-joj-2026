@@ -1,0 +1,66 @@
+import { Hono } from "hono";
+import { ok, fail } from "../../http/response.js";
+import {
+  listEvents,
+  getEventById,
+  createEvent,
+  updateEvent,
+  deleteEvent
+} from "./events.service.js";
+import { requireAdmin } from "../../middleware/auth.js";
+import { eventSchema } from "../../../shared/contracts.js";
+
+export const eventRoutes = new Hono();
+
+eventRoutes.get("/", async (c) => {
+  const requestedStatus = c.req.query("status");
+  const status = requestedStatus === "all" ? undefined : requestedStatus ?? "published";
+  const limit = c.req.query("limit") ? Number(c.req.query("limit")) : undefined;
+
+  const events = await listEvents({
+    status,
+    limit: Number.isFinite(limit) ? Math.max(1, Math.min(limit as number, 250)) : 100,
+  });
+
+  return ok(c, events);
+});
+
+eventRoutes.get("/:id", async (c) => {
+  const id = c.req.param("id");
+  const event = await getEventById(id);
+
+  if (!event) {
+    return fail(c, 404, "NOT_FOUND", "Event not found");
+  }
+
+  return ok(c, event);
+});
+
+eventRoutes.post("/", async (c) => {
+  const denied = requireAdmin(c);
+  if (denied) return denied;
+
+  const body = eventSchema.parse(await c.req.json());
+
+
+  const event = await createEvent(body);
+
+  return ok(c, event, 201);
+});
+
+eventRoutes.patch("/:id", async (c) => {
+  const denied = requireAdmin(c);
+  if (denied) return denied;
+
+  const body = eventSchema.partial().parse(await c.req.json());
+  const event = await updateEvent(c.req.param("id"), body);
+  return ok(c, event);
+});
+
+eventRoutes.delete("/:id", async (c) => {
+  const denied = requireAdmin(c);
+  if (denied) return denied;
+
+  await deleteEvent(c.req.param("id"));
+  return ok(c, { deleted: true });
+});

@@ -1,7 +1,7 @@
 import { ObjectId, type Filter, type WithId } from "mongodb";
 import { getMongoDatabase } from "../../mongodb/client.js";
 
-export type ContentCollectionName = "news" | "events";
+export type ContentCollectionName = "news";
 
 type ContentDocument = Record<string, any>;
 

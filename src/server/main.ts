@@ -17,6 +17,7 @@ import { torchRoutes } from "./features/torch/torch.routes.js";
 import { listingRoutes } from "./features/business_listings/listings.routes.js";
 import { uploadRoutes } from "./features/uploads/upload.routes.js";
 import { itineraryRoutes } from "./features/itinerary/itinerary.routes.js";
+import { eventRoutes } from "./features/events/events.routes.js";
 import { attachSessionUser } from "./middleware/auth.js";
 import { fail } from "./http/response.js";
 import { HttpError } from "./http/errors.js";
@@ -64,6 +65,7 @@ v2Routes.use("*", attachSessionUser);
 v2Routes.route("/zones", zonesRoutes);
 v2Routes.route("/places", placesRoutes);
 v2Routes.route("/torch", torchRoutes);
+v2Routes.route("/events", eventRoutes);
 v2Routes.route("/business/listings", listingRoutes);
 v2Routes.route("/", contentRoutes);
 

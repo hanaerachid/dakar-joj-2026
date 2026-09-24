@@ -13,18 +13,18 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Icon } from "@iconify/react";
 
-type ApiNewsItem = {
-  id: string;
+type ApiEventsItem = {
+  _id: string;
   name: string;
   updatedAt: string;
-  time: string;
-  venueName: string;
+  datetime: string;
+  venue: string;
   sport: string;
 };
 
-type NewsResponse = {
+type EventsResponse = {
   success: boolean;
-  data: ApiNewsItem[];
+  data: ApiEventsItem[];
 };
 
 import { ALL_SPORT_OPTIONS } from "../data/sports";
@@ -40,12 +40,12 @@ export function getSportIcon({ sportId }: { sportId: any }) {
 
 export const EventsContent = () => {
   const { t } = useTranslation();
-  const [events, setEvents] = useState<ApiNewsItem[]>([]);
+  const [events, setEvents] = useState<ApiEventsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchNews = async () => {
+    const fetchEvents = async () => {
       try {
         setLoading(true);
         setError(null);
@@ -58,7 +58,7 @@ export const EventsContent = () => {
           throw new Error(`Failed to fetch events: ${response.status}`);
         }
 
-        const result: NewsResponse = await response.json();
+        const result: EventsResponse = await response.json();
 
         if (!result.success) {
           throw new Error("Failed to fetch events");
@@ -72,7 +72,7 @@ export const EventsContent = () => {
         setLoading(false);
       }
     };
-    fetchNews();
+    fetchEvents();
   }, []);
 
   if (loading) {
@@ -131,7 +131,7 @@ export const EventsContent = () => {
                     {item.name}
                   </ItemTitle>
                   <ItemDescription>
-                    {item.time} • {item.venueName}
+                    {new Date(item.datetime).toLocaleString()} • {item.venue}
                   </ItemDescription>
                 </ItemContent>
               </Item>

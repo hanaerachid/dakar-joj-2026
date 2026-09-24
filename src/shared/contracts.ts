@@ -158,27 +158,25 @@ export const newsSchema = z
   })
   .passthrough();
 
-export const eventSchema = z
-  .object({
-    id: z.string().optional(),
-    legacyFirestoreId: z.string().nullable().optional(),
-    name: z.string().nullable().optional(),
-    nameFr: z.string().nullable().optional(),
-    day: z.string().nullable().optional(),
-    time: z.string().nullable().optional(),
-    sport: z.string().nullable().optional(),
-    status: z.string().nullable().optional(),
-    venueName: z.string().nullable().optional(),
-    venueLocation: z.any().nullable().optional(),
-    createdAt: z.string().datetime().nullable().optional(),
-    updatedAt: z.string().datetime().nullable().optional(),
-  })
-  .passthrough();
-
 export const geoJsonPointSchema = z.object({
-  type: z.literal("Point"),
+  type: z.literal("Point").optional(),
   coordinates: z.tuple([z.number(), z.number()]), // [longitude, latitude]
 });
+
+export const eventSchema = z
+  .object({
+    _id: z.string().optional(),
+    // legacyFirestoreId: z.string().nullable().optional(),
+    name: z.string().nullable().optional(),
+    nameFr: z.string().nullable().optional(),
+    datetime: z.string().datetime().nullable().optional(),
+    sport: z.string().nullable().optional(),
+    status: z.string().nullable().optional(),
+    venue: z.string().nullable().optional(),
+    location: geoJsonPointSchema.optional(),
+    createdAt: z.string().datetime().nullable().optional(),
+    updatedAt: z.string().datetime().nullable().optional(),
+  });
 
 export const torchStopMetadataSchema = z.object({
   phase: z.string().optional(),
