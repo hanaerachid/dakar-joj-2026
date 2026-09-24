@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertCircle } from "lucide-react"
+import { AlertCircle } from "lucide-react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import {
   Item,
@@ -8,7 +8,7 @@ import {
   ItemDescription,
   ItemGroup,
   ItemMedia,
-  ItemTitle
+  ItemTitle,
 } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Icon } from "@iconify/react";
@@ -33,13 +33,12 @@ export const SPORT_OPTIONS_BY_KEY = Object.fromEntries(
 );
 
 export function getSportIcon({ sportId }: { sportId: any }) {
-  return ALL_SPORT_OPTIONS.find(
-    (sport) => sport.key === sportId
-  )?.icon;
+  return ALL_SPORT_OPTIONS.find((sport) => sport.key === sportId)?.icon;
 }
 
 export const EventsContent = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage || i18n.language || "en";
   const [events, setEvents] = useState<ApiEventsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -80,10 +79,7 @@ export const EventsContent = () => {
       <div className="flex flex-col gap-4 py-4">
         <div className="flex flex-col gap-4">
           {[...Array(4)].map((_, i) => (
-            <Skeleton
-              key={i}
-              className="overflow-hidden h-16 rounded-3xl"
-            />
+            <Skeleton key={i} className="overflow-hidden h-16 rounded-3xl" />
           ))}
         </div>
       </div>
@@ -94,9 +90,7 @@ export const EventsContent = () => {
     return (
       <Alert variant="destructive">
         <AlertCircle />
-        <AlertTitle>
-          {error}
-        </AlertTitle>
+        <AlertTitle>{error}</AlertTitle>
       </Alert>
     );
   }
@@ -112,34 +106,37 @@ export const EventsContent = () => {
         </h2>
       </div>
       <div className="flex flex-col gap-4">
-        <ItemGroup className="gap-2" >
+        <ItemGroup className="gap-2">
           {events.map((item, index) => {
             const sport = SPORT_OPTIONS_BY_KEY[item.sport];
             return (
               <Item key={index} size="sm" variant="muted">
                 {sport?.icon && (
                   <ItemMedia variant="icon" className="w-10 h-10">
-                    <Icon icon={getSportIcon({ sportId: item.sport }) || "mdi:help"} className="w-10 h-10" />
+                    <Icon
+                      icon={getSportIcon({ sportId: item.sport }) || "mdi:help"}
+                      className="w-10 h-10"
+                    />
                   </ItemMedia>
                 )}
-
                 <ItemContent>
+                  <ItemTitle>{item.name}</ItemTitle>
                   <ItemDescription>
-                    {new Date(item.updatedAt).toLocaleDateString()}
-                  </ItemDescription>
-                  <ItemTitle>
-                    {item.name}
-                  </ItemTitle>
-                  <ItemDescription>
-                    {new Date(item.datetime).toLocaleString()} • {item.venue}
+                    {new Date(item.datetime).toLocaleDateString(lang, {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}{" "}
+                    • {item.venue}
                   </ItemDescription>
                 </ItemContent>
               </Item>
             );
-          }
-          )}
+          })}
         </ItemGroup>
       </div>
     </div>
   );
-}
+};
