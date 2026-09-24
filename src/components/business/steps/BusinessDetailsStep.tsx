@@ -19,7 +19,6 @@ import {
 } from "@/components/common/Field";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function BusinessDetailsStep(
   { title }: { title?: string },
@@ -120,15 +119,17 @@ export function BusinessDetailsStep(
             )}
           </FieldLegend>
           <FieldGroup className="grid gap-4 sm:grid-cols-1">
-            <LocationPickerButton onClick={openModal} />
-            <TextField
-              name="address"
-              label={t(
-                "businessCreate.fields.address",
-                "Street address",
-              )}
-              placeholder="Street, avenue, landmark"
-            />
+            <div className="flex items-end justify-between gap-2">
+              <TextField
+                name="address"
+                label={t(
+                  "businessCreate.fields.address",
+                  "Street address",
+                )}
+                placeholder="Street, avenue, landmark"
+              />
+              <LocationPickerButton onClick={openModal} />
+            </div>
             <FieldGroup className="grid gap-4 sm:grid-cols-2">
               <TextField
                 name="location.coordinates.0"
@@ -151,14 +152,6 @@ export function BusinessDetailsStep(
                 suffix="°"
               />
             </FieldGroup>
-            <Alert>
-              <AlertDescription>
-              {t(
-                "businessCreate.details.mapHint",
-                "Your location will be precisely placed on the map during validation.",
-              )}
-              </AlertDescription>
-            </Alert>
           </FieldGroup>
         </FieldSet>
 

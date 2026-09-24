@@ -12,7 +12,7 @@ import type { BusinessCreateValues } from "../business-create.schema";
 export function BusinessIdentityStep(
   { title }: { title?: string },
 ) {
-  const navigate= useNavigate ();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { watch } = useFormContext<BusinessCreateValues>();
   const plan = watch("pack");
@@ -39,28 +39,57 @@ export function BusinessIdentityStep(
             />
           </div>
 
-          {hasBusinessCapability(plan, "phone") && (
-          <TextField
-            type="tel"
-            name="tel"
-            label={t(
-              "businessCreate.fields.tel",
-              "Phone",
+          <div className="relative">
+            <TextField
+              type="tel"
+              name="tel"
+              label={t(
+                "businessCreate.fields.tel",
+                "Phone",
+              )}
+              disabled={!hasBusinessCapability(plan, "phone")}
+              className={cn(!hasBusinessCapability(plan, "phone") && "opacity-50")}
+              placeholder="+221..."
+            />
+            {!hasBusinessCapability(plan, "phone") && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center rounded-md bg-background/60">
+                <Button
+                  type="button"
+                  variant="link"
+                  className="text-xs text-muted-foreground hover:text-foreground"
+                  onClick={() => navigate("/pricing")}
+                >
+                  Upgrade your plan to add a phone number
+                </Button>
+              </div>
             )}
-            placeholder="+221..."
-          />
-          )}
+          </div>
 
-          {hasBusinessCapability(plan, "whatsapp") && (
-          <TextField
-            name="wa"
-            label={t(
-              "businessCreate.fields.wa",
-              "WhatsApp",
+          <div className="relative">
+            <TextField
+              type="tel"
+              name="wa"
+              disabled={!hasBusinessCapability(plan, "whatsapp")}
+              className={cn(!hasBusinessCapability(plan, "whatsapp") && "opacity-50")}
+              label={t(
+                "businessCreate.fields.wa",
+                "WhatsApp",
+              )}
+              placeholder="221..."
+            />
+            {!hasBusinessCapability(plan, "whatsapp") && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center rounded-md bg-background/60">
+                <Button
+                  type="button"
+                  variant="link"
+                  className="text-xs text-muted-foreground hover:text-foreground"
+                  onClick={() => navigate("/pricing")}
+                >
+                  Upgrade your plan to add WhatsApp
+                </Button>
+              </div>
             )}
-            placeholder="221..."
-          />
-          )}
+          </div>
 
           <div className="relative">
             <TextField
@@ -112,34 +141,34 @@ export function BusinessIdentityStep(
             )}
           </div>
 
-          {/* <div className="sm:col-span-2"> */}
-          <div className="relative">
-            <TextField
-              type="text"
-              name="social"
-              disabled={hasBusinessCapability(plan, "SNS")}
-              className={cn(hasBusinessCapability(plan, "SNS") && "opacity-50")}
-              label={t(
-                "businessCreate.fields.social",
-                "Instagram / social media",
+          <div className="sm:col-span-2">
+            <div className="relative">
+              <TextField
+                type="text"
+                name="social"
+                disabled={!hasBusinessCapability(plan, "SNS")}
+                className={cn(!hasBusinessCapability(plan, "SNS") && "opacity-50")}
+                label={t(
+                  "businessCreate.fields.social",
+                  "Instagram / social media",
+                )}
+                placeholder="@business"
+              />
+              {!hasBusinessCapability(plan, "SNS") && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center rounded-md bg-background/60">
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="text-xs text-muted-foreground hover:text-foreground"
+                    onClick={() => navigate("/pricing")}
+                  >
+                    Upgrade your plan to add social media
+                  </Button>
+                </div>
               )}
-              placeholder="@business"
-            />
-            {hasBusinessCapability(plan, "SNS") && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center rounded-md bg-background/60">
-                <Button
-                  type="button"
-                  variant="link"
-                  className="text-xs text-muted-foreground hover:text-foreground"
-                  onClick={() => navigate("/pricing")}
-                >
-                  Upgrade your plan to add social media
-                </Button>
-              </div>
-            )}
+            </div>
           </div>
         </div>
-      {/* </div> */}
       </CardContent>
     </>
   );

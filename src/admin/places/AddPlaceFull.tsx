@@ -1,20 +1,20 @@
 // src/admin/places/AddPlaceFull.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner"
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
 import { listZones, createPlace } from "../../lib/api/places";
 import { SITES_META, type VenueSport } from "../../data/sitesMeta";
 import PlacePreview from "@/components/admin/places/PlacePreview";
 import BrandingFields from "@/components/admin/places/BrandingFields";
 import VisualsFields from "@/components/admin/places/VisualsFields";
 import { Section } from "@/components/common/Section";
-import { Button } from "@/components/ui/button";
 import BasicDetailsFields from "@/components/admin/places/BasicDetailsFields";
 import CategoryZoneFields from "@/components/admin/places/CategoryZoneFields";
 import { CATEGORIES } from "@/components/place-list/place-list-utils";
 import { ALL_SPORT_OPTIONS } from "../../data/sports";
-import { ButtonGroup } from "@/components/ui/button-group";
-import { ArrowLeft } from "lucide-react";
-
 /* ---------------------------------------------
    Types & constants
 --------------------------------------------- */
@@ -68,10 +68,6 @@ export default function AddPlaceFull() {
 
   // UX state
   const [saving, setSaving] = useState(false);
-  const [toast, setToast] = useState<{
-    kind: "success" | "error";
-    msg: string;
-  } | null>(null);
 
   // competition-only
   const [sports, setSports] = useState<VenueSport[]>([]);
@@ -179,7 +175,6 @@ export default function AddPlaceFull() {
   async function onSave() {
     if (!canSave) return;
     setSaving(true);
-    setToast(null);
     try {
       const docRef = await createPlace({
         name,
@@ -211,8 +206,11 @@ export default function AddPlaceFull() {
         zoneId: zoneId || null,
       });
 
-      setToast({ kind: "success", msg: "Place created 🎉" });
       console.info("Place created:", docRef.id);
+      toast.success(
+        "Place created successfully!",
+      )
+
       window.scrollTo({ top: 0, behavior: "smooth" });
 
       // reset form
@@ -239,13 +237,11 @@ export default function AddPlaceFull() {
       setSportsTouched(false);
     } catch (e) {
       console.error(e);
-      setToast({
-        kind: "error",
-        msg: "Failed to create place. Check your permissions/rules and try again.",
-      });
+      toast.error(
+        "Failed to create place. Check your permissions/rules and try again.",
+      );
     } finally {
       setSaving(false);
-      setTimeout(() => setToast(null), 4000);
     }
   }
 
@@ -281,18 +277,6 @@ export default function AddPlaceFull() {
           </div>
         </div>
       </div>
-
-      {/* Toast */}
-      {toast && (
-        <div
-          className={`mb-4 rounded-xl border px-4 py-3 text-sm shadow-sm ${toast.kind === "success"
-            ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-            : "border-rose-200 bg-rose-50 text-rose-900"
-            }`}
-        >
-          {toast.msg}
-        </div>
-      )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Form column - left */}

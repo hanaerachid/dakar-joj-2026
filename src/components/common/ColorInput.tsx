@@ -13,7 +13,7 @@ export function ColorInput({
 }) {
   return (
     <InputGroup className={cn(
-      "h-10 w-full border border-border bg-input shadow-sm outline-none ",
+      "h-10 w-full",
       "disabled:opacity-60 disabled:cursor-not-allowed",
     )}>
       <InputGroupAddon align="inline-start">
@@ -32,7 +32,6 @@ export function ColorInput({
       <InputGroupInput
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="text-sm transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
       />
     </InputGroup>
   );

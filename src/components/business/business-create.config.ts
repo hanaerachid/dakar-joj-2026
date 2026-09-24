@@ -34,8 +34,9 @@ export const BUSINESS_CATEGORIES: BusinessCategories = {
     label: "Hotel",
     fields: [
       { name: "chambres", type: "number", label: "Number of rooms" },
-      { name: "pricePerNight", type: "number", label: "Price per night", unit: "FCFA" },
-      { name: "capacity", type: "number", label: "Guest capacity" },
+      { name: "capacity", type: "number", label: "Guest capacity", unit: "person(s) per room" },
+      { name: "pricePerNight", type: "number", label: "Average price per night", unit: "FCFA" },
+      { name: "maxPricePerNight", type: "number", label: "Maximum price per night", unit: "FCFA" },
       {
         name: "equip",
         type: "multi",
@@ -58,8 +59,9 @@ export const BUSINESS_CATEGORIES: BusinessCategories = {
     label: "Furnished apartment",
     fields: [
       { name: "pieces", type: "number", label: "Number of rooms" },
-      { name: "pricePerNight", type: "number", label: "Price per night" },
-      { name: "capacity", type: "number", label: "Sleeping capacity" },
+      { name: "capacity", type: "number", label: "Sleeping capacity", unit: "person(s) per room" },
+      { name: "pricePerNight", type: "number", label: "Average price per night", unit: "FCFA" },
+      { name: "maxPricePerNight", type: "number", label: "Maximum price per night", unit: "FCFA" },
       {
         name: "equip",
         type: "multi",

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group";
+import { cn } from "cn";
 
 type FileFieldProps<T extends FieldValues> = {
   name: FieldPath<T>;
@@ -51,6 +52,7 @@ type TextFieldProps<T extends FieldValues> =
     name: FieldPath<T>;
     label: string;
     placeholder?: string;
+    className?: string;
     type?: string;
     suffix?: string;
     disabled?: boolean;
@@ -149,6 +151,7 @@ export function TextField<T extends FieldValues>({
   name,
   label,
   placeholder,
+  className,
   type = "text",
   suffix,
   ...inputProps
@@ -168,6 +171,10 @@ export function TextField<T extends FieldValues>({
               {...inputProps}
               id={name}
               type={type}
+              className={cn(
+                type === "number" && "text-end placeholder:text-start",
+                className,
+              )}
               placeholder={placeholder}
               value={field.value ?? ""}
               aria-invalid={!!fieldState.error}

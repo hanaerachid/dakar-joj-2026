@@ -1,16 +1,16 @@
 import { useRef } from "react";
 import { Icon } from "@iconify/react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
-import { TextInput } from "../../common/TextInput";
-import { TextArea } from "../../common/TextArea";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ColorInput } from "../../common/ColorInput";
 import { Section } from "../../common/Section";
 import type { VenueSport } from "../../../data/sitesMeta";
 import LocationPickerModal from "../../../core/map/LocationPickerModal";
 import LocationPickerButton from "../../../core/map/LocationPickerButton";
-import { Badge } from "@/components/ui/badge";
 import { useModalContext } from "@/components/modal-provider";
-import { Button } from "@/components/ui/button";
 import type { LocationPickerHandle } from "../../../core/map/LocationPickerModal";
 
 type Props = {
@@ -130,7 +130,7 @@ export default function BasicDetailsFields(props: Props) {
             <FieldLabel htmlFor="name">
               Place name
             </FieldLabel>
-            <TextInput
+            <Input
               id="name"
               placeholder="e.g. Iba Mar Diop Stadium"
               value={name}
@@ -143,7 +143,7 @@ export default function BasicDetailsFields(props: Props) {
             <FieldLabel htmlFor="nameFr">
               Place name (French)
             </FieldLabel>
-            <TextInput
+            <Input
               id="nameFr"
               placeholder="Nom en français…"
               value={nameFr}
@@ -152,13 +152,13 @@ export default function BasicDetailsFields(props: Props) {
           </Field>
         </div>
         {/* Row 1.1:  lat, lng + map picker */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-end gap-3">
           <div className="flex-1 grid gap-4 sm:grid-cols-2">
             <Field>
               <FieldLabel htmlFor="lat">
                 Latitude
               </FieldLabel>
-              <TextInput
+              <Input
                 id="lat"
                 type="number"
                 step="any"
@@ -174,7 +174,7 @@ export default function BasicDetailsFields(props: Props) {
               <FieldLabel htmlFor="lng">
                 Longitude
               </FieldLabel>
-              <TextInput
+              <Input
                 id="lng"
                 type="number"
                 step="any"
@@ -196,7 +196,7 @@ export default function BasicDetailsFields(props: Props) {
           <FieldLabel htmlFor="address">
             Address
           </FieldLabel>
-          <TextInput
+          <Input
             id="address"
             placeholder="Street, City"
             value={address}
@@ -208,7 +208,7 @@ export default function BasicDetailsFields(props: Props) {
           <FieldLabel htmlFor="info">
             About / Info
           </FieldLabel>
-          <TextArea
+          <Textarea
             id="info"
             placeholder="Historic multi-use stadium in Dakar."
             value={info}
@@ -220,7 +220,7 @@ export default function BasicDetailsFields(props: Props) {
           <FieldLabel htmlFor="infoFr">
             About / Info (French)
           </FieldLabel>
-          <TextArea
+          <Textarea
             id="infoFr"
             placeholder="Description en français…"
             value={infoFr}
@@ -234,7 +234,7 @@ export default function BasicDetailsFields(props: Props) {
             <FieldLabel htmlFor="rating">
               Rating (0–5)
             </FieldLabel>
-            <TextInput
+            <Input
               id="rating"
               type="number"
               step="0.1"
@@ -253,7 +253,7 @@ export default function BasicDetailsFields(props: Props) {
             <FieldLabel htmlFor="tags">
               Tags
             </FieldLabel>
-            <TextInput
+            <Input
               id="tags"
               placeholder="Stadium, Sports, Events"
               value={tags}

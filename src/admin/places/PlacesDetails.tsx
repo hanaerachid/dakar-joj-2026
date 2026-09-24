@@ -1,60 +1,22 @@
 // src/admin/places/PlaceDetailsPage.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner"
+import { ArrowLeft } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
 import { deletePlace, duplicatePlace, getPlace, updatePlace } from "../../lib/api/places";
 import { SITES_META, type VenueSport } from "../../data/sitesMeta";
 import { Icon } from "@iconify/react";
 import PlacePreview from "../../components/admin/places/PlacePreview";
 import { ALL_SPORT_OPTIONS } from "../../data/sports";
-import { Field as FieldUI, FieldDescription, FieldLabel } from "@/components/ui/field";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Section } from "@/components/common/Section";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
-import { Spinner } from "@/components/ui/spinner";
-import { ArrowLeft } from "lucide-react";
 import { ColorInput } from "@/components/common/ColorInput";
 import { TextInput } from "@/components/common/TextInput";
-
-/* ---------- Small UI helpers ---------- */
-function Field({
-  id,
-  label,
-  hint,
-  required,
-  children,
-}: {
-  id: string;
-  label: string;
-  hint?: string;
-  required?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <FieldUI>
-      <FieldLabel htmlFor={id}>
-        {label} {required ? <span className="text-destructive">*</span> : null}
-      </FieldLabel>
-      {children}
-      {hint ? <FieldDescription>{hint}</FieldDescription> : null}
-    </FieldUI>
-  );
-}
-
-function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return (
-    <textarea
-      {...props}
-      className={[
-        "min-h-[92px] w-full rounded-2xl border border-border bg-input px-3 py-2 text-sm shadow-sm outline-none transition",
-        "focus:border-blue-300 focus:ring-4 focus:ring-blue-100",
-        "disabled:opacity-60 disabled:cursor-not-allowed",
-        props.className || "",
-      ].join(" ")}
-    />
-  );
-}
 
 /* ---------- Helpers for root vs zone scoped docs ---------- */
 const isRoot = (z?: string | null) => !z || z === "root";
@@ -114,10 +76,6 @@ export function PlaceDetailsPage() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [toast, setToast] = useState<{
-    kind: "success" | "error";
-    msg: string;
-  } | null>(null);
 
   // core fields
   const [name, setName] = useState("");
@@ -166,7 +124,7 @@ export function PlaceDetailsPage() {
       try {
         const snap = await getPlace(placeId, isRoot(zoneParam) ? null : zoneParam!);
         if (!snap) {
-          setToast({ kind: "error", msg: "Place not found." });
+          toast.error("Place not found.");
           return;
         }
         const d = snap as Place;
@@ -221,7 +179,6 @@ export function PlaceDetailsPage() {
   /* ---------- Save ---------- */
   async function onSave() {
     setSaving(true);
-    setToast(null);
     try {
       await updatePlace(placeId, {
         name,
@@ -256,13 +213,12 @@ export function PlaceDetailsPage() {
 
       });
 
-      setToast({ kind: "success", msg: "Changes saved." });
+      toast.success("Changes saved.");
     } catch (e) {
       console.error(e);
-      setToast({ kind: "error", msg: "Failed to save changes." });
+      toast.error("Failed to save changes.");
     } finally {
       setSaving(false);
-      setTimeout(() => setToast(null), 4000);
     }
   }
 
@@ -329,32 +285,28 @@ export function PlaceDetailsPage() {
         </div>
       </div>
 
-      {toast && (
-        <Alert
-          className="mb-4"
-          variant={toast?.kind === "success" ? "default" : "destructive"}
-        >
-          <AlertDescription>
-            {toast?.msg}
-          </AlertDescription>
-        </Alert>
-      )}
-
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Left column */}
         <div className="lg:col-span-8 space-y-6">
           {/* Basic */}
           <Section title="Basic details">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field id="name" label="Place name" required>
+              <Field>
+                <FieldLabel htmlFor="name">
+                  Place name
+                </FieldLabel>
                 <TextInput
                   id="name"
+                  required
                   placeholder="e.g. Iba Mar Diop Stadium"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </Field>
-              <Field id="nameFr" label="Place name (French)">
+              <Field>
+                <FieldLabel htmlFor="nameFr">
+                  Place name (French)
+                </FieldLabel>
                 <TextInput
                   id="nameFr"
                   placeholder="Nom en français…"
@@ -364,9 +316,13 @@ export function PlaceDetailsPage() {
               </Field>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field id="lat" label="Latitude" required>
+              <Field>
+                <FieldLabel htmlFor="lat">
+                  Latitude
+                </FieldLabel>
                 <TextInput
                   id="lat"
+                  required
                   type="number"
                   step="any"
                   placeholder="14.6928"
@@ -378,9 +334,13 @@ export function PlaceDetailsPage() {
                   }
                 />
               </Field>
-              <Field id="lng" label="Longitude" required>
+              <Field>
+                <FieldLabel htmlFor="lng">
+                  Longitude
+                </FieldLabel>
                 <TextInput
                   id="lng"
+                  required
                   type="number"
                   step="any"
                   placeholder="-17.4467"
@@ -396,14 +356,20 @@ export function PlaceDetailsPage() {
 
             {/* Category (read-only text for now; you can swap to a <select> if you want) */}
             <div className="grid gap-4 sm:grid-cols-3">
-              <Field id="category" label="Category">
+              <Field>
+                <FieldLabel htmlFor="category">
+                  Category
+                </FieldLabel>
                 <TextInput
                   id="category"
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
                 />
               </Field>
-              <Field id="locationLabel" label="Location label">
+              <Field>
+                <FieldLabel htmlFor="locationLabel">
+                  Location label
+                </FieldLabel>
                 <TextInput
                   id="locationLabel"
                   placeholder="Location label"
@@ -411,7 +377,10 @@ export function PlaceDetailsPage() {
                   onChange={(e) => setLocationLabel(e.target.value)}
                 />
               </Field>
-              <Field id="shortCode" label="Short code">
+              <Field>
+                <FieldLabel htmlFor="shortCode">
+                  Short code
+                </FieldLabel>
                 <TextInput
                   id="shortCode"
                   placeholder="DEX"
@@ -421,7 +390,10 @@ export function PlaceDetailsPage() {
               </Field>
             </div>
 
-            <Field id="address" label="Address">
+            <Field>
+              <FieldLabel htmlFor="address">
+                Address
+              </FieldLabel>
               <TextInput
                 id="address"
                 placeholder="Street, City"
@@ -429,29 +401,37 @@ export function PlaceDetailsPage() {
                 onChange={(e) => setAddress(e.target.value)}
               />
             </Field>
-            <Field id="info" label="About / Info">
-              <TextArea
+            <Field>
+              <FieldLabel htmlFor="info">
+                About / Info
+              </FieldLabel>
+              <Textarea
                 id="info"
                 placeholder="Short description…"
                 value={info}
                 onChange={(e) => setInfo(e.target.value)}
               />
             </Field>
-            <Field
-              id="infoFr"
-              label="About / Info (French)"
-              hint="Displayed when the app language is FR."
-            >
-              <TextArea
+            <Field>
+              <FieldLabel htmlFor="infoFr">
+                About / Info (French)
+              </FieldLabel>
+              <Textarea
                 id="infoFr"
                 placeholder="Description en français…"
                 value={infoFr}
                 onChange={(e) => setInfoFr(e.target.value)}
               />
+              <FieldDescription>
+                Displayed when the app language is FR.
+              </FieldDescription>
             </Field>
 
             <div className="grid gap-4 sm:grid-cols-3">
-              <Field id="rating" label="Rating (0–5)">
+              <Field>
+                <FieldLabel htmlFor="rating">
+                  Rating (0–5)
+                </FieldLabel>
                 <TextInput
                   id="rating"
                   type="number"
@@ -467,11 +447,10 @@ export function PlaceDetailsPage() {
                   }
                 />
               </Field>
-              <Field
-                id="tags"
-                label="Tags"
-                hint="Comma separated. Shown as chips."
-              >
+              <Field>
+                <FieldLabel htmlFor="tags">
+                  Tags
+                </FieldLabel>
                 <TextInput
                   id="tags"
                   placeholder="Stadium, Sports, Events"
@@ -479,7 +458,10 @@ export function PlaceDetailsPage() {
                   onChange={(e) => setTags(e.target.value)}
                 />
               </Field>
-              <Field id="pointColor" label="Point color">
+              <Field>
+                <FieldLabel htmlFor="pointColor">
+                  Point color
+                </FieldLabel>
                 <ColorInput value={pointColor} onChange={setPointColor} />
               </Field>
             </div>
@@ -552,10 +534,16 @@ export function PlaceDetailsPage() {
           {/* Visuals & Media */}
           <Section title="Visuals & Media" desc="Gradient and cover image.">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field id="gradFrom" label="Gradient from">
+              <Field>
+                <FieldLabel htmlFor="gradFrom">
+                  Gradient from
+                </FieldLabel>
                 <ColorInput value={gradientFrom} onChange={setGradientFrom} />
               </Field>
-              <Field id="gradTo" label="Gradient to">
+              <Field>
+                <FieldLabel htmlFor="gradTo">
+                  Gradient to
+                </FieldLabel>
                 <ColorInput value={gradientTo} onChange={setGradientTo} />
               </Field>
             </div>
@@ -570,7 +558,10 @@ export function PlaceDetailsPage() {
               </span>
             </div>
 
-            <Field id="imageUrl" label="Cover image URL">
+            <Field>
+              <FieldLabel htmlFor="imageUrl">
+                Cover image URL
+              </FieldLabel>
               <div className="flex flex-col gap-3">
                 <input
                   id="imageUrl"
@@ -603,7 +594,10 @@ export function PlaceDetailsPage() {
           {/* Branding & Links */}
           <Section title="Branding & Links">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field id="brandTitle" label="Brand title">
+              <Field>
+                <FieldLabel htmlFor="brandTitle">
+                  Brand title
+                </FieldLabel>
                 <TextInput
                   id="brandTitle"
                   placeholder="DAKAR 2026"
@@ -611,7 +605,10 @@ export function PlaceDetailsPage() {
                   onChange={(e) => setBrandTitle(e.target.value)}
                 />
               </Field>
-              <Field id="brandSubtitle" label="Brand subtitle">
+              <Field>
+                <FieldLabel htmlFor="brandSubtitle">
+                  Brand subtitle
+                </FieldLabel>
                 <TextInput
                   id="brandSubtitle"
                   placeholder="YOUTH OLYMPIC GAMES"
@@ -619,7 +616,10 @@ export function PlaceDetailsPage() {
                   onChange={(e) => setBrandSubtitle(e.target.value)}
                 />
               </Field>
-              <Field id="website" label="Website">
+              <Field>
+                <FieldLabel htmlFor="website">
+                  Website
+                </FieldLabel>
                 <TextInput
                   id="website"
                   placeholder="https://www.dakar2026.org"
@@ -627,7 +627,10 @@ export function PlaceDetailsPage() {
                   onChange={(e) => setWebsite(e.target.value)}
                 />
               </Field>
-              <Field id="social" label="Social handle">
+              <Field>
+                <FieldLabel htmlFor="social">
+                  Social handle
+                </FieldLabel>
                 <TextInput
                   id="social"
                   placeholder="@jojdakar2026"

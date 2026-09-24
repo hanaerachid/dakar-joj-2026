@@ -154,7 +154,7 @@ export default function PlacePreview({
       {/* Body */}
       <CardContent>
         <CardTitle>
-          {nameText || "EGG TOWER COMPLEX"}
+          {nameText || "Place name will appear here"}
         </CardTitle>
 
         {(shortCode || sportCount) && (
@@ -192,37 +192,42 @@ export default function PlacePreview({
           </div>
         ) : null}
 
-        <CardDescription
-          className="font-sans text-[11px] sm:text-xs leading-snug"
-          style={
-            infoExpanded
-              ? undefined
-              : {
-                display: "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
+        {infoText && (
+          <>
+            <CardDescription
+              className="font-sans text-[11px] sm:text-xs leading-snug"
+              style={
+                infoExpanded
+                  ? undefined
+                  : {
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                  }
               }
-          }
-        >
-          {infoText}
-        </CardDescription>
-        <Button
-          type="button"
-          variant="link"
-          size="xs"
-          onClick={() => setInfoExpanded((v) => !v)}
-          className="inline-flex h-auto p-0 text-xs"
-        >
-          {infoExpanded ? "See less" : "See more"}
-        </Button>
+            >
+              {infoText}
+            </CardDescription>
+            <Button
+              type="button"
+              variant="link"
+              size="xs"
+              onClick={() => setInfoExpanded((v) => !v)}
+              className="inline-flex h-auto p-0 text-xs"
+            >
+              {infoExpanded ? "See less" : "See more"}
+            </Button>
+          </>
+        )}
+
         <p className="font-sans text-xs sm:text-sm mt-1 text-muted-foreground">{address}</p>
 
         {/* Optional site tags */}
         {!!tagList?.length && (
           <div className="flex flex-wrap gap-1 mt-3">
-            {tagList.map((tag, idx) => (
-              <Badge
+          {tagList.map((tag, idx) => (
+            <Badge
                 key={idx}
                 variant="secondary"
                 className="text-xs px-2 py-0.5"
@@ -258,7 +263,6 @@ export default function PlacePreview({
           disabled inert
           onClick={onGetDirections || (() => { })}
           className="flex-1"
-          style={{ color: `${g1}` }}
           title="Preview"
         >
           Get Directions
