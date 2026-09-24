@@ -1,7 +1,9 @@
 // src/pages/torch/TorchPage.tsx
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { ArrowLeft, MoreVertical, Pencil, Plus } from "lucide-react";
 import {
   listTorchStops,
   deleteTorchStop,
@@ -12,23 +14,29 @@ import {
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 // import { Badge } from "@/components/ui/badge";
-// import { Input } from "@/components/ui/input";
-// import { Section } from "@/components/common/Section";
 import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Empty,
   EmptyContent,
   EmptyDescription,
   EmptyHeader,
 } from "@/components/ui/empty";
-// import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 // import {
 //   Select,
 //   SelectContent,
@@ -37,25 +45,25 @@ import {
 //   SelectValue,
 // } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
+
+import { DateTimePicker } from "@/components/date-time-picker";
+import { Section } from "@/components/common/Section";
+
 import BasicDetails from "@/components/admin/BasicDetails";
 import LocationDetails from "@/components/admin/LocationDetails";
-import { Spinner } from "@/components/ui/spinner";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Section } from "@/components/common/Section";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
-import { TextInput } from "@/components/common/TextInput";
-import { TextArea } from "@/components/common/TextArea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { DatePicker } from "@/components/date-picker";
 
 /* ---------------- Types ---------------- */
 export type TorchStop = {
   _id: string;
   name: string;
-  location?: {
-    type: string;
-    coordinates: number[]
-  } | any;
+  location?:
+    | {
+        type: string;
+        coordinates: number[];
+      }
+    | any;
   region?: string | null;
   tourDate: Date | string;
   metadata?: {
@@ -69,6 +77,8 @@ export type TorchStop = {
 /* --------------- Page --------------- */
 export function TorchPage() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage || i18n.language || "en";
   const [loading, setLoading] = useState(false);
   const [torchStops, setTorchStops] = useState<TorchStop[]>([]);
   // const [search, setSearch] = useState("");
@@ -116,10 +126,12 @@ export function TorchPage() {
           {/* Title + subtitle */}
           <div className="min-w-0">
             <h2 className="flex items-center gap-2 text-lg md:text-xl font-semibold tracking-tight text-foreground/90">
-              <span className="truncate">Torch Stops</span>
+              <span className="truncate">
+                {t("torchstops.title", "Torch Stops")}
+              </span>
             </h2>
             <p className="mt-0.5 text-sm text-foreground/70 truncate">
-              Browse and manage torch stops.
+              {t("torchstops.description", "Browse and manage torch stops.")}
             </p>
           </div>
 
@@ -131,7 +143,7 @@ export function TorchPage() {
               className="inline-flex items-center gap-2"
             >
               <Plus />
-              <span>New torch stop</span>
+              <span>{t("torchstops.new")}</span>
             </Button>
           </div>
         </div>
@@ -264,12 +276,8 @@ export function TorchPage() {
         {loading && (
           <div className="col-span-full grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {[...Array(6)].map((_, i) => (
-              <Skeleton
-                key={i}
-                className="overflow-hidden rounded-3xl"
-              >
-                <Skeleton className="h-2 w-full bg-foreground/30" />
-                <Skeleton className="h-44 w-full bg-foreground/20" />
+              <Skeleton key={i} className="overflow-hidden rounded-3xl">
+                <Skeleton className="w-full aspect-video bg-foreground/20" />
                 <Skeleton className="p-4 space-y-3">
                   <Skeleton className="h-4 w-1/2 rounded bg-foreground/20" />
                   <Skeleton className="h-3 w-2/3 rounded bg-foreground/20" />
@@ -284,18 +292,17 @@ export function TorchPage() {
           <Empty className="col-span-full border border-foreground/30 p-8 text-foreground/50 shadow-sm">
             <EmptyHeader>
               <EmptyDescription className="text-center text-sm text-foreground/50">
-                No torch stops found
+                {t("torchstops.empty", "No torch stops found")}
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
               <Button
                 variant="default"
-                disabled
                 onClick={() => navigate("/admin/torch/new")}
                 className="inline-flex items-center gap-2"
               >
                 <Plus />
-                <span>New torch stop</span>
+                <span>{t("torchstops.new")}</span>
               </Button>
             </EmptyContent>
           </Empty>
@@ -307,8 +314,35 @@ export function TorchPage() {
               <Card
                 key={index}
                 size="sm"
-                className="mx-auto w-full max-w-sm"
+                className="relative mx-auto w-full max-w-sm"
               >
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    className="absolute end-4 top-4 z-20"
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label={t("more_actions", "More actions")}
+                        className="w-8 h-8 flex items-center justify-center"
+                      >
+                        <MoreVertical />
+                        <span className="sr-only">
+                          {t("open_actions", "Open actions")}
+                        </span>
+                      </Button>
+                    }
+                  />
+
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onClick={() => handleDeleteTorchStop(item)}
+                    >
+                      {t("delete", "Delete")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
                 {/* body */}
                 <CardHeader>
@@ -317,41 +351,45 @@ export function TorchPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-
                   {item.metadata?.description && (
                     <CardDescription>
                       {item.metadata?.description}
                     </CardDescription>
                   )}
 
-                  {item.location && (
-                    <p className="text-xs text-foreground/50">
-                      {item.location.coordinates[0]?.toFixed?.(5)} •{" "}
-                      {item.location.coordinates[1]?.toFixed?.(5)}
-                    </p>
+                  {item.tourDate && (
+                    <CardDescription>
+                      {new Date(item.updatedAt).toLocaleDateString(lang, {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </CardDescription>
                   )}
 
+                  {item.location && (
+                    <CardDescription className="text-xs font-mono">
+                      {item.location.coordinates[0]?.toFixed?.(5)} •{" "}
+                      {item.location.coordinates[1]?.toFixed?.(5)}
+                    </CardDescription>
+                  )}
                 </CardContent>
-                <CardFooter className="flex items-center justify-between">
+                <CardFooter className="flex-1 flex items-end justify-between">
                   <div className="text-xs text-foreground/50">
                     {item.updatedAt?.toDate
                       ? new Date(item.updatedAt.toDate()).toLocaleString()
                       : ""}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="link"
-                      onClick={() => navigate(`/admin/torch/${item._id}`)}
-                    >
-                      <span>View / Edit</span>
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleDeleteTorchStop(item)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    onClick={() => navigate(`/admin/torch/${item._id}`)}
+                  >
+                    <Pencil />
+                    <span>{t("edit", "Edit")}</span>
+                  </Button>
                 </CardFooter>
               </Card>
             );
@@ -361,12 +399,9 @@ export function TorchPage() {
   );
 }
 
-/* ---------------------------------------------
-   AddTorchPage component
---------------------------------------------- */
 export function AddTorchPage() {
   const navigate = useNavigate();
-
+  const { t } = useTranslation();
   // base fields
   const [name, setName] = useState("");
   const [phase, setPhase] = useState("");
@@ -379,10 +414,6 @@ export function AddTorchPage() {
 
   // UX state
   const [saving, setSaving] = useState(false);
-  const [toast, setToast] = useState<{
-    kind: "success" | "error";
-    msg: string;
-  } | null>(null);
 
   const canSave = !!name && lat !== "" && lng !== "" && !saving;
 
@@ -396,14 +427,13 @@ export function AddTorchPage() {
   async function onSave() {
     if (!canSave) return;
     setSaving(true);
-    setToast(null);
     try {
       const docRef = await createTorchStop({
         name,
         region: region || "",
         location: {
           type: "Point",
-          coordinates: [Number(lng), Number(lat)]
+          coordinates: [Number(lng), Number(lat)],
         },
         tourDate: tourDate || new Date(),
         metadata: {
@@ -413,8 +443,10 @@ export function AddTorchPage() {
         },
       });
 
-      setToast({ kind: "success", msg: "Torch stop created 🎉" });
       console.info("Torch stop created:", docRef);
+      toast.success(
+        t("torchstops.stopcreate.sucess", "Torch stop created successfully")
+      );
       window.scrollTo({ top: 0, behavior: "smooth" });
 
       // reset form
@@ -428,13 +460,14 @@ export function AddTorchPage() {
       setInfo("");
     } catch (e) {
       console.error(e);
-      setToast({
-        kind: "error",
-        msg: "Failed to create torch stop. Check your permissions/rules and try again.",
-      });
+      toast.error(
+        t(
+          "torchstops.stopcreate.error",
+          "Failed to create torch stop. Check your permissions/rules and try again."
+        )
+      );
     } finally {
       setSaving(false);
-      setTimeout(() => setToast(null), 4000);
     }
   }
 
@@ -443,38 +476,27 @@ export function AddTorchPage() {
       {/* Header */}
       <div className="mb-5 flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-          >
+          <Button variant="ghost" onClick={() => navigate(-1)}>
             <ArrowLeft />
-            Back
+            {t("back", "Back")}
           </Button>
           <div>
-            <h2 className="text-xl font-bold tracking-tight">Add a Torch Stop</h2>
+            <h2 className="text-xl font-bold tracking-tight">
+              {t("torchstops.newtorch.title", "Add a Torch Stop")}
+            </h2>
             <p className="mt-1 text-sm text-foreground/70">
-              Create a new torch stop and add it to the map.
+              {t(
+                "torchstops.newtorch.description",
+                "Create a new torch stop and add it to the map."
+              )}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Toast */}
-      {toast && (
-        <div
-          className={`mb-4 rounded-xl border px-4 py-3 text-sm shadow-sm ${toast.kind === "success"
-            ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-            : "border-rose-200 bg-rose-50 text-rose-900"
-            }`}
-        >
-          {toast.msg}
-        </div>
-      )}
-
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Form column - left */}
         <div className="lg:col-span-8 space-y-6">
-
           {/* Basic Details */}
           <BasicDetails
             name={name}
@@ -501,10 +523,10 @@ export function AddTorchPage() {
 
           {/* Actions */}
           <ButtonGroup className="flex items-center gap-3 pt-2">
-            <Button
-              variant="default"
-              onClick={onSave} disabled={!canSave}>
-              {saving ? "Saving…" : "Create torch stop"}
+            <Button variant="default" onClick={onSave} disabled={!canSave}>
+              {saving
+                ? t("torchstops.save.saving", "Saving…")
+                : t("torchstops.save.create", "Create torch stop")}
             </Button>
             <Button
               variant="ghost"
@@ -520,7 +542,7 @@ export function AddTorchPage() {
                 setInfo("");
               }}
             >
-              Reset
+              {t("torchstops.reset", "Reset")}
             </Button>
           </ButtonGroup>
         </div>
@@ -531,15 +553,12 @@ export function AddTorchPage() {
 
 export function EditTorchPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const params = useParams();
   const torchStopId = params.torchStopId;
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [toast, setToast] = useState<{
-    kind: "success" | "error";
-    msg: string;
-  } | null>(null);
 
   const [name, setName] = useState("");
   const [lat, setLat] = useState<number | "">("");
@@ -550,7 +569,8 @@ export function EditTorchPage() {
   const [tourDate, setTourDate] = useState<Date | undefined>(undefined);
   const [region, setRegion] = useState("");
 
-  const canSave = !!torchStopId && !!name && lat !== "" && lng !== "" && !saving;
+  const canSave =
+    !!torchStopId && !!name && lat !== "" && lng !== "" && !saving;
 
   /* ---------- Load ---------- */
   useEffect(() => {
@@ -559,7 +579,7 @@ export function EditTorchPage() {
       try {
         const snap = await getTorchStop(torchStopId);
         if (!snap) {
-          setToast({ kind: "error", msg: "Torch stop not found." });
+          toast.error(t("torchstops.notfound", "Torch stop not found."));
           return;
         }
         const d = snap as TorchStop;
@@ -572,7 +592,6 @@ export function EditTorchPage() {
         setIsMajorStop(d.metadata?.isMajorStop || false);
         setTourDate(d.tourDate ? new Date(d.tourDate) : undefined);
         setRegion(d.region || "");
-
       } finally {
         setLoading(false);
       }
@@ -583,13 +602,12 @@ export function EditTorchPage() {
   /* ---------- Save ---------- */
   async function onSave() {
     setSaving(true);
-    setToast(null);
     try {
       await updateTorchStop(torchStopId, {
         name,
         location: {
           type: "Point",
-          coordinates: [Number(lng), Number(lat)]
+          coordinates: [Number(lng), Number(lat)],
         },
         metadata: {
           description: description || null,
@@ -599,23 +617,27 @@ export function EditTorchPage() {
         tourDate: tourDate || null,
         region: region || null,
       });
-
-      setToast({ kind: "success", msg: "Changes saved." });
+      toast.success(t("torchstops.stopupdate.success", "Changes saved."));
     } catch (e) {
       console.error(e);
-      setToast({
-        kind: "error",
-        msg: "Failed to save changes.",
-      });
+
+      toast.error(t("torchstops.stopupdate.error", "Failed to save changes."));
     } finally {
       setSaving(false);
-      setTimeout(() => setToast(null), 4000);
     }
   }
 
   /* ---------- Delete / Duplicate ---------- */
   async function onDelete() {
-    if (!confirm("Delete this place? This cannot be undone.")) return;
+    if (
+      !confirm(
+        t(
+          "torchstops.delete.confirm",
+          "Delete this place? This cannot be undone."
+        )
+      )
+    )
+      return;
     await deleteTorchStop(torchStopId);
     navigate("/admin/torch");
   }
@@ -634,17 +656,19 @@ export function EditTorchPage() {
       {/* Top bar */}
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-          >
+          <Button variant="ghost" onClick={() => navigate(-1)}>
             <ArrowLeft />
             Back
           </Button>
           <div>
-            <h2 className="text-xl font-bold tracking-tight">Edit place</h2>
+            <h2 className="text-xl font-bold tracking-tight">
+              {t("torchstops.edittorch.title", "Edit place")}
+            </h2>
             <p className="mt-1 text-sm text-foreground/70">
-              Update details, visuals, links
+              {t(
+                "torchstops.edittorch.description",
+                "Update details, visuals, links"
+              )}
               {/* {isRoot(zoneParam) ? "" : " — zone-scoped"}. */}
             </p>
           </div>
@@ -654,30 +678,23 @@ export function EditTorchPage() {
             Delete
           </Button>
           <Button onClick={onSave} disabled={!canSave}>
-            {saving ? "Saving…" : "Save changes"}
+            {saving
+              ? t("torchstops.save.saving", "Saving…")
+              : t("torchstops.save.edit", "Save changes")}
           </Button>
         </div>
       </div>
 
-      {toast && (
-        <Alert
-          className="mb-4"
-          variant={toast?.kind === "success" ? "default" : "destructive"}
-        >
-          <AlertDescription>
-            {toast?.msg}
-          </AlertDescription>
-        </Alert>
-      )}
-
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Left column */}
         <div className="lg:col-span-8 space-y-6">
-          <Section title="Basic details">
+          <Section title={t("torchstops.basic.title", "Basic details")}>
             <div className="grid gap-4 sm:grid-cols-1">
               <Field>
-                <FieldLabel htmlFor="name">Stop name</FieldLabel>
-                <TextInput
+                <FieldLabel htmlFor="name">
+                  {t("torchstops.fields.name", "Stop name")}
+                </FieldLabel>
+                <Input
                   required
                   id="name"
                   placeholder="e.g. Iba Mar Diop Stadium"
@@ -689,9 +706,9 @@ export function EditTorchPage() {
             <div className="grid gap-4 sm:grid-cols-1">
               <Field>
                 <FieldLabel htmlFor="phase">
-                  Stop phase
+                  {t("torchstops.fields.phase", "Stop phase")}
                 </FieldLabel>
-                <TextInput
+                <Input
                   id="phase"
                   placeholder="e.g. Phase 1"
                   value={phase}
@@ -702,15 +719,17 @@ export function EditTorchPage() {
 
             <Field>
               <FieldLabel htmlFor="info">
-                Description
+                {t("torchstops.fields.info", "Description")}
               </FieldLabel>
-              <TextArea
+              <Textarea
                 id="info"
                 placeholder="Historic multi-use stadium in Dakar."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
-              <FieldDescription>Short description shown in the card/popup.</FieldDescription>
+              <FieldDescription>
+                Short description shown in the card/popup.
+              </FieldDescription>
             </Field>
             <Field orientation="horizontal">
               <Checkbox
@@ -719,15 +738,15 @@ export function EditTorchPage() {
                 onCheckedChange={(checked) => setIsMajorStop(!!checked)}
               />
               <FieldLabel htmlFor="isMajorStop">
-                Major Stop
+                {t("torchstops.fields.isMajorStop", "Major Stop")}
               </FieldLabel>
             </Field>
 
             <Field>
               <FieldLabel htmlFor="tourDate">
-                Tour Date
+                {t("torchstops.fields.tourDate", "Tour Date")}
               </FieldLabel>
-              <DatePicker
+              <DateTimePicker
                 // id="tourDate"
                 date={tourDate}
                 setDate={setTourDate}
@@ -735,13 +754,13 @@ export function EditTorchPage() {
             </Field>
           </Section>
 
-          <Section title="Location details">
+          <Section title={t("torchstops.location.title", "Location details")}>
             <div className="grid gap-4 sm:grid-cols-1">
               <Field>
                 <FieldLabel htmlFor="region">
-                  Stop region
+                  {t("torchstops.fields.region", "Stop region")}
                 </FieldLabel>
-                <TextInput
+                <Input
                   id="region"
                   placeholder="e.g. Dakar"
                   value={region}
@@ -751,8 +770,10 @@ export function EditTorchPage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field>
-                <FieldLabel htmlFor="lng">Latitude</FieldLabel>
-                <TextInput
+                <FieldLabel htmlFor="lng">
+                  {t("torchstops.fields.lat", "Latitude")}
+                </FieldLabel>
+                <Input
                   required
                   id="lat"
                   type="number"
@@ -761,14 +782,16 @@ export function EditTorchPage() {
                   value={lat as any}
                   onChange={(e) =>
                     setLat(
-                      e.target.value === "" ? "" : parseFloat(e.target.value),
+                      e.target.value === "" ? "" : parseFloat(e.target.value)
                     )
                   }
                 />
               </Field>
               <Field>
-                <FieldLabel htmlFor="lng">Longitude</FieldLabel>
-                <TextInput
+                <FieldLabel htmlFor="lng">
+                  {t("torchstops.fields.lng", "Longitude")}
+                </FieldLabel>
+                <Input
                   required
                   id="lng"
                   type="number"
@@ -777,7 +800,7 @@ export function EditTorchPage() {
                   value={lng as any}
                   onChange={(e) =>
                     setLng(
-                      e.target.value === "" ? "" : parseFloat(e.target.value),
+                      e.target.value === "" ? "" : parseFloat(e.target.value)
                     )
                   }
                 />
@@ -787,5 +810,5 @@ export function EditTorchPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

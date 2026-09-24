@@ -1,6 +1,6 @@
 import { Outlet, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { HeaderBar } from "@/components/header/HeaderBar";
 import {
@@ -55,25 +55,22 @@ export function AdminShell() {
               <NavigationMenuLink
                 // className={navigationMenuTriggerStyle()}
                 render={<Link
-                  to="/admin/places"
+                  to="/admin/events"
                   className="inline-flex items-center gap-2 py-2"
                 />}
               >
-                {t("places", "Places")}
+                {t("events.events", "Events")}
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink
                 // className={navigationMenuTriggerStyle()}
-                render={
-                  <Link
-                    to="/admin/places/new"
-                    className="inline-flex items-center gap-2 py-2"
-                  />
-                }
+                render={<Link
+                  to="/admin/places"
+                  className="inline-flex items-center gap-2 py-2"
+                />}
               >
-                <Plus className="h-4 w-4" />
-                {t("new_place", "New place")}
+                {t("places", "Places")}
               </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>

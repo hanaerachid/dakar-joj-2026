@@ -3,7 +3,7 @@ import { TextInput } from "../common/TextInput";
 import { TextArea } from "../common/TextArea";
 import { Section } from "../common/Section";
 import { Checkbox } from "../ui/checkbox";
-import { DatePicker } from "@/components/date-picker";
+import { DateTimePicker } from "@/components/date-time-picker";
 
 type Props = {
   name: string;
@@ -91,8 +91,7 @@ export default function BasicDetails(props: Props) {
           <FieldLabel htmlFor="tourDate">
             Tour Date
           </FieldLabel>
-          <DatePicker
-            // id="tourDate"
+          <DateTimePicker
             date={tourDate}
             setDate={setTourDate}
           />

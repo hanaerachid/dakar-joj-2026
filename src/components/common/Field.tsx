@@ -46,13 +46,15 @@ type TextAreaFieldProps<T extends FieldValues> = {
   rows?: number;
 };
 
-type TextFieldProps<T extends FieldValues> = {
-  name: FieldPath<T>;
-  label: string;
-  placeholder?: string;
-  type?: string;
-  suffix?: string;
-};
+type TextFieldProps<T extends FieldValues> =
+  Omit<React.ComponentProps<typeof Input>, "name"> & {
+    name: FieldPath<T>;
+    label: string;
+    placeholder?: string;
+    type?: string;
+    suffix?: string;
+    disabled?: boolean;
+  };
 
 type MultiSelectFieldProps<T extends FieldValues> = {
   name: FieldPath<T>;
@@ -149,6 +151,7 @@ export function TextField<T extends FieldValues>({
   placeholder,
   type = "text",
   suffix,
+  ...inputProps
 }: TextFieldProps<T>) {
   const { control } = useFormContext<T>();
 
@@ -162,6 +165,7 @@ export function TextField<T extends FieldValues>({
           <InputGroup>
             <InputGroupInput
               {...field}
+              {...inputProps}
               id={name}
               type={type}
               placeholder={placeholder}

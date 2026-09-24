@@ -4,10 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Pencil, Plus, MoreVertical } from "lucide-react";
 
-import {
-  listEvents,
-  deleteEvent,
-} from "../../lib/api/events";
+import { listEvents, deleteEvent } from "../../lib/api/events";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,13 +12,13 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
   Empty,
@@ -35,10 +32,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 export type Event = {
   _id: string;
   name: string;
-  location?: {
-    type?: string;
-    coordinates: number[]
-  } | any;
+  location?:
+    | {
+        type?: string;
+        coordinates: number[];
+      }
+    | any;
   region?: string | null;
   sport?: string | null;
   status?: string | null;
@@ -110,7 +109,8 @@ export function EventPage() {
           <div className="flex items-center gap-2">
             <Button
               variant="default"
-              disabled inert
+              disabled
+              inert
               onClick={() => navigate("/admin/events/new")}
               className="inline-flex items-center gap-2"
             >
@@ -248,10 +248,7 @@ export function EventPage() {
         {loading && (
           <div className="col-span-full grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {[...Array(6)].map((_, i) => (
-              <Skeleton
-                key={i}
-                className="overflow-hidden rounded-3xl"
-              >
+              <Skeleton key={i} className="overflow-hidden rounded-3xl">
                 <Skeleton className="w-full aspect-video bg-foreground/20" />
                 <Skeleton className="p-4 space-y-3">
                   <Skeleton className="h-4 w-1/2 rounded bg-foreground/20" />
@@ -273,7 +270,8 @@ export function EventPage() {
             <EmptyContent>
               <Button
                 variant="default"
-                disabled inert
+                disabled
+                inert
                 onClick={() => navigate("/admin/events/new")}
                 className="inline-flex items-center gap-2"
               >
@@ -297,7 +295,8 @@ export function EventPage() {
                     className="absolute end-4 top-4 z-20"
                     render={
                       <Button
-                        variant="ghost" size="icon-sm"
+                        variant="ghost"
+                        size="icon-sm"
                         aria-label={t("more_actions", "More actions")}
                         className="w-8 h-8 flex items-center justify-center"
                       >
@@ -326,32 +325,23 @@ export function EventPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-
                   {item.venue && (
-                    <CardDescription>
-                      {item.venue}
-                    </CardDescription>
+                    <CardDescription>{item.venue}</CardDescription>
                   )}
 
                   {item.datetime && (
                     <CardDescription>
-                    {new Date(item.updatedAt)
-                      .toLocaleDateString(
-                        lang,
-                        {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }
-                      )
-                    }
+                      {new Date(item.updatedAt).toLocaleDateString(lang, {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </CardDescription>
                   )}
-
                 </CardContent>
-                <CardFooter className="w-full flex-1 flex-col gap-2">
+                <CardFooter className="w-full flex-1 flex-col items-end gap-2">
                   <div className="text-xs text-muted-foreground">
                     {item.updatedAt?.toDate
                       ? new Date(item.updatedAt.toDate()).toLocaleString()
@@ -360,7 +350,8 @@ export function EventPage() {
                   <Button
                     className="w-full"
                     variant="outline"
-                    disabled inert
+                    disabled
+                    inert
                     onClick={() => navigate(`/admin/events/${item._id}`)}
                   >
                     <Pencil />

@@ -310,7 +310,7 @@ export function BusinessPage() {
                   )} */}
 
                   </CardContent>
-                  <CardFooter className="w-full flex-1">
+                  <CardFooter className="w-full flex-1 items-end">
                     {/* <div className="text-xs text-foreground/50">
                     {item.updatedAt?.toDate
                       ? new Date(item.updatedAt.toDate()).toLocaleString()
