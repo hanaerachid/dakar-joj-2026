@@ -166,7 +166,7 @@ export const geoJsonPointSchema = z.object({
 export const eventSchema = z
   .object({
     _id: z.string().optional(),
-    // legacyFirestoreId: z.string().nullable().optional(),
+    legacyFirestoreId: z.string().nullable().optional(),
     name: z.string().nullable().optional(),
     nameFr: z.string().nullable().optional(),
     datetime: z.string().datetime().nullable().optional(),
@@ -177,6 +177,8 @@ export const eventSchema = z
     createdAt: z.string().datetime().nullable().optional(),
     updatedAt: z.string().datetime().nullable().optional(),
   });
+
+export type Event = z.infer<typeof eventSchema>;
 
 export const torchStopMetadataSchema = z.object({
   phase: z.string().optional(),
