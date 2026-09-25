@@ -11,13 +11,13 @@ import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
 import { useStateContext } from "./state-provider";
 import { MapManager } from "@/core/MapManager";
+import { clearDirections } from "@/utils/directions";
 
 type SidebarProps = {
   longitude: number;
   latitude: number;
   zoom: number;
   onReset: () => void;
-  onClearRoute: () => void;
 };
 
 export function Sidebar({
@@ -25,7 +25,6 @@ export function Sidebar({
   longitude,
   latitude,
   zoom,
-  onClearRoute,
 }: SidebarProps) {
   const { t } = useTranslation();
   const { torchVisible, setTorchVisible } = useStateContext();
@@ -117,7 +116,7 @@ export function Sidebar({
           icon={RouteOff}
           title={t("actions.clearroute", "Clear Route")}
           tooltip={t("actions.clearroute", "Clear Route")}
-          onClick={onClearRoute}
+          onClick={clearDirections}
         />
         <AnimatedButton
           icon={Share2}

@@ -57,10 +57,11 @@ export function Panel({
           open={isOpen}
           modal={false} disablePointerDismissal
           swipeDirection="left"
+          snapPoints={[0.5, 0.75, 1]}
         >
           <DrawerContent
             className={cn(`
-            z-150 my-18 bg-background/80 backdrop-blur-md shadow-lg
+            z-150 mt-18 mb-8 bg-background/80 backdrop-blur-md shadow-lg
             `, SIZE_MAP[size],
             )}
           >

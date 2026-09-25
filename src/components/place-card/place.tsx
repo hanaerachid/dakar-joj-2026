@@ -20,12 +20,13 @@ import { getPlace } from "@/lib/api/places";
 import type { Place } from "../../shared/contracts";
 import { useStateContext } from "../state-provider";
 import { ManeuverIcon } from "../maneuverIcons";
-import { getDirections } from "../../utils/directions";
+import { getDirections, clearDirections } from "../../utils/directions";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+
 
 type RouteStep = {
   instruction: string;
@@ -49,13 +50,13 @@ type PlaceDetailsProps = {
 type PlaceContentProps = {
   place: Place;
   route: RouteSummary;
-  onClear: () => void;
   onGetDirections: (
     destination: [number, number]
   ) => Promise<void>;
 };
 
 export function PlaceDetails({ id }: PlaceDetailsProps) {
+  const { t } = useTranslation();
   const [place, setPlace] = useState<Place | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -102,6 +103,11 @@ export function PlaceDetails({ id }: PlaceDetailsProps) {
     };
   }, [id]);
 
+  const handleBack = () => {
+    clearDirections();
+    setSelectedPlace(null);
+  };
+
   const handleGetDirections = async (
     destination: [number, number]
   ) => {
@@ -128,11 +134,11 @@ export function PlaceDetails({ id }: PlaceDetailsProps) {
           setRoute(itinerary);
         } catch (error) {
           console.error("Directions failed:", error);
-          toast.error("Failed to calculate directions.");
+          toast.error(t("place.details.directions.error", "Failed to calculate directions."));
         }
       },
       () => {
-        toast.error("Unable to retrieve your location.");
+        toast.error(t("place.details.location.unknown_error", "Unable to retrieve your location."));
       },
       {
         enableHighAccuracy: true,
@@ -148,10 +154,10 @@ export function PlaceDetails({ id }: PlaceDetailsProps) {
           size="default"
           variant="secondary"
           className="fixed top-15 start-2 z-50"
-          onClick={() => setSelectedPlace(null)}
+          onClick={handleBack}
         >
           <ChevronLeft />
-          <span>Back</span>
+          <span>{t("place.details.back", "Back")}</span>
         </Button>
       </div>
       <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto">
@@ -159,7 +165,7 @@ export function PlaceDetails({ id }: PlaceDetailsProps) {
 
         {error && (
           <Alert variant="destructive" className="w-full">
-            <AlertDescription>Error{error}</AlertDescription>
+            <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
 
@@ -167,7 +173,7 @@ export function PlaceDetails({ id }: PlaceDetailsProps) {
           <Empty>
             <EmptyContent>
               <EmptyDescription>
-                Place not found.
+                {t("place.details.not_found", "Place not found.")}
               </EmptyDescription>
             </EmptyContent>
           </Empty>
@@ -177,7 +183,6 @@ export function PlaceDetails({ id }: PlaceDetailsProps) {
           <PlaceContent
             place={place}
             route={route}
-            onClear={() => setRoute(null)}
             onGetDirections={handleGetDirections}
           />
         )}
@@ -186,7 +191,7 @@ export function PlaceDetails({ id }: PlaceDetailsProps) {
   );
 }
 
-function PlaceContent({ place, route, onClear, onGetDirections }: PlaceContentProps) {
+function PlaceContent({ place, route, onGetDirections }: PlaceContentProps) {
   const {
     title,
     imageUrl,
@@ -203,7 +208,7 @@ function PlaceContent({ place, route, onClear, onGetDirections }: PlaceContentPr
     website,
     socialHandle,
   } = place;
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage || i18n.language || "en";
   const infoText = lang.startsWith("fr") ? (infoFr ?? "").trim() || info : info;
   const [infoExpanded, setInfoExpanded] = useState(false);
@@ -309,7 +314,7 @@ function PlaceContent({ place, route, onClear, onGetDirections }: PlaceContentPr
               onClick={() => setInfoExpanded((v) => !v)}
               className="inline-flex h-auto p-0 text-xs"
             >
-              {infoExpanded ? "See less" : "See more"}
+              {infoExpanded ? t("see_less", "See less") : t("see_more", "See more")}
             </Button></>
         )}
 
@@ -354,7 +359,6 @@ function PlaceContent({ place, route, onClear, onGetDirections }: PlaceContentPr
         {location && (
           <Iternary
             route={route}
-            onClear={onClear}
             onGetDirections={onGetDirections}
             destination={[location.longitude, location.latitude]}
           />
@@ -367,12 +371,10 @@ function PlaceContent({ place, route, onClear, onGetDirections }: PlaceContentPr
 export function Iternary({
   route,
   destination,
-  onClear,
   onGetDirections,
 }: {
   route: RouteSummary;
   destination: [number, number];
-  onClear: () => void;
   onGetDirections: (
     destination: [number, number]
   ) => Promise<void>;
@@ -385,7 +387,7 @@ export function Iternary({
     // Currently open → clear itinerary
     if (isOpen) {
       setIsOpen(false);
-      onClear();
+      clearDirections();
       return;
     }
 

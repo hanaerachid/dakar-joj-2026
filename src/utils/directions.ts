@@ -37,3 +37,13 @@ export async function getDirections(
     throw error;
   }
 }
+
+export function clearDirections() {
+  try {
+    MapManager.getInstance().clearCurrentRoute();
+
+  } catch (error) {
+    console.error("Failed to clear itinerary:", error);
+    throw error;
+  }
+}

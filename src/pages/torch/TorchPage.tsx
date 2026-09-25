@@ -143,7 +143,7 @@ export function TorchPage() {
               className="inline-flex items-center gap-2"
             >
               <Plus />
-              <span>{t("torchstops.new")}</span>
+              <span>{t("torchstops.new", "New Torch Stop")}</span>
             </Button>
           </div>
         </div>
@@ -302,7 +302,7 @@ export function TorchPage() {
                 className="inline-flex items-center gap-2"
               >
                 <Plus />
-                <span>{t("torchstops.new")}</span>
+                <span>{t("torchstops.new", "New Torch Stop")}</span>
               </Button>
             </EmptyContent>
           </Empty>

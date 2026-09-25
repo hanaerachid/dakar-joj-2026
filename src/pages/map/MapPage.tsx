@@ -93,10 +93,6 @@ export default function MapPage() {
     };
   }, [isMobile, mapManager]);
   const handleReset = () => mapManager.resetView();
-  const handleClear = () => {
-    MapManager.getInstance().clearCurrentRoute();
-    //  setRoute(null);
-  };
 
   return (
     <div className="relative w-full h-[100dvh]">
@@ -114,7 +110,6 @@ export default function MapPage() {
           latitude={latitude}
           zoom={zoom}
           onReset={handleReset}
-          onClearRoute={handleClear}
         />
       </div>
 
