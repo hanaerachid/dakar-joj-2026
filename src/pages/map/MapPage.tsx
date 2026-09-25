@@ -7,6 +7,7 @@ import { HeaderBar } from "../../components/header/HeaderBar";
 import { getInitialZoom } from "../../utils/mapConfig";
 import { useTranslation } from "react-i18next";
 import { usePanelContext } from "@/components/panel-provider";
+import { useModalContext } from "@/components/modal-provider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SidePanel } from "@/components/side-panel/core";
 import { useStateContext } from "@/components/state-provider";
@@ -19,8 +20,40 @@ export default function MapPage() {
   const [zoom, setZoom] = useState(() => getInitialZoom());
   const { t } = useTranslation();
   const isMobile = useIsMobile();
-  const { setActiveTab } = useStateContext();
+  const { selectedPlace, setActiveTab } = useStateContext();
   const { setPanelContent, setIsOpen } = usePanelContext();
+  const { setModalContent, setIsOpen: setModalOpen } = useModalContext();
+
+  useEffect(() => {
+    if (!selectedPlace) return;
+
+    setActiveTab("explorer");
+    if (isMobile) {
+      setModalContent({
+        title: null,
+        onClose: () => setModalOpen(false),
+        size: "lg",
+        children: <SidePanel />,
+      });
+      setModalOpen(true);
+      return;
+    }
+
+    setPanelContent({
+      title: null,
+      onClose: () => setIsOpen(false),
+      children: <SidePanel />,
+    });
+    setIsOpen(true);
+  }, [
+    isMobile,
+    selectedPlace,
+    setActiveTab,
+    setIsOpen,
+    setModalContent,
+    setModalOpen,
+    setPanelContent,
+  ]);
 
   useEffect(() => {
     if (!mapContainerRef.current) return;

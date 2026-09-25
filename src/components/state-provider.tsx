@@ -8,6 +8,10 @@ import {
   useEffect
 } from "react";
 import { initAuth } from "../auth/nitAuth";
+import {
+  PLACE_SELECTED_EVENT,
+  type PlaceSelection,
+} from "./place-selection";
 
 type ProviderProps = {
   children: React.ReactNode
@@ -32,6 +36,9 @@ type ProviderState = {
   setActiveMainCategoryId: (id: string) => void
   activeCatId: string
   setActiveCatId: (id: string) => void
+
+  selectedPlace: Record<string, unknown> | null
+  setSelectedPlace: (place: Record<string, unknown> | null) => void
 }
 
 const initialState: ProviderState = {
@@ -53,6 +60,9 @@ const initialState: ProviderState = {
   setActiveMainCategoryId: () => null,
   activeCatId: "competition",
   setActiveCatId: () => null,
+
+  selectedPlace: null,
+  setSelectedPlace: () => null,
 };
 
 export const StateContext = createContext<ProviderState>(initialState);
@@ -73,8 +83,8 @@ export function StateProvider({
   });
   const [activeMainCategoryId, setActiveMainCategoryId] = useState("sports");
   const [activeCatId, setActiveCatId] = useState("competition");
+  const [selectedPlace, setSelectedPlace] = useState<Record<string, unknown> | null>(null);
   const [role, setRole] = useState<string | undefined>(undefined);
-
 
   useEffect(() => {
     initAuth((user, r) => {
@@ -82,6 +92,20 @@ export function StateProvider({
       console.log("[initAuth] role:", role);
       setRole(r);
     });
+  }, []);
+
+  useEffect(() => {
+    const handlePlaceSelected = (event: Event) => {
+      const place = (event as CustomEvent<PlaceSelection>).detail;
+      if (!place?.id) return;
+
+      setActiveTab("explorer");
+      setSelectedPlace(place);
+    };
+
+    window.addEventListener(PLACE_SELECTED_EVENT, handlePlaceSelected);
+    return () =>
+      window.removeEventListener(PLACE_SELECTED_EVENT, handlePlaceSelected);
   }, []);
 
   const value = {
@@ -103,6 +127,9 @@ export function StateProvider({
     setActiveMainCategoryId,
     activeCatId,
     setActiveCatId,
+
+    selectedPlace,
+    setSelectedPlace,
   };
 
   return (

@@ -4,6 +4,7 @@ import { SearchPlacesInput } from "./search/SearchPlacesInput";
 import { SearchPlacesModal } from "./search/SearchPlacesModal";
 import { PlacesListContent } from "./place-list/PlacesList";
 import { useStateContext } from "./state-provider";
+import { PlaceDetails } from "./place-card/place";
 
 export const ExplorerContent = ({
   setPanelOpen,
@@ -11,9 +12,13 @@ export const ExplorerContent = ({
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
   // const hasSearchQuery = query.trim().length > 0;
-  const { isSearchOpen } = useStateContext();
+  const { isSearchOpen, selectedPlace } = useStateContext();
   return (
     <div className="flex h-full flex-col">
+      {selectedPlace ? (
+        <PlaceDetails id={selectedPlace.id} />
+      ) : (
+      <>
       <SearchPlacesInput
         query={query}
         onQueryChange={setQuery}
@@ -30,6 +35,8 @@ export const ExplorerContent = ({
       ) : (
         <PlacesListContent setPanelOpen={setPanelOpen} />
       )}
+      </>
+    )}
     </div>
   );
 };

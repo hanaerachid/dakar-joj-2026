@@ -58,7 +58,12 @@ export const PlacesList = () => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const { isOpen, setIsOpen, setPanelContent, } = usePanelContext();
-  const { activeTab, setActiveTab, isSearchOpen, setIsSearchOpen } = useStateContext();
+  const {
+    activeTab,
+    setActiveTab,
+    isSearchOpen,
+    setIsSearchOpen,
+  } = useStateContext();
 
   const {
     isOpen: panelOpen,
@@ -124,6 +129,7 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
     setActiveMainCategoryId,
     activeCatId,
     setActiveCatId,
+    setSelectedPlace,
   } = useStateContext();
 
   const translatedCategories = useMemo(
@@ -370,6 +376,7 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
     id?: string,
   ) => {
     setSelectedTitle(title);
+    setSelectedPlace({ lng, lat, title, id });
     const map = mapManager.getMap();
     if (map) {
       // Ensure this category is visible

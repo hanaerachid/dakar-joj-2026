@@ -1,9 +1,7 @@
 // src/core/layers/categoryPoints.ts
-import mapboxgl, { Map } from "mapbox-gl";
+import { Map } from "mapbox-gl";
 import { addOrSetSource } from "../map/utils";
-import { destroyPopup, renderVenuePopup } from "../../components/popupRenderer";
-import { keepPopupInView } from "./popupUtils";
-import type { VenueSport } from "../../data/sitesMeta";
+import { selectPlace } from "../../components/place-selection";
 import { listPlaces, listZones } from "../../lib/api/places";
 
 export type CategoryLayerOptions = {
@@ -31,19 +29,6 @@ function toLatLng(p: any) {
   return { lat, lng };
 }
 
-function parseArray<T = unknown>(v: unknown): T[] | undefined {
-  if (Array.isArray(v)) return v as T[];
-  if (typeof v === "string") {
-    try {
-      const parsed = JSON.parse(v);
-      return Array.isArray(parsed) ? (parsed as T[]) : undefined;
-    } catch {
-      return undefined;
-    }
-  }
-  return undefined;
-}
-
 // simple deterministic id from URL
 // function hashId(str: string) {
 //   let h = 5381;
@@ -60,18 +45,6 @@ function parseArray<T = unknown>(v: unknown): T[] | undefined {
 //   map.addImage(id, bmp, { pixelRatio: 2 }); // 2x for sharpness
 //   return id;
 // }
-
-function gradientFromProps(
-  p: Record<string, any>,
-): [string, string] | undefined {
-  const g = parseArray<string>(p["gradient"]);
-  if (g?.length === 2 && g[0] && g[1]) return [String(g[0]), String(g[1])];
-  const gf = p["gradientFrom"];
-  const gt = p["gradientTo"];
-  if (typeof gf === "string" && typeof gt === "string" && gf && gt)
-    return [gf, gt];
-  return undefined;
-}
 
 function parseStringArray(value: unknown): string[] {
   if (Array.isArray(value)) return value.map(String).filter(Boolean);
@@ -542,54 +515,11 @@ async function addClusterLayers(
     const coords = (f.geometry as any).coordinates as [number, number];
     const p = (f.properties || {}) as Record<string, any>;
     const title = (p["title"] as string) || (p["Name"] as string) || "Untitled";
-    const titleFr =
-      (p["title_fr"] as string) ||
-      (p["name_fr"] as string) ||
-      (p["nameFr"] as string) ||
-      "";
-    const gradient = gradientFromProps(p);
-    const sports = parseArray<VenueSport>(p["sports"]) ?? [];
-    const infoEn = (p["info"] as string) || "";
-    const infoFr =
-      (p["info_fr"] as string) || (p["infoFr"] as string) || "";
-    console.log("[categoryPoints] popup info", {
-      title,
-      titleFr,
-      infoEn,
-      infoFr,
-      props: p,
-    });
-    const node = renderVenuePopup({
-      title,
-      titleFr,
-      zone: p["categoryId"] || categoryId,
-      categoryId: p["categoryId"] || categoryId,
-      info: infoEn,
-      infoFr,
-      imageUrl: (p["imageUrl"] as string) || undefined,
-      address: (p["address"] as string) || "",
-      rating:
-        typeof p["rating"] === "number" ? (p["rating"] as number) : undefined,
-      tags: parseStringArray(p["tags"]),
-      coordinates: coords,
-      onClose: () => popup.remove(),
-      brandTitle: p["brandTitle"] as string | undefined,
-      brandSubtitle: p["brandSubtitle"] as string | undefined,
-      locationLabel: p["locationLabel"] as string | undefined,
-      shortCode: p["shortCode"] as string | undefined,
-      sportCount:
-        typeof p["sportCount"] === "number"
-          ? (p["sportCount"] as number)
-          : sports.length,
-      sports,
-      gradient,
-      website: p["website"] as string | undefined,
-      socialHandle: p["socialHandle"] as string | undefined,
-    });
+    const id = p["id"] || p["docId"] || p["placeId"];
+    if (typeof id !== "string") return;
+
+    selectPlace({ id, lng: coords[0], lat: coords[1], title });
     map.easeTo({ center: coords, zoom: Math.max(map.getZoom(), 15) });
-    popup.setLngLat(coords).setDOMContent(node).addTo(map);
-    keepPopupInView(map, popup);
-    popup.once("close", () => destroyPopup(node));
   });
 
   map.on(
@@ -825,5 +755,3 @@ export function stopBounceSelected(map?: Map) {
       map.setLayoutProperty(id, "icon-offset", [0, 0] as any);
   }
 }
-
-const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: true });

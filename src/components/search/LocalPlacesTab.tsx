@@ -23,6 +23,7 @@ import { Empty, EmptyDescription } from "@/components/ui/empty";
 // import { Kbd } from "@/components/ui/kbd"
 import { Spinner } from "@/components/ui/spinner";
 import { useStateContext } from "../state-provider";
+import { selectPlace } from "../place-selection";
 
 // —— types & helpers ——
 type VenueFeature = Feature<Point, GeoJsonProperties>;
@@ -43,72 +44,6 @@ function loadAllPlaces() {
     });
   }
   return allPlacesPromise;
-}
-
-function layerPrefixFor(catId: string): string {
-  if (catId === "competition") return "comp-";
-  if (catId === "training") return "train-";
-  if (catId === "fan-zones") return "fanz-";
-  if (catId === "hotels") return "hotel-";
-  if (catId === "restaurants") return "rest-";
-  if (catId === "artworks") return "artworks-";
-  if (catId === "attraction") return "attraction-";
-  if (catId === "castle") return "castle-";
-  if (catId === "church") return "church-";
-  if (catId === "gallery") return "gallery-";
-  if (catId === "memorial") return "memorial-";
-  if (catId === "monument") return "monument-";
-  if (catId === "mosque") return "mosque-";
-  if (catId === "museum") return "museum-";
-  if (catId === "viewpoints") return "viewpoints-";
-  if (catId === "zoo") return "zoo-";
-  if (catId === "hospitals") return "hosp-";
-  if (catId === "transport") return "trans-";
-  if (catId === "police") return "pol-";
-  if (catId === "bank") return "ban-";
-  if (catId === "atm") return "atm-";
-  if (catId === "firestation") return "fires-";
-  if (catId === "embassy") return "embassy-";
-  if (catId === "consulate") return "consulate-";
-  if (catId === "airport") return "airport-";
-  if (catId === "bus") return "bus-";
-  if (catId === "ferry") return "ferry-";
-  if (catId === "railway") return "railway-";
-  return `${catId}-`;
-}
-
-function getCategoryLayerIds(catId: string, map: mapboxgl.Map): string[] {
-  const prefix = layerPrefixFor(catId);
-  const style = map.getStyle();
-  const layers = style?.layers || [];
-  return layers
-    .filter((l) => l.id?.startsWith?.(prefix) && l.id.endsWith("-points"))
-    .map((l) => l.id);
-}
-
-function openPopupForCategory(
-  catId: string | undefined,
-  lng: number,
-  lat: number,
-  map: mapboxgl.Map,
-) {
-  if (!catId) return;
-  const layerIds = getCategoryLayerIds(catId, map);
-  if (layerIds.length === 0) return;
-
-  const pt = map.project([lng, lat]);
-  const bbox: [mapboxgl.PointLike, mapboxgl.PointLike] = [
-    { x: pt.x - 6, y: pt.y - 6 } as any,
-    { x: pt.x + 6, y: pt.y + 6 } as any,
-  ];
-
-  const hits = map.queryRenderedFeatures(bbox, { layers: layerIds });
-  if (hits.length > 0) {
-    (map as any).fire("click", {
-      point: pt,
-      lngLat: { lng, lat },
-    });
-  }
 }
 
 // —— component ——
@@ -218,13 +153,18 @@ export function LocalPlacesTab({
     const map = mapManager.getMap();
     if (!map) return;
     const [lng, lat] = v.geometry.coordinates;
+    const title =
+      (v.properties?.Name as string) ||
+      (v.properties?.title as string) ||
+      (v.properties?.name as string) ||
+      t("local.untitled");
+    const id = v.properties?.id;
+
+    if (typeof id !== "string") return;
+
+    selectPlace({ id, lng, lat, title });
 
     map.flyTo({ center: [lng, lat], zoom: 14, speed: 1.2 });
-    const once = () => {
-      openPopupForCategory(v.__catId, lng, lat, map);
-      map.off("moveend", once);
-    };
-    map.on("moveend", once);
   };
 
   return (
@@ -265,7 +205,7 @@ export function LocalPlacesTab({
               <Item key={index}
                 variant="default"
                 size="xs"
-                onClick={() => handleSelect(v)}
+                onMouseDown={() => handleSelect(v)}
                 className="hover:bg-primary/10 transition cursor-pointer"
               >
                 <ItemMedia
