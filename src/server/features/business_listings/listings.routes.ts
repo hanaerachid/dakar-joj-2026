@@ -6,7 +6,8 @@ import {
   getBusinessListingById,
   createBusinessListing,
   updateBusinessListing,
-  deleteBusinessListing
+  deleteBusinessListing,
+  setListingVerified
 } from "./listings.service.js";
 import { requireAuth } from "../../middleware/auth.js";
 import { businessListingSchema } from "../../../shared/contracts.js";
@@ -82,4 +83,36 @@ listingRoutes.delete("/:id", async (c) => {
     return fail(c, 404, "NOT_FOUND", "Business listing not found");
   }
   return ok(c, { deleted: true });
+});
+
+listingRoutes.patch("/listings/:id/verify", async (c) => {
+  const denied = requireAuth(c);
+  if (denied) return denied;
+
+  const listingId = c.req.param("id");
+
+  const body = await c.req.json<{
+    verified: boolean;
+  }>();
+
+  if (typeof body.verified !== "boolean") {
+    return fail(c, 400, "BAD_REQUEST", "verified must be a boolean");
+  }
+
+  try {
+    const result = await setListingVerified(
+      listingId,
+      body.verified,
+    );
+
+    if (!result) {
+      return fail(c, 404, "NOT_FOUND", "Listing not found");
+    }
+
+    return ok(c, result);
+  } catch (error) {
+    console.error("Failed to update listing verification:", error);
+
+    return fail(c, 500, "INTERNAL_SERVER_ERROR", "Failed to update listing");
+  }
 });

@@ -25,12 +25,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   listBusinessListings,
   deleteBusinessListing,
+  setListingVerified,
 } from "@/lib/api/submitBusinessListing";
 import { type BreadcrumbConfig, Breadcrumbs } from "@/components/BreadCrumbs";
 import { DataTable } from "@/components/DataTable";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type BusinessListingWithOwner = BusinessListing & {
+  _id?: string;
   verified?: boolean;
   ownerId?: string;
   owner?: {
@@ -94,6 +96,19 @@ export function BusinessPage4Admin() {
       toast.error("Failed to delete the business listing. Please try again.");
     }
   }
+
+  const handleVerify = async (
+    id: any,
+    verified: boolean,
+  ) => {
+    try {
+      await setListingVerified(id, verified);
+
+      // Update your local state / refetch listings
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const columns = columnHelper.columns([
     columnHelper.accessor("photos", {
@@ -184,8 +199,7 @@ export function BusinessPage4Admin() {
                 variant="default"
                 size="default"
                 className="flex items-center justify-center"
-                disabled inert
-              // onClick={() => navigate(`/business/${item._id}`)}
+                onClick={() => handleVerify(item._id, true)}
               >
                 <span >{t("admin.approve_listing", "Verify")}</span>
               </Button>

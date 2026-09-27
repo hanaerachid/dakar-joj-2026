@@ -245,3 +245,33 @@ export async function deleteBusinessListing(id: string, actor: ListingActor) {
 
   return result.deletedCount === 1;
 }
+
+export async function setListingVerified(
+  listingId: string,
+  verified: boolean,
+) {
+  const db = await getMongoDatabase();
+  const collection = db.collection<BusinessListingDocument>("listings");
+
+  if (!ObjectId.isValid(listingId)) {
+    throw new Error("Invalid listing ID");
+  }
+
+  const result = await collection.updateOne(
+    { _id: new ObjectId(listingId) },
+    {
+      $set: {
+        verified,
+        updatedAt: new Date(),
+      },
+    },
+  );
+
+  if (result.matchedCount === 0) {
+    return null;
+  }
+
+  return {
+    verified,
+  };
+}
