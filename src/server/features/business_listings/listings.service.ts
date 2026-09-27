@@ -18,19 +18,58 @@ export type ListingActor = Pick<SessionUser, "uid" | "role">;
 
 export function buildListingFilter(
   id: string,
-  actor: ListingActor,
+  actor?: ListingActor,
 ): Filter<BusinessListingDocument> {
-  const ownershipFilter = actor.role === "admin" ? {} : { ownerId: actor.uid };
+  const idFilterValue = idFilter(id);
+
+  // Admins can access everything.
+  if (actor?.role === "admin") {
+    return idFilterValue as Filter<BusinessListingDocument>;
+  }
+
+  // Anonymous users can only access verified listings.
+  if (!actor) {
+    return {
+      ...idFilterValue,
+      verified: true,
+    } as Filter<BusinessListingDocument>;
+  }
+
+  // Authenticated users can access:
+  // - their own listings, regardless of verification
+  // - other people's verified listings
   return {
-    ...idFilter(id),
-    ...ownershipFilter,
+    ...idFilterValue,
+    $or: [
+      { ownerId: actor.uid },
+      { verified: true },
+    ],
   } as Filter<BusinessListingDocument>;
 }
 
 export function buildListingListFilter(
-  actor: ListingActor,
+  actor?: ListingActor,
 ): Filter<BusinessListingDocument> {
-  return actor.role === "admin" ? {} : { ownerId: actor.uid };
+  // Admins can see everything.
+  if (actor?.role === "admin") {
+    return {};
+  }
+
+  // Anonymous users: verified listings only.
+  if (!actor) {
+    return {
+      verified: true,
+    };
+  }
+
+  // Authenticated users:
+  // their own listings OR any verified listing.
+  return {
+    $or: [
+      { ownerId: actor.uid },
+      { verified: true },
+    ],
+  };
 }
 
 function buildPayload(input: any, includeCreatedAt = true) {
@@ -54,7 +93,7 @@ function buildCreateDocument(input: any) {
   };
 }
 
-export async function listBusinessListings(actor: ListingActor) {
+export async function listBusinessListings(actor?: ListingActor) {
   const db = await getMongoDatabase();
   const collection = db.collection<BusinessListingDocument>("listings");
 
@@ -67,24 +106,51 @@ export async function listBusinessListings(actor: ListingActor) {
   }));
 }
 
-export async function getBusinessListingById(id: string, actor: ListingActor) {
+export async function getBusinessListingById(
+  id: string,
+  actor?: ListingActor,
+) {
   const db = await getMongoDatabase();
   const collection = db.collection<BusinessListingDocument>("listings");
 
-  const identifierFilter: Filter<BusinessListingDocument> = ObjectId.isValid(id)
-    ? { _id: { $in: [id, new ObjectId(id)] } }
-    : ({ name: id } as any);
+  const identifierFilter: Filter<BusinessListingDocument> =
+    ObjectId.isValid(id)
+      ? { _id: { $in: [id, new ObjectId(id)] } }
+      : ({ name: id } as Filter<BusinessListingDocument>);
+
   const filter = {
     ...identifierFilter,
-    ...buildListingListFilter(actor),
+    ...buildListingListFilterForSingleListing(actor),
   } as Filter<BusinessListingDocument>;
 
   const doc = await collection.findOne(filter);
+
   if (!doc) return null;
 
   return {
     ...doc,
     _id: doc._id.toString(),
+  };
+}
+
+function buildListingListFilterForSingleListing(
+  actor?: ListingActor,
+): Filter<BusinessListingDocument> {
+  if (actor?.role === "admin") {
+    return {};
+  }
+
+  if (!actor) {
+    return {
+      verified: true,
+    };
+  }
+
+  return {
+    $or: [
+      { ownerId: actor.uid },
+      { verified: true },
+    ],
   };
 }
 

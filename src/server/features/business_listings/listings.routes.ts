@@ -24,10 +24,7 @@ function unauthorized(c: Context) {
 }
 
 listingRoutes.get("/", async (c) => {
-  const denied = requireAuth(c);
-  if (denied) return denied;
   const user = c.get("user");
-  if (!user) return unauthorized(c);
 
   const listings = await listBusinessListings(user);
 
@@ -35,12 +32,9 @@ listingRoutes.get("/", async (c) => {
 });
 
 listingRoutes.get("/:id", async (c) => {
-  const denied = requireAuth(c);
-  if (denied) return denied;
   const user = c.get("user");
-  if (!user) return unauthorized(c);
-
   const id = c.req.param("id");
+
   const listing = await getBusinessListingById(id, user);
 
   if (!listing) {
