@@ -1,6 +1,7 @@
 // src/pages/MapPage.tsx
 import { useEffect, useRef, useState } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { cn } from "cn";
 import { MapManager } from "../../core/MapManager";
 import { Sidebar } from "../../components/Sidebar";
 import { HeaderBar } from "../../components/header/HeaderBar";
@@ -11,6 +12,36 @@ import { useModalContext } from "@/components/modal-provider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SidePanel } from "@/components/side-panel/core";
 import { useStateContext } from "@/components/state-provider";
+import { Item, ItemContent } from "@/components/ui/item";
+
+const Countdown = ({ targetedDate }: { targetedDate: Date }) => {
+  const { t } = useTranslation();
+  const targetDate = targetedDate.getTime();
+  const [timeLeft, setTimeLeft] = useState(targetDate - Date.now());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(targetDate - Date.now());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [targetDate]);
+
+  if (timeLeft <= 0) {
+    return <span>{t("home.event_is_here", "The event is here!")}</span>;
+  }
+
+  const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+
+  return (
+    <div>
+      <span className="uppercase text-[#f2b705] text-base font-mono font-semibold">{t("home.d", "d")}</span>
+      &minus;
+      <span className="text-[#f2b705] text-base font-mono font-semibold">{days}</span>
+    </div>
+  );
+}
+
 
 export default function MapPage() {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -100,7 +131,26 @@ export default function MapPage() {
         title={t("title")}
         description={t("description")}
         onReset={handleReset}
-      />
+      >
+        <Item
+          size="xs"
+          variant="outline"
+          className={cn(
+            "flex items-center py-1.25",
+            "w-fit bg-gradient-to-b from-[#f2b705]/10 to-[#f2b705]/5",
+          )}
+        >
+          <ItemContent>
+            <Countdown targetedDate={new Date("2026-10-31T00:00:00")} />
+          </ItemContent>
+
+          <ItemContent>
+            <span className="uppercase text-muted-foreground text-xs">
+              31 Oct - 13 Nov
+            </span>
+          </ItemContent>
+        </Item>
+      </HeaderBar>
       {/* Top-left: Admin link (only if admin) */}
 
       {/* Sidebar (original) */}

@@ -51,7 +51,7 @@ import {
 } from "@/lib/api/submitBusinessListing";
 import type { BusinessListing } from "@/shared/contracts";
 
-export default function Countdown({ targetedDate }: { targetedDate: Date }) {
+function Countdown({ targetedDate }: { targetedDate: Date }) {
   const { t } = useTranslation();
 
   const targetDate = targetedDate.getTime();
@@ -483,7 +483,7 @@ const StatsContent = () => {
             >
               <ItemContent>
                 <ItemDescription className="flex items-center gap-2">
-                  <span className="text-5xl ">{item.value}</span>
+                  <span className="text-4xl md:text-5xl">{item.value}</span>
                 </ItemDescription>
                 <ItemTitle>
                   {item.title}

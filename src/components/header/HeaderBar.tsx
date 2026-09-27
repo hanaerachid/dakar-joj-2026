@@ -52,10 +52,10 @@ export function HeaderBar({
 
         {/* center: title */}
         <div className=" flex-1 min-w-0 px-1 ">
-          <h1 className="font-heading text-xs font-bold text-foreground text-center uppercase leading-tight sm:px-2 sm:text-lg line-clamp-2">
+          <h1 className="font-heading text-xs font-bold text-foreground text-center uppercase leading-tight sm:px-2 sm:text-base line-clamp-1">
             {title}
           </h1>
-          <p className="font-sans text-xs font-normal text-muted-foreground text-center uppercase leading-tight sm:px-2 sm:text-lg line-clamp-2">
+          <p className="font-sans text-xs font-normal text-muted-foreground text-center uppercase leading-tight sm:px-2 sm:text-base line-clamp-1">
             {description}
           </p>
         </div>
