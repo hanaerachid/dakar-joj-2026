@@ -199,21 +199,21 @@ export const MAIN_CATEGORIES = [
   {
     id: "health",
     icon: Cross,
-    color: "#f63b3b",
+    color: "#f63333",
     label: "Health",
     categories: ["hospitals"]
   },
   {
     id: "security",
     icon: Siren,
-    color: "#f63b3b",
+    color: "#f6573b",
     label: "Security",
     categories: ["police"]
   },
   {
     id: "services",
     icon: Store,
-    color: "#3bf641",
+    color: "#14bfb3",
     label: "Services",
     categories: ["bank", "atm", "firestation", "embassy", "consulate"]
   },

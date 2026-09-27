@@ -1,10 +1,11 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { SignInButton, useAuth, useUser } from "@clerk/clerk-react";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
@@ -25,7 +26,7 @@ export const BusinessContent = () => {
       : "discover";
   const plan = PRICING_PLANS[planId];
 
-  const { label, features, desc } = plan;
+  const { label, features, limitations, desc } = plan;
 
   return (
     <div className="flex flex-col gap-4 py-4">
@@ -46,61 +47,67 @@ export const BusinessContent = () => {
             <h2 className="text-xs text-muted-foreground uppercase">
               {t("business.current_plan", "Current plan")}
             </h2>
-        <Card size="sm">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between gap-1">
-              <span
-                className="text-lg text-muted-foreground font-bold uppercase"
-              >
-                {label}
-              </span>
-                  {planId === "discover" && (
+            <Card size="sm">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between gap-1">
+                  <span
+                    className="text-lg text-muted-foreground font-bold uppercase"
+                  >
+                    {label}
+                  </span>
+                </CardTitle>
+                <CardDescription className="flex items-center gap-2">
+                  {desc}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {features.map((item, index) => (
+                  <CardDescription
+                    key={index}
+                    className="flex justfiy-start gap-2 py-2 text-sm text-foreground"
+                  >
+                    <Check className="w-4 h-4 text-primary" />
+                    <span>
+                      {item}
+                    </span>
+                  </CardDescription>
+                ))}
+                {limitations.map((item, index) => (
+                  <CardDescription
+                    key={index}
+                    className="flex justfiy-start gap-2 py-2 text-sm text-muted-foreground"
+                  >
+                    <X className="w-4 h-4 text-destructive" />
+                    <span>
+                      {item}
+                    </span>
+                  </CardDescription>
+                ))}
+              </CardContent>
+              <CardFooter className="flex flex-col gap-2">
+                <CardAction className="w-full">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => navigate("/business")}
+                  >
+                    {t("business.manage_business", "Manage your business")}
+                  </Button>
+                </CardAction>
+                {planId === "discover" && (
+                  <CardAction className="w-full">
                     <Button
-                      variant="link"
+                      variant="default"
+                      className="w-full"
                       onClick={() => navigate("/pricing")}
                     >
                       Upgrade
                     </Button>
-                  )}
-            </CardTitle>
-            <CardDescription className="flex items-center gap-2">
-              {desc}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {features.map((feature, index) => (
-              <CardDescription
-                key={index}
-                className="flex justfiy-start gap-2 text-sm"
-              >
-                <Check className="w-4 h-4 text-primary" />
-                <span>
-                  {feature}
-                </span>
-              </CardDescription>
-            ))}
-          </CardContent>
-          <CardFooter>
-            {planId === "discover" ? (
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => navigate("/business")}
-              >
-                {t("business.manage_business", "Manage your business")}
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => navigate("/business")}
-              >
-                {t("business.manage_business", "Manage your business")}
-              </Button>
-            )}
-          </CardFooter>
-        </Card>
-        </>
+                  </CardAction>
+                )}
+              </CardFooter>
+            </Card>
+          </>
         ) : (
           <>
             <Button
