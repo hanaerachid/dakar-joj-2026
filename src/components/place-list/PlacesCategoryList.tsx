@@ -100,9 +100,6 @@ export function PlacesCategoryList(props: Props) {
                 <span className="font-medium text-foreground" >
                   {main.label}
                 </span>
-                <Badge variant="secondary" >
-                  {children.length}
-                </Badge>
               </h2>
 
               {/* Checkbox + label */}
@@ -225,7 +222,7 @@ export function PlacesCategoryList(props: Props) {
                             </ToggleGroup>
 
                             {/* Filtered venues */}
-                            <ItemGroup className="flex-col gap-2">
+                            <ItemGroup>
                               {Object.entries(grouped)
                                 .filter(([zone]) => selectedZones.has(zone))
                                 .flatMap(([zone, list]) =>
@@ -270,12 +267,17 @@ export function PlacesCategoryList(props: Props) {
                                             handleClick(lng, lat, title, id);
                                           }}
                                           className={cn(
-                                            "w-full cursor-pointer transition text-sm font-medium",
-                                            (selectedTitle === title) ? "bg-primary/70 font-semibold" : "hover:bg-primary/10"
+                                            "w-full cursor-pointer transition",
+                                            (selectedTitle === title) ? "bg-primary/70" : "hover:bg-primary/10"
                                           )}
                                         >
                                           <ItemContent>
-                                            <ItemTitle>
+                                            <ItemTitle
+                                              className={cn(
+                                                "text-sm font-medium",
+                                                (selectedTitle === title) && "font-semibold"
+                                              )}
+                                            >
                                               {title}
                                             </ItemTitle>
 
