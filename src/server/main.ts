@@ -12,9 +12,10 @@ import { env } from "./config/env.js";
 import { authRoutes } from "./features/auth/auth.routes.js";
 import { zonesRoutes } from "./features/zones/zones.routes.js";
 import { placesRoutes } from "./features/places/places.routes.js";
-import { contentRoutes } from "./features/content/content.routes.js";
+import { newsRoutes } from "./features/news/news.routes.js";
 import { torchRoutes } from "./features/torch/torch.routes.js";
 import { listingRoutes } from "./features/business_listings/listings.routes.js";
+import { metadataRoutes } from "./features/metadata/metadata.routes.js";
 import { uploadRoutes } from "./features/uploads/upload.routes.js";
 import { itineraryRoutes } from "./features/itinerary/itinerary.routes.js";
 import { eventRoutes } from "./features/events/events.routes.js";
@@ -67,7 +68,8 @@ v2Routes.route("/places", placesRoutes);
 v2Routes.route("/torch", torchRoutes);
 v2Routes.route("/events", eventRoutes);
 v2Routes.route("/business/listings", listingRoutes);
-v2Routes.route("/", contentRoutes);
+v2Routes.route("/metadata", metadataRoutes);
+v2Routes.route("/news", newsRoutes);
 
 const itineraryCoordinateSchema = z
   .tuple([z.number(), z.number()])
