@@ -245,7 +245,7 @@ export const HomeContent = () => {
         </h2>
 
         {loading && (
-          <div className="col-span-full grid gap-1 grid-cols-3">
+          <div className="col-span-full grid gap-1 grid-cols-2 lg:grid-cols-3">
             {[...Array(3)].map((_, i) => (
               <Skeleton key={i} className="aspect-square overflow-hidden rounded-3xl p-4 space-y-3" >
                 <Skeleton className="h-4 w-1/2 rounded bg-foreground/20" />
