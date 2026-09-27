@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { ok, fail } from "../../http/response.js";
-import { fetchUrlMetadata } from "./metadata.service";
+import { fetchUrlMetadata } from "./metadata.service.js";
 
 export const metadataRoutes = new Hono();
 
