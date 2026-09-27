@@ -44,6 +44,17 @@ export function AdminShell() {
               <NavigationMenuLink
                 // className={navigationMenuTriggerStyle()}
                 render={<Link
+                  to="/admin/listings"
+                  className="inline-flex items-center gap-2 py-2"
+                />}
+              >
+                {t("business_listings", "Business Listongs")}
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink
+                // className={navigationMenuTriggerStyle()}
+                render={<Link
                   to="/admin/torch"
                   className="inline-flex items-center gap-2 py-2"
                 />}

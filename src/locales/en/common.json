@@ -4,6 +4,8 @@
   "hello": "Hello, {{name}}!",
   "back_to_map": "Back to map",
   "admin_panel": "Admin Panel",
+  "torch_stops": "Torch Stops",
+  "business_listings": "Business Listings",
   "places": "Places",
   "new_place": "New place",
   "no_image": "No image",
@@ -118,7 +120,9 @@
     "admin": "Administration",
     "places": "Places",
     "new_place": "New place",
-    "import_place": "Import places"
+    "import_place": "Import places",
+    "approve_listing": "Approve",
+    "verified_business": "Verified"
   },
   "search.title": "Search Places",
   "search.placeholder": "Search Places",

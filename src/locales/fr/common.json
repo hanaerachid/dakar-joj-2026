@@ -4,6 +4,8 @@
   "hello": "Hello, {{name}}!",
   "back_to_map": "Retour à la carte",
   "admin_panel": "Panneau d'administration",
+  "torch_stops": "Arrêts de la flamme",
+  "business_listings": "Etablissements",
   "places": "Lieux",
   "new_place": "Nouveau lieu",
   "no_image": "Pas d'image",
@@ -118,7 +120,9 @@
     "admin": "Administration",
     "places": "Lieux",
     "new_place": "Nouveau lieu",
-    "import_place": "Importer des lieux"
+    "import_place": "Importer des lieux",
+    "approve_listing": "Approver",
+    "verified_business": "Vérifié"
   },
   "search.title": "Rechercher des lieux",
   "search.placeholder": "Rechercher des lieux",
