@@ -1,8 +1,8 @@
 // src/admin/places/PlaceDetailsPage.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner"
-import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
@@ -17,6 +17,7 @@ import { ALL_SPORT_OPTIONS } from "../../data/sports";
 import { Section } from "@/components/common/Section";
 import { ColorInput } from "@/components/common/ColorInput";
 import { TextInput } from "@/components/common/TextInput";
+import { type BreadcrumbConfig, Breadcrumbs } from "@/components/BreadCrumbs";
 
 /* ---------- Helpers for root vs zone scoped docs ---------- */
 const isRoot = (z?: string | null) => !z || z === "root";
@@ -70,6 +71,7 @@ export type Place = {
    ==================================================== */
 export function PlaceDetailsPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const params = useParams();
   const zoneParam = params.zoneId; // may be "root"
   const placeId = params.placeId!;
@@ -106,6 +108,15 @@ export function PlaceDetailsPage() {
 
   // competition-only
   const [sports, setSports] = useState<VenueSport[]>([]);
+
+  const breadcrumbConfig: BreadcrumbConfig = {
+    "/admin": {
+      label: t("admin.admin", "Administration"),
+    },
+    "/admin/places": {
+      label: t("admin.places", "Places"),
+    },
+  }
 
 
   const canSave = !!placeId && !!name && lat !== "" && lng !== "" && !saving;
@@ -253,17 +264,12 @@ export function PlaceDetailsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-6">
-      {/* Top bar */}
+    <div className="mx-auto max-w-6xl p-4 md:pt-12">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-          >
-            <ArrowLeft />
-            Back
-          </Button>
+        <div className="space-y-6">
+          <Breadcrumbs
+            config={breadcrumbConfig}
+          />
           <div>
             <h2 className="text-xl font-bold tracking-tight">Edit place</h2>
             <p className="mt-1 text-sm text-foreground/70">

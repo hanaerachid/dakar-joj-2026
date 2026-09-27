@@ -6,6 +6,8 @@
   "admin_panel": "Panneau d'administration",
   "places": "Lieux",
   "new_place": "Nouveau lieu",
+  "no_image": "Pas d'image",
+  "edit": "Modifier",
   "actions": {
     "closepanel": "Fermer le panneau",
     "openpanel": "Ouvrir le panneau",
@@ -82,6 +84,13 @@
   },
   "business": {
     "businesses": "Professionnels",
+    "hero_title": "Gérez vos établissements pour les Jeux.",
+    "hero_description": "Des milliers de visiteurs chercheront où dormir, manger, se déplacer et faire leurs achats à Dakar. Publiez vos fiches sur la carte officielle et captez cette audience.",
+    "listings": "Etablissements",
+    "create": "Créer un business",
+    "edit": "Modifier un business",
+    "new_listing": "Nouvelle établissement",
+    "not_found": "Aucun établissement trouvé",
     "listbusiness": "Référencez votre établissement",
     "business_description": "Hôtels, restaurants, boutiques, concessions automobiles, musées, galeries… Rejoignez la carte officielle des visiteurs des Jeux.",
     "selectplan": "Nos plans",
@@ -104,6 +113,12 @@
     "contact_us": "Contactez-nous",
     "recommended": "Recommandé",
     "current_plan": "Plan actuel"
+  },
+  "admin": {
+    "admin": "Administration",
+    "places": "Lieux",
+    "new_place": "Nouveau lieu",
+    "import_place": "Importer des lieux"
   },
   "search.title": "Rechercher des lieux",
   "search.placeholder": "Rechercher des lieux",

@@ -6,6 +6,8 @@
   "admin_panel": "Admin Panel",
   "places": "Places",
   "new_place": "New place",
+  "no_image": "No image",
+  "edit": "Edit",
   "actions": {
     "closepanel": "Close Panel",
     "openpanel": "Open Panel",
@@ -82,6 +84,13 @@
   },
   "business": {
     "businesses": "Businesses",
+    "hero_title": "Manage your business for the Games.",
+    "hero_description": "Thousands of visitors will be looking for where to sleep, eat, get around and shop in Dakar. Publish your listings on the official map and capture this audience.",
+    "listings": "Listings",
+    "create": "Create Business",
+    "edit": "Edit Business",
+    "new_listing": "New business listing",
+    "not_found": "No business listings found",
     "listbusiness": "List your business",
     "business_description": "Hotels, restaurants, shops, car dealerships, museums, galleries — join the official visitor map.",
     "selectplan": "Our plans",
@@ -104,6 +113,12 @@
     "contact_us": "Contact us",
     "recommended": "Recommended",
     "current_plan": "Current plan"
+  },
+  "admin": {
+    "admin": "Administration",
+    "places": "Places",
+    "new_place": "New place",
+    "import_place": "Import places"
   },
   "search.title": "Search Places",
   "search.placeholder": "Search Places",

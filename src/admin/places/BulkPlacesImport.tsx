@@ -1,11 +1,9 @@
 // src/admin/places/BulkPlacesImport.tsx
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { importPlaces, listPlaces, listZones } from "../../lib/api/places";
 import { Section } from "../../components/common/Section";
 import { Button } from "@/components/ui/button";
-import { CATEGORIES } from "../../components/place-list/place-list-utils";
-import { ArrowLeft } from "lucide-react";
 import { Field, FieldLabel } from "@/components/ui/field";
 import {
   Table,
@@ -14,7 +12,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
+import { CATEGORIES } from "../../components/place-list/place-list-utils";
+import { type BreadcrumbConfig, Breadcrumbs } from "@/components/BreadCrumbs";
 
 // ---- Types ----
 type Zone = { id: string; name: string; color: string; categoryId: string };
@@ -205,7 +205,7 @@ function maybeToLonLat(
 }
 
 export default function BulkPlacesImport() {
-  const navigate = useNavigate();
+  const { t } = useTranslation();
   const [categoryId, setCategoryId] = useState("competition");
   const [zones, setZones] = useState<Zone[]>([]);
   const [zonesLoading, setZonesLoading] = useState(false);
@@ -243,6 +243,18 @@ export default function BulkPlacesImport() {
   const [skipDuplicates, setSkipDuplicates] = useState(true);
   const [importing, setImporting] = useState(false);
   const [log, setLog] = useState<string[]>([]);
+
+  const breadcrumbConfig: BreadcrumbConfig = {
+    "/admin": {
+      label: t("admin.admin", "Administration"),
+    },
+    "/admin/places": {
+      label: t("admin.places", "Places"),
+    },
+    "/admin/places/import": {
+      label: t("admin.import_place", "Import Places"),
+    },
+  }
 
   const pushLog = (s: string) =>
     setLog((prev) => [...prev, `${new Date().toLocaleTimeString()}  ${s}`]);
@@ -524,16 +536,12 @@ export default function BulkPlacesImport() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-6">
+    <div className="mx-auto max-w-6xl p-4 md:pt-12">
       <div className="mb-5 flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-          >
-            <ArrowLeft />
-            Back
-          </Button>
+        <div className="space-y-6">
+          <Breadcrumbs
+            config={breadcrumbConfig}
+          />
           <div>
             <h2 className="text-xl font-bold tracking-tight">
               Bulk Import Places (GeoJSON)

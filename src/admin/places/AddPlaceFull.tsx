@@ -1,8 +1,6 @@
 // src/admin/places/AddPlaceFull.tsx
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner"
-import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { listZones, createPlace } from "../../lib/api/places";
@@ -14,7 +12,9 @@ import { Section } from "@/components/common/Section";
 import BasicDetailsFields from "@/components/admin/places/BasicDetailsFields";
 import CategoryZoneFields from "@/components/admin/places/CategoryZoneFields";
 import { CATEGORIES } from "@/components/place-list/place-list-utils";
+import { type BreadcrumbConfig, Breadcrumbs } from "@/components/BreadCrumbs";
 import { ALL_SPORT_OPTIONS } from "../../data/sports";
+import { useTranslation } from "react-i18next";
 /* ---------------------------------------------
    Types & constants
 --------------------------------------------- */
@@ -31,7 +31,7 @@ export const DEFAULT_COMP_ZONES = [
    Main component
 --------------------------------------------- */
 export default function AddPlaceFull() {
-  const navigate = useNavigate();
+  const { t } = useTranslation();
   // data loads
   const [categoryId, setCategoryId] = useState("competition");
 
@@ -72,6 +72,18 @@ export default function AddPlaceFull() {
   // competition-only
   const [sports, setSports] = useState<VenueSport[]>([]);
   const [sportsTouched, setSportsTouched] = useState(false);
+
+  const breadcrumbConfig: BreadcrumbConfig = {
+    "/admin": {
+      label: t("admin.admin", "Administration"),
+    },
+    "/admin/places": {
+      label: t("admin.places", "Places"),
+    },
+    "/admin/places/new": {
+      label: t("admin.new_place", "Create Place"),
+    },
+  }
 
   /* ---------------------------------------------
      Zones: fetch helpers + seeding
@@ -257,17 +269,13 @@ export default function AddPlaceFull() {
   const hasFallback = zonesPrimary.length === 0 && zonesFallback.length > 0;
 
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-6">
+    <div className="mx-auto max-w-6xl p-4 md:pt-12">
       {/* Header */}
       <div className="mb-5 flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-          >
-            <ArrowLeft />
-            Back
-          </Button>
+        <div className="space-y-6">
+          <Breadcrumbs
+            config={breadcrumbConfig}
+          />
           <div>
             <h2 className="text-xl font-bold tracking-tight">Add a Place</h2>
             <p className="mt-1 text-sm text-foreground/70">

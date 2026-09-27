@@ -61,6 +61,7 @@ import {
   updateBusinessListing,
   deleteBusinessListing,
 } from "@/lib/api/submitBusinessListing";
+import { type BreadcrumbConfig, Breadcrumbs } from "@/components/BreadCrumbs";
 
 const STEP_FIELDS: Record<number, (keyof BusinessCreateValues)[]> = {
   0: ["cat"],
@@ -71,12 +72,19 @@ const STEP_FIELDS: Record<number, (keyof BusinessCreateValues)[]> = {
 };
 
 export function BusinessPage() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [businessListings, setBusinessListings] = useState<BusinessListing[]>([]);
   // const [search, setSearch] = useState("");
   // const [sort, setSort] = useState<"updated" | "name">("updated");
+
+  const breadcrumbConfig: BreadcrumbConfig = {
+    "/business": {
+      label: t("business.businesses", "Businesses"),
+    },
+  }
 
   async function loadBusinessListings() {
     setLoading(true);
@@ -133,19 +141,22 @@ export function BusinessPage() {
   }
 
   return (
-      <div className="mx-auto max-w-6xl pt-24 pb-8 space-y-6">
+      <div className="mx-auto max-w-6xl pt-16 pb-8 space-y-6">
+        <Breadcrumbs
+          config={breadcrumbConfig}
+        />
         <Card>
           <CardHeader>
             <Badge variant="secondary">
-              Bonjour
+              {t("hello", "Bonjour", { name: user?.firstName || user?.fullName || "User" })}
             </Badge>
           </CardHeader>
           <CardContent>
             <CardTitle className="max-w-xl">
-              {t("business_hero_title", "Gérez vos établissements pour les Jeux.")}
+              {t("business.hero_title", "Gérez vos établissements pour les Jeux.")}
             </CardTitle>
             <CardDescription className="max-w-xl">
-              {t("business_hero_description", "Des milliers de visiteurs chercheront où dormir, manger, se déplacer et faire leurs achats à Dakar. Publiez vos fiches sur la carte officielle et captez cette audience.")}
+              {t("business.hero_description", "Des milliers de visiteurs chercheront où dormir, manger, se déplacer et faire leurs achats à Dakar. Publiez vos fiches sur la carte officielle et captez cette audience.")}
             </CardDescription>
           </CardContent>
           <CardFooter>
@@ -157,7 +168,7 @@ export function BusinessPage() {
                 className="inline-flex items-center gap-2"
               >
                 <Plus />
-                <span>{t("new_listing", "New business listing")}</span>
+                <span>{t("business.new_listing", "New business listing")}</span>
               </Button>
             </CardAction>
           </CardFooter>
@@ -168,7 +179,7 @@ export function BusinessPage() {
             {/* Title + subtitle */}
             <div className="min-w-0">
               <h2 className="flex items-center gap-2 text-lg md:text-xl font-semibold tracking-tight text-foreground/90">
-                <span className="truncate">Business listings</span>
+                <span className="truncate">{t("business.listings", "Business listings")}</span>
               </h2>
             </div>
 
@@ -180,7 +191,7 @@ export function BusinessPage() {
                 className="inline-flex items-center gap-2"
               >
                 <Plus />
-                <span>{t("new_listing", "New business listing")}</span>
+                <span>{t("business.new_listing", "New business listing")}</span>
               </Button>
             </div>
           </div>
@@ -207,7 +218,7 @@ export function BusinessPage() {
             <Empty className="col-span-full border border-foreground/30 p-8 text-foreground/50 shadow-sm">
               <EmptyHeader>
                 <EmptyDescription className="text-center text-sm text-foreground/50">
-                  {t("not_found", "No business listings found")}
+                  {t("business.not_found", "No business listings found")}
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
@@ -217,7 +228,7 @@ export function BusinessPage() {
                   className="inline-flex items-center gap-2"
                 >
                   <Plus />
-                  <span>{t("new_listing", "New business listing")}</span>
+                  <span>{t("business.new_listing", "New business listing")}</span>
                 </Button>
               </EmptyContent>
             </Empty>
@@ -268,7 +279,7 @@ export function BusinessPage() {
                     {/* image */}
                     {item.photos && item.photos.length > 0 ? (
                     <>
-                      <div className="absolute bg-gradient-to-b from-background/80 to-transparent w-full aspect-video object-cover"/>
+                      <div className="absolute bg-gradient-to-b from-background to-transparent w-full h-1/4 aspect-video object-cover"/>
                       <img
                         src={item.photos[0]}
                         alt={item.name}
@@ -338,6 +349,16 @@ export function BusinessCreate() {
   const { user } = useUser();
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+
+  const breadcrumbConfig: BreadcrumbConfig = {
+    "/business": {
+      label: t("business.businesses", "Businesses"),
+    },
+
+    "/create": {
+      label: t("business.create", "Create Business"),
+    },
+  }
 
   const metadataPlan = user?.publicMetadata?.plan;
   const selectedPlan =
@@ -474,13 +495,16 @@ export function BusinessCreate() {
 
   return (
 
-      <div className="pt-24 pb-8">
+      <div className="pt-16 pb-8">
         <FormProvider {...form}>
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="mx-auto w-full max-w-3xl space-y-6"
           >
             <div className="space-y-2">
+              <Breadcrumbs
+                 config={breadcrumbConfig}
+              />
               <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold">
                   {t(
@@ -555,6 +579,16 @@ export function BusinessEdit() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  const breadcrumbConfig: BreadcrumbConfig = {
+    "/business": {
+      label: t("business.businesses", "Businesses"),
+    },
+
+    "/business/listings": {
+      label: t("business.listings", "Listings"),
+    },
+  }
 
   const form = useForm({
     resolver: zodResolver(businessCreateSchema),
@@ -692,8 +726,9 @@ export function BusinessEdit() {
   };
 
   return (
-      <div className="pt-24 pb-8">
+      <div className="pt-16 pb-8">
         <div className="mx-auto w-full max-w-3xl">
+
           {loading && <Skeleton className="h-[38rem] w-full" />}
 
           {!loading && loadError && (
@@ -703,10 +738,16 @@ export function BusinessEdit() {
               </EmptyHeader>
             </Empty>
           )}
+        </div>
 
           {!loading && !loadError && (
             <FormProvider {...form}>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={handleSubmit(onSubmit)} className="mx-auto w-full max-w-3xl space-y-6">
+              <div className="space-y-2">
+                <Breadcrumbs
+                  config={breadcrumbConfig}
+                />
+              </div>
                 <Card>
                   <CardHeader>
                     <CardTitle>{t("businessEdit.title", "Edit business listing")}</CardTitle>
@@ -730,7 +771,6 @@ export function BusinessEdit() {
               </form>
             </FormProvider>
           )}
-        </div>
       </div>
   )
 }
