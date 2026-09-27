@@ -243,8 +243,9 @@ export const HomeContent = () => {
         <h2 className="text-xs text-muted-foreground uppercase">
           {t("home.around_me", "Around Me")}
         </h2>
+
         {loading && (
-          <div className="col-span-full grid gap-1 md:grid-cols-2 xl:grid-cols-3">
+          <div className="col-span-full grid gap-1 grid-cols-3">
             {[...Array(3)].map((_, i) => (
               <Skeleton key={i} className="aspect-square overflow-hidden rounded-3xl p-4 space-y-3" >
                 <Skeleton className="h-4 w-1/2 rounded bg-foreground/20" />
@@ -282,8 +283,15 @@ export const HomeContent = () => {
                     <Item
                       size="sm"
                       variant="outline"
-                      className="relative aspect-square bg-cover overflow-hidden"
-                      style={{ backgroundImage: `url(${item.photos[0]})` }}
+                      className={cn(
+                        "group relative aspect-square bg-cover overflow-hidden",
+                      )}
+                      style={{
+                        backgroundImage: `url(${item.photos[0]})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        backgroundRepeat: "no-repeat",
+                      }}
                     >
                       <Badge
                         className="absolute start-2 top-2 z-20"
@@ -291,10 +299,24 @@ export const HomeContent = () => {
                       >
                         {getFriendlyCategoryName(item.cat)}
                       </Badge>
-                      <ItemContent className="flex-col justify-end absolute h-full bottom-0 left-0 right-0 bg-gradient-to-t from-background/70 to-transparent p-2">
-                        <CardTitle className="font-semibold text-sm leading-tight">
+                      <ItemMedia variant="default" className="h-full absolute inset-0"
+                        style={{
+                          backgroundImage: `url(${item.photos[0]})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                          backgroundRepeat: "no-repeat",
+                        }}
+                      />
+                      <ItemContent className="flex-col justify-end absolute h-1/2 bottom-0 left-0 right-0 bg-gradient-to-t from-background to-transparent p-2">
+                        <ItemTitle
+                          title={item.name}
+                          className={cn(
+                            "w-full line-clamp-1 overflow-hidden text-ellipsis",
+                            "text-sm leading-tight"
+                          )}
+                        >
                           {item.name}
-                        </CardTitle>
+                        </ItemTitle>
                       </ItemContent>
                     </Item>
                   </CarouselItem>)
