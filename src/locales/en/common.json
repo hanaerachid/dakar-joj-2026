@@ -95,6 +95,16 @@
     "free": "Free",
     "month": "month"
   },
+  "pricing": {
+    "title": "A single pass for the entire campaign",
+    "description": "Pay once: your visibility lasts until the closing of the Games, on November 13, 2026. The earlier you commit, the less you pay.",
+    "manage_business": "Manage your business",
+    "downgrade_to_discover": "Downgrade to Discover",
+    "start": "Start",
+    "contact_us": "Contact us",
+    "recommended": "Recommended",
+    "current_plan": "Current plan"
+  },
   "search.title": "Search Places",
   "search.placeholder": "Search Places",
   "search.tip": "Search places, landmarks, or addresses then select a place to show on the map.",

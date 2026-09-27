@@ -95,6 +95,16 @@
     "free": "Gratuit",
     "month": "mois"
   },
+  "pricing": {
+    "title": "Un pass unique pour toute la campagne",
+    "description": "Payez une fois : votre visibilité court jusqu'à la clôture des Jeux, le 13 novembre 2026. Plus vous vous engagez tôt, moins vous payez.",
+    "manage_business": "Gérer votre business",
+    "downgrade_to_discover": "Passer au plan Découverte",
+    "start": "Commencer",
+    "contact_us": "Contactez-nous",
+    "recommended": "Recommandé",
+    "current_plan": "Plan actuel"
+  },
   "search.title": "Rechercher des lieux",
   "search.placeholder": "Rechercher des lieux",
   "search.tip": "Recherchez des lieux, des monuments ou des adresses puis sélectionnez un lieu pour l’afficher sur la carte.",

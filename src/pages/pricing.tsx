@@ -36,7 +36,7 @@ export function PricingPage() {
     if (isSignedIn) {
       if (planId === currentPlanId && isSignedIn) {
         return {
-          label: t("pricing.manage_business", "Open dashboard"),
+          label: t("pricing.manage_business", "Manage your businessdashboard"),
           action: () => navigate("/business"),
           disabled: false,
           variant: "default" as const,
@@ -98,9 +98,9 @@ export function PricingPage() {
         <div className="mx-auto w-full max-w-7xl space-y-6">
           {/* Header */}
           <div className="mb-12 flex-col items-center items-start justify-between gap-3">
-            <h2 className="text-xl text-center font-bold tracking-tight">Un pass unique pour toute la campagne</h2>
+            <h2 className="text-xl text-center font-bold tracking-tight">{t("pricing.title", "A single pass for the entire campaign")}</h2>
             <p className="mt-1 text-sm text-center text-foreground/70">
-              Payez une fois : votre visibilité court jusqu'à la clôture des Jeux, le 13 novembre 2026. Plus vous vous engagez tôt, moins vous payez.
+              {t("pricing.description", "Pay once: your visibility lasts until the closing of the Games, on November 13, 2026. The earlier you commit, the less you pay.")}
             </p>
           </div>
           <div className="grid gap-2 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
