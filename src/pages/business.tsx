@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeft, MoreVertical, Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { fileToBase64 } from "@/lib/fileConvert";
+import { getFriendlyCategoryName } from "@/utils/key-translations";
 
 import {
   businessCreateSchema,
@@ -113,21 +114,6 @@ export function BusinessPage() {
     void loadBusinessListings();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Define function to get friendly category name (optional, based on your data structure)
-  const getFriendlyCategoryName = (category: string) => {
-    const categoryMap: Record<string, string> = {
-      "restaurant": "Restaurant",
-      "hotel": "Hotel",
-      "store": "Store",
-      "appart": "Appartement",
-      "resto": "Restaurant",
-      "concess": "Concession",
-      "boutique": "Boutique",
-      "galerie": "Galerie",
-    };
-    return categoryMap[category] || category;
-  };
 
   async function handleDeleteBusinessListing(item: BusinessListing) {
     if (!confirm("Delete this business listing? This cannot be undone.")) return;
@@ -246,7 +232,7 @@ export function BusinessPage() {
                     className="absolute start-4 top-4 z-20"
                     variant="secondary"
                   >
-                    {getFriendlyCategoryName(item.cat)}
+                    {getFriendlyCategoryName(item.cat, t)}
                   </Badge>
                   <DropdownMenu>
                     <DropdownMenuTrigger

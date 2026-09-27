@@ -192,6 +192,14 @@
       "defaultTagOutdoor": "Outdoor"
     }
   },
+  "listing_types": {
+    "hotel": "Hotel",
+    "appart": "Appartment",
+    "resto": "Restaurant",
+    "concess": "Concession",
+    "boutique": "Boutique",
+    "gallerie": "Galerie"
+  },
   "placeCategory": {
     "competition": "Competition Sites",
     "training": "Training Sites",

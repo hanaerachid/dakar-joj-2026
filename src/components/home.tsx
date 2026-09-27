@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@clerk/clerk-react";
 import { cn } from "cn";
+import { getFriendlyCategoryName } from "@/utils/key-translations";
 import {
   BriefcaseBusiness,
   Calendar,
@@ -115,20 +116,6 @@ export const HomeContent = () => {
       setLoading(false);
     }
   }
-
-  const getFriendlyCategoryName = (category: string) => {
-    const categoryMap: Record<string, string> = {
-      "restaurant": "Restaurant",
-      "hotel": "Hotel",
-      "store": "Store",
-      "appart": "Appartement",
-      "resto": "Restaurant",
-      "concess": "Concession",
-      "boutique": "Boutique",
-      "galerie": "Galerie",
-    };
-    return categoryMap[category] || category;
-  };
 
   useEffect(() => {
     void loadBusinessListings();
@@ -297,7 +284,7 @@ export const HomeContent = () => {
                         className="absolute start-2 top-2 z-20"
                         variant="secondary"
                       >
-                        {getFriendlyCategoryName(item.cat)}
+                        {getFriendlyCategoryName(item.cat, t)}
                       </Badge>
                       <ItemMedia variant="default" className="h-full absolute inset-0"
                         style={{
