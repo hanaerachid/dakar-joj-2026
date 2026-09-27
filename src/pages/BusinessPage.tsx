@@ -28,16 +28,24 @@ import {
 } from "@/lib/api/submitBusinessListing";
 import { type BreadcrumbConfig, Breadcrumbs } from "@/components/BreadCrumbs";
 import { DataTable } from "@/components/DataTable";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const columnHelper = createColumnHelper<DataTableFeatures, BusinessListing>()
+type BusinessListingWithOwner = BusinessListing & {
+  verified?: boolean;
+  ownerId?: string;
+  owner?: {
+    name?: string;
+    imageUrl?: string;
+  } | null;
+};
+
+const columnHelper = createColumnHelper<DataTableFeatures, BusinessListingWithOwner>()
 
 export function BusinessPage4Admin() {
   const { t } = useTranslation();
   // const { user } = useUser();
   const [loading, setLoading] = useState(false);
-  const [businessListings, setBusinessListings] = useState<BusinessListing[]>([]);
-  // const [search, setSearch] = useState("");
-  // const [sort, setSort] = useState<"updated" | "name">("updated");
+  const [businessListings, setBusinessListings] = useState<BusinessListingWithOwner[]>([]);
 
   const breadcrumbConfig: BreadcrumbConfig = {
     "/admin": {
@@ -120,6 +128,32 @@ export function BusinessPage4Admin() {
         )
       },
     }),
+    columnHelper.accessor("ownerId", {
+      header: "Owner",
+      cell: ({ row }) => {
+        const ownerName = row.original.owner?.name;
+        const ownerPhoto = row.original.owner?.imageUrl;
+        return (
+          <div className="flex items-center justify-start gap-1">
+            <Avatar size="sm">
+              <AvatarImage
+                src={ownerPhoto || undefined}
+                alt={ownerName || "Owner"}
+              />
+
+              <AvatarFallback
+                className="text-xs"
+              >
+                {ownerName ? ownerName[0].toUpperCase() : "?"}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-muted-foreground text-sm">
+              {ownerName ? ownerName : t("admin.unknown_owner", "Unknown")}
+            </span>
+          </div>
+        )
+      }
+    }),
     columnHelper.accessor("pack", {
       header: "Plan",
       cell: ({ row }) => {
@@ -136,7 +170,7 @@ export function BusinessPage4Admin() {
     columnHelper.display({
       id: "actions",
       cell: ({ row }) => {
-        const item: any = row.original
+        const item = row.original
 
         return (
           <div className="flex items-center justify-end gap-2">

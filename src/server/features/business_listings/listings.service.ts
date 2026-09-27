@@ -3,6 +3,11 @@ import { getMongoDatabase } from "../../mongodb/client.js";
 import { businessListingSchema } from "../../../shared/contracts.js";
 import type { SessionUser } from "../../../shared/contracts.js";
 import type z from "zod";
+import { createClerkClient } from "@clerk/backend";
+
+const clerk = createClerkClient({
+  secretKey: process.env.CLERK_SECRET_KEY!,
+});
 
 type BusinessListingDocument = { _id: string | ObjectId;[key: string]: any };
 type BusinessListingPayload = Record<string, any>;
@@ -96,13 +101,53 @@ function buildCreateDocument(input: any) {
 export async function listBusinessListings(actor?: ListingActor) {
   const db = await getMongoDatabase();
   const collection = db.collection<BusinessListingDocument>("listings");
+  const isAdmin = actor?.role === "admin";
 
   const filter = buildListingListFilter(actor);
   const docs = await collection.find(filter).toArray();
 
+  // Only admins can retrieve owner information.
+  if (isAdmin) {
   return docs.map((doc) => ({
     ...doc,
     _id: doc._id.toString(),
+  }));
+  }
+
+  const ownerIds = [
+    ...new Set(
+      docs
+        .map((doc) => doc.ownerId)
+        .filter((id): id is string => Boolean(id))
+    ),
+  ];
+
+  const users = await Promise.all(
+    ownerIds.map((id) => clerk.users.getUser(id))
+  );
+
+  const owners = new Map(
+    users.map((user) => [
+      user.id,
+      {
+        id: user.id,
+        name:
+          [user.firstName, user.lastName]
+            .filter(Boolean)
+            .join(" ") ||
+          user.username ||
+          "Unknown",
+        imageUrl: user.imageUrl,
+      },
+    ])
+  );
+
+  return docs.map((doc) => ({
+    ...doc,
+    _id: doc._id.toString(),
+    owner: doc.ownerId
+      ? owners.get(doc.ownerId) ?? null
+      : null,
   }));
 }
 
