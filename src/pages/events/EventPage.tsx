@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "cn";
 import { Icon } from "@iconify/react";
-import { Pencil, Plus, MoreVertical, ArrowLeft } from "lucide-react";
+import { Pencil, Plus, MoreVertical } from "lucide-react";
 import { toast } from "sonner";
 import {
   listEvents,
@@ -49,6 +49,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { DateTimePicker } from "@/components/date-time-picker";
 import { Section } from "@/components/common/Section";
+import { type BreadcrumbConfig, Breadcrumbs } from "@/components/BreadCrumbs";
+
 import LocationPickerModal from "../../core/map/LocationPickerModal";
 import LocationPickerButton from "../../core/map/LocationPickerButton";
 import { useModalContext } from "@/components/modal-provider";
@@ -98,6 +100,17 @@ export function EventPage() {
   const [events, setEvents] = useState<Event[]>([]);
   // const [search, setSearch] = useState("");
   // const [sort, setSort] = useState<"updated" | "name">("updated");
+  const breadcrumbConfig: BreadcrumbConfig = {
+    "/admin": {
+      label: t("admin.admin", "Administration"),
+    },
+    "/admin/events": {
+      label: t("admin.events", "Events"),
+    },
+    "/admin/events/new": {
+      label: t("admin.new_event", "Create Event"),
+    },
+  }
 
   async function loadEvents() {
     setLoading(true);
@@ -134,7 +147,10 @@ export function EventPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl p-4 md:p-6">
+    <div className="mx-auto max-w-6xl pt-16 pb-8 space-y-6">
+      <Breadcrumbs
+        config={breadcrumbConfig}
+      />
       {/* Top bar */}
       <div className="mb-6">
         <div className="flex flex-wrap items-center justify-between gap-3 md:gap-4">
@@ -439,7 +455,6 @@ export function EventPage() {
 }
 
 export function AddEventPage() {
-  const navigate = useNavigate();
   const { t } = useTranslation();
   // base fields
   const [name, setName] = useState("");
@@ -454,6 +469,15 @@ export function AddEventPage() {
 
   // UX state
   const [saving, setSaving] = useState(false);
+
+  const breadcrumbConfig: BreadcrumbConfig = {
+    "/admin": {
+      label: t("admin.admin", "Administration"),
+    },
+    "/admin/events": {
+      label: t("admin.events", "Events"),
+    },
+  }
 
   const canSave = !!name && lat !== "" && lng !== "" && !saving;
 
@@ -544,14 +568,13 @@ export function AddEventPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-6">
+    <div className="mx-auto max-w-6xl p-4 md:pt-12">
       {/* Header */}
       <div className="mb-5 flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" onClick={() => navigate(-1)}>
-            <ArrowLeft />
-            {t("back", "Back")}
-          </Button>
+        <div className="space-y-6">
+          <Breadcrumbs
+            config={breadcrumbConfig}
+          />
           <div>
             <h2 className="text-xl font-bold tracking-tight">
               {t("events.newevent.title", "Add a Event")}
@@ -638,6 +661,14 @@ export function EditEventPage() {
   const [startAt, setStartAt] = useState<Date | undefined>(undefined);
   const [endAt, setEndAt] = useState<Date | undefined>(undefined);
   const [region, setRegion] = useState("");
+  const breadcrumbConfig: BreadcrumbConfig = {
+    "/admin": {
+      label: t("admin.admin", "Administration"),
+    },
+    "/admin/events": {
+      label: t("admin.events", "Events"),
+    },
+  }
 
   const canSave = !!eventId && !!name && lat !== "" && lng !== "" && !saving;
 
@@ -757,14 +788,13 @@ export function EditEventPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-6">
+    <div className="mx-auto max-w-6xl p-4 md:pt-12">
       {/* Top bar */}
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" onClick={() => navigate(-1)}>
-            <ArrowLeft />
-            Back
-          </Button>
+        <div className="space-y-6">
+          <Breadcrumbs
+            config={breadcrumbConfig}
+          />
           <div>
             <h2 className="text-xl font-bold tracking-tight">
               {t("events.editevent.title", "Edit event")}

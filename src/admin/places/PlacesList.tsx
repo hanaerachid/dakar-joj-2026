@@ -40,6 +40,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/utils/utils";
+import { Breadcrumbs, type BreadcrumbConfig } from "@/components/BreadCrumbs";
 
 /* ---------------- Types ---------------- */
 export type Zone = {
@@ -92,6 +93,14 @@ export function PlacesListPage() {
   const [places, setPlaces] = useState<Place[]>([]);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"updated" | "name">("updated");
+  const breadcrumbConfig: BreadcrumbConfig = {
+    "/admin": {
+      label: t("admin.admin", "Administration"),
+    },
+    "/admin/torch": {
+      label: t("admin.places", "Places"),
+    },
+  }
 
   // load zones for the chosen category
   useEffect(() => {
@@ -178,8 +187,10 @@ export function PlacesListPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl p-4 md:p-6">
-      {/* Top bar */}
+    <div className="mx-auto max-w-6xl pt-16 pb-8 space-y-6">
+      <Breadcrumbs
+        config={breadcrumbConfig}
+      />
       <div className="mb-6">
         <div className="flex flex-wrap items-center justify-between gap-3 md:gap-4">
           {/* Title + subtitle */}

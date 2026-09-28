@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { ArrowLeft, MoreVertical, Pencil, Plus } from "lucide-react";
+import { MoreVertical, Pencil, Plus } from "lucide-react";
 import {
   listTorchStops,
   deleteTorchStop,
@@ -48,6 +48,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 
+import { type BreadcrumbConfig, Breadcrumbs } from "@/components/BreadCrumbs";
 import { DateTimePicker } from "@/components/date-time-picker";
 import { Section } from "@/components/common/Section";
 
@@ -83,6 +84,17 @@ export function TorchPage() {
   const [torchStops, setTorchStops] = useState<TorchStop[]>([]);
   // const [search, setSearch] = useState("");
   // const [sort, setSort] = useState<"updated" | "name">("updated");
+  const breadcrumbConfig: BreadcrumbConfig = {
+    "/admin": {
+      label: t("admin.admin", "Administration"),
+    },
+    "/admin/torch": {
+      label: t("admin.torchstops", "Torch Stops"),
+    },
+    "/admin/torch/new": {
+      label: t("admin.new_torchstop", "Create Torch Stop"),
+    },
+  }
 
   async function loadTorchStops() {
     setLoading(true);
@@ -119,8 +131,10 @@ export function TorchPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl p-4 md:p-6">
-      {/* Top bar */}
+    <div className="mx-auto max-w-6xl pt-16 pb-8 space-y-6">
+      <Breadcrumbs
+        config={breadcrumbConfig}
+      />
       <div className="mb-6">
         <div className="flex flex-wrap items-center justify-between gap-3 md:gap-4">
           {/* Title + subtitle */}
@@ -400,7 +414,6 @@ export function TorchPage() {
 }
 
 export function AddTorchPage() {
-  const navigate = useNavigate();
   const { t } = useTranslation();
   // base fields
   const [name, setName] = useState("");
@@ -414,6 +427,14 @@ export function AddTorchPage() {
 
   // UX state
   const [saving, setSaving] = useState(false);
+  const breadcrumbConfig: BreadcrumbConfig = {
+    "/admin": {
+      label: t("admin.admin", "Administration"),
+    },
+    "/admin/torch": {
+      label: t("admin.torchstops", "Torch Stops"),
+    },
+  }
 
   const canSave = !!name && lat !== "" && lng !== "" && !saving;
 
@@ -472,14 +493,13 @@ export function AddTorchPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-6">
+    <div className="mx-auto max-w-6xl p-4 md:pt-12">
       {/* Header */}
       <div className="mb-5 flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" onClick={() => navigate(-1)}>
-            <ArrowLeft />
-            {t("back", "Back")}
-          </Button>
+        <div className="space-y-6">
+          <Breadcrumbs
+            config={breadcrumbConfig}
+          />
           <div>
             <h2 className="text-xl font-bold tracking-tight">
               {t("torchstops.newtorch.title", "Add a Torch Stop")}
@@ -568,6 +588,14 @@ export function EditTorchPage() {
   const [isMajorStop, setIsMajorStop] = useState(false);
   const [tourDate, setTourDate] = useState<Date | undefined>(undefined);
   const [region, setRegion] = useState("");
+  const breadcrumbConfig: BreadcrumbConfig = {
+    "/admin": {
+      label: t("admin.admin", "Administration"),
+    },
+    "/admin/torch": {
+      label: t("admin.torchstops", "Torch Stops"),
+    },
+  }
 
   const canSave =
     !!torchStopId && !!name && lat !== "" && lng !== "" && !saving;
@@ -652,14 +680,13 @@ export function EditTorchPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-6">
+    <div className="mx-auto max-w-6xl p-4 md:pt-12">
       {/* Top bar */}
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" onClick={() => navigate(-1)}>
-            <ArrowLeft />
-            Back
-          </Button>
+        <div className="space-y-6">
+          <Breadcrumbs
+            config={breadcrumbConfig}
+          />
           <div>
             <h2 className="text-xl font-bold tracking-tight">
               {t("torchstops.edittorch.title", "Edit place")}
