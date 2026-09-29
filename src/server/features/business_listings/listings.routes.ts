@@ -26,8 +26,26 @@ function unauthorized(c: Context) {
 
 listingRoutes.get("/", async (c) => {
   const user = c.get("user");
+  const location = c.req.query("location");
 
-  const listings = await listBusinessListings(user);
+  if (location !== undefined && !/^-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?$/.test(location)) {
+    return fail(c, 400, "BAD_REQUEST", "location must be in the format lat,lon");
+  }
+
+  const coordinates = location?.split(",").map(Number) as
+    | [number, number]
+    | undefined;
+  if (
+    coordinates &&
+    (coordinates[0] < -90 ||
+      coordinates[0] > 90 ||
+      coordinates[1] < -180 ||
+      coordinates[1] > 180)
+  ) {
+    return fail(c, 400, "BAD_REQUEST", "location coordinates are out of range");
+  }
+
+  const listings = await listBusinessListings(user, coordinates);
 
   return ok(c, listings);
 });

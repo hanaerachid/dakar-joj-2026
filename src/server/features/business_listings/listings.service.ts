@@ -20,6 +20,7 @@ function idFilter(id: string) {
 }
 
 export type ListingActor = Pick<SessionUser, "uid" | "role">;
+type ListingCoordinates = readonly [latitude: number, longitude: number];
 
 export function buildListingFilter(
   id: string,
@@ -98,13 +99,50 @@ function buildCreateDocument(input: any) {
   };
 }
 
-export async function listBusinessListings(actor?: ListingActor) {
+function distanceInMeters(
+  from: ListingCoordinates,
+  to: readonly [longitude: number, latitude: number],
+) {
+  const earthRadius = 6371000;
+  const [fromLatitude, fromLongitude] = from.map((value) => (value * Math.PI) / 180);
+  const [toLongitude, toLatitude] = to.map((value) => (value * Math.PI) / 180);
+  const latitudeDelta = toLatitude - fromLatitude;
+  const longitudeDelta = toLongitude - fromLongitude;
+  const haversine =
+    Math.sin(latitudeDelta / 2) ** 2 +
+    Math.cos(fromLatitude) *
+      Math.cos(toLatitude) *
+      Math.sin(longitudeDelta / 2) ** 2;
+
+  return 2 * earthRadius * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
+}
+
+export async function listBusinessListings(
+  actor?: ListingActor,
+  coordinates?: ListingCoordinates,
+) {
   const db = await getMongoDatabase();
   const collection = db.collection<BusinessListingDocument>("listings");
   const isAdmin = actor?.role === "admin";
 
   const filter = buildListingListFilter(actor);
   const docs = await collection.find(filter).toArray();
+
+  if (coordinates) {
+    docs.sort((a, b) => {
+      const aCoordinates = a.location?.coordinates;
+      const bCoordinates = b.location?.coordinates;
+      const aDistance =
+        Array.isArray(aCoordinates) && aCoordinates.length >= 2
+          ? distanceInMeters(coordinates, [aCoordinates[0], aCoordinates[1]])
+          : Number.POSITIVE_INFINITY;
+      const bDistance =
+        Array.isArray(bCoordinates) && bCoordinates.length >= 2
+          ? distanceInMeters(coordinates, [bCoordinates[0], bCoordinates[1]])
+          : Number.POSITIVE_INFINITY;
+      return aDistance - bDistance;
+    });
+  }
 
   // Only admins can retrieve owner information.
   if (isAdmin) {

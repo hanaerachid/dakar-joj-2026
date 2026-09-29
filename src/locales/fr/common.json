@@ -22,6 +22,20 @@
   },
   "zoom_in": "Zoomer",
   "zoom_out": "Dézoomer",
+  "location": {
+    "title": "Utiliser votre position ?",
+    "description": "Nous utilisons votre position pour afficher les établissements et services pertinents autour de vous.",
+    "requesting": "Demande de votre position",
+    "requestingDescription": "Veuillez autoriser l’accès à votre position dans votre navigateur.",
+    "granted": "Accès à la position autorisé",
+    "grantedDescription": "Nous allons afficher les établissements les plus proches.",
+    "showListings": "Afficher les établissements proches",
+    "denied": "Accès à la position refusé",
+    "deniedDescription": "Activez l’accès à la position dans les paramètres de votre navigateur, puis réessayez.",
+    "error": "Impossible de déterminer votre position",
+    "errorDescription": "Vérifiez les paramètres de localisation, puis réessayez.",
+    "tryAgain": "Réessayer"
+  },
   "tabs": {
     "home": "Accueil",
     "explorer": "Explorer",

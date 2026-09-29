@@ -22,6 +22,20 @@
   },
   "zoom_in": "Zoom In",
   "zoom_out": "Zoom Out",
+  "location": {
+    "title": "Use your location?",
+    "description": "We use your location to show relevant businesses and listings around you.",
+    "requesting": "Requesting your location",
+    "requestingDescription": "Please allow location access in your browser.",
+    "granted": "Location access granted",
+    "grantedDescription": "We will show listings closest to you.",
+    "showListings": "Show nearby listings",
+    "denied": "Location access was denied",
+    "deniedDescription": "Enable location access in your browser settings, then try again.",
+    "error": "We couldn't determine your location",
+    "errorDescription": "Please check your location settings and try again.",
+    "tryAgain": "Try again"
+  },
   "tabs": {
     "home": "Home",
     "explorer": "Explorer",

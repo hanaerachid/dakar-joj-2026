@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@clerk/clerk-react";
@@ -7,21 +8,19 @@ import {
   BriefcaseBusiness,
   Calendar,
   Calendars,
+  CheckCircle2,
   ChevronRight,
   Flame,
   Map,
+  MapPin,
   Newspaper,
+  AlertCircle,
   Star,
 } from "lucide-react";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item";
+import { useStateContext } from "@/components/state-provider";
+import { useModalContext } from "@/components/modal-provider";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
@@ -37,20 +36,146 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
   Empty,
   EmptyDescription,
   EmptyHeader,
 } from "@/components/ui/empty";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useState } from "react";
-import { Badge } from "./ui/badge";
-import { useStateContext } from "./state-provider";
+import { Spinner } from "@/components/ui/spinner";
+
 import { MapManager } from "../core/MapManager";
-import { Button } from "./ui/button";
 import {
   listBusinessListings,
 } from "@/lib/api/submitBusinessListing";
 import type { BusinessListing } from "@/shared/contracts";
+
+type LocationStatus =
+  | "idle"
+  | "requesting"
+  | "granted"
+  | "denied"
+  | "error";
+
+type Coordinates = {
+  latitude: number;
+  longitude: number;
+};
+
+type LocationConsentProps = {
+  requestLocation: () => Promise<Exclude<LocationStatus, "idle" | "requesting">>;
+  initialStatus: LocationStatus;
+  onClose: () => void;
+  onContinue: () => void;
+};
+
+function LocationConsent({
+  requestLocation,
+  initialStatus,
+  onClose,
+  onContinue,
+}: LocationConsentProps) {
+  const { t } = useTranslation();
+  const [status, setStatus] = useState<LocationStatus>(initialStatus);
+
+  useEffect(() => {
+    setStatus(initialStatus);
+  }, [initialStatus]);
+
+  const handleRequest = async () => {
+    setStatus("requesting");
+    setStatus(await requestLocation());
+  };
+
+  if (status === "requesting") {
+    return (
+      <div className="flex flex-col items-center gap-4 py-4 text-center">
+        <Spinner className="size-8 text-primary" />
+        <div className="space-y-1">
+          <p className="font-medium">
+            {t("location.requesting", "Requesting your location")}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {t("location.requestingDescription", "Please allow location access in your browser.")}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "granted") {
+    return (
+      <div className="flex flex-col items-center gap-4 py-4 text-center">
+        <CheckCircle2 className="size-10 text-green-600" aria-hidden="true" />
+        <div className="space-y-1">
+          <p className="font-medium">
+            {t("location.granted", "Location access granted")}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {t("location.grantedDescription", "We will show listings closest to you.")}
+          </p>
+        </div>
+        <Button type="button" onClick={onContinue}>
+          {t("location.showListings", "Show nearby listings")}
+        </Button>
+      </div>
+    );
+  }
+
+  const isDenied = status === "denied";
+  const isError = status === "error";
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-3">
+        {isDenied || isError ? (
+          <AlertCircle className="mt-0.5 size-5 shrink-0 text-destructive" aria-hidden="true" />
+        ) : (
+          <MapPin className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+        )}
+        <div className="space-y-1">
+          <p className="font-medium">
+            {isDenied
+              ? t("location.denied", "Location access was denied")
+              : isError
+                ? t("location.error", "We couldn't determine your location")
+                : t("location.title", "Use your location?")}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {isDenied
+              ? t("location.deniedDescription", "Enable location access in your browser settings, then try again.")
+              : isError
+                ? t("location.errorDescription", "Please check your location settings and try again.")
+                : t("location.description", "We use your location to show relevant businesses and listings around you.")}
+          </p>
+        </div>
+      </div>
+      <div className="flex justify-end gap-2">
+        <Button type="button" variant="ghost" onClick={onClose}>
+          {t("close", "Close")}
+        </Button>
+        <Button type="button" onClick={() => void handleRequest()}>
+          {isDenied || isError
+            ? t("location.tryAgain", "Try again")
+            : t("use_my_location", "Use this location")}
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 function Countdown({ targetedDate }: { targetedDate: Date }) {
   const { t } = useTranslation();
@@ -88,7 +213,129 @@ export const HomeContent = () => {
   const { isSignedIn } = useAuth();
   const [loading, setLoading] = useState(true);
   const [businessListings, setBusinessListings] = useState<BusinessListing[]>([]);
+  const [open, setOpen] = useState(false);
+  const [location, setLocation] = useState<Coordinates | null>(null);
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>("idle");
+
+  const { setIsOpen, setModalContent } = useModalContext();
   const mapManager = MapManager.getInstance();
+
+  const getLocation = () =>
+    new Promise<Exclude<LocationStatus, "idle" | "requesting">>((resolve) => {
+      if (!("geolocation" in navigator)) {
+        setLocationStatus("error");
+        resolve("error");
+        return;
+      }
+
+      setLocationStatus("requesting");
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const coords = {
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          };
+
+          setLocation(coords);
+          setLocationStatus("granted");
+          void loadBusinessListings([coords.latitude, coords.longitude]);
+          resolve("granted");
+        },
+        (err) => {
+          console.warn("Geolocation error:", err);
+
+          if (err.code === GeolocationPositionError.PERMISSION_DENIED) {
+            setLocationStatus("denied");
+          } else {
+            setLocationStatus("error");
+          }
+          resolve(
+            err.code === GeolocationPositionError.PERMISSION_DENIED
+              ? "denied"
+              : "error",
+          );
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 8000,
+          maximumAge: 30000,
+        },
+      );
+    });
+
+  useEffect(() => {
+    let permissionStatus: PermissionStatus | undefined;
+
+    const updatePermissionStatus = () => {
+      if (!permissionStatus) return;
+
+      if (permissionStatus.state === "granted") {
+        setLocationStatus("granted");
+        void getLocation();
+      } else if (permissionStatus.state === "denied") {
+        setLocationStatus("denied");
+      } else {
+        setLocationStatus("idle");
+      }
+    };
+
+    if (!("permissions" in navigator)) return;
+
+    void navigator.permissions
+      .query({ name: "geolocation" })
+      .then((result) => {
+        permissionStatus = result;
+        updatePermissionStatus();
+        permissionStatus.addEventListener("change", updatePermissionStatus);
+      })
+      .catch(() => {
+        // Browsers that do not expose geolocation permission state use the
+        // normal request flow when the user opens the location prompt.
+      });
+
+    return () => {
+      permissionStatus?.removeEventListener("change", updatePermissionStatus);
+    };
+    // The permission state is intentionally checked only when this screen mounts.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    // Opening: allow it immediately
+    if (!nextOpen) {
+      setOpen(false);
+      return;
+    }
+    // Already have permission → open immediately
+    if (locationStatus === "granted" && location) {
+      setOpen(true);
+      return;
+    }
+
+    setModalContent({
+      title: t("location.title", "Use your location?"),
+      size: "md",
+      children: (
+        <LocationConsent
+          requestLocation={getLocation}
+          initialStatus={locationStatus}
+          onClose={() => setIsOpen(false)}
+          onContinue={() => {
+            setIsOpen(false);
+            setOpen(true);
+          }}
+        />
+      ),
+      onConfirm: () => void getLocation(),
+      onClose: () => {
+        setIsOpen(false);
+      },
+      footer: null,
+    });
+
+    setIsOpen(true);
+  };
 
   const {
     setActiveTab,
@@ -105,14 +352,20 @@ export const HomeContent = () => {
     }
   };
 
-  async function loadBusinessListings() {
+  async function loadBusinessListings(
+    coordinates?: readonly [number, number],
+  ) {
     setLoading(true);
     try {
       let items: BusinessListing[] = [];
 
-      items = (await listBusinessListings()) as BusinessListing[];
+      items = (await listBusinessListings(
+        coordinates
+          ? { location: `${coordinates[0]},${coordinates[1]}` }
+          : undefined,
+      )) as BusinessListing[];
 
-      // sort
+      if (!coordinates) {
       items.sort((a: BusinessListing, b: BusinessListing) => {
         // if (sort === "updated") {
         //   const at = a.updatedAt?.toMillis ? a.updatedAt.toMillis() : 0;
@@ -121,6 +374,7 @@ export const HomeContent = () => {
         // }
         return (a.name || "").localeCompare(b.name || "");
       });
+      }
 
       setBusinessListings(items);
     } finally {
@@ -240,10 +494,16 @@ export const HomeContent = () => {
           </CardFooter>
         </Card>
       </div>
-      <div className="flex flex-col gap-3">
-        <h2 className="text-xs text-muted-foreground uppercase">
-          {t("home.around_me", "Around Me")}
-        </h2>
+      <Collapsible
+        open={open}
+        onOpenChange={handleOpenChange}
+        className="flex flex-col gap-3"
+      >
+        <div className="flex items-center justify-between gap-1 w-full">
+          <h2 className="text-xs text-muted-foreground uppercase">
+            {t("home.around_me", "Around Me")}
+          </h2>
+        </div>
 
         {loading && (
           <div className="col-span-full grid gap-1 grid-cols-2 lg:grid-cols-3">
@@ -267,7 +527,7 @@ export const HomeContent = () => {
           </Empty>
         )}
 
-        {!loading && businessListings.length > 0 && (
+        {!open && !loading && businessListings.length > 0 && (
           <Carousel className="w-full whitespace-nowrap"
             orientation="horizontal"
             opts={{
@@ -275,7 +535,18 @@ export const HomeContent = () => {
             }}
           >
             <CarouselContent className="-ml-1">
-              {!loading && businessListings.map((item, index) => {
+              {!loading && businessListings
+                .filter(
+                  (item) =>
+                    item.pack !== "discover" &&
+                    item.pack !== "essential"
+                )
+                .sort((a, b) => {
+                  if (a.pack === "sponsor") return -1;
+                  if (b.pack === "sponsor") return 1;
+                  return 0;
+                }).map((item, index) => {
+
                 return (
                   <CarouselItem
                     key={index}
@@ -313,7 +584,7 @@ export const HomeContent = () => {
                           title={item.name}
                           className={cn(
                             "w-full line-clamp-1 overflow-hidden text-ellipsis",
-                            "text-sm leading-tight font-heading font-bold"
+                            "text-xs leading-tight font-heading font-bold"
                           )}
                         >
                           {item.name}
@@ -327,8 +598,77 @@ export const HomeContent = () => {
             <CarouselNext size="icon-sm" variant="outline" className="right-0" />
           </Carousel>
         )}
-
-      </div>
+        <CollapsibleContent>
+          <div className="flex gap-0.25">
+            {!loading && businessListings.map((item, index) => {
+              return (
+                <div
+                  key={index}
+                  className="basis-1/2 pl-1 lg:basis-1/3"
+                >
+                  <Item
+                    key={index}
+                    size="sm"
+                    variant="outline"
+                    className={cn(
+                      "group relative aspect-square bg-cover overflow-hidden",
+                    )}
+                    style={{
+                      backgroundImage: `url(${item.photos[0]})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      backgroundRepeat: "no-repeat",
+                    }}
+                  >
+                    <Badge
+                      className="absolute start-2 top-2 z-20"
+                      variant="secondary"
+                    >
+                      {getFriendlyCategoryName(item.cat, t)}
+                    </Badge>
+                    <ItemMedia
+                      variant="default"
+                      className="h-full absolute inset-0"
+                      style={{
+                        backgroundImage: `url(${item.photos[0]})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        backgroundRepeat: "no-repeat",
+                      }}
+                    />
+                    <ItemContent
+                      className="flex-col justify-end absolute h-1/2 bottom-0 left-0 right-0 bg-gradient-to-t from-background to-transparent p-2"
+                    >
+                      <ItemTitle
+                        title={item.name}
+                        className={cn(
+                          "w-full line-clamp-1 overflow-hidden text-ellipsis",
+                          "text-xs leading-tight font-heading font-bold"
+                        )}
+                      >
+                        {item.name}
+                      </ItemTitle>
+                    </ItemContent>
+                  </Item>
+                </div>
+              )
+            })}
+          </div>
+        </CollapsibleContent>
+        <CollapsibleTrigger
+          render={
+            <Button
+              className="w-full"
+              variant="link"
+              size="xs"
+            >
+              {!open
+                ? t("see_more", "See more relevant listings")
+                : t("see_less", "See less")}
+            </Button>
+          }
+        />
+      </Collapsible>
       <div className="flex flex-col gap-3">
         <h2 className="text-xs text-muted-foreground uppercase">
           {t("home.quick_access", "Quick Access")}
