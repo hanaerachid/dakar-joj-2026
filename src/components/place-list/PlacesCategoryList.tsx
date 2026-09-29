@@ -8,9 +8,11 @@ import { Badge } from "../ui/badge";
 import { Switch } from "../ui/switch";
 import { Skeleton } from "../ui/skeleton";
 import { useTranslation } from "react-i18next";
-import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
-import { Item, ItemContent, ItemGroup, ItemMedia, ItemTitle } from "../ui/item";
+// import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import { Item, ItemContent, ItemGroup, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { cn } from "cn";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Button } from "../ui/button";
 
 type Props = {
   CATEGORIES: any[];
@@ -45,6 +47,7 @@ type Props = {
   ) => void;
   selectedTitle: string | null;
 };
+const ALL_ZONES = "__all__";
 
 export function PlacesCategoryList(props: Props) {
   const {
@@ -70,6 +73,11 @@ export function PlacesCategoryList(props: Props) {
 
   const { t } = useTranslation();
   const [selectedZones, setSelectedZones] = useState<Set<string>>(new Set());
+  const [selectedZone, setSelectedZone] = useState(ALL_ZONES);
+
+  useEffect(() => {
+    setSelectedZone(ALL_ZONES);
+  }, [grouped]);
 
   useEffect(() => {
     setSelectedZones(new Set(Object.keys(grouped)));
@@ -194,37 +202,58 @@ export function PlacesCategoryList(props: Props) {
                         {!loading && !loadError && !!venues.length && (
                           <div className="flex flex-col gap-2">
                             {/* Zone filters */}
-                            <ToggleGroup multiple
-                              value={[...selectedZones]}
-                              onValueChange={(values) => {
-                                setSelectedZones(new Set(values));
+                            <Carousel
+                              className="w-full whitespace-nowrap"
+                              orientation="horizontal"
+                              opts={{
+                                align: "start",
+                                // dragFree: true,
                               }}
-                              className="flex flex-wrap justify-start gap-2"
                             >
-                              {Object.entries(grouped).map(([zone, list]) => (
-                                <ToggleGroupItem
-                                  key={zone}
-                                  value={zone}
-                                  variant="outline"
-                                  size="sm"
-                                  className={cn(
-                                    "inline-flex items-center gap-1",
-                                    selectedZones.has(zone) && "font-semibold"
-                                  )}
-                                >
-                                  <span>{zone}</span>
+                              <CarouselContent className="ml-6 mr-6">
+                                <CarouselItem className="basis-auto shrink-0 pl-1">
+                                  <Button
+                                    variant={selectedZone === ALL_ZONES ? "default" : "outline"}
+                                    size="default"
+                                    onClick={() => setSelectedZone(ALL_ZONES)}
+                                    className="whitespace-nowrap"
+                                  >
+                                    All
+                                    <Badge variant="ghost">
+                                      {venues.length}
+                                    </Badge>
+                                  </Button>
+                                </CarouselItem>
 
-                                  <Badge variant="ghost">
-                                    {list.length}
-                                  </Badge>
-                                </ToggleGroupItem>
-                              ))}
-                            </ToggleGroup>
+                                {Object.entries(grouped).map(([zone, list]) => (
+                                  <CarouselItem
+                                    key={zone}
+                                    className="basis-auto shrink-0 pl-1"
+                                  >
+                                    <Button
+                                      variant={selectedZone === zone ? "default" : "outline"}
+                                      size="default"
+                                      onClick={() => setSelectedZone(zone)}
+                                      className="whitespace-nowrap"
+                                    >
+                                      {zone}
+                                      <Badge variant="ghost">
+                                        {list.length}
+                                      </Badge>
+                                    </Button>
+                                  </CarouselItem>
+                                ))}
+                              </CarouselContent>
+
+                              <CarouselPrevious size="icon-sm" variant="secondary" className="left-0" />
+                              <CarouselNext size="icon-sm" variant="secondary" className="right-0" />
+                            </Carousel>
 
                             {/* Filtered venues */}
                             <ItemGroup>
                               {Object.entries(grouped)
-                                .filter(([zone]) => selectedZones.has(zone))
+                                .filter(([zone]) => selectedZone === ALL_ZONES || selectedZone === zone)
+                                // .filter(([zone]) => selectedZones.has(zone))
                                 .flatMap(([zone, list]) =>
                                   [...list]
                                     .sort((a: any, b: any) => {
