@@ -88,11 +88,22 @@ export const HomeContent = () => {
   const { isSignedIn } = useAuth();
   const [loading, setLoading] = useState(true);
   const [businessListings, setBusinessListings] = useState<BusinessListing[]>([]);
+  const mapManager = MapManager.getInstance();
 
   const {
     setActiveTab,
+    torchVisible,
+    setTorchVisible,
   } = useStateContext();
-  const mapManager = MapManager.getInstance();
+
+  const handleToggleTorch = async () => {
+    try {
+      setTorchVisible(await mapManager.toggleTorch());
+    } catch {
+      console.error("Error toggling torch");
+      setTorchVisible(false);
+    }
+  };
 
   async function loadBusinessListings() {
     setLoading(true);
@@ -172,8 +183,11 @@ export const HomeContent = () => {
       available: true,
       icon: Flame,
       color: "#FFA500",
-      active: mapManager.isTorchVisible(),
-      primaryAction: () => void mapManager.toggleTorch(),
+      active: torchVisible,
+      primaryAction: () => {
+        void handleToggleTorch();
+        setActiveTab("explorer");
+      },
       secondaryAction: null,
       secondaryActionLabel: null,
       shortcut: true,
@@ -299,7 +313,7 @@ export const HomeContent = () => {
                           title={item.name}
                           className={cn(
                             "w-full line-clamp-1 overflow-hidden text-ellipsis",
-                            "text-sm leading-tight"
+                            "text-sm leading-tight font-heading font-bold"
                           )}
                         >
                           {item.name}
@@ -335,7 +349,13 @@ export const HomeContent = () => {
                   ? "group hover:bg-primary/25 cursor-pointer"
                   : "cursor-not-allowed"
               )}
-              style={!item.shortcut && item.available ? { backgroundColor: item.color + "10" } : undefined}
+              style={
+                (item.available && !item.shortcut) ?
+                  { backgroundColor: item.color + "10" }
+                : (item.available && item.shortcut && item.active) ?
+                    { backgroundColor: item.color + "44" }
+                  : undefined
+              }
               onClick={item.primaryAction}
             >
               <ItemMedia
@@ -367,8 +387,9 @@ export const HomeContent = () => {
 
               <ItemContent className="min-w-0">
                 <ItemTitle className={cn(
-                  !item.shortcut && "truncate whitespace-nowrap",
-                  item.shortcut ? "text-center text-xs" : "text-sm",
+                  "text-xs",
+                  !item.shortcut && "max-w-10/12 truncate whitespace-nowrap line-clamp-1 overflow-hidden text-ellipsis",
+                  item.shortcut ? "text-center" : "font-heading font-bold",
                 )}>
                   {item.title}
                 </ItemTitle>

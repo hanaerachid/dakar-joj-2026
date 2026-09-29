@@ -14,7 +14,7 @@ export const ExplorerContent = ({
   // const hasSearchQuery = query.trim().length > 0;
   const { isSearchOpen, selectedPlace } = useStateContext();
   return (
-    <div className="flex h-full flex-col">
+    <div className="space-y-2">
       {selectedPlace ? (
         <PlaceDetails id={selectedPlace.id} />
       ) : (

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AlertCircleIcon } from "lucide-react";
+import { AlertCircleIcon, Flame } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -9,10 +9,12 @@ import { Switch } from "../ui/switch";
 import { Skeleton } from "../ui/skeleton";
 import { useTranslation } from "react-i18next";
 // import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
-import { Item, ItemContent, ItemGroup, ItemMedia, ItemTitle } from "@/components/ui/item";
+import { Item, ItemActions, ItemContent, ItemGroup, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { cn } from "cn";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Button } from "../ui/button";
+import { MapManager } from "@/core/MapManager";
+import { useStateContext } from "../state-provider";
 
 type Props = {
   CATEGORIES: any[];
@@ -74,6 +76,16 @@ export function PlacesCategoryList(props: Props) {
   const { t } = useTranslation();
   const [selectedZones, setSelectedZones] = useState<Set<string>>(new Set());
   const [selectedZone, setSelectedZone] = useState(ALL_ZONES);
+  const { torchVisible, setTorchVisible } = useStateContext();
+  const mapManager = MapManager.getInstance();
+
+  const handleToggleTorch = async () => {
+    try {
+      setTorchVisible(await mapManager.toggleTorch());
+    } catch {
+      setTorchVisible(false);
+    }
+  };
 
   useEffect(() => {
     setSelectedZone(ALL_ZONES);
@@ -83,7 +95,30 @@ export function PlacesCategoryList(props: Props) {
     setSelectedZones(new Set(Object.keys(grouped)));
   }, [grouped]);
 
-  return (
+  return (<div className="space-y-2">
+    <Item variant="outline" size="xs" className={cn(
+      "w-full cursor-default select-none",
+      "bg-[#FFA500]/10"
+    )}>
+      <ItemMedia
+        variant="icon"
+        className="w-6 h-6"
+      >
+        <Flame className={"h-6 w-6 text-[#FFA500]"} />
+      </ItemMedia>
+      <ItemContent>
+        <ItemTitle>
+          {t("home.torch", "Torch")}
+        </ItemTitle>
+      </ItemContent>
+      <ItemActions>
+        <Switch
+          className="ms-auto cursor-pointer"
+          checked={torchVisible}
+          onCheckedChange={handleToggleTorch}
+        />
+      </ItemActions>
+    </Item>
     <Accordion
       multiple
       value={openMainCategoryIds}
@@ -350,5 +385,5 @@ export function PlacesCategoryList(props: Props) {
         );
       })}
     </Accordion>
-  );
+  </div>);
 }
