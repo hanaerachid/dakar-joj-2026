@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@clerk/clerk-react";
 import { cn } from "cn";
+import Autoplay from "embla-carousel-autoplay"
+
 import { getFriendlyCategoryName } from "@/utils/key-translations";
 import {
   BriefcaseBusiness,
@@ -17,6 +19,7 @@ import {
   AlertCircle,
   Star,
 } from "lucide-react";
+import { Icon } from "@iconify/react";
 import { useStateContext } from "@/components/state-provider";
 import { useModalContext } from "@/components/modal-provider";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +30,7 @@ import {
   CardDescription,
   CardTitle,
   CardFooter,
+  CardContent,
 } from "@/components/ui/card";
 import {
   Carousel,
@@ -62,6 +66,23 @@ import {
   listBusinessListings,
 } from "@/lib/api/submitBusinessListing";
 import type { BusinessListing } from "@/shared/contracts";
+import { ALL_SPORT_OPTIONS } from "../data/sports";
+import { formatDuration } from "../utils/calendar";
+
+type ApiEventsItem = {
+  _id: string;
+  name: string;
+  updatedAt: string;
+  startAt: string;
+  endAt: string;
+  venue: string;
+  sport: string;
+};
+
+type EventsResponse = {
+  success: boolean;
+  data: ApiEventsItem[];
+};
 
 type LocationStatus =
   | "idle"
@@ -207,8 +228,17 @@ function Countdown({ targetedDate }: { targetedDate: Date }) {
   );
 }
 
+export const SPORT_OPTIONS_BY_KEY = Object.fromEntries(
+  ALL_SPORT_OPTIONS.map((sport) => [sport.key, sport])
+);
+
+export function getSportIcon({ sportId }: { sportId: any }) {
+  return ALL_SPORT_OPTIONS.find((sport) => sport.key === sportId)?.icon;
+}
+
 export const HomeContent = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage || i18n.language || "en";
   const navigate = useNavigate();
   const { isSignedIn } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -217,8 +247,18 @@ export const HomeContent = () => {
   const [location, setLocation] = useState<Coordinates | null>(null);
   const [locationStatus, setLocationStatus] = useState<LocationStatus>("idle");
 
+  const [events, setEvents] = useState<ApiEventsItem[]>([]);
+  const [eventLoading, setEventLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { setIsOpen, setModalContent } = useModalContext();
   const mapManager = MapManager.getInstance();
+
+  const plugin = useRef(
+    Autoplay({
+      delay: 6000,
+      stopOnInteraction: true
+    })
+  )
 
   const getLocation = () =>
     new Promise<Exclude<LocationStatus, "idle" | "requesting">>((resolve) => {
@@ -299,6 +339,37 @@ export const HomeContent = () => {
     };
     // The permission state is intentionally checked only when this screen mounts.
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setEventLoading(true);
+        setError(null);
+
+        const response = await fetch(
+          "/api/v2/events?status=published&limit=20"
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch events: ${response.status}`);
+        }
+
+        const result: EventsResponse = await response.json();
+
+        if (!result.success) {
+          throw new Error("Failed to fetch events");
+        }
+
+        setEvents(result.data);
+      } catch (err) {
+        console.error("Error fetching events:", err);
+        setError("Unable to load events.");
+      } finally {
+        setEventLoading(false);
+      }
+    };
+    fetchEvents();
   }, []);
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -471,10 +542,22 @@ export const HomeContent = () => {
 
   return (
     <div className="flex flex-col gap-4 py-4">
-      <div className="flex flex-col gap-4">
+      <Carousel className="w-full"
+        orientation="vertical"
+        opts={{
+          align: "center",
+          loop: true,
+        }}
+        plugins={[plugin.current]}
+        onMouseEnter={plugin.current.stop}
+        onMouseLeave={plugin.current.reset}
+      >
+        <CarouselContent className="-mt-1 h-42">
+          <CarouselItem className="basis-full pt-1">
         <Card
           size="sm"
           className={cn(
+            "h-full",
             "backdrop-blur-sm bg-gradient-to-b from-[#f2b705]/10 to-[#f2b705]/5",
             "overflow-hidden relative before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[linear-gradient(90deg,#008751_0%,#FCD116_52%,#CE1126_100%)] before:content-['']"
           )}
@@ -493,7 +576,69 @@ export const HomeContent = () => {
             </Badge>
           </CardFooter>
         </Card>
-      </div>
+          </CarouselItem>
+
+          {!error && !eventLoading && (
+            <CarouselItem
+              // key={index}
+              className="basis-full pt-1"
+            >
+              {(events as typeof events).slice(0, 1).map((item, index) => {
+                const sport = SPORT_OPTIONS_BY_KEY[item.sport];
+
+                return (
+                  <Card
+                    key={index}
+                    size="sm"
+                    className={cn(
+                      "h-full",
+                      "group",
+                      "backdrop-blur-sm bg-gradient-to-b from-primary/10 to-primary/5",
+                    )}
+                  >
+                    {sport?.icon && (
+                      <CardHeader>
+                        <Icon
+                          className="w-7 h-7"
+                          icon={getSportIcon({ sportId: item.sport }) || "mdi:help"}
+                        />
+                      </CardHeader>
+                    )}
+                    <CardContent className="min-w-0 flex-1">
+                      <CardTitle
+                        className="min-w-0 truncate overflow-hidden text-ellipsis whitespace-nowrap"
+                      >
+                        {item.name}
+                      </CardTitle>
+                      <CardDescription
+                        className="min-w-0 truncate overflow-hidden text-ellipsis whitespace-nowrap"
+                      >
+                        {new Date(item.startAt).toLocaleDateString(lang, {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                        {" • "}
+                        {formatDuration(item.startAt, item.endAt, lang)}
+                      </CardDescription>
+                    </CardContent>
+                    <CardFooter className="shrink-0">
+                      <CardDescription className="text-xs">
+                        {item.venue}
+                      </CardDescription>
+                    </CardFooter>
+                  </Card>
+                );
+              })}
+
+            </CarouselItem>
+          )}
+        </CarouselContent>
+        <CarouselPrevious size="icon-sm" variant="outline" className="-top-4" />
+        <CarouselNext size="icon-sm" variant="outline" className="-bottom-4" />
+      </Carousel>
+
       <Collapsible
         open={open}
         onOpenChange={handleOpenChange}
@@ -505,18 +650,6 @@ export const HomeContent = () => {
           </h2>
         </div>
 
-        {loading && (
-          <div className="col-span-full grid gap-1 grid-cols-2 lg:grid-cols-3">
-            {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className="aspect-square overflow-hidden rounded-3xl p-4 space-y-3" >
-                <Skeleton className="h-4 w-1/2 rounded bg-foreground/20" />
-                <Skeleton className="h-3 w-2/3 rounded bg-foreground/20" />
-                <Skeleton className="h-8 w-full rounded bg-foreground/20" />
-              </Skeleton>
-            ))}
-          </div>
-        )}
-
         {!loading && businessListings.length === 0 && (
           <Empty>
             <EmptyHeader>
@@ -527,13 +660,28 @@ export const HomeContent = () => {
           </Empty>
         )}
 
-        {!open && !loading && businessListings.length > 0 && (
-          <Carousel className="w-full whitespace-nowrap"
+          <Carousel className="w-full"
             orientation="horizontal"
             opts={{
               align: "start",
             }}
-          >
+            >
+          {loading && (
+            <CarouselContent className="-ml-1">
+              {[...Array(3)].map((_, i) => (
+                <CarouselItem
+                  className="basis-1/2 pl-1 lg:basis-1/3"
+                >
+                  <Skeleton key={i} className="aspect-square overflow-hidden rounded-3xl p-4 space-y-3" >
+                    <Skeleton className="h-4 w-1/2 rounded bg-foreground/20" />
+                    <Skeleton className="h-3 w-2/3 rounded bg-foreground/20" />
+                    <Skeleton className="h-8 w-full rounded bg-foreground/20" />
+                  </Skeleton>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          )}
+            {!open && !loading && businessListings.length > 0 && (
             <CarouselContent className="-ml-1">
               {!loading && businessListings
                 .filter(
@@ -591,13 +739,14 @@ export const HomeContent = () => {
                         </ItemTitle>
                       </ItemContent>
                     </Item>
-                  </CarouselItem>)
+                  </CarouselItem>
+                )
               })}
             </CarouselContent>
+          )}
             <CarouselPrevious size="icon-sm" variant="outline" className="left-0" />
             <CarouselNext size="icon-sm" variant="outline" className="right-0" />
           </Carousel>
-        )}
         <CollapsibleContent>
           <div className="flex gap-0.25">
             {!loading && businessListings.map((item, index) => {
