@@ -97,17 +97,19 @@ export function Sidebar({
         <ZoomPill />
         <LocateMeButton />
         <AnimatedButton
+          icon={House}
+          title={t("actions.resetview", "Reset View")}
+          tooltip={t("actions.resetview", "Reset View")}
+          onClick={onReset}
+        />
+        {/* thin divider */}
+        <Separator className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
+        <AnimatedButton
           icon={Flame}
           title={t("actions.torch", "Torch route")}
           tooltip={t("actions.torch", "Show torch route")}
           onClick={handleToggleTorch}
           isOpen={torchVisible}
-        />
-        <AnimatedButton
-          icon={House}
-          title={t("actions.resetview", "Reset View")}
-          tooltip={t("actions.resetview", "Reset View")}
-          onClick={onReset}
         />
         {/* thin divider */}
         <Separator className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />

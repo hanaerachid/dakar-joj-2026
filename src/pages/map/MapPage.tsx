@@ -148,7 +148,7 @@ export default function MapPage() {
             <Countdown targetedDate={new Date("2026-10-31T00:00:00")} />
           </ItemContent>
 
-          <ItemContent>
+          <ItemContent className="hidden sm:flex">
             <span className="uppercase text-muted-foreground text-xs">
               31 Oct - 13 Nov
             </span>

@@ -1,8 +1,8 @@
+import { cn } from "cn";
 import { LogoBrand } from "./LogoBrand";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ProfileMenu } from "../ProfileMenu";
 import { ModeToggle } from "@/components/mode-toggle";
-import { cn } from "cn";
 
 type Props = {
   title?: string;
@@ -27,8 +27,10 @@ export function HeaderBar({
   return (
     <div className="absolute top-0 start-0 end-0 z-20">
       <div
-        className={cn("flex items-center w-full mx-auto gap-2 sm:gap-4 bg-background/80 backdrop-blur-md px-2 sm:px-4 py-1.5 sm:py-2 shadow-md",
-          "relative before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[linear-gradient(90deg,#008751_0%,#FCD116_52%,#CE1126_100%)] before:content-['']")}
+        className={cn(
+          "flex items-center w-full mx-auto gap-2 sm:gap-4 bg-background/80 backdrop-blur-md px-2 sm:px-4 py-1.5 sm:py-2 shadow-md",
+          "relative before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[linear-gradient(90deg,#008751_0%,#FCD116_52%,#CE1126_100%)] before:content-['']"
+        )}
       >
         {/* Back button */}
         {backButton && (
