@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { AnimatePresence } from "framer-motion";
 import { cn } from "cn";
+import { AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
@@ -18,7 +22,7 @@ const SIZE_MAP: Record<ModalSize, string> = {
   lg: "sm:max-w-lg", //w-[90vw] sm:w-72 max-h-[50dvh] 
 };
 
-type ModalProps = {
+type PanelProps = {
   isOpen: boolean;
   onClose: () => void;
   title?: React.ReactNode;
@@ -32,6 +36,7 @@ type ModalProps = {
 
 export function Panel({
   isOpen,
+  onClose,
   title,
   description,
   children,
@@ -39,25 +44,39 @@ export function Panel({
   size = "sm",
   showHeader = false,
   showFooter = false,
-}: ModalProps) {
+}: PanelProps) {
   // ✅ use state, not ref — this triggers a re-render after mount
+  const { t } = useTranslation();
+  const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    if (isMobile) {
+      setMounted(false);
+    } else {
+      setMounted(true);
+    }
   }, []);
 
   // ⛔️ previously: if (!mountedRef.current || !isOpen) return null;
   if (!mounted || !isOpen) return null;
+
+  const showSwipeHandle = isMobile ? true : false;
+  const swipeDirection = isMobile ? "down" : "left";
 
   return (
     <AnimatePresence>
       {isOpen && (
         <Drawer
           open={isOpen}
-          modal={false} disablePointerDismissal
-          swipeDirection="left"
-          snapPoints={[0.5, 0.75, 1]}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) onClose();
+          }}
+          modal={false}
+          disablePointerDismissal
+          showSwipeHandle={showSwipeHandle}
+          swipeDirection={swipeDirection}
+          snapPoints={isMobile ? [0.5, 0.7, 1] : undefined}
         >
           <DrawerContent
             className={cn(`
@@ -80,9 +99,23 @@ export function Panel({
               )}
               {children}
             </div>
-            {(showFooter) && (
+
+            {showFooter && (
               <DrawerFooter>
-                {footer || "No footer content"}
+                {footer && footer}
+                {isMobile && onClose && (
+                  <DrawerClose
+                    render={
+                      <Button
+                        size="default"
+                        variant="destructive"
+                        onClick={() => onClose}
+                      />
+                    }
+                  >
+                    <span>{t("close", "Close")}</span>
+                  </DrawerClose>
+                )}
               </DrawerFooter>
             )}
           </DrawerContent>

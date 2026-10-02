@@ -60,19 +60,23 @@ export default function MapPage() {
 
     setActiveTab("explorer");
     if (isMobile) {
-      setModalContent({
+      setPanelContent({
         title: null,
-        onClose: () => setModalOpen(false),
+        onClose: () => {
+          setIsOpen(false)
+        },
         size: "lg",
         children: <SidePanel />,
       });
-      setModalOpen(true);
+      setIsOpen(true);
       return;
     }
 
     setPanelContent({
       title: null,
-      onClose: () => setIsOpen(false),
+      onClose: () => {
+        setIsOpen(false)
+      },
       children: <SidePanel />,
     });
     setIsOpen(true);

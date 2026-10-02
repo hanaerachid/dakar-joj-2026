@@ -1,17 +1,17 @@
 import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatedButton } from "../buttons/AnimatedButton";
 
 import { SidePanel } from "../side-panel/core";
 import { usePanelContext } from "@/components/panel-provider";
-import { useModalContext } from "@/components/modal-provider";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useStateContext } from "@/components/state-provider";
 import { GlobalPlacesTab } from "../search/GlobalPlacesTab";
 import { LocalPlacesTab } from "../search/LocalPlacesTab";
 
 export const SearchPlaces = () => {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   const {
     activeTab,
@@ -21,55 +21,50 @@ export const SearchPlaces = () => {
   } = useStateContext();
 
   const {
-    isOpen: panelOpen,
-    setIsOpen: setPanelOpen,
-    setPanelContent: setPanelContent,
+    isOpen,
+    setIsOpen,
+    setPanelContent,
   } = usePanelContext();
 
-  const isMobile = useIsMobile();
-  const {
-    isOpen: modalOpen,
-    setIsOpen: setModalOpen,
-    setModalContent,
-  } = useModalContext();
 
   const openPanel = () => {
     if (!isMobile) {
-      if (panelOpen && isSearchOpen && activeTab === "explorer") {
-        setPanelOpen(false);
+      if (isOpen && isSearchOpen && activeTab === "explorer") {
+        setIsOpen(false);
         return;
       }
       setActiveTab("explorer");
       setPanelContent({
         title: null,
         onClose: () => {
-          setPanelOpen(false);
+          setIsOpen(false);
           setIsSearchOpen(false)
         },
         size: "lg",
         children: <SidePanel />,
       });
-      setPanelOpen(true);
+      setIsOpen(true);
       setIsSearchOpen(true);
     }
 
     if (isMobile) {
-      if (modalOpen && isSearchOpen && activeTab === "explorer") {
-        setModalOpen(false);
+      if (isOpen && !isSearchOpen && activeTab === "explorer") {
+        setIsOpen(false);
         setIsSearchOpen(false);
         return;
       }
       setActiveTab("explorer");
-      setModalContent({
+      setPanelContent({
         title: null,
+        showFooter: true,
         onClose: () => {
-          setModalOpen(false);
+          setIsOpen(false);
           setIsSearchOpen(false)
         },
         size: "lg",
         children: <SidePanel />,
       });
-      setModalOpen(true);
+      setIsOpen(true);
       setIsSearchOpen(true);
     }
   }
@@ -79,7 +74,7 @@ export const SearchPlaces = () => {
       icon={Search}
       title={t("actions.search", "Search Places")}
       tooltip={t("actions.search", "Search Places")}
-      isOpen={panelOpen && activeTab === "explorer" && isSearchOpen}
+      isOpen={isOpen && activeTab === "explorer" && isSearchOpen}
       onClick={openPanel}
     />
   )

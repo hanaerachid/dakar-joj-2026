@@ -18,7 +18,6 @@ import { useTranslation } from "react-i18next";
 import { withTranslatedCategoryLabels } from "./categoryTranslations";
 import { Layers2 } from "lucide-react";
 import { usePanelContext } from "@/components/panel-provider";
-import { useModalContext } from "@/components/modal-provider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SidePanel } from "@/components/side-panel/core";
 import { useStateContext } from "@/components/state-provider";
@@ -57,7 +56,7 @@ function getFeatureCategoryId(props: GeoJsonProperties | undefined): string {
 export const PlacesList = () => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
-  const { isOpen, setIsOpen, setPanelContent, } = usePanelContext();
+
   const {
     activeTab,
     setActiveTab,
@@ -66,10 +65,10 @@ export const PlacesList = () => {
   } = useStateContext();
 
   const {
-    isOpen: panelOpen,
-    setIsOpen: setPanelOpen,
-    setModalContent: setModalContent,
-  } = useModalContext();
+    isOpen,
+    setIsOpen,
+    setPanelContent,
+  } = usePanelContext();
 
   const openPanel = () => {
     if (!isMobile) {
@@ -80,30 +79,29 @@ export const PlacesList = () => {
       setActiveTab("explorer");
       setPanelContent({
         title: null,
-        size: "sm",
+        size: "lg",
         children: <SidePanel />,
       });
       setIsOpen(true);
     }
 
     if (isMobile) {
-      if (panelOpen && !isSearchOpen && activeTab === "explorer") {
-        setPanelOpen(false);
+      if (isOpen && !isSearchOpen && activeTab === "explorer") {
+        setIsOpen(false);
         return;
       }
       setActiveTab("explorer");
-      setModalContent({
+      setPanelContent({
         title: null,
+        showFooter: true,
         onClose: () => {
-          setPanelOpen(false);
+          setIsOpen(false);
           setIsSearchOpen(false)
         },
-        panelClassName: "sm:max-w-md",
-        contentClassName: "relative h-[80vh] sm:h-[680px] px-0 py-0",
-        size: "sm",
+        size: "lg",
         children: <SidePanel />,
       });
-      setPanelOpen(true);
+      setIsOpen(true);
     }
   }
 
