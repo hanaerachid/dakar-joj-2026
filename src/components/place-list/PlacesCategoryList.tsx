@@ -124,9 +124,21 @@ export function PlacesCategoryList(props: Props) {
       value={openMainCategoryIds}
       onValueChange={setOpenMainCategoryIds}
     >
-      {MAIN_CATEGORIES.map((main) => {
+      {[...MAIN_CATEGORIES]
+        .sort((a, b) => {
+          const aHasChildren = CATEGORIES.some((category) =>
+            a.categories.includes(category.id)
+          );
+          const bHasChildren = CATEGORIES.some((category) =>
+            b.categories.includes(category.id)
+          );
+
+          return Number(bHasChildren) - Number(aHasChildren);
+        })
+        .map((main) => {
         const children = CATEGORIES.filter((category) => main.categories.includes(category.id));
         const mainEnabled = !!mainCategoryChecked[main.id];
+
         return (
           <AccordionItem
             key={main.id}
