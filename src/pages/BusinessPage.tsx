@@ -27,7 +27,7 @@ import {
   listBusinessListings,
   deleteBusinessListing,
   setListingVerified,
-} from "@/lib/api/submitBusinessListing";
+} from "@/lib/api/listings";
 import { type BreadcrumbConfig, Breadcrumbs } from "@/components/BreadCrumbs";
 import { DataTable } from "@/components/DataTable";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

@@ -65,7 +65,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { MapManager } from "../core/MapManager";
 import {
   listBusinessListings,
-} from "@/lib/api/submitBusinessListing";
+} from "@/lib/api/listings";
 import type { BusinessListing } from "@/shared/contracts";
 import { ALL_SPORT_OPTIONS } from "../data/sports";
 import { formatDuration } from "../utils/calendar";

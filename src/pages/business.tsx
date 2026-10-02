@@ -62,7 +62,7 @@ import {
   createBusinessListing,
   updateBusinessListing,
   deleteBusinessListing,
-} from "@/lib/api/submitBusinessListing";
+} from "@/lib/api/listings";
 import { type BreadcrumbConfig, Breadcrumbs } from "@/components/BreadCrumbs";
 
 const STEP_FIELDS: Record<number, (keyof BusinessCreateValues)[]> = {
