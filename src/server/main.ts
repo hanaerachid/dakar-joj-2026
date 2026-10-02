@@ -70,6 +70,7 @@ v2Routes.route("/events", eventRoutes);
 v2Routes.route("/business/listings", listingRoutes);
 v2Routes.route("/metadata", metadataRoutes);
 v2Routes.route("/news", newsRoutes);
+v2Routes.route("/uploads", uploadRoutes);
 
 const itineraryCoordinateSchema = z
   .tuple([z.number(), z.number()])

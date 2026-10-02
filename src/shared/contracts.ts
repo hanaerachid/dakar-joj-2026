@@ -208,6 +208,7 @@ const photoSchema = z.union([
   z.string().url({
     message: "Invalid image URL",
   }),
+  z.string().regex(/^users\/[^/]+\/[a-f0-9-]+\.(png|jpg|gif|webp)$/),
 ]);
 
 const videoSchema = z.union([
@@ -221,6 +222,7 @@ const videoSchema = z.union([
   z.string().url({
     message: "Invalid video URL",
   }),
+  z.string().regex(/^users\/[^/]+\/[a-f0-9-]+\.(mp4|webm|ogg)$/),
 ]);
 
 export const businessListingSchema = z.object({

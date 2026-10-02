@@ -6,7 +6,8 @@ import { useUser } from "@clerk/clerk-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeft, MoreVertical, Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { fileToBase64 } from "@/lib/fileConvert";
+import { uploadFilesToR2 } from "@/lib/api/uploads";
+import { getMediaUrl } from "@/lib/fileConvert";
 import { getFriendlyCategoryName } from "@/utils/key-translations";
 
 import {
@@ -267,7 +268,7 @@ export function BusinessPage() {
                     <>
                       <div className="absolute bg-gradient-to-b from-background to-transparent w-full h-1/4 aspect-video object-cover"/>
                       <img
-                        src={item.photos[0]}
+                        src={getMediaUrl(item.photos[0])}
                         alt={item.name}
                         className="w-full aspect-video object-cover"
                         loading="lazy"
@@ -412,21 +413,13 @@ export function BusinessCreate() {
       });
       const { photos, videos, ...businessData } = sanitizedValues;
 
-      // 1. Convert all photo files to Base64 strings in parallel
-      const base64Photos = await Promise.all(
-        photos.map((photo: File) => fileToBase64(photo))
-      );
+      const uploadedPhotos = await uploadFilesToR2(photos);
+      const uploadedVideos = await uploadFilesToR2(videos);
 
-      // 1. Convert all video files to Base64 strings in parallel
-      const base64Videos = await Promise.all(
-        videos.map((video: File) => fileToBase64(video))
-      );
-
-      // 3. Build a pure JavaScript object payload
       const payload = {
         ...businessData,
-        photos: base64Photos, // Now an array of Base64 strings
-        videos: base64Videos, // Now an array of Base64 strings
+        photos: uploadedPhotos,
+        videos: uploadedVideos,
       };
 
       // 4. Send the pure JSON payload to your Hono server
@@ -666,26 +659,17 @@ export function BusinessEdit() {
     try {
       const { photos, videos, ...businessData } = values;
 
-      // 1. Convert all photo files to Base64 strings in parallel
-      const base64Photos = await Promise.all(
-        photos.map((photo) => fileToBase64(photo))
-      );
+      const uploadedPhotos = await uploadFilesToR2(photos);
+      const uploadedVideos = await uploadFilesToR2(videos);
 
-      // 1. Convert all video files to Base64 strings in parallel
-      const base64Videos = await Promise.all(
-        videos.map((video) => fileToBase64(video))
-      );
-
-      // 3. Build a pure JavaScript object payload
       const payload: Record<string, unknown> = {
         ...businessData,
       };
 
       // Leave existing remote media untouched unless replacement files were selected.
-      if (photos.length > 0) payload.photos = base64Photos;
-      if (videos.length > 0) payload.videos = base64Videos;
+      if (photos.length > 0) payload.photos = uploadedPhotos;
+      if (videos.length > 0) payload.videos = uploadedVideos;
 
-      // 4. Send the pure JSON payload to your Hono server
       await updateBusinessListing(listingId , payload);
 
       toast.success(

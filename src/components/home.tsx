@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@clerk/clerk-react";
 import { cn } from "cn";
 import Autoplay from "embla-carousel-autoplay"
-
+import { getMediaUrl } from "@/lib/fileConvert";
 import { getFriendlyCategoryName } from "@/utils/key-translations";
 import {
   BriefcaseBusiness,
@@ -707,7 +707,7 @@ export const HomeContent = () => {
                         "group relative aspect-square bg-cover overflow-hidden",
                       )}
                       style={{
-                        backgroundImage: `url(${item.photos[0]})`,
+                        backgroundImage: `url(${getMediaUrl(item.photos[0])})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
                         backgroundRepeat: "no-repeat",
@@ -721,7 +721,7 @@ export const HomeContent = () => {
                       </Badge>
                       <ItemMedia variant="default" className="h-full absolute inset-0"
                         style={{
-                          backgroundImage: `url(${item.photos[0]})`,
+                          backgroundImage: `url(${getMediaUrl(item.photos[0])})`,
                           backgroundSize: "cover",
                           backgroundPosition: "center",
                           backgroundRepeat: "no-repeat",
@@ -763,7 +763,7 @@ export const HomeContent = () => {
                       "group relative aspect-square bg-cover overflow-hidden",
                     )}
                     style={{
-                      backgroundImage: `url(${item.photos[0]})`,
+                      backgroundImage: `url(${getMediaUrl(item.photos[0])})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                       backgroundRepeat: "no-repeat",
@@ -779,7 +779,7 @@ export const HomeContent = () => {
                       variant="default"
                       className="h-full absolute inset-0"
                       style={{
-                        backgroundImage: `url(${item.photos[0]})`,
+                        backgroundImage: `url(${getMediaUrl(item.photos[0])})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
                         backgroundRepeat: "no-repeat",

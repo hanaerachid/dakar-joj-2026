@@ -6,3 +6,18 @@ export const fileToBase64 = (file: File): Promise<string> => {
     reader.onerror = (error) => reject(error);
   });
 };
+
+export function getMediaUrl(value: string) {
+  // Existing data URI
+  if (value.startsWith("data:")) {
+    return value;
+  }
+
+  // Existing absolute URL
+  if (/^https?:\/\//i.test(value)) {
+    return value;
+  }
+
+  // New R2 object path
+  return `${import.meta.env.VITE_STORAGE_URL_BASE}/${value}`;
+}

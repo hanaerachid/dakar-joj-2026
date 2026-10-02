@@ -18,6 +18,10 @@ const envSchema = z.object({
   CLERK_SECRET_KEY: z.string().optional(),
   ORS_API_KEY: z.string().optional(),
   ORS_BASE_URL: z.string().url().optional(),
+  R2_ACCOUNT_ID: z.string().optional(),
+  R2_ACCESS_KEY_ID: z.string().optional(),
+  R2_SECRET_ACCESS_KEY: z.string().optional(),
+  R2_BUCKET_NAME: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
