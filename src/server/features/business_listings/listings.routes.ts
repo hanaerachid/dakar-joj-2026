@@ -103,7 +103,7 @@ listingRoutes.delete("/:id", async (c) => {
   return ok(c, { deleted: true });
 });
 
-listingRoutes.patch("/listings/:id/verify", async (c) => {
+listingRoutes.patch("/:id/verify", async (c) => {
   const denied = requireAuth(c);
   if (denied) return denied;
 

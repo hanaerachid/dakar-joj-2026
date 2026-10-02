@@ -5,6 +5,7 @@ import { CheckIcon, MoreVertical } from "lucide-react";
 import { toast } from "sonner";
 import { type DataTableFeatures } from "@/utils/data-table-features"
 import { getFriendlyCategoryName } from "@/utils/key-translations";
+import { getMediaUrl } from "@/lib/fileConvert";
 import { getCategoryIcon, getPricingPlanInfo } from "@/utils/helpers";
 import type { BusinessListing } from "@/shared/contracts";
 
@@ -118,7 +119,7 @@ export function BusinessPage4Admin() {
         const firstPhoto = photos && photos.length > 0 ? photos[0] : null;
         return firstPhoto ? (
           <img
-            src={firstPhoto}
+            src={getMediaUrl(firstPhoto)}
             alt={row.original.name}
             className="h-12 aspect-square rounded object-cover"
           />

@@ -725,6 +725,45 @@ app.openAPIRegistry.registerPath({
   },
 });
 
+// Verify Business Listing
+app.openAPIRegistry.registerPath({
+  method: "patch",
+  path: "/api/v2/business/listings/{id}/verify",
+  summary: "Set business listing verified status",
+  security: [{ apiKeyAuth: [] }],
+  request: {
+    params: z.object({
+      id: z.string().openapi({
+        description: "Business listing ID",
+        example: "xxxxxxxxxxxxxxxxxxxx",
+      }),
+    }),
+    body: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: z.object({
+            verified: z.boolean().openapi({
+              description: "Verified status to set for the business listing",
+              example: true,
+            }),
+          }),
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Updated business listing verification status",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(z.object({ verified: z.boolean() })),
+        },
+      },
+    },
+  },
+});
+
 app.openAPIRegistry.registerPath({
   method: "get",
   path: "/api/v1/auth/me",

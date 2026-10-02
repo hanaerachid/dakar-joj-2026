@@ -65,7 +65,12 @@ export async function setListingVerified(
   id: string,
   verified: boolean,
 ) {
-  const response = await apiRequest<{ success: true; data: { deleted: true } }>(`/api/v2/business/listings/${id}/verify`, {
+  const response = await apiRequest<{
+    success: true;
+    data: {
+      verified: boolean;
+    };
+  }>(`/api/v2/business/listings/${id}/verify`, {
     method: "PATCH",
     body: JSON.stringify({ verified }),
   });

@@ -291,12 +291,8 @@ export async function setListingVerified(
   const db = await getMongoDatabase();
   const collection = db.collection<BusinessListingDocument>("listings");
 
-  if (!ObjectId.isValid(listingId)) {
-    throw new Error("Invalid listing ID");
-  }
-
   const result = await collection.updateOne(
-    { _id: new ObjectId(listingId) },
+    { _id: listingId },
     {
       $set: {
         verified,
