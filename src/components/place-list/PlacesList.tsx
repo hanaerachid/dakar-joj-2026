@@ -71,38 +71,22 @@ export const PlacesList = () => {
   } = usePanelContext();
 
   const openPanel = () => {
-    if (!isMobile) {
-      if (isOpen && !isSearchOpen && activeTab === "explorer") {
-        setIsOpen(false);
-        return;
-      }
-      setActiveTab("explorer");
-      setPanelContent({
-        title: null,
-        size: "lg",
-        children: <SidePanel />,
-      });
-      setIsOpen(true);
+    if (isOpen && !isSearchOpen && activeTab === "explorer") {
+      setIsOpen(false);
+      return;
     }
-
-    if (isMobile) {
-      if (isOpen && !isSearchOpen && activeTab === "explorer") {
+    setActiveTab("explorer");
+    setPanelContent({
+      title: null,
+      showFooter: isMobile ? true : false,
+      onClose: isMobile ? () => {
         setIsOpen(false);
-        return;
-      }
-      setActiveTab("explorer");
-      setPanelContent({
-        title: null,
-        showFooter: true,
-        onClose: () => {
-          setIsOpen(false);
-          setIsSearchOpen(false)
-        },
-        size: "lg",
-        children: <SidePanel />,
-      });
-      setIsOpen(true);
-    }
+        setIsSearchOpen(false)
+      } : undefined,
+      size: "lg",
+      children: <SidePanel />,
+    });
+    setIsOpen(true);
   }
 
   return (

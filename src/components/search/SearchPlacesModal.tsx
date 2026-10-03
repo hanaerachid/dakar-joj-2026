@@ -28,45 +28,26 @@ export const SearchPlaces = () => {
 
 
   const openPanel = () => {
-    if (!isMobile) {
-      if (isOpen && isSearchOpen && activeTab === "explorer") {
-        setIsOpen(false);
-        return;
-      }
-      setActiveTab("explorer");
-      setPanelContent({
-        title: null,
-        onClose: () => {
-          setIsOpen(false);
-          setIsSearchOpen(false)
-        },
-        size: "lg",
-        children: <SidePanel />,
-      });
-      setIsOpen(true);
-      setIsSearchOpen(true);
-    }
-
-    if (isMobile) {
-      if (isOpen && !isSearchOpen && activeTab === "explorer") {
-        setIsOpen(false);
+    if (isOpen && activeTab === "explorer") {
+      setIsOpen(false);
+      if (!isSearchOpen) {
         setIsSearchOpen(false);
         return;
       }
-      setActiveTab("explorer");
-      setPanelContent({
-        title: null,
-        showFooter: true,
-        onClose: () => {
-          setIsOpen(false);
-          setIsSearchOpen(false)
-        },
-        size: "lg",
-        children: <SidePanel />,
-      });
-      setIsOpen(true);
-      setIsSearchOpen(true);
     }
+    setActiveTab("explorer");
+    setPanelContent({
+      title: null,
+      showFooter: isMobile ? true : false,
+      onClose: () => {
+        setIsOpen(false);
+        setIsSearchOpen(false)
+      },
+      size: "lg",
+      children: <SidePanel />,
+    });
+    setIsOpen(true);
+    setIsSearchOpen(true);
   }
 
   return (
