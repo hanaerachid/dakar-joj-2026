@@ -84,7 +84,7 @@ export function Panel({
             `, SIZE_MAP[size],
             )}
           >
-            <div className="flex-1 overflow-y-auto p-4 sm:p-2">
+            <div className="flex-1 overflow-y-auto px-2 py-1 sm:py-2">
               {(showHeader) && (
                 <DrawerHeader>
                   {title && (

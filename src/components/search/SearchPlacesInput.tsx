@@ -64,7 +64,7 @@ export const SearchPlacesInput = ({
           </InputGroupButton>
         )}
       </InputGroup>
-      {!query && (
+      {!query && tipText && (
         <FieldDescription>
           {tipText}
         </FieldDescription>
