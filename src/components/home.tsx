@@ -722,9 +722,10 @@ export const HomeContent = () => {
             <CarouselContent className="-ml-1">
               {[...Array(3)].map((_, i) => (
                 <CarouselItem
+                  key={i}
                   className="basis-1/2 pl-1 lg:basis-1/3"
                 >
-                  <Skeleton key={i} className="aspect-square overflow-hidden rounded-3xl p-4 space-y-3" >
+                  <Skeleton className="aspect-square overflow-hidden rounded-3xl p-4 space-y-3" >
                     <Skeleton className="h-4 w-1/2 rounded bg-foreground/20" />
                     <Skeleton className="h-3 w-2/3 rounded bg-foreground/20" />
                     <Skeleton className="h-8 w-full rounded bg-foreground/20" />
