@@ -2,6 +2,7 @@ import { HelpCircle } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { BUSINESS_CATEGORIES } from "@/components/business/business-create.config";
 import { PRICING_PLANS } from "@/components/pricing/pricingplans.config";
+import { ALL_SPORT_OPTIONS } from "@/data/sports";
 
 export function getCategoryIcon(
   key: string | undefined
@@ -33,4 +34,8 @@ export function getPricingPlanInfo(key: string | undefined): {
     label: plan.label,
     icon: plan.icon,
   };
+}
+
+export function getSportIcon({ sportId }: { sportId: string }) {
+  return ALL_SPORT_OPTIONS.find((sport) => sport.key === sportId)?.icon;
 }

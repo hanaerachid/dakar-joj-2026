@@ -1,27 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@clerk/clerk-react";
-import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { cn } from "cn";
 import Autoplay from "embla-carousel-autoplay"
 import { getMediaUrl } from "@/lib/fileConvert";
 import { getFriendlyCategoryName } from "@/utils/key-translations";
+import { formatDuration } from "../utils/calendar";
+import { getSportIcon } from "@/utils/helpers";
 import {
-  BriefcaseBusiness,
-  Calendar,
-  Calendars,
   CheckCircle2,
-  ChevronRight,
-  Flame,
-  Map,
   MapPin,
-  Newspaper,
   AlertCircle,
-  Star,
 } from "lucide-react";
 import { Icon } from "@iconify/react";
-import { useStateContext } from "@/components/state-provider";
 import { useModalContext } from "@/components/modal-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -52,23 +42,20 @@ import {
 } from "@/components/ui/empty";
 import {
   Item,
-  ItemActions,
   ItemContent,
-  ItemDescription,
-  ItemGroup,
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
+import { QuickAccess } from "./QuickAccess";
+import { StatsSection } from "./StatsSection";
 
-import { MapManager } from "../core/MapManager";
 import {
   listBusinessListings,
 } from "@/lib/api/listings";
 import type { BusinessListing } from "@/shared/contracts";
 import { ALL_SPORT_OPTIONS } from "../data/sports";
-import { formatDuration } from "../utils/calendar";
 
 type ApiEventsItem = {
   _id: string;
@@ -229,70 +216,13 @@ function Countdown({ targetedDate }: { targetedDate: Date }) {
   );
 }
 
-function AnimatedCounter({ value, duration = 1.5, delay = 0 }: {
-  value: number | string;
-  duration?: number;
-  delay?: number;
-}) {
-  const { i18n } = useTranslation();
-  const lang = i18n.resolvedLanguage || i18n.language || "en";
-  const stringValue = String(value);
-
-  // 1. Check if the incoming number has decimals
-  const hasDecimals = stringValue.includes(".");
-  const decimalMatches = stringValue.match(/\.([0-9]+)/);
-  const decimalPlaces = decimalMatches ? decimalMatches[1].length : 0;
-
-  // 2. Extract just the numbers for Framer Motion to animate
-  const numericValue = parseFloat(stringValue.replace(/[^0-9.]/g, "")) || 0;
-
-  // 3. Initialize motion value at 0
-  const count = useMotionValue(0);
-
-  // 4. Format the number back into a localized string on every frame
-  const formatted = useTransform(count, (latest) => {
-    const options = {
-      minimumFractionDigits: hasDecimals ? decimalPlaces : 0,
-      maximumFractionDigits: hasDecimals ? decimalPlaces : 0,
-    };
-    
-    const formattedNumber = latest.toLocaleString(lang, options);
-    
-    // Re-attach prefixes or suffixes safely
-    if (stringValue.includes("\$")) return `$${formattedNumber}`;
-    if (stringValue.includes("%")) return `${formattedNumber}%`;
-    if (stringValue.includes("+")) return `+${formattedNumber}`;
-    
-    return formattedNumber;
-  });
-
-  useEffect(() => {
-    // 5. Run the framer-motion animation loop
-    const controls = animate(count, numericValue, {
-      duration: duration,
-      delay: delay,
-      ease: "easeOut",
-    });
-
-    return () => controls.stop();
-  }, [numericValue, duration, delay, count]);
-
-  return <motion.span>{formatted}</motion.span>;
-}
-
 export const SPORT_OPTIONS_BY_KEY = Object.fromEntries(
   ALL_SPORT_OPTIONS.map((sport) => [sport.key, sport])
 );
 
-export function getSportIcon({ sportId }: { sportId: any }) {
-  return ALL_SPORT_OPTIONS.find((sport) => sport.key === sportId)?.icon;
-}
-
 export const HomeContent = () => {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage || i18n.language || "en";
-  const navigate = useNavigate();
-  const { isSignedIn } = useAuth();
   const [loading, setLoading] = useState(true);
   const [businessListings, setBusinessListings] = useState<BusinessListing[]>([]);
   const [open, setOpen] = useState(false);
@@ -303,7 +233,6 @@ export const HomeContent = () => {
   const [eventLoading, setEventLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { setIsOpen, setModalContent } = useModalContext();
-  const mapManager = MapManager.getInstance();
 
   const plugin = useRef(
     Autoplay({
@@ -460,21 +389,6 @@ export const HomeContent = () => {
     setIsOpen(true);
   };
 
-  const {
-    setActiveTab,
-    torchVisible,
-    setTorchVisible,
-  } = useStateContext();
-
-  const handleToggleTorch = async () => {
-    try {
-      setTorchVisible(await mapManager.toggleTorch());
-    } catch {
-      console.error("Error toggling torch");
-      setTorchVisible(false);
-    }
-  };
-
   async function loadBusinessListings(
     coordinates?: readonly [number, number],
   ) {
@@ -507,90 +421,7 @@ export const HomeContent = () => {
 
   useEffect(() => {
     void loadBusinessListings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
-
-  const STARTERS = [
-    {
-      title: t("home.agenda"),
-      description: t("home.agendainfo"),
-      available: true,
-      color: "#00915a",
-      icon: Calendars,
-      primaryAction: () => setActiveTab("events"),
-      secondaryAction: null,
-      secondaryActionLabel: null,
-      shortcut: false,
-    },
-    {
-      title: t("home.my_agenda", "My Agenda"),
-      available: true,
-      icon: Calendar,
-      color: "#FFA500",
-      active: false,
-      primaryAction: () => setActiveTab("events"),
-      secondaryAction: null,
-      secondaryActionLabel: null,
-      shortcut: true,
-    },
-    {
-      title: t("home.maps", "Maps"),
-      available: false,
-      icon: Map,
-      color: "#FFA500",
-      active: false,
-      primaryAction: () => null,
-      secondaryAction: null,
-      secondaryActionLabel: null,
-      shortcut: true,
-    },
-    {
-      title: t("home.discover"),
-      description: t("home.localservices"),
-      available: false,
-      color: "#b98703",
-      icon: Star,
-      primaryAction: () => setActiveTab("discover"),
-      secondaryAction: null,
-      secondaryActionLabel: null,
-      shortcut: false,
-    },
-    {
-      title: t("home.torch", "Torch"),
-      available: true,
-      icon: Flame,
-      color: "#FFA500",
-      active: torchVisible,
-      primaryAction: () => {
-        void handleToggleTorch();
-        setActiveTab("explorer");
-      },
-      secondaryAction: null,
-      secondaryActionLabel: null,
-      shortcut: true,
-    },
-    {
-      title: t("home.news", "News"),
-      available: true,
-      icon: Newspaper,
-      color: "#FFA500",
-      active: false,
-      primaryAction: () => setActiveTab("news"),
-      secondaryAction: null,
-      secondaryActionLabel: null,
-      shortcut: true,
-    },
-    {
-      title: t("home.business"),
-      description: t("home.registerplace"),
-      available: true,
-      color: "#e03a2f",
-      icon: BriefcaseBusiness,
-      primaryAction: () => setActiveTab("business"),
-      secondaryActionLabel: t("home.pricing", "See plans"),
-      secondaryAction: () => navigate("/pricing"),
-    },
-  ]
 
   return (
     <div className="flex flex-col gap-4 py-4">
@@ -712,7 +543,7 @@ export const HomeContent = () => {
           </Empty>
         )}
 
-        {!open && businessListings.length > 0 && (
+        {!open && (
           <Carousel
             className="w-full"
             orientation="horizontal"
@@ -806,7 +637,7 @@ export const HomeContent = () => {
         )}
 
         <CollapsibleContent>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-0.25">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-1">
             {!loading && businessListings
               .filter(
                 (item) =>
@@ -822,7 +653,7 @@ export const HomeContent = () => {
                 return (
                 <div
                   key={index}
-                  className="basis-1/2 pl-1 lg:basis-1/3"
+                  className="basis-1/2 pl-0 lg:basis-1/3"
                 >
                   <Item
                     key={index}
@@ -888,185 +719,9 @@ export const HomeContent = () => {
         />
       </Collapsible>
 
-      <div className="flex flex-col gap-3">
-        <h2 className="text-xs text-muted-foreground uppercase">
-          {t("home.quick_access", "Quick Access")}
-        </h2>
-        <ItemGroup className="w-full grid grid-cols-[minmax(0,1fr)_5rem_5rem] gap-1">
-          {STARTERS.map((item, index) => (
-            <Item
-              key={index}
-              size="sm"
-              variant={item.available ? "outline" : "muted"}
-              className={cn(
-                "w-full",
-                "last:col-span-3",
-                !item.shortcut && "relative overflow-hidden",
-                item.shortcut
-                && "flex-col items-center justify-center",
-                item.available
-                  ? "group hover:bg-primary/25 cursor-pointer"
-                  : "cursor-not-allowed"
-              )}
-              style={
-                (item.available && !item.shortcut) ?
-                  { backgroundColor: item.color + "10" }
-                : (item.available && item.shortcut && item.active) ?
-                    { backgroundColor: item.color + "44" }
-                  : undefined
-              }
-              onClick={item.primaryAction}
-            >
-              <ItemMedia
-                variant={item.shortcut ? "icon" : "default"}
-                className={cn(
-                  !item.shortcut && "w-12 h-12",
-                  !item.shortcut && "-z-10",
-                  !item.shortcut && "absolute top-1/8 end-0 -translate-x-1/8 -translate-y-1/8"
+      <QuickAccess />
 
-                )}
-              >
-                {item.shortcut ? (
-                  <item.icon
-                    className={cn(
-                      "w-12 h-12"
-                    )}
-                    style={item.shortcut ? { color: item.active ? item.color : undefined } : undefined}
-                  />
-                ) : (
-                  <item.icon
-                    className={cn(
-                      "w-12 h-12",
-                      "text-muted-foreground/20"
-                    )}
-                    style={{ color: item.color + "50" }}
-                  />
-                )}
-              </ItemMedia>
-
-              <ItemContent className="min-w-0">
-                <ItemTitle className={cn(
-                  "text-xs",
-                  !item.shortcut && "max-w-10/12 truncate whitespace-nowrap line-clamp-1 overflow-hidden text-ellipsis",
-                  item.shortcut ? "text-center" : "font-heading font-bold",
-                )}>
-                  {item.title}
-                </ItemTitle>
-                {item.description && (
-
-                  <ItemDescription className={cn(
-                    "text-xs"
-                  )}>
-                    {item.description}
-                  </ItemDescription>
-                )}
-              </ItemContent>
-
-              {!item.shortcut && item.secondaryAction !== null && item.available && !isSignedIn && (
-                <ItemActions>
-                  <Button
-                    className="cursor-pointer"
-                    variant="default"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      item.secondaryAction();
-                    }}
-                  >
-                    {item.secondaryActionLabel}
-                  </Button>
-                </ItemActions>
-              )}
-              {!item.shortcut && !item.secondaryAction !== null && item.available && (
-                <ItemActions className="opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ItemDescription>
-                    <ChevronRight className="w-4 h-4" />
-                  </ItemDescription>
-                </ItemActions>
-              )}
-            </Item>
-          ))}
-        </ItemGroup>
-      </div>
-      <StatsContent />
-    </div>
-  );
-}
-
-const StatsContent = () => {
-  const { t } = useTranslation();
-  const stats = [
-    {
-      title: t("stats.competition_sites", "Competition Sites"),
-      value: 8,
-      subtitle: "",
-    },
-    {
-      title: t("stats.competition_sports", "Competition Sports"),
-      value: 25,
-      subtitle: t("stats.competition_sports_engagement", ""),
-    },
-    {
-      title: t("stats.delegations", "Delegations (NOCs)"),
-      value: 200,
-      subtitle: "",
-    },
-    {
-      title: t("stats.athletes", "Athletes"),
-      value: 2700,
-      subtitle: "",
-    },
-    {
-      title: t("stats.cities", "Competition Cities"),
-      value: 3,
-      subtitle: t("stats.cities_list", "Dakar · Diamniadio · Saly"),
-    },
-    {
-      title: t("stats.capacity", "Estimated Capacity"),
-      value: 20000,
-      subtitle: "",
-    },
-  ]
-
-  return (
-    <div className="flex flex-col gap-4 py-4">
-      <div className="flex flex-col gap-2">
-        <p className="text-xs text-[#f2b705] uppercase">
-          {t("stats.gamesinnumers", "The Games in numbers")}
-        </p>
-        {/*
-        <h2 className="text-xl text-foreground font-bold uppercase">
-          {t("stats.stats", "News")}
-        </h2>
-        */}
-      </div>
-      <div className="flex flex-col gap-4">
-        <ItemGroup className="grid grid-cols-2 gap-2" >
-          {stats.map((item, index) => (
-            <Item
-              key={index}
-              size="xs"
-              variant="muted"
-              className="overflow-hidden flex-col items-start justify-start"
-            >
-              <ItemContent>
-                <ItemDescription className="flex items-center gap-2">
-                  <span className="text-4xl md:text-5xl">
-                    <AnimatedCounter value={item.value} />
-                  </span>
-                </ItemDescription>
-                <ItemTitle>
-                  {item.title}
-                </ItemTitle>
-                <ItemDescription>
-                  <span className="text-xs text-muted-foreground">
-                    {item.subtitle}
-                  </span>
-                </ItemDescription>
-              </ItemContent>
-            </Item>
-          ))}
-        </ItemGroup>
-      </div>
+      <StatsSection />
     </div>
   );
 }
