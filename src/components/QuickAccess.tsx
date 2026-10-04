@@ -123,7 +123,7 @@ export const QuickAccess = () => {
       color: "#e03a2f",
       icon: BriefcaseBusiness,
       primaryAction: () => setActiveTab("business"),
-      secondaryActionLabel: t("home.pricing", "See plans"),
+      secondaryActionLabel: t("business.pricing", "See plans"),
       secondaryAction: () => navigate("/pricing"),
     },
   ]

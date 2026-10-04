@@ -10,9 +10,11 @@ import {
   CheckCircle2,
   MapPin,
   AlertCircle,
+  Plus,
 } from "lucide-react";
 import { Icon } from "@iconify/react";
 import { useModalContext } from "@/components/modal-provider";
+import { useStateContext } from "@/components/state-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -233,6 +235,7 @@ export const HomeContent = () => {
   const [eventLoading, setEventLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { setIsOpen, setModalContent } = useModalContext();
+  const { setActiveTab } = useStateContext();
 
   const plugin = useRef(
     Autoplay({
@@ -589,20 +592,17 @@ export const HomeContent = () => {
                   >
                     <Item
                       size="sm"
-                      variant="outline"
+                      variant="muted"
                       className={cn(
-                        "group relative aspect-square bg-cover overflow-hidden",
+                        "group relative aspect-square overflow-hidden",
                       )}
-                      style={{
-                        backgroundImage: `url(${getMediaUrl(item.photos[0])})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        backgroundRepeat: "no-repeat",
-                      }}
                     >
                       <Badge
-                        className="absolute start-2 top-2 z-20"
                         variant="secondary"
+                        className={cn(
+                          "absolute start-1.5 top-1.5 z-20",
+                          "text-[11px]"
+                        )}
                       >
                         {getFriendlyCategoryName(item.cat, t)}
                       </Badge>
@@ -619,7 +619,7 @@ export const HomeContent = () => {
                           title={item.name}
                           className={cn(
                             "w-full line-clamp-1 overflow-hidden text-ellipsis",
-                            "text-xs leading-tight font-heading font-bold"
+                            "text-xs/3.5 tracking-normal font-heading font-normal"
                           )}
                         >
                           {item.name}
@@ -658,20 +658,17 @@ export const HomeContent = () => {
                   <Item
                     key={index}
                     size="sm"
-                    variant="outline"
+                    variant="muted"
                     className={cn(
-                      "group relative aspect-square bg-cover overflow-hidden",
+                      "group relative aspect-square overflow-hidden",
                     )}
-                    style={{
-                      backgroundImage: `url(${getMediaUrl(item.photos[0])})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      backgroundRepeat: "no-repeat",
-                    }}
                   >
                     <Badge
-                      className="absolute start-2 top-2 z-20"
                       variant="secondary"
+                      className={cn(
+                        "absolute start-1.5 top-1.5 z-20",
+                        "text-[11px]"
+                      )}
                     >
                       {getFriendlyCategoryName(item.cat, t)}
                     </Badge>
@@ -692,7 +689,7 @@ export const HomeContent = () => {
                         title={item.name}
                         className={cn(
                           "w-full line-clamp-1 overflow-hidden text-ellipsis",
-                          "text-xs leading-tight font-heading font-bold"
+                          "text-xs/3.5 tracking-normal font-heading font-normal"
                         )}
                       >
                         {item.name}
@@ -702,6 +699,49 @@ export const HomeContent = () => {
                 </div>
               )
             })}
+
+            <div className="basis-1/2 pl-0 lg:basis-1/3">
+              <Item
+                size="sm"
+                variant="muted"
+                className={cn(
+                  "group relative aspect-square overflow-hidden",
+                  "flex flex-col items-center justify-center gap-2",
+                  "hover:bg-primary/10 cursor-pointer"
+                )}
+                onClick={() => {
+                  setActiveTab("business");
+                }}
+              >
+                <ItemMedia
+                  variant="default"
+                  className={cn(
+                    "w-12 h-12",
+                    "-z-10",
+                    "absolute top-1/3 -translate-x-0 -translate-y-1/2"
+                  )}
+                >
+                  <Plus
+                    className={cn(
+                      "w-12 h-12",
+                      "text-muted-foreground/20"
+                    )}
+                  />
+                </ItemMedia>
+                <ItemContent
+                  className="flex-col justify-end absolute h-full bottom-0 left-0 right-0 p-2"
+                >
+                  <ItemTitle
+                    className={cn(
+                      "w-full line-clamp-2 overflow-hidden text-ellipsis",
+                      "text-center text-xs/3.5 tracking-normal font-heading font-normal"
+                    )}
+                  >
+                    {t("home.add_your_business", "Show your business here")}
+                  </ItemTitle>
+                </ItemContent>
+              </Item>
+            </div>
           </div>
         </CollapsibleContent>
         <CollapsibleTrigger
@@ -712,7 +752,7 @@ export const HomeContent = () => {
               size="xs"
             >
               {!open
-                ? t("see_more", "See more relevant listings")
+                ? t("see_more_relevant_listings", "See more relevant listings")
                 : t("see_less", "See less")}
             </Button>
           }

@@ -10,6 +10,8 @@
   "new_place": "New place",
   "no_image": "No image",
   "edit": "Edit",
+  "see_more_relevant_listings": "See more relevant listings",
+  "see_less": "See less",
   "actions": {
     "closepanel": "Close Panel",
     "openpanel": "Open Panel",
@@ -109,6 +111,7 @@
     "not_found": "No business listings found",
     "listbusiness": "List your business",
     "business_description": "Hotels, restaurants, shops, car dealerships, museums, galleries — join the official visitor map.",
+    "pricing": "See plans",
     "selectplan": "Our plans",
     "current_plan": "Your current plan",
     "discover": "Discover",

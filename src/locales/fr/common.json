@@ -10,6 +10,8 @@
   "new_place": "Nouveau lieu",
   "no_image": "Pas d'image",
   "edit": "Modifier",
+  "see_more_relevant_listings": "Voir plus d'établissements pertinents",
+  "see_less": "voir moins",
   "actions": {
     "closepanel": "Fermer le panneau",
     "openpanel": "Ouvrir le panneau",
@@ -109,6 +111,7 @@
     "not_found": "Aucun établissement trouvé",
     "listbusiness": "Référencez votre établissement",
     "business_description": "Hôtels, restaurants, boutiques, concessions automobiles, musées, galeries… Rejoignez la carte officielle des visiteurs des Jeux.",
+    "pricing": "Voir les plans",
     "selectplan": "Nos plans",
     "current_plan": "Votre plan actuel",
     "discover": "Découverte",
