@@ -123,7 +123,7 @@ export function PricingPage() {
               {t("pricing.description", "Pay once: your visibility lasts until the closing of the Games, on November 13, 2026. The earlier you commit, the less you pay.")}
             </p>
           </div>
-          <div className="grid gap-2 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Object.entries(PRICING_PLANS).map(
               ([key, item]) => {
                 const planId = key as keyof typeof PRICING_PLANS;
