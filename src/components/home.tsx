@@ -31,6 +31,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 import {
   Collapsible,
@@ -236,6 +237,9 @@ export const HomeContent = () => {
   const [error, setError] = useState<string | null>(null);
   const { setIsOpen, setModalContent } = useModalContext();
   const { setActiveTab } = useStateContext();
+  const [api, setApi] = useState<CarouselApi>()
+  const [canScrollPrev, setCanScrollPrev] = useState(false)
+  const [canScrollNext, setCanScrollNext] = useState(false)
 
   const plugin = useRef(
     Autoplay({
@@ -355,6 +359,25 @@ export const HomeContent = () => {
     };
     fetchEvents();
   }, []);
+
+  useEffect(() => {
+    if (!api) return
+
+    const update = () => {
+      setCanScrollPrev(api.canScrollPrev())
+      setCanScrollNext(api.canScrollNext())
+    }
+
+    update()
+
+    api.on("select", update)
+    api.on("reInit", update)
+
+    return () => {
+      api.off("select", update)
+      api.off("reInit", update)
+    }
+  }, [api])
 
   const handleOpenChange = (nextOpen: boolean) => {
     // Opening: allow it immediately
@@ -548,18 +571,30 @@ export const HomeContent = () => {
 
         {!open && (
           <Carousel
-            className="w-full"
+            setApi={setApi}
+            className="w-full relative"
             orientation="horizontal"
             opts={{
               align: "start",
             }}
+            >
+            <div
+              className={cn(
+                "relative",
+                canScrollPrev && canScrollNext &&
+                "[mask-image:linear-gradient(to_right,transparent,#000_48px,#000_calc(100%-48px),transparent)]",
+                !canScrollPrev && canScrollNext &&
+                "[mask-image:linear-gradient(to_right,#000,#000_calc(100%-48px),transparent)]",
+                canScrollPrev && !canScrollNext &&
+                "[mask-image:linear-gradient(to_right,transparent,#000_48px,#000)]",
+              )}
             >
             {loading && (
             <CarouselContent className="-ml-1">
               {[...Array(3)].map((_, i) => (
                 <CarouselItem
                   key={i}
-                  className="basis-1/2 pl-1 lg:basis-1/3"
+                  className="basis-2/5 pl-1"
                 >
                   <Skeleton className="aspect-square overflow-hidden rounded-3xl p-4 space-y-3" >
                     <Skeleton className="h-4 w-1/2 rounded bg-foreground/20" />
@@ -588,7 +623,7 @@ export const HomeContent = () => {
                 return (
                   <CarouselItem
                     key={index}
-                    className="basis-1/2 pl-1 lg:basis-1/3"
+                    className="basis-2/5 pl-1"
                   >
                     <Item
                       size="sm"
@@ -631,6 +666,8 @@ export const HomeContent = () => {
               })}
             </CarouselContent>
             )}
+            </div>
+
             <CarouselPrevious size="icon-sm" variant="secondary" className="left-0" />
             <CarouselNext size="icon-sm" variant="secondary" className="right-0" />
           </Carousel>
