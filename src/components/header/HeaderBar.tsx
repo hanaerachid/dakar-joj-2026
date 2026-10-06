@@ -3,6 +3,7 @@ import { LogoBrand } from "./LogoBrand";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ProfileMenu } from "../ProfileMenu";
 import { ModeToggle } from "@/components/mode-toggle";
+import { InstallPWAButton } from "@/components/InstallButton";
 
 type Props = {
   title?: string;
@@ -39,6 +40,7 @@ export function HeaderBar({
           </div>
         )}
 
+        <div className="flex-1 min-w-0 flex items-center justify-start gap-1">
         {/* logo */}
         {showLogo && (
           <div className="min-w-0 shrink-0">
@@ -52,17 +54,21 @@ export function HeaderBar({
           </div>
         )}
 
-        {/* center: title */}
-        <div className=" flex-1 min-w-0 px-1 ">
-          <h1 className="font-heading text-xs font-bold text-foreground text-center uppercase leading-tight sm:px-2 sm:text-base line-clamp-1">
+          {/* title */}
+        <div className="flex-1 min-w-0 hidden md:block">
+          <h1 className="font-heading text-xs font-bold text-foreground uppercase leading-tight sm:px-2 sm:text-base line-clamp-1">
             {title}
           </h1>
-          <p className="font-sans text-xs font-normal text-muted-foreground text-center uppercase leading-tight sm:px-2 sm:text-base line-clamp-1">
+
+          <p className="font-sans text-xs font-normal text-muted-foreground uppercase leading-tight sm:px-2 sm:text-base line-clamp-1">
             {description}
           </p>
         </div>
+        </div>
 
         {children}
+
+        <InstallPWAButton />
 
         {/* right: flags + profile */}
         <div className="flex items-center gap-2 shrink-0 sm:gap-3">
