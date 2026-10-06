@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "cn";
 import { useTranslation } from "react-i18next";
-import { AlertCircle, CalendarPlus, Check, ExternalLink } from "lucide-react";
+import { AlertCircle, CalendarPlus, CalendarX, Check, ExternalLink } from "lucide-react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -87,6 +87,14 @@ export const EventsContent = () => {
       setLoadingEventId(null);
     }
   }
+
+  const handleRemoveFromCalendar = (event: ApiEventsItem) => {
+    setTrackedEventIds((prev) => {
+      const next = new Set(prev);
+      next.delete(event._id);
+      return next;
+    });
+  };
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -285,29 +293,12 @@ export const EventsContent = () => {
                           (tracked || isLoading) ? "flex opacity-100" : "",
                         )}
                       >
-                        <Button
-                          variant={isLoading ? "secondary" : tracked ? "outline" : "default"}
-                          size={tracked ? "default" : "icon"}
-                          onClick={() => handleAddToCalendar(item)}
-                          disabled={isLoading}
-                        >
-                          {isLoading ? (
-                            <>
-                              <Spinner />
-                              <span className="sr-only">{t("calendar.adding_to_calendar", "Adding...")}</span>
-                            </>
-                          ) : tracked ? (
-                            <>
-                              <Check />
-                              <span>{t("calendar.added_to_calendar", "Added")}</span>
-                            </>
-                          ) : (
-                            <>
-                              <CalendarPlus />
-                              <span className="sr-only">{t("calendar.add_to_calendar", "Add to Calendar")}</span>
-                            </>
-                          )}
-                        </Button>
+                        <CalendarButton
+                          isLoading={isLoading}
+                          tracked={tracked}
+                          handleAddToCalendar={() => handleAddToCalendar(item)}
+                          handleRemoveFromCalendar={() => handleRemoveFromCalendar(item)}
+                        />
                       </ItemActions>
                     </Item>
                   );
@@ -333,3 +324,85 @@ export const EventsContent = () => {
     </div>
   );
 };
+
+const CalendarButton = ({
+  isLoading,
+  tracked,
+  handleAddToCalendar,
+  handleRemoveFromCalendar
+}: {
+  isLoading: boolean;
+  tracked: boolean;
+  handleAddToCalendar: () => void;
+  handleRemoveFromCalendar: () => void;
+}) => {
+  const { t } = useTranslation();
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div className="flex items-center gap-1">
+      {isLoading ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          disabled
+          aria-label={t("calendar.adding_to_calendar", "Adding...")}
+        >
+          <Spinner />
+        </Button>
+      ) : tracked ? (
+        <>
+          <Button
+            variant="ghost"
+            size="default"
+            disabled
+            className="cursor-default"
+          >
+            <Check />
+            <span>
+              {t("calendar.added_to_calendar", "Added")}
+            </span>
+          </Button>
+          {isHovered && (
+            <Button
+              variant="destructive"
+              size="icon"
+              onClick={handleRemoveFromCalendar}
+              aria-label={t(
+                "calendar.remove_from_calendar",
+                "Remove from calendar",
+              )}
+            >
+              <CalendarX />
+            </Button>)}
+        </>
+      ) : (
+        <Button
+          variant="default"
+          size={isHovered ? "default" : "icon"}
+          className="overflow-hidden transition-all duration-200 ease-in-out"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onClick={handleAddToCalendar}
+          aria-label={t(
+            "calendar.add_to_calendar",
+            "Add to Calendar",
+          )}
+        >
+          <CalendarPlus className="shrink-0" />
+
+          <span
+            className={cn(
+              "whitespace-nowrap transition-all duration-200",
+              isHovered
+                ? "ml-2 max-w-[200px] opacity-100"
+                : "ml-0 max-w-0 opacity-0",
+            )}
+          >
+            {t("calendar.add_to_calendar", "Add to Calendar")}
+          </span>
+        </Button>
+      )}
+    </div>
+  );
+}
