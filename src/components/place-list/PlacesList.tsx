@@ -21,6 +21,12 @@ import { usePanelContext } from "@/components/panel-provider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SidePanel } from "@/components/side-panel/core";
 import { useStateContext } from "@/components/state-provider";
+import { listBusinessListings } from "@/lib/api/listings";
+import {
+  businessListingToFeature,
+  isVerifiedBusinessListing,
+  type BusinessListingWithVerification,
+} from "@/lib/businessListings";
 
 type VenueFeature = Feature<Point, GeoJsonProperties>;
 const DEFAULT_VISIBLE_CATS = new Set<string>(["competition"]);
@@ -191,7 +197,19 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
       setMainCategoryVenues([]);
 
       try {
-        const { fc, color } = await getMainCategoryFeatureCollection(mainCategoryId);
+        const result = mainCategoryId === "businesses"
+          ? {
+              fc: {
+                type: "FeatureCollection" as const,
+                features: ((await listBusinessListings()) as BusinessListingWithVerification[])
+                  .filter(isVerifiedBusinessListing)
+                  .map(businessListingToFeature)
+                  .filter((feature): feature is NonNullable<typeof feature> => feature !== null),
+              },
+              color: "#0f766e",
+            }
+          : await getMainCategoryFeatureCollection(mainCategoryId);
+        const { fc, color } = result;
         const all = ((fc.features || []) as VenueFeature[]).map((feature) => ({
           ...feature,
           zoneColor: color,
@@ -253,6 +271,7 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
 
   // === layer helpers (prefixes must match your style layer ids) ===
   function layerPrefixFor(catId: string): string {
+    if (catId === "business") return "business-";
     if (catId === "competition") return "comp-";
     if (catId === "training") return "train-";
     if (catId === "castle") return "castle-";
@@ -358,7 +377,18 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
     id?: string,
   ) => {
     setSelectedTitle(title);
-    setSelectedPlace({ lng, lat, title, id });
+    const selectedFeature = venues.find((venue) => venue.properties?.id === id);
+    const businessListing = activeCategory.id === "business" && typeof selectedFeature?.properties?.businessListing === "string"
+      ? JSON.parse(selectedFeature.properties.businessListing)
+      : undefined;
+    setSelectedPlace({
+      lng,
+      lat,
+      title,
+      id,
+      type: activeCategory.id === "business" ? "business" : "place",
+      listing: businessListing,
+    });
     const map = mapManager.getMap();
     if (map) {
       // Ensure this category is visible

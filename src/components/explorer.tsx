@@ -5,6 +5,7 @@ import { SearchPlacesModal } from "./search/SearchPlacesModal";
 import { PlacesListContent } from "./place-list/PlacesList";
 import { useStateContext } from "./state-provider";
 import { PlaceDetails } from "./place-card/place";
+import { BusinessDetails } from "./listing-card/listing";
 
 export const ExplorerContent = ({
   setPanelOpen,
@@ -18,7 +19,11 @@ export const ExplorerContent = ({
   return (
     <div className="space-y-2">
       {selectedPlace ? (
-        <PlaceDetails id={selectedPlace.id} />
+        selectedPlace.type === "business" ? (
+          <BusinessDetails listing={selectedPlace.listing} />
+        ) : (
+          <PlaceDetails id={selectedPlace.id} />
+        )
       ) : (
       <>
       <SearchPlacesInput

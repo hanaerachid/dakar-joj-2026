@@ -5,6 +5,8 @@ export type PlaceSelection = {
   lng: number;
   lat: number;
   title?: string;
+  type?: "place" | "business";
+  listing?: unknown;
 };
 
 export function selectPlace(place: PlaceSelection) {

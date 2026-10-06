@@ -84,10 +84,23 @@ export const HomeContent = () => {
   const [listingRoutes, setListingRoutes] = useState<Record<string, ListingRoute>>({});
 
   const { setIsOpen, setModalContent } = useModalContext();
-  const { setActiveTab } = useStateContext();
+  const { setActiveTab, setSelectedPlace } = useStateContext();
   const [api, setApi] = useState<CarouselApi>()
   const [canScrollPrev, setCanScrollPrev] = useState(false)
   const [canScrollNext, setCanScrollNext] = useState(false)
+
+  const openBusinessListing = (listing: BusinessListing) => {
+    const [lng, lat] = listing.location.coordinates;
+    setSelectedPlace({
+      id: listing._id,
+      lng,
+      lat,
+      title: listing.name,
+      type: "business",
+      listing,
+    });
+    setActiveTab("explorer");
+  };
 
   const getLocation = (): Promise<LocationResult> =>
     new Promise((resolve) => {
@@ -395,6 +408,7 @@ export const HomeContent = () => {
                     <Item
                       size="sm"
                       variant="muted"
+                      onClick={() => openBusinessListing(item)}
                       className={cn(
                         "group relative aspect-square overflow-hidden",
                       )}
@@ -474,6 +488,7 @@ export const HomeContent = () => {
                     key={index}
                     size="sm"
                     variant="muted"
+                    onClick={() => openBusinessListing(item)}
                     className={cn(
                       "group relative aspect-square overflow-hidden",
                     )}

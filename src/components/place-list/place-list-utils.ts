@@ -1,7 +1,12 @@
 import type { CategoryConfig } from "@/types/config";
-import { Car, Landmark, Cross, Siren, Store, Mosque, CircleEllipsis, ShoppingCart, House, Utensils, Trophy, Circle, type LucideIcon } from "lucide-react";
+import { Car, Landmark, Cross, Siren, Store, Mosque, CircleEllipsis, ShoppingCart, House, Utensils, Trophy, Circle, BriefcaseBusiness, type LucideIcon } from "lucide-react";
 
 export const CATEGORIES: CategoryConfig[] = [
+  {
+    id: "business",
+    label: "Verified businesses",
+    sources: [],
+  },
   {
     id: "competition",
     label: "Competition Sites",
@@ -154,6 +159,13 @@ export const CATEGORIES: CategoryConfig[] = [
 ];
 
 export const MAIN_CATEGORIES = [
+  {
+    id: "businesses",
+    label: "Businesses",
+    icon: BriefcaseBusiness,
+    color: "#0f766e",
+    categories: ["business"],
+  },
   {
     id: "sports",
     label: "Sports",

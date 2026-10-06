@@ -2,7 +2,7 @@
 import mapboxgl, { Map as MapboxMap } from "mapbox-gl";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import { addZoneLayers } from "./layers/zones";
-import { addDbCategoryPointsLayer } from "./layers/categoryPoints"; // ✅ generic DB-driven points
+import { addBusinessListingsLayer, addDbCategoryPointsLayer } from "./layers/categoryPoints"; // ✅ generic DB-driven points
 import {
   MAPBOX_ACCESS_TOKEN,
   INITIAL_CENTER,
@@ -204,6 +204,7 @@ export class MapManager {
     await addZoneLayers(this.map);
 
     await Promise.all([
+      addBusinessListingsLayer(this.map),
       addDbCategoryPointsLayer(this.map, "competition", "comp-", {
         initiallyVisible: DEFAULT_VISIBLE_CATS.has("competition"),
       }),

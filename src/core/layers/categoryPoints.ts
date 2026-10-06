@@ -3,6 +3,12 @@ import { Map } from "mapbox-gl";
 import { addOrSetSource } from "../map/utils";
 import { selectPlace } from "../../components/place-selection";
 import { listPlaces, listZones } from "../../lib/api/places";
+import { listBusinessListings } from "../../lib/api/listings";
+import {
+  businessListingToFeature,
+  isVerifiedBusinessListing,
+  type BusinessListingWithVerification,
+} from "../../lib/businessListings";
 
 export type CategoryLayerOptions = {
   initiallyVisible?: boolean; // default false
@@ -76,6 +82,7 @@ const MAKI_ICON_BY_CATEGORY: Record<string, string> = {
 };
 
 const LOCAL_IMG_BY_CATEGORY: Record<string, string> = {
+  business: "/markers/pin.png",
   hotels: "/markers/hotel.png",
   hotel: "/markers/hotel.png",
   restaurants: "/markers/restaurants.png",
@@ -518,7 +525,17 @@ async function addClusterLayers(
     const id = p["id"] || p["docId"] || p["placeId"];
     if (typeof id !== "string") return;
 
-    selectPlace({ id, lng: coords[0], lat: coords[1], title });
+    const listing = categoryId === "business" && typeof p.businessListing === "string"
+      ? JSON.parse(p.businessListing)
+      : undefined;
+    selectPlace({
+      id,
+      lng: coords[0],
+      lat: coords[1],
+      title,
+      type: categoryId === "business" ? "business" : "place",
+      listing,
+    });
     map.easeTo({ center: coords, zoom: Math.max(map.getZoom(), 15) });
   });
 
@@ -609,6 +626,27 @@ export async function addDbCategoryPointsLayer(
       opts,
     );
   }
+}
+
+export async function addBusinessListingsLayer(
+  map: Map,
+  opts: CategoryLayerOptions = {},
+) {
+  const listings = (await listBusinessListings()) as BusinessListingWithVerification[];
+  const features = listings
+    .filter(isVerifiedBusinessListing)
+    .map(businessListingToFeature)
+    .filter((feature): feature is NonNullable<typeof feature> => feature !== null);
+
+  if (!features.length) return;
+  await addClusterLayers(
+    map,
+    "business-sites",
+    { type: "FeatureCollection", features },
+    undefined,
+    "business",
+    opts,
+  );
 }
 
 // PUT THIS NEAR THE BOTTOM OF categoryPoints.ts (export it):
