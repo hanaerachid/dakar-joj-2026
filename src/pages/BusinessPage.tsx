@@ -9,6 +9,7 @@ import { getMediaUrl } from "@/lib/fileConvert";
 import { getCategoryIcon, getPricingPlanInfo } from "@/utils/helpers";
 import type { BusinessListing } from "@/shared/contracts";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -30,7 +31,7 @@ import {
 } from "@/lib/api/listings";
 import { type BreadcrumbConfig, Breadcrumbs } from "@/components/BreadCrumbs";
 import { DataTable } from "@/components/DataTable";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useModalContext } from "@/components/modal-provider";
 
 type BusinessListingWithOwner = BusinessListing & {
   _id?: string;
@@ -49,6 +50,7 @@ export function BusinessPage4Admin() {
   // const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [businessListings, setBusinessListings] = useState<BusinessListingWithOwner[]>([]);
+  const { setIsOpen, setModalContent } = useModalContext();
 
   const breadcrumbConfig: BreadcrumbConfig = {
     "/admin": {
@@ -87,28 +89,103 @@ export function BusinessPage4Admin() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function handleDeleteBusinessListing(item: BusinessListing) {
-    if (!confirm("Delete this business listing? This cannot be undone.")) return;
-    try {
-      await deleteBusinessListing(item._id);
-      await loadBusinessListings();
-    } catch (error) {
-      console.error("Failed to delete business listing:", error);
-      toast.error("Failed to delete the business listing. Please try again.");
-    }
+  async function handleDelete(item: BusinessListing) {
+    setModalContent({
+      title: t("delete_confirmation_title", "Delete this business listing?"),
+      size: "md",
+      children: (
+        <p>{t("delete_confirmation_message", "This cannot be undone.")}</p>
+      ),
+      onClose: () => {
+        setIsOpen(false);
+      },
+      footer: ((
+        <>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setIsOpen(false);
+            }}
+          >
+            {t("cancel", "Cancel")}
+          </Button>
+
+          <Button
+            variant="default"
+            onClick={async () => {
+              const previousListings = businessListings;
+              setBusinessListings((listings) =>
+                listings.filter((listing) => listing._id !== item._id)
+              );
+              setIsOpen(false);
+              try {
+                await deleteBusinessListing(item._id);
+                await loadBusinessListings();
+              } catch (error) {
+                console.error("Failed to delete business listing:", error);
+                setBusinessListings(previousListings);
+                toast.error(
+                  t("listing_deletion_failure", "Failed to delete the business listing. Please try again.")
+                );
+              }
+            }}
+          >
+            {t("confirm", "Confirm")}
+          </Button>
+        </>
+      )),
+    });
+
+    setIsOpen(true);
   }
 
   const handleVerify = async (
     id: any,
     verified: boolean,
   ) => {
-    try {
-      await setListingVerified(id, verified);
 
-      // Update your local state / refetch listings
-    } catch (error) {
-      console.error(error);
-    }
+    setModalContent({
+      title: t("approve_confirmation_title", "Approve this business listing?"),
+      size: "md",
+      children: (
+        <p>{t("approve_confirmation_message", "Are you sure?")}</p>
+      ),
+      onClose: () => {
+        setIsOpen(false);
+      },
+      footer: ((
+        <>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setIsOpen(false);
+            }}
+          >
+            {t("cancel", "Cancel")}
+          </Button>
+
+          <Button
+            variant="default"
+            onClick={async () => {
+              setIsOpen(false);
+              try {
+                await setListingVerified(id, verified);
+                await loadBusinessListings();
+              } catch (error) {
+                console.error("Failed to approve business listing:", error);
+                toast.error(
+                  t("listing_approbation_failure", "Failed to approve the business listing. Please try again.")
+                );
+              }
+            }}
+          >
+            {t("confirm", "Confirm")}
+          </Button>
+        </>
+      )),
+    });
+
+    setIsOpen(true);
   };
 
   const columns = columnHelper.columns([
@@ -221,7 +298,7 @@ export function BusinessPage4Admin() {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
                   variant="destructive"
-                  onClick={() => handleDeleteBusinessListing(item)}
+                  onClick={() => handleDelete(item)}
                 >
                   Delete
                 </DropdownMenuItem>
