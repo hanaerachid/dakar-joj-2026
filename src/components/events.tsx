@@ -256,8 +256,12 @@ export const EventsContent = () => {
                       className="group hover:bg-accent"
                     >
                       {sport?.icon && (
-                        <ItemMedia variant="icon" >
+                        <ItemMedia
+                          variant="default"
+                          className="w-7 h-7"
+                        >
                           <Icon
+                            className="w-6 h-6"
                             icon={getSportIcon({ sportId: item.sport }) || "mdi:help"}
                           />
                         </ItemMedia>

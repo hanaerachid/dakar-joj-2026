@@ -169,7 +169,7 @@ export const Promo = () => {
               return (
                 <Card
                   key={index}
-                  size="sm"
+                  size="default"
                   className={cn(
                     "h-full",
                     "group",
@@ -177,9 +177,11 @@ export const Promo = () => {
                   )}
                 >
                   {sport?.icon && (
-                    <CardHeader>
+                    <CardHeader
+                      className="absolute top-1/8 end-12 -translate-x-1/8 -translate-y-1/8"
+                    >
                       <Icon
-                        className="w-7 h-7"
+                        className="w-12 h-12"
                         icon={getSportIcon({ sportId: item.sport }) || "mdi:help"}
                       />
                     </CardHeader>
