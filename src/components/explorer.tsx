@@ -8,7 +8,9 @@ import { PlaceDetails } from "./place-card/place";
 
 export const ExplorerContent = ({
   setPanelOpen,
-}: any) => {
+}: {
+  setPanelOpen: (open: boolean) => void;
+}) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
   // const hasSearchQuery = query.trim().length > 0;

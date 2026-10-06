@@ -1,30 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "cn";
-import Autoplay from "embla-carousel-autoplay"
 import { getMediaUrl } from "@/lib/fileConvert";
 import { getFriendlyCategoryName } from "@/utils/key-translations";
-import { formatDuration } from "../utils/calendar";
-import { getSportIcon, useRelativeTime } from "@/utils/helpers";
 import {
   CheckCircle2,
   MapPin,
   AlertCircle,
   Plus,
 } from "lucide-react";
-import { Icon } from "@iconify/react";
 import { useModalContext } from "@/components/modal-provider";
 import { useStateContext } from "@/components/state-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardDescription,
-  CardTitle,
-  CardFooter,
-  CardContent,
-} from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
@@ -52,6 +40,7 @@ import {
 } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
+import { Promo } from "./Promo";
 import { QuickAccess } from "./QuickAccess";
 import { StatsSection } from "./StatsSection";
 
@@ -59,23 +48,7 @@ import {
   listBusinessListings,
 } from "@/lib/api/listings";
 import type { BusinessListing } from "@/shared/contracts";
-import { ALL_SPORT_OPTIONS } from "../data/sports";
 import { getItinerary } from "@/lib/api/itinerary";
-
-type ApiEventsItem = {
-  _id: string;
-  name: string;
-  updatedAt: string;
-  startAt: string;
-  endAt: string;
-  venue: string;
-  sport: string;
-};
-
-type EventsResponse = {
-  success: boolean;
-  data: ApiEventsItem[];
-};
 
 type LocationStatus =
   | "idle"
@@ -196,40 +169,6 @@ function LocationConsent({
   );
 }
 
-function Countdown({ targetedDate }: { targetedDate: Date }) {
-  const { t } = useTranslation();
-
-  const targetDate = targetedDate.getTime();
-
-  const [timeLeft, setTimeLeft] = useState(targetDate - Date.now());
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(targetDate - Date.now());
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [targetDate]);
-
-  if (timeLeft <= 0) {
-    return <span>{t("home.event_is_here", "The event is here!")}</span>;
-  }
-
-  const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-
-  return (
-    <span>
-      <span className="text-5xl font-semibold">{days}</span>
-      &nbsp;
-      <span className="uppercase text-[#f2b705] text-sm">{t("home.days", "days")}</span>
-    </span>
-  );
-}
-
-export const SPORT_OPTIONS_BY_KEY = Object.fromEntries(
-  ALL_SPORT_OPTIONS.map((sport) => [sport.key, sport])
-);
-
 export const HomeContent = () => {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage || i18n.language || "en";
@@ -240,22 +179,11 @@ export const HomeContent = () => {
   const [locationStatus, setLocationStatus] = useState<LocationStatus>("idle");
   const [listingRoutes, setListingRoutes] = useState<Record<string, ListingRoute>>({});
 
-  const [events, setEvents] = useState<ApiEventsItem[]>([]);
-  const [eventLoading, setEventLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { setIsOpen, setModalContent } = useModalContext();
   const { setActiveTab } = useStateContext();
-  const { getRelativeTime } = useRelativeTime();
   const [api, setApi] = useState<CarouselApi>()
   const [canScrollPrev, setCanScrollPrev] = useState(false)
   const [canScrollNext, setCanScrollNext] = useState(false)
-
-  const plugin = useRef(
-    Autoplay({
-      delay: 6000,
-      stopOnInteraction: true
-    })
-  )
 
   const getLocation = () =>
     new Promise<Exclude<LocationStatus, "idle" | "requesting">>((resolve) => {
@@ -300,39 +228,6 @@ export const HomeContent = () => {
       );
     });
 
-  const getEtas = async () => {
-    if (!location || locationStatus !== "granted") return;
-
-    setListingRoutes({});
-
-    await Promise.all(
-      businessListings.flatMap((listing) => {
-        if (!listing._id) return [];
-
-        return getItinerary({
-          coordinates: [
-            [location.longitude, location.latitude],
-            listing.location.coordinates,
-          ],
-          profile: "driving-car",
-          format: "json",
-        })
-          .then((itinerary) => {
-            const route = itinerary.routes[0]?.summary;
-            if (!route) return;
-
-            setListingRoutes((currentRoutes) => ({
-              ...currentRoutes,
-              [listing._id!]: route,
-            }));
-          })
-          .catch((error) => {
-            console.warn(`Could not calculate route for listing ${listing._id}:`, error);
-          });
-      })
-    );
-  };
-
   useEffect(() => {
     let permissionStatus: PermissionStatus | undefined;
 
@@ -367,38 +262,6 @@ export const HomeContent = () => {
       permissionStatus?.removeEventListener("change", updatePermissionStatus);
     };
     // The permission state is intentionally checked only when this screen mounts.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        setEventLoading(true);
-        setError(null);
-
-        const response = await fetch(
-          "/api/v2/events?status=published&limit=20"
-        );
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch events: ${response.status}`);
-        }
-
-        const result: EventsResponse = await response.json();
-
-        if (!result.success) {
-          throw new Error("Failed to fetch events");
-        }
-
-        setEvents(result.data);
-      } catch (err) {
-        console.error("Error fetching events:", err);
-        setError("Unable to load events.");
-      } finally {
-        setEventLoading(false);
-      }
-    };
-    fetchEvents();
   }, []);
 
   useEffect(() => {
@@ -410,6 +273,39 @@ export const HomeContent = () => {
     if (businessListings.length === 0) {
       return;
     }
+
+    const getEtas = async () => {
+      if (!location || locationStatus !== "granted") return;
+
+      setListingRoutes({});
+
+      await Promise.all(
+        businessListings.flatMap((listing) => {
+          if (!listing._id) return [];
+
+          return getItinerary({
+            coordinates: [
+              [location.longitude, location.latitude],
+              listing.location.coordinates,
+            ],
+            profile: "driving-car",
+            format: "json",
+          })
+            .then((itinerary) => {
+              const route = itinerary.routes[0]?.summary;
+              if (!route) return;
+
+              setListingRoutes((currentRoutes) => ({
+                ...currentRoutes,
+                [listing._id!]: route,
+              }));
+            })
+            .catch((error) => {
+              console.warn(`Could not calculate route for listing ${listing._id}:`, error);
+            });
+        })
+      );
+    };
 
     void getEtas();
   }, [location, locationStatus, businessListings]);
@@ -507,103 +403,7 @@ export const HomeContent = () => {
 
   return (
     <div className="flex flex-col gap-4 py-4">
-      <Carousel className="w-full"
-        orientation="vertical"
-        opts={{
-          align: "center",
-          loop: true,
-        }}
-        plugins={[plugin.current]}
-        onMouseEnter={plugin.current.stop}
-        onMouseLeave={plugin.current.reset}
-      >
-        <CarouselContent className="-mt-1 h-42">
-          <CarouselItem className="basis-full pt-1">
-        <Card
-          size="sm"
-          className={cn(
-            "h-full",
-            "backdrop-blur-sm bg-gradient-to-b from-[#f2b705]/10 to-[#f2b705]/5",
-            "overflow-hidden relative before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[linear-gradient(90deg,#008751_0%,#FCD116_52%,#CE1126_100%)] before:content-['']"
-          )}
-        >
-          <CardHeader>
-            <CardTitle>
-              <Countdown targetedDate={new Date("2026-10-31T00:00:00")} />
-            </CardTitle>
-            <CardDescription>
-              {t("home.countdown_description", "Days left until the Dakar 2026 Youth Olympic Games!")}
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Badge variant="secondary" className="uppercase text-xs">
-              31 Oct - 13 Nov 2026
-            </Badge>
-          </CardFooter>
-        </Card>
-          </CarouselItem>
-
-          {!error && !eventLoading && (
-            <CarouselItem
-              // key={index}
-              className="basis-full pt-1"
-            >
-              {(events as typeof events).slice(0, 1).map((item, index) => {
-                const sport = SPORT_OPTIONS_BY_KEY[item.sport];
-
-                return (
-                  <Card
-                    key={index}
-                    size="sm"
-                    className={cn(
-                      "h-full",
-                      "group",
-                      "backdrop-blur-sm bg-gradient-to-b from-primary/10 to-primary/5",
-                    )}
-                  >
-                    {sport?.icon && (
-                      <CardHeader>
-                        <Icon
-                          className="w-7 h-7"
-                          icon={getSportIcon({ sportId: item.sport }) || "mdi:help"}
-                        />
-                      </CardHeader>
-                    )}
-                    <CardContent className="min-w-0 flex-1">
-                      <CardTitle
-                        className="min-w-0 truncate overflow-hidden text-ellipsis whitespace-nowrap"
-                      >
-                        {item.name}
-                      </CardTitle>
-                      <CardDescription
-                        className="min-w-0 truncate overflow-hidden text-ellipsis whitespace-nowrap"
-                        title={new Date(item.startAt).toLocaleDateString(lang, {
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}                      >
-                        {getRelativeTime(new Date(item.startAt))}
-                        {" • "}
-                        {formatDuration(item.startAt, item.endAt, lang)}
-                      </CardDescription>
-                    </CardContent>
-                    <CardFooter className="shrink-0">
-                      <CardDescription className="text-xs">
-                        {item.venue}
-                      </CardDescription>
-                    </CardFooter>
-                  </Card>
-                );
-              })}
-
-            </CarouselItem>
-          )}
-        </CarouselContent>
-        <CarouselPrevious size="icon-sm" variant="secondary" className="-top-4" />
-        <CarouselNext size="icon-sm" variant="secondary" className="-bottom-4" />
-      </Carousel>
-
+      <Promo />
       <Collapsible
         open={open}
         onOpenChange={handleOpenChange}
