@@ -63,7 +63,7 @@ export type RouteSummary = {
 } | null;
 
 type PlaceDetailsProps = {
-  id: string;
+  id: string | unknown | any;
 };
 
 type PlaceContentProps = {
