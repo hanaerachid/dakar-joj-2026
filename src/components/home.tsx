@@ -46,6 +46,7 @@ import {
 import {
   Item,
   ItemContent,
+  ItemDescription,
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
@@ -59,6 +60,7 @@ import {
 } from "@/lib/api/listings";
 import type { BusinessListing } from "@/shared/contracts";
 import { ALL_SPORT_OPTIONS } from "../data/sports";
+import { getItinerary } from "@/lib/api/itinerary";
 
 type ApiEventsItem = {
   _id: string;
@@ -85,6 +87,11 @@ type LocationStatus =
 type Coordinates = {
   latitude: number;
   longitude: number;
+};
+
+type ListingRoute = {
+  duration: number;
+  distance: number;
 };
 
 type LocationConsentProps = {
@@ -231,6 +238,7 @@ export const HomeContent = () => {
   const [open, setOpen] = useState(false);
   const [location, setLocation] = useState<Coordinates | null>(null);
   const [locationStatus, setLocationStatus] = useState<LocationStatus>("idle");
+  const [listingRoutes, setListingRoutes] = useState<Record<string, ListingRoute>>({});
 
   const [events, setEvents] = useState<ApiEventsItem[]>([]);
   const [eventLoading, setEventLoading] = useState(true);
@@ -268,7 +276,6 @@ export const HomeContent = () => {
 
           setLocation(coords);
           setLocationStatus("granted");
-          void loadBusinessListings([coords.latitude, coords.longitude]);
           resolve("granted");
         },
         (err) => {
@@ -292,6 +299,39 @@ export const HomeContent = () => {
         },
       );
     });
+
+  const getEtas = async () => {
+    if (!location || locationStatus !== "granted") return;
+
+    setListingRoutes({});
+
+    await Promise.all(
+      businessListings.flatMap((listing) => {
+        if (!listing._id) return [];
+
+        return getItinerary({
+          coordinates: [
+            [location.longitude, location.latitude],
+            listing.location.coordinates,
+          ],
+          profile: "driving-car",
+          format: "json",
+        })
+          .then((itinerary) => {
+            const route = itinerary.routes[0]?.summary;
+            if (!route) return;
+
+            setListingRoutes((currentRoutes) => ({
+              ...currentRoutes,
+              [listing._id!]: route,
+            }));
+          })
+          .catch((error) => {
+            console.warn(`Could not calculate route for listing ${listing._id}:`, error);
+          });
+      })
+    );
+  };
 
   useEffect(() => {
     let permissionStatus: PermissionStatus | undefined;
@@ -360,6 +400,19 @@ export const HomeContent = () => {
     };
     fetchEvents();
   }, []);
+
+  useEffect(() => {
+    if (!location || locationStatus !== "granted") {
+      setListingRoutes({});
+      return;
+    }
+
+    if (businessListings.length === 0) {
+      return;
+    }
+
+    void getEtas();
+  }, [location, locationStatus, businessListings]);
 
   useEffect(() => {
     if (!api) return
@@ -447,7 +500,9 @@ export const HomeContent = () => {
   }
 
   useEffect(() => {
-    void loadBusinessListings();
+    void loadBusinessListings(
+      location ? [location.latitude, location.longitude] : undefined,
+    );
   }, [location]);
 
   return (
@@ -591,7 +646,7 @@ export const HomeContent = () => {
               )}
             >
             {loading && (
-            <CarouselContent className="-ml-1">
+            <CarouselContent className="-ml-1 select-none">
               {[...Array(3)].map((_, i) => (
                 <CarouselItem
                   key={i}
@@ -608,7 +663,7 @@ export const HomeContent = () => {
             )}
 
             {!open && !loading && businessListings.length > 0 && (
-            <CarouselContent className="-ml-1">
+            <CarouselContent className="-ml-1 select-none">
               {!loading && businessListings
                 .filter(
                   (item) =>
@@ -637,7 +692,7 @@ export const HomeContent = () => {
                         variant="secondary"
                         className={cn(
                           "absolute start-1.5 top-1.5 z-20",
-                          "text-[11px]"
+                          "text-[9px] uppercase"
                         )}
                       >
                         {getFriendlyCategoryName(item.cat, t)}
@@ -660,6 +715,17 @@ export const HomeContent = () => {
                         >
                           {item.name}
                         </ItemTitle>
+                        {locationStatus === "granted" && listingRoutes[item._id ?? ""] && (
+                          <ItemDescription className="text-xs/3.5">
+                            {new Intl.NumberFormat(lang).format(
+                              Math.round(listingRoutes[item._id ?? ""].duration / 60),
+                            )} {t("home.minutes_short", "min")}
+                            {" • "}
+                            {new Intl.NumberFormat(lang, {
+                              maximumFractionDigits: 1,
+                            }).format(listingRoutes[item._id ?? ""].distance / 1000)} {t("home.kilometers_short", "km")}
+                          </ItemDescription>
+                        )}
                       </ItemContent>
                     </Item>
                   </CarouselItem>
@@ -705,7 +771,7 @@ export const HomeContent = () => {
                       variant="secondary"
                       className={cn(
                         "absolute start-1.5 top-1.5 z-20",
-                        "text-[11px]"
+                        "text-[9px] uppercase"
                       )}
                     >
                       {getFriendlyCategoryName(item.cat, t)}
@@ -732,6 +798,17 @@ export const HomeContent = () => {
                       >
                         {item.name}
                       </ItemTitle>
+                      {locationStatus === "granted" && listingRoutes[item._id ?? ""] && (
+                        <ItemDescription className="text-xs/3.5">
+                          {new Intl.NumberFormat(lang).format(
+                            Math.round(listingRoutes[item._id ?? ""].duration / 60),
+                          )} {t("home.minutes_short", "min")}
+                          {" • "}
+                          {new Intl.NumberFormat(lang, {
+                            maximumFractionDigits: 1,
+                          }).format(listingRoutes[item._id ?? ""].distance / 1000)} {t("home.kilometers_short", "km")}
+                        </ItemDescription>
+                      )}
                     </ItemContent>
                   </Item>
                 </div>
