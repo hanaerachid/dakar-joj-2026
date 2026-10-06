@@ -171,22 +171,22 @@ export function BusinessPage() {
   }
 
   return (
-      <div className="mx-auto max-w-6xl pt-16 pb-8 space-y-6">
+    <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-16 pb-8 space-y-6">
         <Breadcrumbs
           config={breadcrumbConfig}
         />
         <Card>
           <CardHeader>
             <Badge variant="secondary">
-              {t("hello", "Bonjour", { name: user?.firstName || user?.fullName || "User" })}
+            {t("hello", "Hello", { name: user?.firstName || user?.fullName || "User" })}
             </Badge>
           </CardHeader>
           <CardContent>
             <CardTitle className="max-w-xl">
-              {t("business.hero_title", "Gérez vos établissements pour les Jeux.")}
+            {t("business.hero_title", "Manage your business listings and reach more customers.")}
             </CardTitle>
             <CardDescription className="max-w-xl">
-              {t("business.hero_description", "Des milliers de visiteurs chercheront où dormir, manger, se déplacer et faire leurs achats à Dakar. Publiez vos fiches sur la carte officielle et captez cette audience.")}
+            {t("business.hero_description", "Create, edit, and manage your business listings to attract more customers and grow your presence.")}
             </CardDescription>
           </CardContent>
           <CardFooter>
@@ -370,7 +370,7 @@ export function BusinessPage() {
               );
             })}
         </div>
-      </div>
+    </main>
   );
 }
 

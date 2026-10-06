@@ -184,7 +184,7 @@ export function SubscriptionsPage() {
   ])
 
   return (
-    <main className="mx-auto w-full max-w-6xl space-y-6 px-4 py-8">
+    <main className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-16 pb-8 space-y-6">
       <Breadcrumbs
         config={breadcrumbConfig}
       />

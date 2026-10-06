@@ -234,7 +234,7 @@ export function BusinessPage4Admin() {
   ])
 
   return (
-    <div className="mx-auto max-w-6xl pt-16 pb-8 space-y-6">
+    <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-16 pb-8 space-y-6">
       <Breadcrumbs
         config={breadcrumbConfig}
       />
@@ -279,6 +279,6 @@ export function BusinessPage4Admin() {
           />
         </div>
       )}
-    </div>
+    </main>
   );
 }
