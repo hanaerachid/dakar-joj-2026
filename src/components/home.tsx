@@ -4,9 +4,6 @@ import { cn } from "cn";
 import { getMediaUrl } from "@/lib/fileConvert";
 import { getFriendlyCategoryName } from "@/utils/key-translations";
 import {
-  CheckCircle2,
-  MapPin,
-  AlertCircle,
   Plus,
 } from "lucide-react";
 import { useModalContext } from "@/components/modal-provider";
@@ -39,7 +36,6 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Spinner } from "@/components/ui/spinner";
 import { Promo } from "./Promo";
 import { QuickAccess } from "./QuickAccess";
 import { StatsSection } from "./StatsSection";
@@ -49,6 +45,7 @@ import {
 } from "@/lib/api/listings";
 import type { BusinessListing } from "@/shared/contracts";
 import { getItinerary } from "@/lib/api/itinerary";
+import { LocationConsent } from "./LocationConsent";
 
 type LocationStatus =
   | "idle"
@@ -56,6 +53,15 @@ type LocationStatus =
   | "granted"
   | "denied"
   | "error";
+
+type LocationResult =
+  | {
+    status: "granted";
+    coords: Coordinates;
+  }
+  | {
+    status: "denied" | "error";
+  };
 
 type Coordinates = {
   latitude: number;
@@ -66,108 +72,6 @@ type ListingRoute = {
   duration: number;
   distance: number;
 };
-
-type LocationConsentProps = {
-  requestLocation: () => Promise<Exclude<LocationStatus, "idle" | "requesting">>;
-  initialStatus: LocationStatus;
-  onClose: () => void;
-  onContinue: () => void;
-};
-
-function LocationConsent({
-  requestLocation,
-  initialStatus,
-  onClose,
-  onContinue,
-}: LocationConsentProps) {
-  const { t } = useTranslation();
-  const [status, setStatus] = useState<LocationStatus>(initialStatus);
-
-  useEffect(() => {
-    setStatus(initialStatus);
-  }, [initialStatus]);
-
-  const handleRequest = async () => {
-    setStatus("requesting");
-    setStatus(await requestLocation());
-  };
-
-  if (status === "requesting") {
-    return (
-      <div className="flex flex-col items-center gap-4 py-4 text-center">
-        <Spinner className="size-8 text-primary" />
-        <div className="space-y-1">
-          <p className="font-medium">
-            {t("location.requesting", "Requesting your location")}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {t("location.requestingDescription", "Please allow location access in your browser.")}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (status === "granted") {
-    return (
-      <div className="flex flex-col items-center gap-4 py-4 text-center">
-        <CheckCircle2 className="size-10 text-green-600" aria-hidden="true" />
-        <div className="space-y-1">
-          <p className="font-medium">
-            {t("location.granted", "Location access granted")}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {t("location.grantedDescription", "We will show listings closest to you.")}
-          </p>
-        </div>
-        <Button type="button" onClick={onContinue}>
-          {t("location.showListings", "Show nearby listings")}
-        </Button>
-      </div>
-    );
-  }
-
-  const isDenied = status === "denied";
-  const isError = status === "error";
-
-  return (
-    <div className="space-y-4">
-      <div className="flex gap-3">
-        {isDenied || isError ? (
-          <AlertCircle className="mt-0.5 size-5 shrink-0 text-destructive" aria-hidden="true" />
-        ) : (
-          <MapPin className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
-        )}
-        <div className="space-y-1">
-          <p className="font-medium">
-            {isDenied
-              ? t("location.denied", "Location access was denied")
-              : isError
-                ? t("location.error", "We couldn't determine your location")
-                : t("location.title", "Use your location?")}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {isDenied
-              ? t("location.deniedDescription", "Enable location access in your browser settings, then try again.")
-              : isError
-                ? t("location.errorDescription", "Please check your location settings and try again.")
-                : t("location.description", "We use your location to show relevant businesses and listings around you.")}
-          </p>
-        </div>
-      </div>
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="ghost" onClick={onClose}>
-          {t("close", "Close")}
-        </Button>
-        <Button type="button" onClick={() => void handleRequest()}>
-          {isDenied || isError
-            ? t("location.tryAgain", "Try again")
-            : t("use_my_location", "Use this location")}
-        </Button>
-      </div>
-    </div>
-  );
-}
 
 export const HomeContent = () => {
   const { t, i18n } = useTranslation();
@@ -185,11 +89,13 @@ export const HomeContent = () => {
   const [canScrollPrev, setCanScrollPrev] = useState(false)
   const [canScrollNext, setCanScrollNext] = useState(false)
 
-  const getLocation = () =>
-    new Promise<Exclude<LocationStatus, "idle" | "requesting">>((resolve) => {
+  const getLocation = (): Promise<LocationResult> =>
+    new Promise((resolve) => {
       if (!("geolocation" in navigator)) {
         setLocationStatus("error");
-        resolve("error");
+        resolve({
+          status: "error",
+        });
         return;
       }
 
@@ -204,7 +110,10 @@ export const HomeContent = () => {
 
           setLocation(coords);
           setLocationStatus("granted");
-          resolve("granted");
+          resolve({
+            status: "granted",
+            coords,
+          });
         },
         (err) => {
           console.warn("Geolocation error:", err);
@@ -215,9 +124,11 @@ export const HomeContent = () => {
             setLocationStatus("error");
           }
           resolve(
-            err.code === GeolocationPositionError.PERMISSION_DENIED
-              ? "denied"
-              : "error",
+            {
+              status: err.code === GeolocationPositionError.PERMISSION_DENIED
+                ? "denied"
+                : "error",
+            }
           );
         },
         {
