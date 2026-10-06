@@ -65,6 +65,7 @@ import {
   deleteBusinessListing,
 } from "@/lib/api/listings";
 import { type BreadcrumbConfig, Breadcrumbs } from "@/components/BreadCrumbs";
+import { useModalContext } from "@/components/modal-provider";
 
 const STEP_FIELDS: Record<number, (keyof BusinessCreateValues)[]> = {
   0: ["cat"],
@@ -80,6 +81,8 @@ export function BusinessPage() {
   const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [businessListings, setBusinessListings] = useState<BusinessListing[]>([]);
+  const { setIsOpen, setModalContent } = useModalContext();
+
   // const [search, setSearch] = useState("");
   // const [sort, setSort] = useState<"updated" | "name">("updated");
 
@@ -117,15 +120,54 @@ export function BusinessPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function handleDeleteBusinessListing(item: BusinessListing) {
-    if (!confirm("Delete this business listing? This cannot be undone.")) return;
-    try {
-      await deleteBusinessListing(item._id);
-      await loadBusinessListings();
-    } catch (error) {
-      console.error("Failed to delete business listing:", error);
-      toast.error("Failed to delete the business listing. Please try again.");
-    }
+  async function handleDelete(item: BusinessListing) {
+    setModalContent({
+      title: t("delete_confirmation_title", "Delete this business listing?"),
+      size: "md",
+      children: (
+        <p>{t("delete_confirmation_message", "This cannot be undone.")}</p>
+      ),
+      onClose: () => {
+        setIsOpen(false);
+      },
+      footer: ((
+        <>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setIsOpen(false);
+            }}
+          >
+            {t("cancel", "Cancel")}
+          </Button>
+
+          <Button
+            variant="default"
+            onClick={async () => {
+              const previousListings = businessListings;
+              setBusinessListings((listings) =>
+                listings.filter((listing) => listing._id !== item._id)
+              );
+              setIsOpen(false);
+              try {
+                await deleteBusinessListing(item._id);
+                await loadBusinessListings();
+              } catch (error) {
+                console.error("Failed to delete business listing:", error);
+                setBusinessListings(previousListings);
+                toast.error(
+                  t("listing_deletion_failure", "Failed to delete the business listing. Please try again.")
+                );
+              }
+            }}
+          >
+            {t("confirm", "Confirm")}
+          </Button>
+        </>
+      )),
+    });
+
+    setIsOpen(true);
   }
 
   return (
@@ -256,7 +298,7 @@ export function BusinessPage() {
                         variant="destructive"
                         // disabled
                         // aria-disabled
-                        onClick={() => handleDeleteBusinessListing(item)}
+                        onClick={() => handleDelete(item)}
                       >
                         Delete
                       </DropdownMenuItem>
