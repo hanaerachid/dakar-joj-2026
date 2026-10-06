@@ -134,11 +134,11 @@ export const QuickAccess = () => {
       <h2 className="text-xs text-muted-foreground uppercase">
         {t("home.quick_access", "Quick Access")}
       </h2>
-      <ItemGroup className="w-full grid grid-cols-[minmax(0,4fr)_1fr_1fr] !gap-1">
+      <ItemGroup className="w-full grid grid-cols-[minmax(0,4fr)_1fr_1fr] !gap-1.5">
         {STARTERS.map((item, index) => (
           <Item
             key={index}
-            size="sm"
+            size="xs"
             variant={item.available ? "outline" : "muted"}
             className={cn(
               "w-full",
@@ -187,8 +187,8 @@ export const QuickAccess = () => {
 
             <ItemContent className="min-w-0">
               <ItemTitle className={cn(
-                "text-xs/3.5 tracking-normal font-heading font-semibold",
-                !item.shortcut && "max-w-10/12 truncate whitespace-nowrap line-clamp-1 overflow-hidden text-ellipsis",
+                "text-xs/4 tracking-normal font-heading font-semibold",
+                !item.shortcut && "max-w-7/8 truncate whitespace-nowrap line-clamp-1 overflow-hidden text-ellipsis",
                 item.shortcut ? "text-center" : "text-start",
               )}>
                 {item.title}
@@ -196,8 +196,8 @@ export const QuickAccess = () => {
 
               {item.description && (
                 <ItemDescription className={cn(
-                  "text-xs/3.5",
-                  !item.shortcut && "max-w-10/12",
+                  "text-xs/4",
+                  !item.shortcut && "max-w-7/8",
                   item.shortcut ? "text-center" : "text-start",
                 )}>
                   {item.description}
