@@ -1,6 +1,8 @@
-import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SignInButton, useAuth, useUser } from "@clerk/clerk-react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { SignInButton, useAuth } from "@clerk/clerk-react";
 import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,13 +15,24 @@ import {
   CardTitle
 } from "@/components/ui/card";
 import { PRICING_PLANS } from "./pricing/pricingplans.config";
+import { getMySubscription } from "../lib/api/payments";
 
 export const BusinessContent = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { isSignedIn } = useAuth();
-  const { user } = useUser();
-  const currentPlan = user?.publicMetadata?.plan;
+  const [subscription, setSubscription] = useState<{ plan: string; status: string } | null>(null);
+
+  useEffect(() => {
+    if (!isSignedIn) return;
+    const load = async () => {
+      setSubscription(await getMySubscription());
+    };
+    void load().catch((error) => toast.error(error instanceof Error ? error.message : "Unable to load payment status"));
+  }, [isSignedIn]);
+
+  const currentPlan = subscription?.plan;
+
   const planId: keyof typeof PRICING_PLANS =
     typeof currentPlan === "string" && currentPlan in PRICING_PLANS
       ? (currentPlan as keyof typeof PRICING_PLANS)
