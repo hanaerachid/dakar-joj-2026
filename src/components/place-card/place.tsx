@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "cn";
 import {
-  ChevronLeft,
   Clock9,
   CircleDot,
   Ruler,
@@ -64,7 +63,7 @@ export type RouteSummary = {
 } | null;
 
 type PlaceDetailsProps = {
-  id: any;
+  id: string;
 };
 
 type PlaceContentProps = {
@@ -455,15 +454,15 @@ export function PlaceDetails({ id }: PlaceDetailsProps) {
 
   return (
     <div className="relative flex flex-col gap-2">
-      <div className="absolute top-16 start-2">
+      <div className="absolute top-16 end-3">
         <Button
-          size="default"
+          size="icon"
           variant="secondary"
-          className="fixed top-15 start-2 z-50"
+          className="fixed top-16 end-3 z-50"
           onClick={handleBack}
         >
-          <ChevronLeft />
-          <span>{t("place.details.back", "Back")}</span>
+          <X />
+          <span className="sr-only">{t("place.details.back", "Back")}</span>
         </Button>
       </div>
       <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto">
@@ -588,14 +587,14 @@ function PlaceContent({ place, route, onGetDirections }: PlaceContentProps) {
 
             {/* {getCategoryIcon(categoryId)} */}
             <span className="text-sm/7 font-extralight text-muted-foreground">
-              {getLocalizedCategory(categoryId as any, t)}
+              {getLocalizedCategory(categoryId as string, t)}
             </span>
           </div>
           <Separator />
         </div>
 
         {location && (
-          <Iternary
+          <Itinerary
             route={route}
             onGetDirections={onGetDirections}
             destination={[location.longitude, location.latitude]}
@@ -613,9 +612,9 @@ function PlaceContent({ place, route, onGetDirections }: PlaceContentProps) {
               >
                 {s.icon ? (
                   <Icon icon={s.icon} className="w-6 h-6" />
-                ) : (s as any).iconUrl ? (
+                ) : s.iconUrl ? (
                   <img
-                    src={(s as any).iconUrl}
+                    src={s.iconUrl}
                     alt={s.label}
                     className="w-6 h-6"
                   />
@@ -731,7 +730,7 @@ function PlaceContent({ place, route, onGetDirections }: PlaceContentProps) {
   );
 }
 
-export function Iternary({
+export function Itinerary({
   route,
   destination,
   onGetDirections,
@@ -789,10 +788,10 @@ export function Iternary({
 
             <span>
               {loading
-                ? t("layer.actions.calculatingRoute", "Getting iternary...")
+                ? t("layer.actions.calculatingRoute", "Getting itinerary...")
                 : isOpen
-                  ? t("layer.actions.clearRoute", "Clear iternary")
-                  : t("layer.actions.getDirections", "Get iternary")}
+                  ? t("layer.actions.clearRoute", "Clear itinerary")
+                  : t("layer.actions.getDirections", "Get itinerary")}
             </span>
           </Button>
         }
