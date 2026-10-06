@@ -5,7 +5,7 @@ import Autoplay from "embla-carousel-autoplay"
 import { getMediaUrl } from "@/lib/fileConvert";
 import { getFriendlyCategoryName } from "@/utils/key-translations";
 import { formatDuration } from "../utils/calendar";
-import { getSportIcon } from "@/utils/helpers";
+import { getSportIcon, useRelativeTime } from "@/utils/helpers";
 import {
   CheckCircle2,
   MapPin,
@@ -237,6 +237,7 @@ export const HomeContent = () => {
   const [error, setError] = useState<string | null>(null);
   const { setIsOpen, setModalContent } = useModalContext();
   const { setActiveTab } = useStateContext();
+  const { getRelativeTime } = useRelativeTime();
   const [api, setApi] = useState<CarouselApi>()
   const [canScrollPrev, setCanScrollPrev] = useState(false)
   const [canScrollNext, setCanScrollNext] = useState(false)
@@ -521,13 +522,13 @@ export const HomeContent = () => {
                       </CardTitle>
                       <CardDescription
                         className="min-w-0 truncate overflow-hidden text-ellipsis whitespace-nowrap"
-                      >
-                        {new Date(item.startAt).toLocaleDateString(lang, {
+                        title={new Date(item.startAt).toLocaleDateString(lang, {
                           month: "short",
                           day: "numeric",
                           hour: "2-digit",
                           minute: "2-digit",
-                        })}
+                        })}                      >
+                        {getRelativeTime(new Date(item.startAt))}
                         {" • "}
                         {formatDuration(item.startAt, item.endAt, lang)}
                       </CardDescription>

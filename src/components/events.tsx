@@ -22,6 +22,7 @@ import {
 } from "../utils/calendar";
 import { addEventToCalendar } from "../lib/api/events";
 import { ALL_SPORT_OPTIONS } from "../data/sports";
+import { getSportIcon, useRelativeTime } from "@/utils/helpers";
 
 type ApiEventsItem = {
   _id: string;
@@ -42,9 +43,6 @@ export const SPORT_OPTIONS_BY_KEY = Object.fromEntries(
   ALL_SPORT_OPTIONS.map((sport) => [sport.key, sport])
 );
 
-export function getSportIcon({ sportId }: { sportId: any }) {
-  return ALL_SPORT_OPTIONS.find((sport) => sport.key === sportId)?.icon;
-}
 
 export const EventsContent = () => {
   const { t, i18n } = useTranslation();
@@ -56,6 +54,8 @@ export const EventsContent = () => {
   const [trackedEventIds, setTrackedEventIds] = useState<Set<string>>(
     () => new Set()
   );
+
+  const { getRelativeTime } = useRelativeTime();
 
   async function handleAddToCalendar(event: ApiEventsItem) {
     setLoadingEventId(event._id);
@@ -262,13 +262,14 @@ export const EventsContent = () => {
                         </ItemTitle>
                         <ItemDescription
                           className="min-w-0 truncate overflow-hidden text-ellipsis whitespace-nowrap"
-                        >
-                          {new Date(item.startAt).toLocaleDateString(lang, {
+                          title={new Date(item.startAt).toLocaleDateString(lang, {
                             month: "short",
                             day: "numeric",
                             hour: "2-digit",
                             minute: "2-digit",
                           })}
+                        >
+                          {getRelativeTime(new Date(item.startAt))}
                           {" • "}
                           {formatDuration(item.startAt, item.endAt, lang)}
                         </ItemDescription>
