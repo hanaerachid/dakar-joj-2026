@@ -83,10 +83,10 @@ export const QuickAccess = () => {
     {
       title: t("home.discover"),
       description: t("home.localservices"),
-      available: false,
+      available: true,
       color: "#b98703",
       icon: Star,
-      primaryAction: () => setActiveTab("discover"),
+      primaryAction: () => setActiveTab("explorer"),
       secondaryAction: null,
       secondaryActionLabel: null,
       shortcut: false,
