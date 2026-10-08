@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { cn } from "cn";
-import { AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
@@ -65,7 +64,7 @@ export function Panel({
   const swipeDirection = isMobile ? "down" : "left";
 
   return (
-    <AnimatePresence>
+    <>
       {isOpen && (
         <Drawer
           open={isOpen}
@@ -76,15 +75,14 @@ export function Panel({
           disablePointerDismissal
           showSwipeHandle={showSwipeHandle}
           swipeDirection={swipeDirection}
-          snapPoints={isMobile ? [0.5, 0.7, 1] : undefined}
+          snapPoints={isMobile ? [0.4, 0.7, 1] : undefined}
         >
           <DrawerContent
-            className={cn(`
-            z-150 mt-18 mb-8 bg-background/80 backdrop-blur-md shadow-lg
-            `, SIZE_MAP[size],
+            className={cn(
+              "z-150 mt-18 mb-8 bg-background/80 backdrop-blur-md shadow-lg",
+              SIZE_MAP[size],
             )}
           >
-            <div className="flex-1 overflow-y-auto px-2 py-1 sm:py-2">
               {(showHeader) && (
                 <DrawerHeader>
                   {title && (
@@ -97,6 +95,8 @@ export function Panel({
                   )}
                 </DrawerHeader>
               )}
+
+            <div className="overflow-y-auto px-2 py-1 sm:py-2">
               {children}
             </div>
 
@@ -121,6 +121,6 @@ export function Panel({
           </DrawerContent>
         </Drawer>
       )}
-    </AnimatePresence>
+    </>
   );
 }
