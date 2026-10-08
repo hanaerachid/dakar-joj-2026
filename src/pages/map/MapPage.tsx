@@ -49,7 +49,6 @@ export default function MapPage() {
   const [longitude, setLongitude] = useState(-74.0242);
   const [latitude, setLatitude] = useState(40.6941);
   const [zoom, setZoom] = useState(() => getInitialZoom());
-  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const { selectedPlace, setActiveTab } = useStateContext();
   const { setPanelContent, setIsOpen } = usePanelContext();
@@ -132,8 +131,8 @@ export default function MapPage() {
   return (
     <div className="relative w-full h-[100dvh]">
       <HeaderBar
-        title={t("title")}
-        description={t("description")}
+      // title={t("title")}
+      // description={t("description")}
         onReset={handleReset}
       >
         <Item

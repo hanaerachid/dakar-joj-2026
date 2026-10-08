@@ -1,11 +1,9 @@
 import { useSearchParams } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { SignIn } from "@clerk/clerk-react";
 
 import { HeaderBar } from "../components/header/HeaderBar";
 
 export function LoginPage() {
-  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
 
   const redirectUrl = searchParams.get("redirect") || "/admin";
@@ -13,8 +11,8 @@ export function LoginPage() {
   return (
     <>
       <HeaderBar
-        title={t("title")}
-        description={t("description")}
+      // title={t("title")}
+      // description={t("description")}
         showLogin={false}
       />
 

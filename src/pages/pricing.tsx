@@ -111,8 +111,8 @@ export function PricingPage() {
   return (
     <>
       <HeaderBar
-        title={t("title")}
-        description={t("description")}
+      // title={t("title")}
+      // description={t("description")}
       />
       <div className="pt-24 pb-8">
         <div className="mx-auto w-full max-w-7xl space-y-6">

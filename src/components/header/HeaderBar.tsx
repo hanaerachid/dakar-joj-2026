@@ -46,10 +46,10 @@ export function HeaderBar({
           <div className="min-w-0 shrink-0">
             <button
               onClick={onReset}
-              className="flex items-center justify-center w-16 sm:w-auto"
+              className="flex items-center justify-center w-auto"
               aria-label="Logo action"
             >
-              <LogoBrand logoSrc="/logo.jpeg" />
+              <LogoBrand logoSrc="/logo.svg" />
             </button>
           </div>
         )}
