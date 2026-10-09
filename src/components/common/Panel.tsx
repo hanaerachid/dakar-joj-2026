@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { cn } from "cn";
 import { useTranslation } from "react-i18next";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "cn";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -12,6 +12,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer"
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type ModalSize = "sm" | "md" | "lg";
 
@@ -29,7 +30,6 @@ type PanelProps = {
   children?: React.ReactNode;
   footer?: React.ReactNode;
   size?: ModalSize;
-  showHeader?: boolean;
   showFooter?: boolean;
 };
 
@@ -41,7 +41,6 @@ export function Panel({
   children,
   footer,
   size = "sm",
-  showHeader = false,
   showFooter = false,
 }: PanelProps) {
   // ✅ use state, not ref — this triggers a re-render after mount
@@ -60,7 +59,7 @@ export function Panel({
   // ⛔️ previously: if (!mountedRef.current || !isOpen) return null;
   if (!mounted || !isOpen) return null;
 
-  const showSwipeHandle = isMobile ? true : false;
+  // const showSwipeHandle = isMobile ? true : false;
   const swipeDirection = isMobile ? "down" : "left";
 
   return (
@@ -73,7 +72,7 @@ export function Panel({
           }}
           modal={false}
           disablePointerDismissal
-          showSwipeHandle={showSwipeHandle}
+          // showSwipeHandle={showSwipeHandle}
           swipeDirection={swipeDirection}
           snapPoints={isMobile ? [0.4, 0.7, 1] : undefined}
         >
@@ -83,39 +82,47 @@ export function Panel({
               SIZE_MAP[size],
             )}
           >
-              {(showHeader) && (
-                <DrawerHeader>
+            {isMobile && (
+              <DrawerHeader className="relative my-2">
                   {title && (
-                    <DrawerTitle>{title}</DrawerTitle>
+                  <DrawerTitle>
+                    {title}
+                  </DrawerTitle>
                   )}
+
                   {description && (
                     <DrawerDescription>
                       {description}
                     </DrawerDescription>
                   )}
-                </DrawerHeader>
-              )}
 
-            <div className="overflow-y-auto px-2 py-1 sm:py-2">
+                <DrawerClose
+                  render={
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className={cn(
+                        "absolute right-2 top-0 z-50",
+                      )}
+                      aria-label="Close drawer"
+                    >
+                      <X />
+                      <span className="sr-only">
+                        {t("close", "Close")}
+                      </span>
+                    </Button>
+                  }
+                />
+              </DrawerHeader>
+            )}
+
+            <div className="overflow-y-auto px-2 py-2">
               {children}
             </div>
 
-            {showFooter && (
+            {showFooter && footer && (
               <DrawerFooter>
-                {footer && footer}
-                {isMobile && onClose && (
-                  <DrawerClose
-                    render={
-                      <Button
-                        size="default"
-                        variant="destructive"
-                        onClick={() => onClose}
-                      />
-                    }
-                  >
-                    <span>{t("close", "Close")}</span>
-                  </DrawerClose>
-                )}
+                {footer}
               </DrawerFooter>
             )}
           </DrawerContent>
