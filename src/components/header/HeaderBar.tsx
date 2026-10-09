@@ -1,9 +1,9 @@
 import { cn } from "cn";
 import { LogoBrand } from "./LogoBrand";
+import { InstallButton } from "@/components/InstallButton";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ProfileMenu } from "../ProfileMenu";
 import { ModeToggle } from "@/components/mode-toggle";
-import { InstallPWAButton } from "@/components/InstallButton";
 
 type Props = {
   title?: string;
@@ -29,7 +29,7 @@ export function HeaderBar({
     <header className="absolute top-0 start-0 end-0 z-20 w-full max-w-full overflow-hidden">
       <div
         className={cn(
-          "flex items-center w-full min-w-0 mx-auto gap-2 sm:gap-4 bg-background/80 backdrop-blur-md px-2 sm:px-4 py-1.5 sm:py-2 shadow-md",
+          "flex items-center w-full min-w-0 mx-auto gap-1.5 sm:gap-3 bg-background/80 backdrop-blur-md px-2 sm:px-4 py-1.5 sm:py-2 shadow-md",
           "relative before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[linear-gradient(90deg,#008751_0%,#FCD116_52%,#CE1126_100%)] before:content-['']"
         )}
       >
@@ -68,12 +68,14 @@ export function HeaderBar({
 
         {children}
 
-        <InstallPWAButton />
-
         {/* right: flags + profile */}
-        <div className="flex items-center gap-2 shrink-0 sm:gap-3">
+        <div className="flex items-center gap-1.5 shrink-0 sm:gap-3">
           <LanguageSwitcher />
+
           <ModeToggle />
+
+          <InstallButton />
+
           {showLogin && (
           <ProfileMenu />
           )}

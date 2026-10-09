@@ -6,7 +6,7 @@ import {
   UserButton,
 } from "@clerk/clerk-react";
 import { useRole } from "../../auth/hooks/useRole";
-import { ChevronDown, UserShield } from "lucide-react";
+import { ChevronDown, UserRoundPlus, UserShield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
@@ -52,9 +52,12 @@ export function ClerkAuthControls() {
                   aria-label={t("auth.accountOptions", "Account options")}
                 >
                   {isMobile ? (
-                    <span>
+                    <>
+                    <UserRoundPlus />
+                    <span className="sr-only">
                       {t("auth.account", "Account")}
                     </span>
+                    </>
                   ) : (
                     <span className="sr-only">
                       {t("auth.accountOptions", "Account options")}
