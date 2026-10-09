@@ -164,15 +164,14 @@ export function BasemapSwitcherContent({
   };
 
   return (
-
     <ItemGroup>
       {OPTIONS.map((opt) => {
         const selected = opt.id === active;
         return (
           <Item
+            key={opt.id}
             variant="default"
             size="xs"
-            key={opt.id}
             onClick={() => apply(opt.id)}
             className={cn(
               "w-full transition",
@@ -189,10 +188,10 @@ export function BasemapSwitcherContent({
               <opt.icon className="w-5 h-5" />
             </ItemMedia>
             <ItemContent>
-              <ItemTitle className="truncate">
+              <ItemTitle className="">
                 {t(opt.labelKey, opt.labelFallback)}
               </ItemTitle>
-              <ItemDescription className="text-xs truncate">
+              <ItemDescription className="text-xs ">
                 {t(opt.descKey, opt.descFallback)}
               </ItemDescription>
             </ItemContent>

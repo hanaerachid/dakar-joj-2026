@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { cn } from "cn";
 import {
   Dialog,
   DialogContent,
@@ -67,13 +68,13 @@ export function Modal({
         showCloseButton={showClose}
         role="dialog"
         aria-modal="true"
-        className={[
+        className={cn(
           "w-full",
-          SIZE_MAP[size],
-          "rounded-2xl bg-background/80 backdrop-blur-xl shadow-2xl ring-1 ring-black/10",
+          "bg-background/80 backdrop-blur-md shadow-lg",
           "animate-[popIn_.18s_ease]",
+          SIZE_MAP[size],
           panelClassName,
-        ].join(" ")}
+        )}
         onMouseDown={(e) => e.stopPropagation()}
       >
         {(title) && (
@@ -87,10 +88,11 @@ export function Modal({
         )}
 
         <div
-          className={[
-            "max-h-[70vh] sm:max-h-[75vh] overflow-y-auto",
+          className={cn(
+            "max-h-[70vh] sm:max-h-[75vh]",
+            "overflow-y-auto",
             contentClassName,
-          ].join(" ")}
+          )}
         >
           {children}
         </div>
