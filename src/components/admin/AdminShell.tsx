@@ -1,7 +1,7 @@
 import { Outlet, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "cn";
-import { ArrowLeft, ChevronDown, Home, Menu } from "lucide-react";
+import { Home, Menu } from "lucide-react";
 
 import { HeaderBar } from "@/components/header/HeaderBar";
 import {
