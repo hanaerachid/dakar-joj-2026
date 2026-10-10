@@ -1,9 +1,8 @@
 import { cn } from "cn";
 import { LogoBrand } from "./LogoBrand";
 import { InstallButton } from "@/components/InstallButton";
-import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ProfileMenu } from "../ProfileMenu";
-import { ModeToggle } from "@/components/mode-toggle";
+import { SettingsDialog } from "../SettingsDialog";
 
 type Props = {
   title?: string;
@@ -70,9 +69,7 @@ export function HeaderBar({
 
         {/* right: flags + profile */}
         <div className="flex items-center gap-1.5 shrink-0 sm:gap-3">
-          <LanguageSwitcher />
-
-          <ModeToggle />
+          <SettingsDialog />
 
           <InstallButton />
 

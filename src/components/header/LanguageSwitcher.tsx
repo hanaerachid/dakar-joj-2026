@@ -61,7 +61,11 @@ export function LanguageSwitcher({ value, onChange }: Props) {
         aria-label="Select language"
       >
         <Globe className="h-5 w-5" />
-        <SelectValue className="sr-only" />
+        <SelectValue>
+          {languages.find((lang) =>
+            lang.code === activeLang)?.label
+          }
+        </SelectValue>
       </SelectTrigger>
 
       <SelectContent>
