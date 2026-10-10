@@ -331,9 +331,9 @@ export function PlacesListPage() {
       </Section>
 
       {/* Cards */}
-      <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-6 grid gap-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
         {loading && (
-          <div className="col-span-full grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <div className="col-span-full grid gap-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
             {[...Array(6)].map((_, i) => (
               <Skeleton key={i} className="overflow-hidden rounded-3xl">
                 <Skeleton className="w-full aspect-video bg-foreground/20" />

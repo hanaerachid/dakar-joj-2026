@@ -2,17 +2,26 @@
 import { useEffect, useRef, useState } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { cn } from "cn";
+import {
+  Compass,
+  Home,
+  Newspaper,
+  Calendar,
+  Briefcase,
+} from "lucide-react";
 import { MapManager } from "../../core/MapManager";
 import { Sidebar } from "../../components/Sidebar";
 import { HeaderBar } from "../../components/header/HeaderBar";
 import { getInitialZoom } from "../../utils/mapConfig";
 import { useTranslation } from "react-i18next";
-import { usePanelContext } from "@/components/panel-provider";
 import { useModalContext } from "@/components/modal-provider";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { SidePanel } from "@/components/side-panel/core";
+import { useNavbarContext } from "@/components/navbar-provider";
+import { usePanelContext } from "@/components/panel-provider";
 import { useStateContext } from "@/components/state-provider";
+import { SidePanel } from "@/components/side-panel/core";
 import { Item, ItemContent } from "@/components/ui/item";
+import type { BottomNavigationItem } from "@/components/BottomBar";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Countdown = ({ targetedDate }: { targetedDate: Date }) => {
   const { t } = useTranslation();
@@ -42,7 +51,6 @@ const Countdown = ({ targetedDate }: { targetedDate: Date }) => {
   );
 }
 
-
 export default function MapPage() {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapManager = MapManager.getInstance();
@@ -50,9 +58,63 @@ export default function MapPage() {
   const [latitude, setLatitude] = useState(40.6941);
   const [zoom, setZoom] = useState(() => getInitialZoom());
   const isMobile = useIsMobile();
-  const { selectedPlace, setActiveTab } = useStateContext();
-  const { setPanelContent, setIsOpen } = usePanelContext();
+  const { selectedPlace, activeTab, setActiveTab } = useStateContext();
+  const { setPanelContent, isOpen, setIsOpen } = usePanelContext();
   const { setModalContent, setIsOpen: setModalOpen } = useModalContext();
+  const { setNavbarContent } = useNavbarContext();
+
+  const openNavigationPanel = (tab: string) => {
+    setActiveTab(tab);
+    setPanelContent({
+      title: null,
+      onClose: () => setIsOpen(false),
+      children: <SidePanel />,
+    });
+    setIsOpen(true);
+  };
+
+  const navigationItems: BottomNavigationItem[] = [
+    {
+      key: "home",
+      label: "Home",
+      icon: Home,
+      action: () => {
+        openNavigationPanel("home");
+      },
+    },
+    {
+      key: "explorer",
+      label: "Explorer",
+      icon: Compass,
+      action: () => {
+        openNavigationPanel("explorer");
+      },
+    },
+    {
+      key: "events",
+      label: "Events",
+      icon: Calendar,
+      action: () => {
+        openNavigationPanel("events");
+      },
+    },
+    {
+      key: "news",
+      label: "News",
+      icon: Newspaper,
+      action: () => {
+        openNavigationPanel("news");
+      },
+    },
+    {
+      key: "business",
+      label: "Business",
+      icon: Briefcase,
+      action: () => {
+        openNavigationPanel("business");
+      },
+    },
+  ];
 
   useEffect(() => {
     if (!selectedPlace) return;
@@ -127,6 +189,13 @@ export default function MapPage() {
     };
   }, [isMobile, mapManager]);
   const handleReset = () => mapManager.resetView();
+
+  useEffect(() => {
+    setNavbarContent({
+      items: navigationItems,
+      activeKey: isOpen ? activeTab : "",
+    })
+  }, [setNavbarContent, activeTab, isOpen]);
 
   return (
     <div className="relative w-full h-[100dvh]">

@@ -21,6 +21,7 @@ import "./App.css";
 import BulkPlacesImport from "./admin/places/BulkPlacesImport";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModalProvider } from "@/components/modal-provider";
+import {NavbarProvider } from "@/components/navbar-provider";
 import { PanelProvider } from "@/components/panel-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { StateProvider } from "@/components/state-provider";
@@ -62,9 +63,11 @@ export default function App() {
             <Route
               path="/"
               element={
+                <NavbarProvider>
                 <PanelProvider>
                   <MapPage />
                 </PanelProvider>
+                </NavbarProvider>
               }
             />
 

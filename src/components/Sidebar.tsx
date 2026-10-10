@@ -6,12 +6,18 @@ import { BaseMapSwitcher } from "../core/BasemapSwitcherModal";
 import { ZoomPill } from "../core/ZoomPill";
 import { LocateMeButton } from "../core/LocateMeButton";
 import { toast } from "sonner";
-import { Flame, House, RouteOff, Share2 } from "lucide-react";
+import {
+  /*Flame,*/
+  House,
+  RouteOff,
+  Share2
+} from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
-import { useStateContext } from "./state-provider";
-import { MapManager } from "@/core/MapManager";
+// import { useStateContext } from "./state-provider";
+// import { MapManager } from "@/core/MapManager";
 import { clearDirections } from "@/utils/directions";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type SidebarProps = {
   longitude: number;
@@ -27,16 +33,17 @@ export function Sidebar({
   zoom,
 }: SidebarProps) {
   const { t } = useTranslation();
-  const { torchVisible, setTorchVisible } = useStateContext();
-  const mapManager = MapManager.getInstance();
+  const isMobile = useIsMobile();
+  // const { torchVisible, setTorchVisible } = useStateContext();
+  // const mapManager = MapManager.getInstance();
 
-  const handleToggleTorch = async () => {
-    try {
-      setTorchVisible(await mapManager.toggleTorch());
-    } catch {
-      setTorchVisible(false);
-    }
-  };
+  // const handleToggleTorch = async () => {
+  //   try {
+  //     setTorchVisible(await mapManager.toggleTorch());
+  //   } catch {
+  //     setTorchVisible(false);
+  //   }
+  // };
 
   const handleShare = async () => {
     try {
@@ -88,13 +95,24 @@ export function Sidebar({
       >
         {/* Top group */}
         <BaseMapSwitcher />
+
         {/* Utility group */}
-        <PlacesList /> {/* keeps its own popover; button fits the dock */}
+        {!isMobile && (
+        <PlacesList />
+        )}
+
         {/* thin divider */}
         <Separator className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
+
+        {!isMobile && (
         <SearchPlaces />
+        )}
+
         {/* Zoom */}
+        {!isMobile && (
         <ZoomPill />
+        )}
+
         <LocateMeButton />
         <AnimatedButton
           icon={House}
@@ -103,6 +121,7 @@ export function Sidebar({
           onClick={onReset}
         />
         {/* thin divider */}
+        {/*
         <Separator className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
         <AnimatedButton
           icon={Flame}
@@ -111,6 +130,8 @@ export function Sidebar({
           onClick={handleToggleTorch}
           isOpen={torchVisible}
         />
+        */}
+
         {/* thin divider */}
         <Separator className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
         {/* Bottom group */}

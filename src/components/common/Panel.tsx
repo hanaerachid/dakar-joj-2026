@@ -48,6 +48,7 @@ export function Panel({
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
+  const [activeSnapPoint, setActiveSnapPoint] = useState<string | number | null>(0.7);
 
   useEffect(() => {
     if (isMobile) {
@@ -56,6 +57,12 @@ export function Panel({
       setMounted(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (isOpen && isMobile) {
+      setActiveSnapPoint(0.7);
+    }
+  }, [isOpen, isMobile]);
 
   // ⛔️ previously: if (!mountedRef.current || !isOpen) return null;
   if (!mounted || !isOpen) return null;
@@ -75,16 +82,18 @@ export function Panel({
           disablePointerDismissal
           // showSwipeHandle={showSwipeHandle}
           swipeDirection={swipeDirection}
-          snapPoints={isMobile ? [0.4, 0.7, 1] : undefined}
+          snapPoints={isMobile ? [0.4, 0.7, 0.9] : undefined}
+          snapPoint={isMobile ? activeSnapPoint : undefined}
+          onSnapPointChange={setActiveSnapPoint}
         >
           <DrawerContent
             className={cn(
-              "z-150 mt-18 mb-8 bg-background/80 backdrop-blur-md shadow-lg",
+              "z-150 mt-11 mb-18 md:mt-18 md:mb-8 bg-background/80 backdrop-blur-md shadow-lg",
               SIZE_MAP[size],
             )}
           >
             {isMobile && (
-              <DrawerHeader className="relative my-2">
+              <DrawerHeader className="py-0">
                   {title && (
                   <DrawerTitle>
                     {title}
@@ -100,10 +109,10 @@ export function Panel({
                 <DrawerClose
                   render={
                     <Button
-                      variant="ghost"
+                      variant="secondary"
                       size="icon-sm"
                       className={cn(
-                        "absolute right-2 top-0 z-50",
+                        "absolute right-0 -top-9 z-50",
                       )}
                       aria-label="Close drawer"
                     >
