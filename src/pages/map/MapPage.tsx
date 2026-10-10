@@ -153,21 +153,22 @@ export default function MapPage() {
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
-    const map = mapManager.initMap(mapContainerRef.current);
 
-    const openExplorer = () => {
-      setActiveTab("home");
+    let map: mapboxgl.Map;
 
-      if (!isMobile) {
-        setPanelContent({
-          title: null,
-          onClose: () => setIsOpen(false),
-          children: <SidePanel />,
-        });
-        setIsOpen(true);
+    try {
+      map = mapManager.initMap(mapContainerRef.current);
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message.includes("Failed to initialize WebGL")
+      ) {
+        console.warn("WebGL initialization failed:", error);
         return;
       }
-    };
+
+      throw error;
+    }
 
     const onMove = () => {
       const center = map.getCenter();
@@ -177,17 +178,32 @@ export default function MapPage() {
     };
 
     map.on("move", onMove);
-    if (map.loaded()) {
-      openExplorer();
-    } else {
-      map.once("load", openExplorer);
-    }
+
     return () => {
       map.off("move", onMove);
-      map.off("load", openExplorer);
       mapManager.destroyMap();
     };
-  }, [isMobile, mapManager]);
+  }, [mapManager]);
+
+  useEffect(() => {
+    setActiveTab("home");
+
+    if (!isMobile) {
+      setPanelContent({
+        title: null,
+        onClose: () => setIsOpen(false),
+        children: <SidePanel />,
+      });
+
+      setIsOpen(true);
+    }
+  }, [
+    isMobile,
+    setActiveTab,
+    setPanelContent,
+    setIsOpen,
+  ]);
+
   const handleReset = () => mapManager.resetView();
 
   useEffect(() => {
