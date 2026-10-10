@@ -115,7 +115,7 @@ export const SidePanel = () => {
           </Button>
 
           {/* Scrollable tabs container */}
-          <div className="md:px-10">
+          <div className="md:px-6">
             <div
               ref={scrollContainerRef}
               className={cn("overflow-x-auto scrollbar-hide",
@@ -137,6 +137,7 @@ export const SidePanel = () => {
               >
                 <TabsTrigger
                   className={cn(
+                    "px-2",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="home"
@@ -145,6 +146,7 @@ export const SidePanel = () => {
                 </TabsTrigger>
                 <TabsTrigger
                   className={cn(
+                    "px-2",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="explorer"
@@ -153,6 +155,7 @@ export const SidePanel = () => {
                 </TabsTrigger>
                 <TabsTrigger
                   className={cn(
+                    "px-2",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="events"
@@ -161,6 +164,7 @@ export const SidePanel = () => {
                 </TabsTrigger>
                 <TabsTrigger
                   className={cn(
+                    "px-2",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="news"
@@ -169,6 +173,7 @@ export const SidePanel = () => {
                 </TabsTrigger>
                 <TabsTrigger
                   className={cn(
+                    "px-2",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="business"
