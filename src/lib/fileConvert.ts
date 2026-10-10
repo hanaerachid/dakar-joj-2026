@@ -8,6 +8,11 @@ export const fileToBase64 = (file: File): Promise<string> => {
 };
 
 export function getMediaUrl(value: string) {
+  // Handle missing or empty media URLs
+  if (!value || typeof value !== "string") {
+    return ""; // Or return a fallback image URL
+  }
+
   // Existing data URI
   if (value.startsWith("data:")) {
     return value;
