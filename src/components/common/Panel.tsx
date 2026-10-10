@@ -11,7 +11,8 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer"
+} from "@/components/ui/drawer";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 type ModalSize = "sm" | "md" | "lg";
@@ -116,9 +117,14 @@ export function Panel({
               </DrawerHeader>
             )}
 
-            <div className="overflow-y-auto px-2 py-2">
+            <ScrollArea
+              className={cn(
+                "h-full",
+                "px-2 py-2"
+              )}
+            >
               {children}
-            </div>
+            </ScrollArea>
 
             {showFooter && footer && (
               <DrawerFooter>
