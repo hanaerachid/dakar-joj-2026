@@ -2,7 +2,7 @@
 import { AnimatedButton } from "./buttons/AnimatedButton";
 import { PlacesList } from "./place-list/PlacesList";
 import { SearchPlaces } from "./search/SearchPlacesModal";
-import { BaseMapSwitcher } from "../core/BasemapSwitcherModal";
+// import { BaseMapSwitcher } from "../core/BasemapSwitcherModal";
 import { ZoomPill } from "../core/ZoomPill";
 import { LocateMeButton } from "../core/LocateMeButton";
 import { toast } from "sonner";
@@ -94,7 +94,9 @@ export function Sidebar({
       "
       >
         {/* Top group */}
+        {/*
         <BaseMapSwitcher />
+        */}
 
         {/* Utility group */}
         {!isMobile && (

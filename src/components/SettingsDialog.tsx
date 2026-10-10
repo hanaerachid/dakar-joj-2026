@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 
+import { BasemapSwitcher } from "@/components/header/BasemapSwitcher"
 import { LanguageSwitcher } from "@/components/header/LanguageSwitcher"
 import { ThemeSwitcher } from "@/components/header/ThemeSwitcher"
 
@@ -38,16 +39,29 @@ export function SettingsDialog() {
         <div className="space-y-6">
           {/* Theme */}
           <div className="space-y-3">
-            <h3 className="text-xs text-muted-foreground font-medium uppercase">Theme</h3>
+            <h3 className="text-xs text-muted-foreground font-medium uppercase">
+              {t("theme", "Theme")}
+            </h3>
 
             <ThemeSwitcher />
           </div>
 
           {/* Language */}
           <div className="space-y-3">
-            <h3 className="text-xs text-muted-foreground font-medium uppercase">Language</h3>
+            <h3 className="text-xs text-muted-foreground font-medium uppercase">
+              {t("language", "Language")}
+            </h3>
 
             <LanguageSwitcher />
+          </div>
+
+          {/* Basemap */}
+          <div className="space-y-3">
+            <h3 className="text-xs text-muted-foreground font-medium uppercase">
+              {t("basemap", "Basemap")}
+            </h3>
+
+            <BasemapSwitcher />
           </div>
         </div>
       </DialogContent>

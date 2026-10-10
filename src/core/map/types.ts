@@ -48,3 +48,12 @@ export type RouteDetails = {
 };
 
 export type RouteSummary = Pick<RouteDetails, "distance" | "duration">;
+
+export type BasemapId =
+  | "mapbox-streets"
+  | "mapbox-outdoors"
+  | "mapbox-light"
+  | "mapbox-dark"
+  | "mapbox-satellite"
+  | "mapbox-navigation-day"
+  | "mapbox-navigation-night";
