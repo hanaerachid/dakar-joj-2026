@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Clock9, X, Globe, BadgeCheck, MapPin } from "lucide-react";
+import { Clock9, Globe, BadgeCheck, MapPin, ArrowLeft } from "lucide-react";
 import { getDomain } from "tldts";
 import { Button } from "@/components/ui/button";
 import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
@@ -49,19 +49,19 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
 
   return (
     <div className="relative flex flex-col gap-2">
-      <div className="absolute top-16 end-3">
+      <div className="absolute top-16 start-3">
         <Button
           size="icon"
           variant="secondary"
-          className="fixed top-16 end-3 z-50"
+          className="fixed top-16 start-3 z-50"
           onClick={() => setSelectedPlace(null)}
         >
-          <X />
+          <ArrowLeft />
           <span className="sr-only">{t("place.details.back", "Back")}</span>
         </Button>
       </div>
 
-      <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto">
+      <div className="w-full h-full flex flex-col items-stretch justify-center overflow-y-auto">
         <div className="w-full flex flex-col gap-2 py-2">
           <div className="relative w-full rounded-2xl overflow-hidden">
             {/* Hero image */}
@@ -108,7 +108,9 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
                 <MapPin />
               </ItemMedia>
               <ItemContent>
-                <ItemDescription>{business.address}</ItemDescription>
+                <ItemDescription className="break-words">
+                  {business.address}
+                </ItemDescription>
               </ItemContent>
             </Item>
 
@@ -118,7 +120,7 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
                   <Globe />
                 </ItemMedia>
                 <ItemContent>
-                  <ItemDescription>
+                  <ItemDescription className="break-words">
                     <a
                       className="underline"
                       href={business.website}
@@ -138,7 +140,7 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
                   <Clock9 />
                 </ItemMedia>
                 <ItemContent>
-                  <ItemDescription>{business.openHours}</ItemDescription>
+                  <ItemDescription className="break-words">{business.openHours}</ItemDescription>
                 </ItemContent>
               </Item>
             )}
@@ -149,7 +151,7 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
                   <BadgeCheck />
                 </ItemMedia>
                 <ItemContent>
-                  <ItemDescription>
+                  <ItemDescription className="break-all">
                     <span className="text-sm font-mono">{business.social}</span>
                   </ItemDescription>
                 </ItemContent>
@@ -162,7 +164,7 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
                   <BadgeCheck />
                 </ItemMedia>
                 <ItemContent>
-                  <ItemDescription>
+                  <ItemDescription className="break-all">
                     <a
                       className="underline"
                       href={`mailto:${business.email}`}
