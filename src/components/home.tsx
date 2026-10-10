@@ -326,8 +326,9 @@ export const HomeContent = () => {
   }, [location]);
 
   return (
-    <div className="flex flex-col gap-4 py-4">
+    <div className="space-y-6 pt-4">
       <Promo />
+
       <Collapsible
         open={open}
         onOpenChange={handleOpenChange}

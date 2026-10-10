@@ -193,39 +193,38 @@ export const EventsContent = () => {
     return grouped;
   }, [events]);
 
-  if (loading) {
-    return (
-      <div className="flex flex-col gap-4 py-4">
-        <div className="flex flex-col gap-4">
-          {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="overflow-hidden h-16 rounded-3xl" />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <Alert variant="destructive">
-        <AlertCircle />
-        <AlertTitle>{error}</AlertTitle>
-      </Alert>
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-4 py-4">
-      <div className="flex flex-col gap-2 overflow-hidden">
+  return(
+    <div className="space-y-4 pt-4">
+      <div className="space-y-2">
         <p className="text-xs text-[#f2b705] uppercase">
           {t("events.live_and_upcoming", "Live & upcoming")}
         </p>
+
         <h2 className="text-xl text-foreground font-bold uppercase">
           {t("events.plan_your_games", "Plan your Games")}
         </h2>
       </div>
 
-      <div className="flex flex-col gap-4">
+      {loading && (
+        <div className="space-y-2">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton
+              key={i}
+              className="overflow-hidden h-16 rounded-3xl"
+            />
+          ))}
+        </div>
+      )}
+
+      {error && (
+      <Alert variant="destructive" >
+        <AlertCircle />
+        <AlertTitle>{error}</AlertTitle>
+      </Alert>
+      )}
+
+      {!loading && !error && (
+      <div className="space-y-4">
         {[
           [t("events.happening", "Happening now"), groups.happening],
           [t("events.today", "Today"), groups.today],
@@ -236,7 +235,7 @@ export const EventsContent = () => {
 
           return (
             <div
-              className="flex flex-col gap-3"
+              className="space-y-3"
               key={label as string}>
               <h2 className="text-xs text-muted-foreground uppercase">
                 {label as string}
@@ -292,8 +291,10 @@ export const EventsContent = () => {
                         </ItemDescription>
                       </ItemContent>
                       <ItemActions
-                        className={cn("shrink-0",
-                          "hidden opacity-0 group-hover:flex group-hover:opacity-100 transition-opacity duration-300",
+                        className={cn(
+                          "shrink-0",
+                          "hidden opacity-0",
+                          "group-hover:flex group-hover:opacity-100 transition-opacity duration-300",
                           (tracked || isLoading) ? "flex opacity-100" : "",
                         )}
                       >
@@ -325,9 +326,10 @@ export const EventsContent = () => {
           </ItemContent>
         </Item>
       </div>
+      )}
     </div>
   );
-};
+}
 
 const CalendarButton = ({
   isLoading,

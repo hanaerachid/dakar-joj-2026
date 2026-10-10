@@ -129,7 +129,6 @@ export const QuickAccess = () => {
   ]
 
   return (
-
     <div className="flex flex-col gap-3">
       <h2 className="text-xs text-muted-foreground uppercase">
         {t("home.quick_access", "Quick Access")}

@@ -77,9 +77,23 @@ export const NewsContent = () => {
     fetchNews();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex flex-col gap-4 py-4">
+  return (
+    <div className="space-y-4 pt-4">
+      <div className="space-y-2">
+        <p className="text-xs text-[#f2b705] uppercase">
+          {t("news.thegamesjournal", "The Games journal")}
+        </p>
+
+        <h2 className="text-xl text-foreground font-bold uppercase">
+          {t("news.news", "News")}
+        </h2>
+
+        <p className="text-sm text-muted-foreground">
+          {t("news.latest", "Latest from the official YOG site and online press.")}
+        </p>
+      </div>
+
+      {loading && (
         <div className="grid grid-cols-2 gap-2">
           {[...Array(4)].map((_, i) => (
             <Skeleton
@@ -88,34 +102,16 @@ export const NewsContent = () => {
             />
           ))}
         </div>
-      </div>
-    );
-  }
+      )}
 
-  if (error) {
-    return (
+      {error && (
       <Alert variant="destructive">
         <AlertCircle />
-        <AlertTitle>
-          {error}
-        </AlertTitle>
+        <AlertTitle>{error}</AlertTitle>
       </Alert>
-    );
-  }
+      )}
 
-  return (
-    <div className="flex flex-col gap-4 py-4">
-      <div className="flex flex-col gap-2">
-        <p className="text-xs text-[#f2b705] uppercase">
-          {t("news.thegamesjournal", "The Games journal")}
-        </p>
-        <h2 className="text-xl text-foreground font-bold uppercase">
-          {t("news.news", "News")}
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          {t("news.latest", "Latest from the official YOG site and online press.")}
-        </p>
-      </div>
+      {!loading && !error && (
       <div className="flex flex-col gap-4">
         <ItemGroup className="grid grid-cols-2 gap-2" >
           {news.map((item, index) => (
@@ -171,6 +167,7 @@ export const NewsContent = () => {
           ))}
         </ItemGroup>
       </div>
+      )}
     </div>
   );
 }

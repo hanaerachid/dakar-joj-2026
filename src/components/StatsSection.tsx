@@ -101,11 +101,11 @@ export const StatsSection = () => {
   ]
 
   return (
-    <div className="flex flex-col gap-4 py-4">
-      <div className="flex flex-col gap-2">
-        <p className="text-xs text-[#f2b705] uppercase">
+    <div className="flex flex-col gap-4">
+      <div className="space-y-2">
+        <h2 className="text-xs text-[#f2b705] uppercase">
           {t("stats.gamesinnumers", "The Games in numbers")}
-        </p>
+        </h2>
         {/*
         <h2 className="text-xl text-foreground font-bold uppercase">
           {t("stats.stats", "News")}

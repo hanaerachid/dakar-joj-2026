@@ -42,18 +42,21 @@ export const BusinessContent = () => {
   const { label, features, limitations, desc } = plan;
 
   return (
-    <div className="flex flex-col gap-4 py-4">
-      <div className="flex flex-col gap-2">
+    <div className="space-y-4 pt-4">
+      <div className="space-y-2">
         <p className="text-xs text-[#f2b705] uppercase">
           {t("business.listbusiness", "List your business")}
         </p>
+
         <h2 className="text-xl text-foreground font-bold uppercase">
           {t("business.businesses", "Businesses")}
         </h2>
+
         <p className="text-sm text-muted-foreground">
           {t("business.business_description", "Hotels, restaurants, shops, car dealerships, museums, galleries — join the official visitor map.")}
         </p>
       </div>
+
       <div className="flex flex-col gap-4">
         {isSignedIn ? (
           <>
