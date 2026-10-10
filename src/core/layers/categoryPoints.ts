@@ -2,7 +2,7 @@
 import { Map } from "mapbox-gl";
 import { addOrSetSource } from "../map/utils";
 import { selectPlace } from "../../components/place-selection";
-import { listPlaces, listZones } from "../../lib/api/places";
+import { listPlaces } from "../../lib/api/places";
 import { listBusinessListings } from "../../lib/api/listings";
 import {
   businessListingToFeature,
@@ -23,10 +23,6 @@ const CLUSTER_UI = {
 };
 
 // ---------------------- helpers ----------------------
-function slugify(s: string) {
-  return (s || "").toLowerCase().trim().replace(/\s+/g, "-");
-}
-
 function toLatLng(p: any) {
   const lat =
     p.location?.latitude ?? p.location?._lat ?? p.location?.lat ?? p.lat;
@@ -179,13 +175,9 @@ function iconForCategory(categoryId?: string) {
 // }
 
 // ---------------------- Firestore fetchers ----------------------
-async function getZones(categoryId: string) {
-  return (await listZones(categoryId)).map((z) => ({ ...z }));
-}
-
-async function getZonePlacesFeatures(zoneId: string, zoneName: string) {
+async function getPlacesFeatures(categoryId: string) {
   const color = "#3b82f6";
-  const ps = await listPlaces({ zoneId, scope: "zone" });
+  const ps = await listPlaces({ categoryId, scope: "all" });
 
   const features = ps
     .map((p) => {
@@ -212,50 +204,7 @@ async function getZonePlacesFeatures(zoneId: string, zoneName: string) {
           imageUrl: p.imageUrl ?? null,
           brandTitle: p.brandTitle ?? null,
           brandSubtitle: p.brandSubtitle ?? null,
-          locationLabel: p.locationLabel ?? zoneName,
-          shortCode: p.shortCode ?? null,
-          sportCount: typeof p.sportCount === "number" ? p.sportCount : null,
-          sports: p.sports ?? null, // raw; normalized on click
-          gradientFrom: p.gradientFrom ?? null,
-          gradientTo: p.gradientTo ?? null,
-          zoneName: p.zone || zoneName,
-        },
-      } as GeoJSON.Feature;
-    })
-    .filter(Boolean) as GeoJSON.Feature[];
-
-  return { color, fc: { type: "FeatureCollection", features } as const };
-}
-
-async function getUnassignedFeatures(categoryId: string) {
-  const ps = await listPlaces({ categoryId, scope: "root" });
-
-  const features = ps
-    .map((p) => {
-      const { lat, lng } = toLatLng(p);
-      if (typeof lat !== "number" || typeof lng !== "number") return null;
-
-      return {
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [lng, lat] as [number, number],
-        },
-        properties: {
-          __source: "firestore",
-          id: p.id,
-          title: p.name ?? "Untitled",
-          title_fr: p.name_fr ?? p.nameFr ?? "",
-          info: p.info ?? "",
-          info_fr: p.info_fr ?? p.infoFr ?? "",
-          address: p.address ?? "",
-          rating: typeof p.rating === "number" ? p.rating : null,
-          tags: parseStringArray(p.tags),
-          pointColor: p.pointColor ?? null, // kept (unused in icons-only view)
-          imageUrl: p.imageUrl ?? null,
-          brandTitle: p.brandTitle ?? null,
-          brandSubtitle: p.brandSubtitle ?? null,
-          locationLabel: p.locationLabel ?? "",
+          locationLabel: p.locationLabel ?? p.zone ?? "Unassigned",
           shortCode: p.shortCode ?? null,
           sportCount: typeof p.sportCount === "number" ? p.sportCount : null,
           sports: p.sports ?? null, // raw; normalized on click
@@ -268,9 +217,8 @@ async function getUnassignedFeatures(categoryId: string) {
     .filter(Boolean) as GeoJSON.Feature[];
 
   return {
-    color: "#64748b",
+    color,
     fc: { type: "FeatureCollection", features } as const,
-    zoneName: "Unassigned",
   };
 }
 
@@ -568,11 +516,8 @@ export async function addDbCategoryPointsLayer(
   prefix: string,
   opts: CategoryLayerOptions = {},
 ) {
-  // ZONED
-  const zones = await getZones(categoryId);
-  for (const z of zones) {
-    const { fc } = await getZonePlacesFeatures(z.id, z.name);
-    if (fc.features.length === 0) continue;
+    const { fc } = await getPlacesFeatures(categoryId);
+    if (fc.features.length === 0) return;
 
     // annotate icon + category (in-memory only)
     for (const f of fc.features) {
@@ -580,7 +525,7 @@ export async function addDbCategoryPointsLayer(
       (f.properties as any).categoryId = categoryId;
     }
 
-    const sourceId = `${prefix}${slugify(z.name)}-sites`;
+    const sourceId = `${prefix}all-sites`;
     const circleLayerId = `${sourceId}-points`; // legacy circle id (we will remove)
 
     // keep source for compatibility (not used by icons), optional
@@ -598,34 +543,6 @@ export async function addDbCategoryPointsLayer(
       categoryId,
       opts,
     );
-  }
-
-  // UNASSIGNED
-  const un = await getUnassignedFeatures(categoryId);
-  if (un.fc.features.length > 0) {
-    for (const f of un.fc.features) {
-      (f.properties as any).__icon = iconForCategory(categoryId);
-      (f.properties as any).categoryId = categoryId;
-    }
-
-    const sourceId = `${prefix}unassigned-sites`;
-    const circleLayerId = `${sourceId}-points`; // legacy circle id
-
-    addOrSetSource(map, sourceId, un.fc);
-
-    // REMOVE any existing small circle layer
-    removeLayerIfExists(map, circleLayerId);
-
-    // add clustered MAKI icons
-    await addClusterLayers(
-      map,
-      sourceId,
-      un.fc as GeoJSON.FeatureCollection,
-      undefined,
-      categoryId,
-      opts,
-    );
-  }
 }
 
 export async function addBusinessListingsLayer(
