@@ -52,6 +52,7 @@ const Countdown = ({ targetedDate }: { targetedDate: Date }) => {
 }
 
 export default function MapPage() {
+  const { t } = useTranslation();
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapManager = MapManager.getInstance();
   const [longitude, setLongitude] = useState(-74.0242);
@@ -76,7 +77,7 @@ export default function MapPage() {
   const navigationItems: BottomNavigationItem[] = [
     {
       key: "home",
-      label: "Home",
+      label: t("tabs.home", "Home"),
       icon: Home,
       action: () => {
         openNavigationPanel("home");
@@ -84,7 +85,7 @@ export default function MapPage() {
     },
     {
       key: "explorer",
-      label: "Explorer",
+      label: t("tabs.explorer", "Explorer"),
       icon: Compass,
       action: () => {
         openNavigationPanel("explorer");
@@ -92,7 +93,7 @@ export default function MapPage() {
     },
     {
       key: "events",
-      label: "Events",
+      label: t("tabs.events", "Events"),
       icon: Calendar,
       action: () => {
         openNavigationPanel("events");
@@ -100,7 +101,7 @@ export default function MapPage() {
     },
     {
       key: "news",
-      label: "News",
+      label: t("tabs.news", "News"),
       icon: Newspaper,
       action: () => {
         openNavigationPanel("news");
@@ -108,7 +109,7 @@ export default function MapPage() {
     },
     {
       key: "business",
-      label: "Business",
+      label: t("tabs.business", "Business"),
       icon: Briefcase,
       action: () => {
         openNavigationPanel("business");
