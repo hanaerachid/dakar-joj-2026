@@ -273,14 +273,14 @@ export const EventsContent = () => {
                         </ItemTitle>
                         <ItemDescription
                           className="min-w-0 truncate overflow-hidden text-ellipsis whitespace-nowrap"
-                          title={new Date(item.startAt).toLocaleDateString(lang, {
+                          title={getRelativeTime(new Date(item.startAt))}
+                        >
+                          {new Date(item.startAt).toLocaleDateString(lang, {
                             month: "short",
                             day: "numeric",
                             hour: "2-digit",
                             minute: "2-digit",
                           })}
-                        >
-                          {getRelativeTime(new Date(item.startAt))}
                           {" • "}
                           {formatDuration(item.startAt, item.endAt, lang)}
                         </ItemDescription>
