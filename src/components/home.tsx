@@ -461,8 +461,22 @@ export const HomeContent = () => {
             )}
             </div>
 
-            <CarouselPrevious size="icon-sm" variant="secondary" className="left-0" />
-            <CarouselNext size="icon-sm" variant="secondary" className="right-0" />
+            <CarouselPrevious
+              size="icon-sm"
+              variant="secondary"
+              className={cn(
+                "left-0",
+                !canScrollPrev && "hidden"
+              )}
+            />
+            <CarouselNext
+              size="icon-sm"
+              variant="secondary"
+              className={cn(
+                "right-0",
+                !canScrollNext && "hidden"
+              )}
+            />
           </Carousel>
         )}
 
