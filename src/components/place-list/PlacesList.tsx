@@ -46,19 +46,6 @@ export interface CategoryConfig {
 
 type LoadedVenue = VenueFeature & { zoneColor: string };
 
-// --- helpers to read category from feature props safely
-function getFeatureCategoryId(props: GeoJsonProperties | undefined): string {
-  const p = props || {};
-  // prefer the Firestore field name used in AddPlaceFull
-  const v =
-    (p.categoryId as string) ??
-    (p.category as string) ??
-    (p.cat as string) ??
-    (p.type as string) ??
-    "";
-  return String(v).toLowerCase();
-}
-
 export const PlacesList = () => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
@@ -178,15 +165,8 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
   );
 
   useEffect(() => {
-    const filtered = mainCategoryVenues.filter((venue) => {
-      const categoryId = getFeatureCategoryId(venue.properties);
-      if (!categoryId || categoryId === activeCategory.id) return true;
-      if (activeCategory.id !== "competition") return false;
-      return Number(venue.properties?.sportCount ?? 0) > 0 ||
-        (Array.isArray(venue.properties?.sports) && venue.properties.sports.length > 0);
-    });
-    setVenues(filtered);
-  }, [activeCategory.id, mainCategoryVenues]);
+    setVenues(mainCategoryVenues);
+  }, [mainCategoryVenues]);
 
   useEffect(() => {
     let cancelled = false;
@@ -514,7 +494,6 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
       mainCategoryChecked={mainCategoryChecked}
       handleMainCategoryCheck={handleMainCategoryCheck}
       openCatIds={openCatIds}
-      activeCategory={activeCategory}
       setOpenCatIds={setOpenCatIds}
       checkedCats={checkedCats}
       handleCategoryOpen={handleCategoryOpen}
