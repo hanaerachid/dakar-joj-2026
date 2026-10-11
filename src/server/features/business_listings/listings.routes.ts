@@ -27,6 +27,8 @@ function unauthorized(c: Context) {
 listingRoutes.get("/", async (c) => {
   const user = c.get("user");
   const location = c.req.query("location");
+  const ownerId = c.req.query("owner");
+  const isAdmin = user?.role === "admin";
 
   if (location !== undefined && !/^-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?$/.test(location)) {
     return fail(c, 400, "BAD_REQUEST", "location must be in the format lat,lon");
@@ -45,7 +47,13 @@ listingRoutes.get("/", async (c) => {
     return fail(c, 400, "BAD_REQUEST", "location coordinates are out of range");
   }
 
-  const listings = await listBusinessListings(user, coordinates);
+  // Only admins or the authenticated owner can request
+  // owner-specific listings.
+  if ( ownerId && !isAdmin && user?.uid !== ownerId) {
+    return fail(c, 403, "FORBIDDEN", "You can only access your own listings",);
+  }
+
+  const listings = await listBusinessListings(user, coordinates, ownerId);
 
   return ok(c, listings);
 });

@@ -6,20 +6,33 @@ type ListingListResponse = { success: true; data: BusinessListing[] };
 
 export type BusinessListingQueryParams = {
   location?: string | readonly [number, number];
+  owner?: string;
 };
 
 function withListingQuery(
   path: string,
   params?: BusinessListingQueryParams,
 ) {
-  if (!params?.location) return path;
+  if (!params) return path;
 
+  const queryParams = new URLSearchParams();
+
+  if (params.location) {
   const location =
     typeof params.location === "string"
       ? params.location
       : `${params.location[0]},${params.location[1]}`;
-  const query = new URLSearchParams({ location });
-  return `${path}?${query.toString()}`;
+
+    queryParams.set("location", location);
+  }
+
+  if (params.owner) {
+    queryParams.set("owner", params.owner);
+  }
+
+  const query = queryParams.toString();
+
+  return query ? `${path}?${query}` : path;
 }
 
 export async function listBusinessListings(params?: BusinessListingQueryParams) {

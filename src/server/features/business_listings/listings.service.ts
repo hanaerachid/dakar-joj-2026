@@ -120,12 +120,23 @@ function distanceInMeters(
 export async function listBusinessListings(
   actor?: ListingActor,
   coordinates?: ListingCoordinates,
+  ownerId?: string,
 ) {
   const db = await getMongoDatabase();
   const collection = db.collection<BusinessListingDocument>("listings");
   const isAdmin = actor?.role === "admin";
+  const effectiveOwnerId = isAdmin ? ownerId : actor?.uid;
 
   const filter = buildListingListFilter(actor);
+
+  if (effectiveOwnerId) {
+    filter.ownerId = effectiveOwnerId;
+  }
+  // Apply an owner filter when requested.
+  if (ownerId) {
+    filter.ownerId = ownerId;
+  }
+
   const docs = await collection.find(filter).toArray();
 
   if (coordinates) {

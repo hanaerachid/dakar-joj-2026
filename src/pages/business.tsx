@@ -78,7 +78,7 @@ const STEP_FIELDS: Record<number, (keyof BusinessCreateValues)[]> = {
 export function BusinessPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const [loading, setLoading] = useState(false);
   const [businessListings, setBusinessListings] = useState<BusinessListing[]>([]);
   const { setIsOpen, setModalContent } = useModalContext();
@@ -93,11 +93,13 @@ export function BusinessPage() {
   }
 
   async function loadBusinessListings() {
+    if (!isLoaded || !user) return;
     setLoading(true);
-    try {
-      let items: BusinessListing[] = [];
 
-      items = (await listBusinessListings()) as BusinessListing[];
+    try {
+      const items = (await listBusinessListings({
+        owner: user.id,
+      })) as BusinessListing[];
 
       // sort
       items.sort((a: BusinessListing, b: BusinessListing) => {
@@ -109,7 +111,7 @@ export function BusinessPage() {
         return (a.name || "").localeCompare(b.name || "");
       });
 
-      setBusinessListings(items);
+      setBusinessListings(items as BusinessListing[]);
     } finally {
       setLoading(false);
     }
@@ -118,7 +120,7 @@ export function BusinessPage() {
   useEffect(() => {
     void loadBusinessListings();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isLoaded, user]);
 
   async function handleDelete(item: BusinessListing) {
     setModalContent({

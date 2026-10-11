@@ -614,6 +614,18 @@ app.openAPIRegistry.registerPath({
   method: "get",
   path: "/api/v2/business/listings",
   summary: "List all business listings",
+  request: {
+    query: z.object({
+      owner: z.string().optional().openapi({
+        description: "Filter listings by business owner user ID",
+        example: "user_xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      }),
+      location: z.string().optional().openapi({
+        description: "Filter listings by coordinates in latitude,longitude format",
+        example: "35.6905203,-78.2931706",
+      }),
+    }),
+  },
   security: [{ apiKeyAuth: [] }],
   responses: {
     200: {
