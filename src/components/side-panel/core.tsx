@@ -91,8 +91,8 @@ export const SidePanel = () => {
             variant="ghost"
             size="icon-sm"
             className={cn(
-              "absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
-              !canScrollLeft && "cursor-not-allowed",
+              "absolute left-0 top-1/2 -translate-y-1/2 z-10",
+              !canScrollLeft ? "hidden cursor-not-allowed" : "hidden md:flex",
             )}
             onClick={scrollLeft}
             disabled={!canScrollLeft}
@@ -105,8 +105,8 @@ export const SidePanel = () => {
             variant="ghost"
             size="icon-sm"
             className={cn(
-              "absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
-              !canScrollRight && "cursor-not-allowed",
+              "absolute right-0 top-1/2 -translate-y-1/2 z-10",
+              !canScrollRight ? "hidden cursor-not-allowed" : "hidden md:flex",
             )}
             onClick={scrollRight}
             disabled={!canScrollRight}
@@ -115,7 +115,10 @@ export const SidePanel = () => {
           </Button>
 
           {/* Scrollable tabs container */}
-          <div className="md:px-6">
+          <div className={cn(
+            canScrollRight && "md:pe-6",
+            canScrollLeft && "md:ps-6"
+          )}>
             <div
               ref={scrollContainerRef}
               className={cn("overflow-x-auto scrollbar-hide",
@@ -132,12 +135,14 @@ export const SidePanel = () => {
               <TabsList
                 variant="line"
                 className={cn(
-                  "sticky top-0 z-10 w-max inline-flex items-center justify-start overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+                  "sticky top-0 z-10 w-full inline-flex items-center justify-start overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
                 )}
               >
                 <TabsTrigger
                   className={cn(
                     "px-2",
+                    "text-xs/5 tracking-tight text-center uppercase",
+                    "aria-selected:bg-blue-500",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="home"
@@ -147,6 +152,8 @@ export const SidePanel = () => {
                 <TabsTrigger
                   className={cn(
                     "px-2",
+                    "text-xs/5 tracking-tight text-center uppercase",
+                    "aria-selected:bg-blue-500",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="explorer"
@@ -156,6 +163,8 @@ export const SidePanel = () => {
                 <TabsTrigger
                   className={cn(
                     "px-2",
+                    "text-xs/5 tracking-tight text-center uppercase",
+                    "aria-selected:bg-blue-500",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="events"
@@ -165,6 +174,8 @@ export const SidePanel = () => {
                 <TabsTrigger
                   className={cn(
                     "px-2",
+                    "text-xs/5 tracking-tight text-center uppercase",
+                    "aria-selected:bg-blue-500",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="news"
@@ -174,6 +185,8 @@ export const SidePanel = () => {
                 <TabsTrigger
                   className={cn(
                     "px-2",
+                    "text-xs/5 tracking-tight text-center uppercase",
+                    "aria-selected:bg-blue-500",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="business"
