@@ -40,8 +40,8 @@ function serializePlace(id: string, data: PlaceDocument, zoneId?: string | null)
     tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
     pointColor: data.pointColor ?? null,
     imageUrl: data.imageUrl ?? null,
-    brandTitle: data.brandTitle ?? null,
-    brandSubtitle: data.brandSubtitle ?? null,
+    // brandTitle: data.brandTitle ?? null,
+    // brandSubtitle: data.brandSubtitle ?? null,
     locationLabel: data.locationLabel ?? null,
     shortCode: data.shortCode ?? null,
     gradientFrom: data.gradientFrom ?? null,
@@ -80,8 +80,8 @@ function buildPayload(input: any, zoneId?: string | null, includeCreatedAt = tru
     tags: Array.isArray(input.tags) ? input.tags : [],
     pointColor: input.pointColor ?? null,
     imageUrl: input.imageUrl ?? null,
-    brandTitle: input.brandTitle ?? null,
-    brandSubtitle: input.brandSubtitle ?? null,
+    // brandTitle: input.brandTitle ?? null,
+    // brandSubtitle: input.brandSubtitle ?? null,
     locationLabel: input.locationLabel ?? null,
     shortCode: input.shortCode ?? null,
     gradientFrom: input.gradientFrom ?? null,
@@ -171,8 +171,8 @@ export async function updatePlace(id: string, input: any, zoneId?: string | null
   const payload = buildPayload(input, zoneId, false);
   const fields = [
     "name", "name_fr", "nameFr", "location", "address", "info", "info_fr",
-    "infoFr", "rating", "tags", "pointColor", "imageUrl", "brandTitle",
-    "brandSubtitle", "locationLabel", "shortCode", "gradientFrom", "gradientTo",
+    "infoFr", "rating", "tags", "pointColor", "imageUrl", /*"brandTitle",
+    "brandSubtitle",*/ "locationLabel", "shortCode", "gradientFrom", "gradientTo",
     "website", "socialHandle", "sportCount", "sports", "categoryId", "mainCategoryId",
     "zoneId", "zone",
   ];

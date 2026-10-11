@@ -50,8 +50,8 @@ export type Place = {
   tags?: string[];
   pointColor?: string;
   imageUrl?: string | null;
-  brandTitle?: string | null;
-  brandSubtitle?: string | null;
+  // brandTitle?: string | null;
+  // brandSubtitle?: string | null;
   locationLabel?: string | null;
   shortCode?: string | null;
   gradientFrom?: string | null;
@@ -93,8 +93,8 @@ export function PlaceDetailsPage() {
   const [imageUrl, setImageUrl] = useState("");
 
   // branding/meta
-  const [brandTitle, setBrandTitle] = useState("");
-  const [brandSubtitle, setBrandSubtitle] = useState("");
+  // const [brandTitle, setBrandTitle] = useState("");
+  // const [brandSubtitle, setBrandSubtitle] = useState("");
   const [locationLabel, setLocationLabel] = useState("");
   const [shortCode, setShortCode] = useState("");
   const [gradientFrom, setGradientFrom] = useState("#12B76A");
@@ -158,8 +158,8 @@ export function PlaceDetailsPage() {
         setTags((d.tags || []).join(", "));
         setPointColor(d.pointColor || "#2962FF");
         setImageUrl(d.imageUrl || "");
-        setBrandTitle(d.brandTitle || "");
-        setBrandSubtitle(d.brandSubtitle || "");
+        // setBrandTitle(d.brandTitle || "");
+        // setBrandSubtitle(d.brandSubtitle || "");
         setLocationLabel(d.locationLabel || "");
         setShortCode(d.shortCode || "");
         setGradientFrom(d.gradientFrom || "#12B76A");
@@ -205,8 +205,8 @@ export function PlaceDetailsPage() {
           .filter(Boolean),
         pointColor: pointColor || null,
         imageUrl: imageUrl.trim() || null,
-        brandTitle: brandTitle || null,
-        brandSubtitle: brandSubtitle || null,
+        // brandTitle: brandTitle || null,
+        // brandSubtitle: brandSubtitle || null,
         locationLabel: locationLabel || null,
         shortCode: shortCode || null,
         gradientFrom: gradientFrom || null,
@@ -600,6 +600,7 @@ export function PlaceDetailsPage() {
           {/* Branding & Links */}
           <Section title="Branding & Links">
             <div className="grid gap-4 sm:grid-cols-2">
+              {/*
               <Field>
                 <FieldLabel htmlFor="brandTitle">
                   Brand title
@@ -622,6 +623,7 @@ export function PlaceDetailsPage() {
                   onChange={(e) => setBrandSubtitle(e.target.value)}
                 />
               </Field>
+              */}
               <Field>
                 <FieldLabel htmlFor="website">
                   Website
@@ -658,8 +660,8 @@ export function PlaceDetailsPage() {
                 gradientFrom={gradientFrom}
                 gradientTo={gradientTo}
                 preview={imageUrl || null}
-                brandTitle={brandTitle}
-                brandSubtitle={brandSubtitle}
+                // brandTitle={brandTitle}
+                // brandSubtitle={brandSubtitle}
                 locationLabel={locationLabel}
                 shortCode={shortCode}
                 name={name}

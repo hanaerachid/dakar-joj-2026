@@ -25,8 +25,8 @@ export interface PopupProps {
   categoryId?: string;
 
   // existing “event/brand” bits
-  brandTitle?: string;
-  brandSubtitle?: string;
+  // brandTitle?: string;
+  // brandSubtitle?: string;
   locationLabel?: string;
   shortCode?: string;
   sportCount?: number;

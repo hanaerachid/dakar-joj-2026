@@ -36,8 +36,8 @@ export interface Place {
   tags: string[];
   pointColor?: string;
   imageUrl?: string;
-  brandTitle?: string;
-  brandSubtitle?: string;
+  // brandTitle?: string;
+  // brandSubtitle?: string;
   locationLabel?: string;
   shortCode?: string;
   gradientFrom?: string;

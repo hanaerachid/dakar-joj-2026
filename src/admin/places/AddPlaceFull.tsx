@@ -56,8 +56,8 @@ export default function AddPlaceFull() {
   const [pointColor, setPointColor] = useState("#2962FF");
   const [gradientFrom, setGradientFrom] = useState("#12B76A");
   const [gradientTo, setGradientTo] = useState("#0A6B4A");
-  const [brandTitle, setBrandTitle] = useState("DAKAR 2026");
-  const [brandSubtitle, setBrandSubtitle] = useState("YOUTH OLYMPIC GAMES");
+  // const [brandTitle, setBrandTitle] = useState("DAKAR 2026");
+  // const [brandSubtitle, setBrandSubtitle] = useState("YOUTH OLYMPIC GAMES");
   const [locationLabel, setLocationLabel] = useState("");
   const [shortCode, setShortCode] = useState("");
   const [website, setWebsite] = useState("");
@@ -202,8 +202,8 @@ export default function AddPlaceFull() {
           .filter(Boolean),
         pointColor: pointColor || null,
         imageUrl: imageUrl.trim() || null,
-        brandTitle: brandTitle || null,
-        brandSubtitle: brandSubtitle || null,
+        // brandTitle: brandTitle || null,
+        // brandSubtitle: brandSubtitle || null,
         locationLabel: locationLabel || null,
         shortCode: shortCode || null,
         gradientFrom: gradientFrom || null,
@@ -238,8 +238,8 @@ export default function AddPlaceFull() {
       setPointColor("#2962FF");
       setGradientFrom("#12B76A");
       setGradientTo("#0A6B4A");
-      setBrandTitle("DAKAR 2026");
-      setBrandSubtitle("YOUTH OLYMPIC GAMES");
+      // setBrandTitle("DAKAR 2026");
+      // setBrandSubtitle("YOUTH OLYMPIC GAMES");
       setLocationLabel("");
       setShortCode("");
       setWebsite("");
@@ -356,10 +356,10 @@ export default function AddPlaceFull() {
           {/* Branding */}
           <Section title="Branding & Links">
             <BrandingFields
-              brandTitle={brandTitle}
-              setBrandTitle={setBrandTitle}
-              brandSubtitle={brandSubtitle}
-              setBrandSubtitle={setBrandSubtitle}
+              // brandTitle={brandTitle}
+              // setBrandTitle={setBrandTitle}
+              // brandSubtitle={brandSubtitle}
+              // setBrandSubtitle={setBrandSubtitle}
               locationLabel={locationLabel}
               setLocationLabel={setLocationLabel}
               shortCode={shortCode}
@@ -393,8 +393,8 @@ export default function AddPlaceFull() {
                 setPointColor("#2962FF");
                 setGradientFrom("#12B76A");
                 setGradientTo("#0A6B4A");
-                setBrandTitle("DAKAR 2026");
-                setBrandSubtitle("YOUTH OLYMPIC GAMES");
+                // setBrandTitle("DAKAR 2026");
+                // setBrandSubtitle("YOUTH OLYMPIC GAMES");
                 setLocationLabel("");
                 setShortCode("");
                 setWebsite("");
@@ -420,8 +420,8 @@ export default function AddPlaceFull() {
                 gradientFrom={gradientFrom}
                 gradientTo={gradientTo}
                 preview={imageUrl || null}
-                brandTitle={brandTitle}
-                brandSubtitle={brandSubtitle}
+                // brandTitle={brandTitle}
+                // brandSubtitle={brandSubtitle}
                 locationLabel={locationLabel}
                 shortCode={shortCode}
                 name={name}

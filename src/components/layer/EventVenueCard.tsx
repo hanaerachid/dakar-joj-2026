@@ -25,8 +25,8 @@ type Props = {
   imageUrl?: string; // defensive: may be absent
   address?: string;
   tags?: string[];
-  brandTitle?: string;
-  brandSubtitle?: string;
+  // brandTitle?: string;
+  // brandSubtitle?: string;
   locationLabel?: string;
   shortCode?: string;
   sportCount?: number;
@@ -67,8 +67,8 @@ const EventVenueCard: React.FC<Props> = ({
   imageUrl,
   address,
   tags,
-  brandTitle,
-  brandSubtitle,
+  // brandTitle,
+  // brandSubtitle,
   locationLabel,
   shortCode,
   sportCount,
@@ -158,6 +158,7 @@ const EventVenueCard: React.FC<Props> = ({
               </Badge>
             )}
           </div>
+          {/*
           <div className="absolute start-2 bottom-2 flex items-center justify-between">
             <div className="text-xs leading-tight ">
               {brandTitle && (
@@ -170,6 +171,7 @@ const EventVenueCard: React.FC<Props> = ({
               )}
             </div>
           </div>
+          */}
         </div>
 
       </CardHeader>

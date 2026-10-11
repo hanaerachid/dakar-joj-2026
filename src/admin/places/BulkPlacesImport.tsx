@@ -41,8 +41,8 @@ type FieldMap = {
   pointColor?: string;
   gradientFrom?: string;
   gradientTo?: string;
-  brandTitle?: string;
-  brandSubtitle?: string;
+  // brandTitle?: string;
+  // brandSubtitle?: string;
   locationLabel?: string;
   shortCode?: string;
   website?: string;
@@ -228,8 +228,8 @@ export default function BulkPlacesImport() {
     pointColor: "pointColor",
     gradientFrom: "gradientFrom",
     gradientTo: "gradientTo",
-    brandTitle: "brandTitle",
-    brandSubtitle: "brandSubtitle",
+    // brandTitle: "brandTitle",
+    // brandSubtitle: "brandSubtitle",
     locationLabel: "locationLabel",
     shortCode: "shortCode",
     website: "website",
@@ -463,8 +463,8 @@ export default function BulkPlacesImport() {
           pointColor: safeGet(p, fieldMap.pointColor) ?? null,
           gradientFrom: safeGet(p, fieldMap.gradientFrom) ?? null,
           gradientTo: safeGet(p, fieldMap.gradientTo) ?? null,
-          brandTitle: safeGet(p, fieldMap.brandTitle) ?? null,
-          brandSubtitle: safeGet(p, fieldMap.brandSubtitle) ?? null,
+          // brandTitle: safeGet(p, fieldMap.brandTitle) ?? null,
+          // brandSubtitle: safeGet(p, fieldMap.brandSubtitle) ?? null,
           locationLabel: safeGet(p, fieldMap.locationLabel) ?? null,
           shortCode: safeGet(p, fieldMap.shortCode) ?? null,
           website: safeGet(p, fieldMap.website) ?? null,
@@ -712,8 +712,8 @@ export default function BulkPlacesImport() {
                   ["pointColor", "Point color"],
                   ["gradientFrom", "Gradient from"],
                   ["gradientTo", "Gradient to"],
-                  ["brandTitle", "Brand title"],
-                  ["brandSubtitle", "Brand subtitle"],
+                  // ["brandTitle", "Brand title"],
+                  // ["brandSubtitle", "Brand subtitle"],
                   ["locationLabel", "Location label"],
                   ["shortCode", "Short code"],
                   ["website", "Website"],

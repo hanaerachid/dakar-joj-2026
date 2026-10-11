@@ -25,8 +25,8 @@ type Props = {
   preview: string | null;
 
   // branding
-  brandTitle: string;
-  brandSubtitle: string;
+  // brandTitle: string;
+  // brandSubtitle: string;
   locationLabel: string;
   shortCode: string;
 
@@ -62,8 +62,8 @@ export default function PlacePreview({
   gradientFrom,
   gradientTo,
   preview,
-  brandTitle,
-  brandSubtitle,
+  // brandTitle,
+  // brandSubtitle,
   locationLabel,
   shortCode,
   name,
@@ -128,6 +128,7 @@ export default function PlacePreview({
             {t("no_image", "No image")}
           </div>
         )}
+        {/*
         <div className="absolute bottom-4 start-4 text-xs leading-tight ">
           {brandTitle && <div className="font-semibold">{brandTitle}</div>}
           {brandSubtitle && (
@@ -136,6 +137,7 @@ export default function PlacePreview({
             </div>
           )}
         </div>
+        */}
         {locationLabel && (
           <Badge
             style={{ color: `${g1}` }}

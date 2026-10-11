@@ -2,10 +2,10 @@ import { TextInput } from "@/components/common/TextInput";
 import { Field, FieldLabel } from "@/components/ui/field";
 
 type Props = {
-  brandTitle: string;
-  setBrandTitle: (v: string) => void;
-  brandSubtitle: string;
-  setBrandSubtitle: (v: string) => void;
+  // brandTitle: string;
+  // setBrandTitle: (v: string) => void;
+  // brandSubtitle: string;
+  // setBrandSubtitle: (v: string) => void;
   locationLabel: string;
   setLocationLabel: (v: string) => void;
   shortCode: string;
@@ -21,10 +21,10 @@ type Props = {
  * We recreate the same structure/classes so nothing changes visually.
  */
 export default function BrandingFields({
-  brandTitle,
-  setBrandTitle,
-  brandSubtitle,
-  setBrandSubtitle,
+  // brandTitle,
+  // setBrandTitle,
+  // brandSubtitle,
+  // setBrandSubtitle,
   locationLabel,
   setLocationLabel,
   shortCode,
@@ -37,6 +37,7 @@ export default function BrandingFields({
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       {/* Brand title */}
+      {/*
       <Field className="grid gap-1.5">
         <FieldLabel htmlFor="brandTitle">
           Brand title
@@ -48,8 +49,10 @@ export default function BrandingFields({
           onChange={(e) => setBrandTitle(e.target.value)}
         />
       </Field>
+      */}
 
       {/* Brand subtitle */}
+      {/*
       <Field className="grid gap-1.5">
         <FieldLabel htmlFor="brandSubtitle">
           Brand subtitle
@@ -61,6 +64,7 @@ export default function BrandingFields({
           onChange={(e) => setBrandSubtitle(e.target.value)}
         />
       </Field>
+      */}
 
       {/* Location label */}
       <Field className="grid gap-1.5">

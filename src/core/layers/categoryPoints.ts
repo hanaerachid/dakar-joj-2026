@@ -202,8 +202,8 @@ async function getPlacesFeatures(categoryId: string) {
           tags: parseStringArray(p.tags),
           pointColor: p.pointColor ?? null, // kept (unused in icons-only view)
           imageUrl: p.imageUrl ?? null,
-          brandTitle: p.brandTitle ?? null,
-          brandSubtitle: p.brandSubtitle ?? null,
+          // brandTitle: p.brandTitle ?? null,
+          // brandSubtitle: p.brandSubtitle ?? null,
           locationLabel: p.locationLabel ?? p.zone ?? "Unassigned",
           shortCode: p.shortCode ?? null,
           sportCount: typeof p.sportCount === "number" ? p.sportCount : null,

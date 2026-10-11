@@ -20,8 +20,8 @@ export type VenueMeta = {
   pointColor?: string;
 
   // new (for Dakar 2026 card style)
-  brandTitle?: string; // "DAKAR 2026"
-  brandSubtitle?: string; // "YOUTH OLYMPIC GAMES"
+  // brandTitle?: string; // "DAKAR 2026"
+  // brandSubtitle?: string; // "YOUTH OLYMPIC GAMES"
   locationLabel?: string; // "Diamniadio"
   shortCode?: string; // "DEX"
   sportCount?: number; // 6
@@ -49,8 +49,8 @@ export const SITES_META: Record<string, Record<string, VenueMeta>> = {
       rating: 4.4,
       tags: ["Complex", "Events"],
       pointColor: "#9C27B0",
-      brandTitle: "DAKAR 2026",
-      brandSubtitle: "YOUTH OLYMPIC GAMES",
+      // brandTitle: "DAKAR 2026",
+      // brandSubtitle: "YOUTH OLYMPIC GAMES",
       locationLabel: "Dakar",
       shortCode: "DEX",
       sportCount: 6,
@@ -152,8 +152,8 @@ export const SITES_META: Record<string, Record<string, VenueMeta>> = {
       pointColor: "#FF9800",
 
       // Card bits from the poster
-      brandTitle: "DAKAR 2026",
-      brandSubtitle: "YOUTH OLYMPIC GAMES",
+      // brandTitle: "DAKAR 2026",
+      // brandSubtitle: "YOUTH OLYMPIC GAMES",
       locationLabel: "Diamniadio",
       shortCode: "DEX",
       sportCount: 6,

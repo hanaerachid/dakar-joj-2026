@@ -60,8 +60,8 @@ function buildProps(
     imageUrl: p.imageUrl ?? null,
 
     // Event/branding fields (used by EventVenueCard)
-    brandTitle: p.brandTitle ?? null,
-    brandSubtitle: p.brandSubtitle ?? null,
+    // brandTitle: p.brandTitle ?? null,
+    // brandSubtitle: p.brandSubtitle ?? null,
     locationLabel: p.locationLabel ?? null,
     shortCode: p.shortCode ?? null,
     gradientFrom: p.gradientFrom ?? "#12B76A",

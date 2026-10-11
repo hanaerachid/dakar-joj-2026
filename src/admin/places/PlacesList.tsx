@@ -59,8 +59,8 @@ export type Place = {
   tags?: string[];
   pointColor?: string;
   imageUrl?: string | null;
-  brandTitle?: string | null;
-  brandSubtitle?: string | null;
+  // brandTitle?: string | null;
+  // brandSubtitle?: string | null;
   locationLabel?: string | null;
   shortCode?: string | null;
   gradientFrom?: string | null;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { cn } from "cn";
+// import { cn } from "cn";
 import {
   Clock9,
   CircleDot,
@@ -364,8 +364,8 @@ function PlaceContent({ place, route, onGetDirections }: PlaceContentProps) {
     info,
     infoFr,
     sports,
-    brandTitle,
-    brandSubtitle,
+    // brandTitle,
+    // brandSubtitle,
     tags,
     website,
     socialHandle,
@@ -397,6 +397,7 @@ function PlaceContent({ place, route, onGetDirections }: PlaceContentProps) {
           </>
         ) : <div className="mt-20" />}
 
+        {/*
         <div className={cn(
           "absolute start-2 bottom-2 flex items-center justify-between",
           "flex flex-col items-center justify-center gap-0.25"
@@ -411,6 +412,7 @@ function PlaceContent({ place, route, onGetDirections }: PlaceContentProps) {
             </div>
           )}
         </div>
+        */}
       </div>
 
       <div className="space-y-4">

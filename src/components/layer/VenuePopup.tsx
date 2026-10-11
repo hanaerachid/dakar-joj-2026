@@ -27,8 +27,8 @@ export interface VenuePopupProps {
   categoryId?: string;
 
   // existing “event/brand” bits
-  brandTitle?: string;
-  brandSubtitle?: string;
+  // brandTitle?: string;
+  // brandSubtitle?: string;
   locationLabel?: string;
   shortCode?: string;
   sportCount?: number;
@@ -121,8 +121,8 @@ export const VenuePopup: React.FC<VenuePopupProps> = ({
   onClose,
   // 🔽 NEW
   categoryId,
-  brandTitle,
-  brandSubtitle,
+  // brandTitle,
+  // brandSubtitle,
   locationLabel,
   shortCode,
   sportCount,
@@ -280,7 +280,7 @@ export const VenuePopup: React.FC<VenuePopupProps> = ({
     : Number(sportCount ?? 0) > 0;
 
   const isCompetition = catKey === "competition";
-  const showEventCard = isCompetition && (hasSports || !!brandTitle);
+  const showEventCard = isCompetition && hasSports;
 
   const card = (() => {
     if (!showEventCard && catMeta && !isCompetition) {
@@ -313,9 +313,8 @@ export const VenuePopup: React.FC<VenuePopupProps> = ({
           infoFr={infoFr}
           imageUrl={imageUrl}
           address={resolvedAddress}
-          tags={tagsArr}
-          brandTitle={brandTitle}
-          brandSubtitle={brandSubtitle}
+          // brandTitle={brandTitle}
+          // brandSubtitle={brandSubtitle}
           locationLabel={locationLabel}
           shortCode={shortCode}
           sportCount={sportCount}
