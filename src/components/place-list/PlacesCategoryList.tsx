@@ -10,7 +10,14 @@ import { useTranslation } from "react-i18next";
 // import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import { Item, ItemActions, ItemContent, ItemGroup, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { cn } from "cn";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 import { Button } from "../ui/button";
 import { MapManager } from "@/core/MapManager";
 import { useStateContext } from "../state-provider";
@@ -66,6 +73,10 @@ export function PlacesCategoryList(props: Props) {
   } = props;
 
   const { t } = useTranslation();
+  const [api, setApi] = useState<CarouselApi>()
+  const [canScrollPrev, setCanScrollPrev] = useState(false)
+  const [canScrollNext, setCanScrollNext] = useState(false)
+
   const [selectedZones, setSelectedZones] = useState<Record<string, string>>({});
   const { torchVisible, setTorchVisible } = useStateContext();
   const mapManager = MapManager.getInstance();
@@ -87,6 +98,25 @@ export function PlacesCategoryList(props: Props) {
       return next;
     });
   }, [MAIN_CATEGORIES, mainCategoryChecked]);
+
+  useEffect(() => {
+    if (!api) return
+
+    const update = () => {
+      setCanScrollPrev(api.canScrollPrev())
+      setCanScrollNext(api.canScrollNext())
+    }
+
+    update()
+
+    api.on("select", update)
+    api.on("reInit", update)
+
+    return () => {
+      api.off("select", update)
+      api.off("reInit", update)
+    }
+  }, [api])
 
   const handleMainCategoriesChange = (value: string[]) => {
     setOpenMainCategoryIds(value);
@@ -215,19 +245,20 @@ export function PlacesCategoryList(props: Props) {
                   </Alert>
                 )}
 
-                <div className="flex-col items-center space-y-1">
-                  {loading &&
-                    [...Array(3)].map((_, index) => (
+                {loading && (
+                  <div className="flex-col items-center space-y-1">
+                    {[...Array(3)].map((_, index) => (
                       <Skeleton key={index} className="min-h-10">
                       </Skeleton>
-                    ))
-                  }
-                </div>
+                    ))}
+                  </div>
+                )}
 
                 {!loading && !loadError && !!mainVenues.length && (
                   <div className="flex flex-col gap-2">
                     {/* Zone filters */}
                     <Carousel
+                      setApi={setApi}
                       className="w-full whitespace-nowrap"
                       orientation="horizontal"
                       opts={{
@@ -235,7 +266,23 @@ export function PlacesCategoryList(props: Props) {
                         // dragFree: true,
                       }}
                     >
-                      <CarouselContent className="ml-6 mr-6">
+                      <div
+                        className={cn(
+                          "relative",
+                          canScrollPrev && canScrollNext &&
+                          "[mask-image:linear-gradient(to_right,transparent,#000_48px,#000_calc(100%-48px),transparent)]",
+                          !canScrollPrev && canScrollNext &&
+                          "[mask-image:linear-gradient(to_right,#000,#000_calc(100%-48px),transparent)]",
+                          canScrollPrev && !canScrollNext &&
+                          "[mask-image:linear-gradient(to_right,transparent,#000_48px,#000)]",
+                        )}
+                      >
+
+                      <CarouselContent className={cn(
+                        "-ml-1 mr-1",
+                        canScrollNext && "md:pe-6",
+                        canScrollPrev && "md:ps-6"
+                      )}>
                         <CarouselItem className="basis-auto shrink-0 pl-1">
                           <Button
                             variant={selectedZone === ALL_ZONES ? "default" : "outline"}
@@ -243,7 +290,7 @@ export function PlacesCategoryList(props: Props) {
                             onClick={() => setSelectedZone(ALL_ZONES)}
                             className="whitespace-nowrap"
                           >
-                            All
+                              {t("all", "All")}
                             <Badge variant="ghost">
                               {mainVenues.length}
                             </Badge>
@@ -269,9 +316,24 @@ export function PlacesCategoryList(props: Props) {
                           </CarouselItem>
                         ))}
                       </CarouselContent>
+                      </div>
 
-                      <CarouselPrevious size="icon-sm" variant="secondary" className="left-0" />
-                      <CarouselNext size="icon-sm" variant="secondary" className="right-0" />
+                      <CarouselPrevious
+                        size="icon-sm"
+                        variant="ghost"
+                        className={cn(
+                          "left-0",
+                          !canScrollPrev && "hidden"
+                        )}
+                      />
+                      <CarouselNext
+                        size="icon-sm"
+                        variant="ghost"
+                        className={cn(
+                          "right-0",
+                          !canScrollNext && "hidden"
+                        )}
+                      />
                     </Carousel>
 
                     {children.map((category) => {
@@ -298,8 +360,8 @@ export function PlacesCategoryList(props: Props) {
                         })
 
                       return (
-                        <div key={category.id} className="flex flex-col gap-3">
-                          <h3 className="px-3.5 pt-3.5 text-xs/6 uppercase text-muted-foreground">{category.label}</h3>
+                        <div key={category.id} className="space-y-3">
+                          <h3 className="pt-3.5 text-xs/4 uppercase text-muted-foreground">{category.label}</h3>
                           {!categoryVenues.length && (
                             <Empty>
                               <EmptyContent>
@@ -320,7 +382,7 @@ export function PlacesCategoryList(props: Props) {
                                 return (
                                   <Item
                                     key={`${category.id}-${feature.properties?.id ?? feature.id ?? index}`}
-                                    variant="default"
+                                    variant="muted"
                                     size="xs"
                                     onClick={() => {
                                       const [lng, lat] =
