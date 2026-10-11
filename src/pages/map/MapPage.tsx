@@ -8,6 +8,7 @@ import {
   Newspaper,
   Calendar,
   Briefcase,
+  Search,
 } from "lucide-react";
 import { MapManager } from "../../core/MapManager";
 import { Sidebar } from "../../components/Sidebar";
@@ -59,7 +60,13 @@ export default function MapPage() {
   const [latitude, setLatitude] = useState(40.6941);
   const [zoom, setZoom] = useState(() => getInitialZoom());
   const isMobile = useIsMobile();
-  const { selectedPlace, activeTab, setActiveTab } = useStateContext();
+  const {
+    activeTab,
+    setActiveTab,
+    isSearchOpen,
+    setIsSearchOpen,
+    selectedPlace,
+  } = useStateContext();
   const { setPanelContent, isOpen, setIsOpen } = usePanelContext();
   const { setModalContent, setIsOpen: setModalOpen } = useModalContext();
   const { setNavbarContent } = useNavbarContext();
@@ -88,6 +95,16 @@ export default function MapPage() {
       label: t("tabs.explorer", "Explorer"),
       icon: Compass,
       action: () => {
+        setIsSearchOpen(false);
+        openNavigationPanel("explorer");
+      },
+    },
+    {
+      key: "search",
+      label: t("tabs.search", "Search"),
+      icon: Search,
+      action: () => {
+        setIsSearchOpen(true);
         openNavigationPanel("explorer");
       },
     },
@@ -207,12 +224,26 @@ export default function MapPage() {
 
   const handleReset = () => mapManager.resetView();
 
+  const activeNavigationKey = !isOpen
+    ? ""
+    : activeTab === "explorer"
+      ? isSearchOpen
+        ? "search"
+        : "explorer"
+      : activeTab;
+
   useEffect(() => {
     setNavbarContent({
       items: navigationItems,
-      activeKey: isOpen ? activeTab : "",
+      activeKey: activeNavigationKey,
     })
-  }, [setNavbarContent, activeTab, isOpen]);
+  }, [
+    setNavbarContent,
+    activeTab,
+    activeNavigationKey,
+    isOpen,
+    navigationItems,
+  ]);
 
   return (
     <div className="relative w-full h-[100dvh]">
