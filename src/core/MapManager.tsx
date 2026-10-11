@@ -8,8 +8,16 @@ import {
   INITIAL_CENTER,
   getInitialZoom,
 } from "../utils/mapConfig";
-import type { RouteDetails, RouteSummary } from "./map/types";
-import { DUMMY_COORDS, USE_DUMMY_LOCATION } from "../config/map.constants";
+import type {
+  BasemapId,
+  RouteDetails,
+  RouteSummary
+} from "./map/types";
+import {
+  DUMMY_COORDS,
+  MAPBOX_STYLE_URLS,
+  USE_DUMMY_LOCATION
+} from "../config/map.constants";
 import { clearRoute, drawRoute } from "../services/directions";
 import {
   addTorchOverlay,
@@ -17,26 +25,6 @@ import {
   fetchTorchStops,
   type TorchStop,
 } from "./layers/torch";
-
-type BasemapId =
-  | "mapbox-streets"
-  | "mapbox-outdoors"
-  | "mapbox-light"
-  | "mapbox-dark"
-  | "mapbox-satellite"
-  | "mapbox-navigation-day"
-  | "mapbox-navigation-night";
-
-// Mapbox style URLs
-const MAPBOX_STYLE_URLS: Record<BasemapId, string> = {
-  "mapbox-streets": "mapbox://styles/mapbox/streets-v12",
-  "mapbox-outdoors": "mapbox://styles/mapbox/outdoors-v12",
-  "mapbox-light": "mapbox://styles/mapbox/light-v11",
-  "mapbox-dark": "mapbox://styles/mapbox/dark-v11",
-  "mapbox-satellite": "mapbox://styles/mapbox/satellite-streets-v12",
-  "mapbox-navigation-day": "mapbox://styles/mapbox/navigation-day-v1",
-  "mapbox-navigation-night": "mapbox://styles/mapbox/navigation-night-v1",
-};
 
 const BASEMAP_STORAGE_KEY = "active-basemap";
 

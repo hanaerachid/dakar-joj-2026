@@ -85,3 +85,14 @@ export const BASEMAPS: {
       descFallback: "Night style designed for in-car use.",
     },
   ];
+
+// Mapbox style URLs
+export const MAPBOX_STYLE_URLS: Record<BasemapId, string> = {
+  "mapbox-streets": "mapbox://styles/mapbox/streets-v12",
+  "mapbox-outdoors": "mapbox://styles/mapbox/outdoors-v12",
+  "mapbox-light": "mapbox://styles/mapbox/light-v11",
+  "mapbox-dark": "mapbox://styles/mapbox/dark-v11",
+  "mapbox-satellite": "mapbox://styles/mapbox/satellite-streets-v12",
+  "mapbox-navigation-day": "mapbox://styles/mapbox/navigation-day-v1",
+  "mapbox-navigation-night": "mapbox://styles/mapbox/navigation-night-v1",
+};
