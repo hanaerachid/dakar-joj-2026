@@ -146,7 +146,11 @@ export function PlacesCategoryList(props: Props) {
             disabled={!children.length}
           >
             {/* Header */}
-            <AccordionTrigger className="w-full flex items-center justify-between gap-3 px-3.5 py-3.5 cursor-pointer select-none" >
+            <AccordionTrigger className={cn(
+              "w-full flex items-center justify-between gap-3",
+              "px-3.5 py-3.5 cursor-pointer select-none",
+              "[&_[data-slot=accordion-trigger-icon]]:order-first",
+            )} >
               <h2 className="flex-1 flex items-center gap-2.5" >
                 <main.icon
                   className="h-5 w-5"
