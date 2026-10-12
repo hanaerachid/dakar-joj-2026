@@ -5,6 +5,7 @@
   "settings": "Settings",
   "theme": "Theme",
   "language": "Language",
+  "map": "Map",
   "light": "Light",
   "dark": "Dark",
   "system": "System",
@@ -79,6 +80,8 @@
     "thegamesjournal": "The Games Journal"
   },
   "events": {
+    "title": "Events",
+    "description": "Browse and manage events.",
     "events": "Events",
     "live_and_upcoming": "Live and upcoming",
     "plan_your_games": "Plan your Games",
@@ -86,7 +89,8 @@
     "happening": "Happening now",
     "today": "Today",
     "tomorrow": "Tomorrow",
-    "later": "Later"
+    "later": "Later",
+    "new": "Nouvel événement"
   },
   "calendar": {
     "add_to_calendar": "Add to calendar",
@@ -145,7 +149,13 @@
     "new_place": "New place",
     "import_place": "Import places",
     "approve_listing": "Approve",
-    "verified_business": "Verified"
+    "verified_business": "Verified",
+    "subscriptions": "Subscriptions"
+  },
+  "torchstops": {
+    "title": "Torch Stops",
+    "description": "Browse and manage torch stops.",
+    "new": "New torch stop"
   },
   "search.title": "Search Places",
   "search.placeholder": "Search Places",

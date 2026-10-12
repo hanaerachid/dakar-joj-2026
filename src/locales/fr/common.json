@@ -3,6 +3,7 @@
   "description": "Dakar Jeux Olympiques de la Jeunesse",
   "hello": "Hello, {{name}}!",
   "settings": "Paramètres",
+  "map": "Carte",
   "theme": "Thème",
   "language": "Langue",
   "light": "Clair",
@@ -79,6 +80,8 @@
     "thegamesjournal": "Le journal des Jeux"
   },
   "events": {
+    "title": "Événements",
+    "description": "Parcourez et gérez les événements.",
     "events": "Événements",
     "live_and_upcoming": "En direct & à venir",
     "plan_your_games": "Planifiez vos Jeux",
@@ -86,7 +89,8 @@
     "happening": "En cours",
     "today": "Aujourd'hui",
     "tomorrow": "Demain",
-    "later": "Plus tard"
+    "later": "Plus tard",
+    "new": "Nouvel événement"
   },
   "calendar": {
     "add_to_calendar": "Ajouter au calendrier",
@@ -145,7 +149,13 @@
     "new_place": "Nouveau lieu",
     "import_place": "Importer des lieux",
     "approve_listing": "Approver",
-    "verified_business": "Vérifié"
+    "verified_business": "Vérifié",
+    "subscriptions": "Abonnements"
+  },
+  "torchstops": {
+    "title": "Arrêts de la flamme",
+    "description": "Parcourez et gérez les arrêts de la flamme.",
+    "new": "Nouvel arrêt"
   },
   "search.title": "Rechercher des lieux",
   "search.placeholder": "Rechercher des lieux",

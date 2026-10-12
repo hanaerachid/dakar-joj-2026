@@ -157,10 +157,10 @@ export function EventPage() {
           {/* Title + subtitle */}
           <div className="min-w-0">
             <h2 className="flex items-center gap-2 text-lg md:text-xl font-semibold tracking-tight text-foreground/90">
-              <span className="truncate">Events</span>
+              <span className="truncate">{t("events.title", "Events")}</span>
             </h2>
             <p className="mt-0.5 text-sm text-foreground/70 truncate">
-              Browse and manage events.
+              {t("events.description", "Browse and manage events.")}
             </p>
           </div>
 
@@ -172,7 +172,7 @@ export function EventPage() {
               className="inline-flex items-center gap-2"
             >
               <Plus />
-              <span>New event</span>
+              <span>{t("events.new", "New event")}</span>
             </Button>
           </div>
         </div>
