@@ -3,17 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { SignInButton, useAuth } from "@clerk/clerk-react";
-import { Check, X } from "lucide-react";
+import { CircleCheck, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemFooter,
+  ItemHeader,
+  ItemTitle
+} from "@/components/ui/item";
+import { Separator } from "@/components/ui/separator";
 import { PRICING_PLANS } from "./pricing/pricingplans.config";
 import { getMySubscription } from "../lib/api/payments";
 
@@ -63,66 +64,75 @@ export const BusinessContent = () => {
             <h2 className="text-xs text-muted-foreground uppercase">
               {t("business.current_plan", "Current plan")}
             </h2>
-            <Card size="sm">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between gap-1">
-                  <span
-                    className="text-lg text-muted-foreground font-bold uppercase"
-                  >
+
+            <Item
+              variant="outline"
+              size="sm"
+            >
+              <ItemHeader className="flex flex-col items-start justify-start gap-1">
+                <ItemTitle>
+                  <span className="text-lg text-foreground font-bold">
                     {label}
                   </span>
-                </CardTitle>
-                <CardDescription className="flex items-center gap-2">
-                  {desc}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                </ItemTitle>
+
+                <ItemDescription>
+                  <span className="text-xs text-muted-foreground">
+                    {desc}
+                  </span>
+                </ItemDescription>
+              </ItemHeader>
+
+              <ItemContent>
                 {features.map((item, index) => (
-                  <CardDescription
+                  <ItemDescription
                     key={index}
-                    className="flex justfiy-start gap-2 py-2 text-sm text-foreground"
+                    className="flex justfiy-start gap-2 py-1.5"
                   >
-                    <Check className="w-4 h-4 text-primary" />
-                    <span>
+                    <CircleCheck
+                      className="w-4 h-4 text-primary"
+                    />
+                    <span className="text-foreground text-xs">
                       {item}
                     </span>
-                  </CardDescription>
+                  </ItemDescription>
                 ))}
+                <Separator />
                 {limitations.map((item, index) => (
-                  <CardDescription
+                  <ItemDescription
                     key={index}
-                    className="flex justfiy-start gap-2 py-2 text-sm text-muted-foreground"
+                    className="flex justfiy-start gap-2 py-1.5"
                   >
-                    <X className="w-4 h-4 text-destructive" />
-                    <span>
+                    <XCircle
+                      className="w-4 h-4 text-muted-foreground"
+                    />
+                    <span className="text-muted-foreground text-xs text-light">
                       {item}
                     </span>
-                  </CardDescription>
+                  </ItemDescription>
                 ))}
-              </CardContent>
-              <CardFooter className="flex flex-col gap-2">
-                <CardAction className="w-full">
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => navigate("/business")}
-                  >
-                    {t("business.manage_business", "Manage your business")}
-                  </Button>
-                </CardAction>
+              </ItemContent>
+              <ItemFooter className="flex flex-col gap-2">
+              </ItemFooter>
+              <ItemActions className="w-full flex flex-col gap-2">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => navigate("/business")}
+                >
+                  {t("business.manage_business", "Manage your business")}
+                </Button>
                 {planId === "discover" && (
-                  <CardAction className="w-full">
-                    <Button
-                      variant="default"
-                      className="w-full"
-                      onClick={() => navigate("/pricing")}
-                    >
-                      Upgrade
-                    </Button>
-                  </CardAction>
+                  <Button
+                    variant="default"
+                    className="w-full"
+                    onClick={() => navigate("/pricing")}
+                  >
+                    Upgrade
+                  </Button>
                 )}
-              </CardFooter>
-            </Card>
+              </ItemActions>
+            </Item>
           </>
         ) : (
           <>
