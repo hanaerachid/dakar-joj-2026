@@ -53,12 +53,11 @@ export function BusinessTypeStep(
                   <category.icon className={selected === key ? "text-primary" : ""} />
                 </ItemMedia>
                 <ItemContent>
-                  <ItemTitle className={selected === key ? "text-primary font-bold" : ""}>
-
-                    {t(
-                      `businessCreate.categories.${key}`,
-                      category.label,
-                    )}
+                  <ItemTitle className={cn(
+                    "text-center",
+                    selected === key ? "text-primary font-bold" : ""
+                  )}>
+                    {t(`businessCreate.categories.${key}`, category.label)}
                   </ItemTitle>
                 </ItemContent>
               </Item>
