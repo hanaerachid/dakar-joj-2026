@@ -7,6 +7,8 @@ type ListingListResponse = { success: true; data: BusinessListing[] };
 export type BusinessListingQueryParams = {
   location?: string | readonly [number, number];
   owner?: string;
+  status?: string;
+  verified?: boolean;
 };
 
 function withListingQuery(
@@ -24,6 +26,14 @@ function withListingQuery(
       : `${params.location[0]},${params.location[1]}`;
 
     queryParams.set("location", location);
+  }
+
+  if (params.status) {
+    queryParams.set("status", params.status);
+  }
+
+  if (params.verified !== undefined) {
+    queryParams.set("verified", String(params.verified));
   }
 
   if (params.owner) {

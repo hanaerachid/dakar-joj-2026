@@ -26,56 +26,89 @@ export function buildListingFilter(
   id: string,
   actor?: ListingActor,
 ): Filter<BusinessListingDocument> {
-  const idFilterValue = idFilter(id);
+  const filter: Filter<BusinessListingDocument> = idFilter(id) as Filter<BusinessListingDocument>;
 
-  // Admins can access everything.
   if (actor?.role === "admin") {
-    return idFilterValue as Filter<BusinessListingDocument>;
+    return filter;
   }
 
-  // Anonymous users can only access verified listings.
   if (!actor) {
     return {
-      ...idFilterValue,
+      ...filter,
+      status: "published",
       verified: true,
     } as Filter<BusinessListingDocument>;
   }
 
-  // Authenticated users can access:
-  // - their own listings, regardless of verification
-  // - other people's verified listings
   return {
-    ...idFilterValue,
+    ...filter,
     $or: [
       { ownerId: actor.uid },
-      { verified: true },
+      { status: "published", verified: true },
     ],
   } as Filter<BusinessListingDocument>;
 }
 
 export function buildListingListFilter(
   actor?: ListingActor,
+  ownerId?: string,
+  status?: string,
+  verified?: boolean,
 ): Filter<BusinessListingDocument> {
-  // Admins can see everything.
-  if (actor?.role === "admin") {
-    return {};
-  }
-
-  // Anonymous users: verified listings only.
-  if (!actor) {
-    return {
-      verified: true,
-    };
-  }
-
-  // Authenticated users:
-  // their own listings OR any verified listing.
-  return {
-    $or: [
+  const filter: Filter<BusinessListingDocument> = {};
+  if (ownerId) {
+    filter.ownerId = ownerId;
+  } else if (actor?.role !== "admin" && actor) {
+    filter.$or = [
       { ownerId: actor.uid },
-      { verified: true },
-    ],
-  };
+      {
+        $and: [
+          {
+            $or: [
+              { status: "published" },
+              { status: { $exists: false } },
+              { status: null },
+            ],
+          },
+          { verified: true },
+        ],
+      },
+    ];
+  }
+
+  if (status === "published") {
+    filter.$and = [
+      ...(filter.$and ?? []),
+      {
+        $or: [
+          { status: "published" },
+          { status: { $exists: false } },
+          { status: null },
+        ],
+      },
+    ];
+  } else if (status !== undefined) {
+    filter.status = status;
+  } else if (!ownerId && (!actor || actor.role !== "admin")) {
+    filter.$and = [
+      ...(filter.$and ?? []),
+      {
+        $or: [
+          { status: "published" },
+          { status: { $exists: false } },
+          { status: null },
+        ],
+      },
+    ];
+  }
+
+  if (verified !== undefined) {
+    filter.verified = verified;
+  } else if (!ownerId && (!actor || actor.role !== "admin")) {
+    filter.verified = true;
+  }
+
+  return filter;
 }
 
 function buildPayload(input: any, includeCreatedAt = true) {
@@ -111,8 +144,8 @@ function distanceInMeters(
   const haversine =
     Math.sin(latitudeDelta / 2) ** 2 +
     Math.cos(fromLatitude) *
-      Math.cos(toLatitude) *
-      Math.sin(longitudeDelta / 2) ** 2;
+    Math.cos(toLatitude) *
+    Math.sin(longitudeDelta / 2) ** 2;
 
   return 2 * earthRadius * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
 }
@@ -121,22 +154,15 @@ export async function listBusinessListings(
   actor?: ListingActor,
   coordinates?: ListingCoordinates,
   ownerId?: string,
+  status?: string,
+  verified?: boolean,
 ) {
   const db = await getMongoDatabase();
   const collection = db.collection<BusinessListingDocument>("listings");
   const isAdmin = actor?.role === "admin";
-  const effectiveOwnerId = isAdmin ? ownerId : actor?.uid;
 
-  const filter = buildListingListFilter(actor);
-
-  if (effectiveOwnerId) {
-    filter.ownerId = effectiveOwnerId;
-  }
-  // Apply an owner filter when requested.
-  if (ownerId) {
-    filter.ownerId = ownerId;
-  }
-
+  const filter = buildListingListFilter(actor, ownerId, status, verified);
+console.log("Listing MongoDB filter:", JSON.stringify(filter, null, 2));
   const docs = await collection.find(filter).toArray();
 
   if (coordinates) {
@@ -157,10 +183,10 @@ export async function listBusinessListings(
 
   // Only admins can retrieve owner information.
   if (isAdmin) {
-  return docs.map((doc) => ({
-    ...doc,
-    _id: doc._id.toString(),
-  }));
+    return docs.map((doc) => ({
+      ...doc,
+      _id: doc._id.toString(),
+    }));
   }
 
   const ownerIds = [

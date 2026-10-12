@@ -26,7 +26,9 @@ function unauthorized(c: Context) {
 
 listingRoutes.get("/", async (c) => {
   const user = c.get("user");
-  const location = c.req.query("location");
+  const status = c.req.query("status");
+  const verifiedParam = c.req.query("verified");
+  const verified = verifiedParam === undefined ? undefined : verifiedParam === "true"; const location = c.req.query("location");
   const ownerId = c.req.query("owner");
   const isAdmin = user?.role === "admin";
 
@@ -53,7 +55,13 @@ listingRoutes.get("/", async (c) => {
     return fail(c, 403, "FORBIDDEN", "You can only access your own listings",);
   }
 
-  const listings = await listBusinessListings(user, coordinates, ownerId);
+  const listings = await listBusinessListings(
+    user,
+    coordinates,
+    ownerId,
+    status,
+    verified,
+  );
 
   return ok(c, listings);
 });

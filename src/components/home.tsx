@@ -296,11 +296,13 @@ export const HomeContent = () => {
     try {
       let items: BusinessListing[] = [];
 
-      items = (await listBusinessListings(
-        coordinates
+      items = (await listBusinessListings({
+        ...(coordinates
           ? { location: `${coordinates[0]},${coordinates[1]}` }
-          : undefined,
-      )) as BusinessListing[];
+          : {}),
+        status: "published",
+        verified: true,
+      })) as BusinessListing[];
 
       if (!coordinates) {
       items.sort((a: BusinessListing, b: BusinessListing) => {
