@@ -10,6 +10,7 @@ import { getCategoryIcon, getPricingPlanInfo } from "@/utils/helpers";
 import type { BusinessListing } from "@/shared/contracts";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,6 +23,13 @@ import {
   EmptyDescription,
   EmptyHeader,
 } from "@/components/ui/empty";
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import {
@@ -39,6 +47,7 @@ type BusinessListingWithOwner = BusinessListing & {
   ownerId?: string;
   owner?: {
     name?: string;
+    email?: string;
     imageUrl?: string;
   } | null;
 };
@@ -143,17 +152,24 @@ export function BusinessPage4Admin() {
     id: any,
     verified: boolean,
   ) => {
+    const operationAction = verified ? t("approve", "Approve") : t("unapprove", "Unapprove");
+    const operationTitle = verified
+      ? t("approve_confirmation_title", "Approve this business listing?")
+      : t("unapprove_confirmation_title", "Unapprove this business listing?");
+    const operationMessage = verified
+      ? t("approve_confirmation_message", "Are you sure you want to approve this business listing?")
+      : t("unapprove_confirmation_message", "Are you sure you want to unapprove this business listing?");
 
     setModalContent({
-      title: t("approve_confirmation_title", "Approve this business listing?"),
+      title: operationTitle,
       size: "md",
       children: (
-        <p>{t("approve_confirmation_message", "Are you sure?")}</p>
+        <span>{operationMessage}</span>
       ),
       onClose: () => {
         setIsOpen(false);
       },
-      footer: ((
+      footer: (
         <>
           <Button
             variant="outline"
@@ -165,7 +181,7 @@ export function BusinessPage4Admin() {
           </Button>
 
           <Button
-            variant="default"
+            variant={verified ? "default" : "destructive"}
             onClick={async () => {
               setIsOpen(false);
               try {
@@ -179,18 +195,18 @@ export function BusinessPage4Admin() {
               }
             }}
           >
-            {t("confirm", "Confirm")}
+            {operationAction}
           </Button>
         </>
-      )),
+      ),
     });
 
     setIsOpen(true);
   };
 
   const columns = columnHelper.columns([
-    columnHelper.accessor("photos", {
-      header: "Image",
+    columnHelper.display({
+      id: t("image", "Image"),
       cell: ({ row }) => {
         const photos = row.original.photos;
         const firstPhoto = photos && photos.length > 0 ? photos[0] : null;
@@ -201,33 +217,44 @@ export function BusinessPage4Admin() {
             className="h-12 aspect-square rounded object-cover"
           />
         ) : (
-          <div className="h-12 aspect-square rounded bg-gray-200" />
+          <div className="h-12 aspect-square rounded bg-muted-foreground" />
         );
       }
     }),
     columnHelper.accessor("name", {
-      header: "Name",
-    }),
-    columnHelper.accessor("cat", {
-      header: "Category",
+      header: t("listing_name", "Listing name"),
       cell: ({ row }) => {
+        const name = row.original.name;
         const Icon = getCategoryIcon(row.original.cat);
-
         return (
-          <div className="flex items-center gap-2">
-            <Icon className="w-4 h-4" />
-            {getFriendlyCategoryName(row.original.cat, t)}
-          </div>
+          <Item
+            size="xs"
+            variant="default"
+            className="p-0"
+          >
+            <ItemMedia variant="icon">
+              <Icon />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>{name}</ItemTitle>
+              <ItemDescription>
+                {getFriendlyCategoryName(row.original.cat, t)}
+              </ItemDescription>
+            </ItemContent>
+          </Item>
         )
       },
     }),
     columnHelper.accessor("ownerId", {
-      header: "Owner",
+      header: t("listing_owner", "Owner"),
       cell: ({ row }) => {
         const ownerName = row.original.owner?.name;
+        const ownerEmail = row.original.owner?.email;
         const ownerPhoto = row.original.owner?.imageUrl;
+        const { label, icon: Icon } = getPricingPlanInfo(row.original.pack);
+
         return (
-          <div className="flex items-center justify-start gap-1">
+          <div className="flex items-center justify-start gap-2">
             <Avatar size="sm">
               <AvatarImage
                 src={ownerPhoto || undefined}
@@ -240,22 +267,22 @@ export function BusinessPage4Admin() {
                 {ownerName ? ownerName[0].toUpperCase() : "?"}
               </AvatarFallback>
             </Avatar>
-            <span className="text-muted-foreground text-sm">
-              {ownerName ? ownerName : t("admin.unknown_owner", "Unknown")}
-            </span>
-          </div>
-        )
-      }
-    }),
-    columnHelper.accessor("pack", {
-      header: "Plan",
-      cell: ({ row }) => {
-        const { label, icon: Icon } = getPricingPlanInfo(row.original.pack);
-
-        return (
-          <div className="flex items-center gap-2">
-            <Icon className="w-4 h-4" />
-            {label}
+            <div>
+              <div className="flex items-center gap-1">
+                <span className="text-foreground text-sm">
+                  {ownerName ? ownerName : t("admin.unknown_owner", "Unknown")}
+                </span>
+                <Badge variant="secondary" className="p-1">
+                  <Icon className="w-4 h-4" />
+                  <span className="text-xs">
+                    {label}
+                  </span>
+                </Badge>
+              </div>
+              <div className="text-muted-foreground text-sm">
+                {ownerEmail ? ownerEmail : t("admin.unknown_owner", "Unknown")}
+              </div>
+            </div>
           </div>
         )
       }
@@ -296,11 +323,20 @@ export function BusinessPage4Admin() {
                 }
               />
               <DropdownMenuContent align="end">
+                {item.verified && (
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={() => handleVerify(item._id, false)}
+                  >
+                    <span >{t("admin.unverify_listing", "Unverify")}</span>
+                  </DropdownMenuItem>
+                )}
+
                 <DropdownMenuItem
                   variant="destructive"
                   onClick={() => handleDelete(item)}
                 >
-                  Delete
+                  {t("delete", "Delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

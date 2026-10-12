@@ -162,7 +162,6 @@ export async function listBusinessListings(
   const isAdmin = actor?.role === "admin";
 
   const filter = buildListingListFilter(actor, ownerId, status, verified);
-console.log("Listing MongoDB filter:", JSON.stringify(filter, null, 2));
   const docs = await collection.find(filter).toArray();
 
   if (coordinates) {
@@ -198,6 +197,11 @@ console.log("Listing MongoDB filter:", JSON.stringify(filter, null, 2));
       user.id,
       {
         id: user.id,
+        email: user.primaryEmailAddressId
+          ? user.emailAddresses.find(
+            (e) => e.id === user.primaryEmailAddressId,
+          )?.emailAddress || null
+          : null,
         name:
           [user.firstName, user.lastName]
             .filter(Boolean)
@@ -259,6 +263,11 @@ export async function getBusinessListingById(
 
       ownerData = {
         id: user.id,
+        email: user.primaryEmailAddressId
+          ? user.emailAddresses.find(
+            (e) => e.id === user.primaryEmailAddressId,
+          )?.emailAddress || null
+          : null,
         name:
           [user.firstName, user.lastName].filter(Boolean).join(" ").trim() ||
           user.emailAddresses.find(
