@@ -11,6 +11,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import React from "react"
 
 export type BreadcrumbConfig = Record<
   string,
@@ -50,9 +51,10 @@ export function Breadcrumbs({ config = {} }: Props) {
           const isLast = index === segments.length - 1
 
           return (
-            <BreadcrumbItem key={href}>
+            <React.Fragment key={href}>
               <BreadcrumbSeparator />
 
+              <BreadcrumbItem>
               {isLast ? (
                 <BreadcrumbPage>
                   {label}
@@ -63,6 +65,7 @@ export function Breadcrumbs({ config = {} }: Props) {
                 </BreadcrumbLink>
               )}
             </BreadcrumbItem>
+            </React.Fragment>
           )
         })}
       </BreadcrumbList>
