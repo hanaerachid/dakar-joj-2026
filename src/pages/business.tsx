@@ -522,17 +522,16 @@ export function BusinessCreate() {
   };
 
   return (
-
-      <div className="pt-16 pb-8">
+    <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-16 pb-8 space-y-6">
+      <Breadcrumbs
+        config={breadcrumbConfig}
+      />
         <FormProvider {...form}>
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="mx-auto w-full max-w-3xl space-y-6"
+            className="space-y-6"
           >
             <div className="space-y-2">
-              <Breadcrumbs
-                 config={breadcrumbConfig}
-              />
               <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold">
                   {t(
@@ -593,7 +592,7 @@ export function BusinessCreate() {
             </Card>
           </form>
         </FormProvider>
-      </div>
+      </main>
   );
 }
 
@@ -745,8 +744,10 @@ export function BusinessEdit() {
   };
 
   return (
-      <div className="pt-16 pb-8">
-        <div className="mx-auto w-full max-w-3xl">
+    <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-16 pb-8 space-y-6">
+      <Breadcrumbs
+        config={breadcrumbConfig}
+      />
 
           {loading && <Skeleton className="h-[38rem] w-full" />}
 
@@ -757,16 +758,10 @@ export function BusinessEdit() {
               </EmptyHeader>
             </Empty>
           )}
-        </div>
 
           {!loading && !loadError && (
             <FormProvider {...form}>
-              <form onSubmit={handleSubmit(onSubmit)} className="mx-auto w-full max-w-3xl space-y-6">
-              <div className="space-y-2">
-                <Breadcrumbs
-                  config={breadcrumbConfig}
-                />
-              </div>
+              <form onSubmit={handleSubmit(onSubmit)} >
                 <Card>
                   <CardHeader>
                     <CardTitle>{t("businessEdit.title", "Edit business listing")}</CardTitle>
@@ -790,6 +785,6 @@ export function BusinessEdit() {
               </form>
             </FormProvider>
           )}
-      </div>
+    </main>
   )
 }

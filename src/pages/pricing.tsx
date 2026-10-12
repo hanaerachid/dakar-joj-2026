@@ -114,8 +114,7 @@ export function PricingPage() {
       // title={t("title")}
       // description={t("description")}
       />
-      <div className="pt-24 pb-8">
-        <div className="mx-auto w-full max-w-7xl space-y-6">
+      <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-7xl px-4 pt-16 pb-8 space-y-6">
           {/* Header */}
           <div className="mb-12 flex-col items-center items-start justify-between gap-3">
             <h2 className="text-xl text-center font-bold tracking-tight">{t("pricing.title", "A single pass for the entire campaign")}</h2>
@@ -246,8 +245,7 @@ export function PricingPage() {
               },
             )}
           </div>
-        </div>
-      </div>
+      </main>
     </>
   );
 }
