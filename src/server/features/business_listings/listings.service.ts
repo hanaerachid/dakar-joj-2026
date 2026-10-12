@@ -181,14 +181,6 @@ console.log("Listing MongoDB filter:", JSON.stringify(filter, null, 2));
     });
   }
 
-  // Only admins can retrieve owner information.
-  if (isAdmin) {
-    return docs.map((doc) => ({
-      ...doc,
-      _id: doc._id.toString(),
-    }));
-  }
-
   const ownerIds = [
     ...new Set(
       docs
@@ -198,24 +190,36 @@ console.log("Listing MongoDB filter:", JSON.stringify(filter, null, 2));
   ];
 
   const users = await Promise.all(
-    ownerIds.map((id) => clerk.users.getUser(id))
+    ownerIds.map((id) => clerk.users.getUser(id).catch(() => null)),
   );
 
   const owners = new Map(
-    users.map((user) => [
+    users.filter((user): user is NonNullable<typeof user> => user !== null,).map((user) => [
       user.id,
       {
         id: user.id,
         name:
           [user.firstName, user.lastName]
             .filter(Boolean)
-            .join(" ") ||
+            .join(" ").trim() ||
+          user.emailAddresses.find(
+            (e) => e.id === user.primaryEmailAddressId,
+          )?.emailAddress ||
           user.username ||
           "Unknown",
         imageUrl: user.imageUrl,
       },
     ])
   );
+
+  // Only admins can retrieve owner information.
+  if (isAdmin) {
+    return docs.map((doc) => ({
+      ...doc,
+      _id: doc._id.toString(),
+      owner: doc.ownerId ? owners.get(doc.ownerId) ?? null : null,
+    }));
+  }
 
   return docs.map((doc) => ({
     ...doc,
@@ -247,9 +251,32 @@ export async function getBusinessListingById(
 
   if (!doc) return null;
 
+  let ownerData = null;
+
+  if (doc.ownerId) {
+    try {
+      const user = await clerk.users.getUser(doc.ownerId);
+
+      ownerData = {
+        id: user.id,
+        name:
+          [user.firstName, user.lastName].filter(Boolean).join(" ").trim() ||
+          user.emailAddresses.find(
+            (e) => e.id === user.primaryEmailAddressId,
+          )?.emailAddress ||
+          user.username ||
+          "Unknown",
+        imageUrl: user.imageUrl,
+      };
+    } catch {
+      ownerData = null;
+    }
+  }
+
   return {
     ...doc,
     _id: doc._id.toString(),
+    owner: ownerData,
   };
 }
 
