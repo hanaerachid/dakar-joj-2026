@@ -97,8 +97,9 @@ export const BusinessContent = () => {
                     </span>
                   </ItemDescription>
                 ))}
-                <Separator />
                 {limitations.map((item, index) => (
+                  <>
+                  <Separator />
                   <ItemDescription
                     key={index}
                     className="flex justfiy-start gap-2 py-1.5"
@@ -110,6 +111,7 @@ export const BusinessContent = () => {
                       {item}
                     </span>
                   </ItemDescription>
+                </>
                 ))}
               </ItemContent>
               <ItemFooter className="flex flex-col gap-2">
