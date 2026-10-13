@@ -2,14 +2,26 @@
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
+import { ImageOff, VideoIcon, X } from "lucide-react";
 import type { BusinessCreateValues } from "../business-create.schema";
 import { BUSINESS_PLANS } from "../business-create.config";
-
 import { FileField, /*TextField*/ } from "@/components/common/Field";
+import {
+  Attachment,
+  AttachmentAction,
+  AttachmentActions,
+  AttachmentContent,
+  AttachmentDescription,
+  AttachmentGroup,
+  AttachmentMedia,
+  AttachmentTitle,
+  AttachmentTrigger,
+} from "@/components/ui/attachment";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useImageStatus } from "@/hooks/use-image-status";
 
 export function BusinessMediaStep(
   { title }: { title?: string },
@@ -80,14 +92,57 @@ export function BusinessMediaStep(
           </FieldLegend>
           <FieldGroup>
             {entitlement.photos && entitlement.photos > 0 ? (
-            <FileField
-              name="photos"
-              label="Photos"
-              accept="image/*"
-              multiple
-              disabled={photos.length >= entitlement.photos}
-            // onFilesChange={addPhotos}
-            />
+              <>
+                <FileField
+                  name="photos"
+                  label="Photos"
+                  accept="image/*"
+                  multiple
+                  disabled={photos.length >= entitlement.photos}
+                // onFilesChange={addPhotos}
+                />
+
+                <AttachmentGroup className="w-full">
+                  {photos.map((file, index) => {
+                    const url = URL.createObjectURL(file);
+
+                    return (
+                      <Attachment key={file.name} size="default" orientation="vertical">
+                        <AttachmentMedia variant="image">
+                          <ImageAttachmentMedia
+                            src={url}
+                            alt={file.name}
+                          />
+                        </AttachmentMedia>
+                        <AttachmentContent>
+                          <AttachmentTitle>{file.name}</AttachmentTitle>
+                          <AttachmentDescription>{file.size} bytes</AttachmentDescription>
+                        </AttachmentContent>
+                        <AttachmentActions>
+                          <AttachmentAction
+                            variant="secondary"
+                            size="icon-sm"
+                            onClick={() => removePhoto(index)}
+                          >
+                            <X />
+                            <span className="sr-only">{t("common.remove", "Remove")}</span>
+                          </AttachmentAction>
+                        </AttachmentActions>
+                        <AttachmentTrigger
+                          render={
+                            <a
+                              href={url}
+                              target="_blank"
+                              rel="noreferrer"
+                              aria-label={`Open ${file.name}`}
+                            />
+                          }
+                        />
+                      </Attachment>
+                    )
+                  })}
+                </AttachmentGroup>
+              </>
             ) : (
               <div className="rounded-lg bg-muted p-4 text-sm">
                 {t(
@@ -96,35 +151,6 @@ export function BusinessMediaStep(
                 )}
               </div>
             )}
-
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {photos.map((file, index) => {
-                const url = URL.createObjectURL(file);
-
-                return (
-                  <div
-                    key={`${file.name}-${index}`}
-                    className="space-y-2"
-                  >
-                    <img
-                      src={url}
-                      alt={file.name}
-                      className="aspect-square w-full rounded-lg object-cover"
-                    />
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                      onClick={() => removePhoto(index)}
-                    >
-                      {t("common.remove", "Remove")}
-                    </Button>
-                  </div>
-                );
-              })}
-            </div>
           </FieldGroup>
         </FieldSet>
 
@@ -132,16 +158,16 @@ export function BusinessMediaStep(
           <FieldLegend className="w-full font-semibold flex items-center justify-between gap-4">
             <div className="flex-1">
               {t(
-              "businessCreate.media.video",
-              "Presentation video",
-            )}
+                "businessCreate.media.video",
+                "Presentation video",
+              )}
             </div>
             <Badge variant="ghost" className="shrink-0 text-sm text-muted-foreground">
               {videos.length} {"/"} {entitlement.videos}
             </Badge>
           </FieldLegend>
           <FieldGroup>
-            {entitlement.videos && entitlement.videos > 0 ? (
+            {entitlement.videos && entitlement.videos > 0 ? (<>
               <FileField
                 name="videos"
                 label={t(
@@ -151,9 +177,47 @@ export function BusinessMediaStep(
                 accept="video/*"
                 multiple
                 disabled={videos.length >= entitlement.videos}
-                // value={videos}
+              // value={videos}
               />
-            ) : (
+
+              <AttachmentGroup className="w-full">
+                {videos.map((file, index) => {
+                  const url = URL.createObjectURL(file);
+
+                  return (
+                    <Attachment key={file.name} size="default" orientation="vertical">
+                      <AttachmentMedia variant="icon">
+                        <VideoIcon />
+                      </AttachmentMedia>
+                      <AttachmentContent>
+                        <AttachmentTitle>{file.name}</AttachmentTitle>
+                        <AttachmentDescription>{file.size} bytes</AttachmentDescription>
+                      </AttachmentContent>
+                      <AttachmentActions>
+                        <AttachmentAction
+                          variant="secondary"
+                          size="icon-sm"
+                          onClick={() => removeVideo(index)}
+                        >
+                          <X />
+                          <span className="sr-only">{t("common.remove", "Remove")}</span>
+                        </AttachmentAction>
+                      </AttachmentActions>
+                      <AttachmentTrigger
+                        render={
+                          <a
+                            href={url}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label={`Open ${file.name}`}
+                          />
+                        }
+                      />
+                    </Attachment>
+                  )
+                })}
+              </AttachmentGroup>
+            </>) : (
               <div className="rounded-lg bg-muted p-4 text-sm">
                 {t(
                   "businessCreate.media.videoLocked",
@@ -161,33 +225,6 @@ export function BusinessMediaStep(
                 )}
               </div>
             )}
-
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {videos.map((file, index) => {
-                // const url = URL.createObjectURL(file);
-
-                return (
-                  <div
-                    key={`${file.name}-${index}`}
-                    className="space-y-2"
-                  >
-                    <p className="truncate text-sm text-muted-foreground" >
-                      {file.name}
-                    </p>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                      onClick={() => removeVideo(index)}
-                    >
-                      {t("common.remove", "Remove")}
-                    </Button>
-                  </div>
-                );
-              })}
-            </div>
 
           </FieldGroup>
         </FieldSet>
@@ -217,4 +254,32 @@ export function BusinessMediaStep(
       </CardContent>
     </>
   );
+}
+
+
+export function ImageAttachmentMedia({
+  src,
+  alt,
+}: any) {
+  const status = useImageStatus(src);
+
+  if (status === "loading") {
+    return (
+      <Skeleton className="flex items-center justify-center" />
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <div
+        role="img"
+        aria-label={`Unable to display ${alt}`}
+        className="flex items-center justify-center"
+      >
+        <ImageOff />
+      </div>
+    );
+  }
+
+  return <img src={src} alt={alt} />;
 }
