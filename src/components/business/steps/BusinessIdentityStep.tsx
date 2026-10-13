@@ -2,10 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { cn } from "cn";
-
 import { Button } from "@/components/ui/button";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TextField } from "@/components/common/Field";
+import { PhoneField, TextField } from "@/components/common/Field";
 import { hasBusinessCapability } from "../business-plan";
 import type { BusinessCreateValues } from "../business-create.schema";
 
@@ -40,7 +39,7 @@ export function BusinessIdentityStep(
           </div>
 
           <div className="relative">
-            <TextField
+            <PhoneField
               type="tel"
               name="tel"
               label={t(
@@ -49,7 +48,7 @@ export function BusinessIdentityStep(
               )}
               disabled={!hasBusinessCapability(plan, "phone")}
               className={cn(!hasBusinessCapability(plan, "phone") && "opacity-50")}
-              placeholder="+221..."
+              placeholder="X XX XXX XX XX"
             />
             {!hasBusinessCapability(plan, "phone") && (
               <div className="absolute inset-0 z-10 flex items-center justify-center rounded-md bg-background/60">

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group";
+import { PhoneInput } from "@/components/phone-input";
 import { cn } from "cn";
 
 type FileFieldProps<T extends FieldValues> = {
@@ -48,6 +49,17 @@ type TextAreaFieldProps<T extends FieldValues> = {
 };
 
 type TextFieldProps<T extends FieldValues> =
+  Omit<React.ComponentProps<typeof Input>, "name"> & {
+    name: FieldPath<T>;
+    label: string;
+    placeholder?: string;
+    className?: string;
+    type?: string;
+    suffix?: string;
+    disabled?: boolean;
+  };
+
+type PhoneFieldProps<T extends FieldValues> =
   Omit<React.ComponentProps<typeof Input>, "name"> & {
     name: FieldPath<T>;
     label: string;
@@ -291,6 +303,48 @@ export function FileField<T extends FieldValues>({
             </FieldDescription>
           )}
 
+          {fieldState.error && (
+            <FieldError className="text-sm">
+              {fieldState.error.message}
+            </FieldError>
+          )}
+        </Field>
+      )}
+    />
+  );
+}
+
+export function PhoneField<T extends FieldValues>({
+  name,
+  label,
+  placeholder,
+  className,
+  type = "text",
+  suffix,
+  ...inputProps
+}: PhoneFieldProps<T>) {
+
+  const { control } = useFormContext<T>();
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState }) => (
+        <Field>
+          <FieldLabel htmlFor={name}>{label}</FieldLabel>
+          <PhoneInput
+            {...inputProps}
+            ref={field.ref}
+            id={name}
+            name={field.name}
+            value={field.value || undefined}
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+            placeholder={placeholder ?? "77 123 45 67"}
+            aria-invalid={!!fieldState.error}
+            className={className}
+          />
           {fieldState.error && (
             <FieldError className="text-sm">
               {fieldState.error.message}
