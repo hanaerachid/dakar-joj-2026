@@ -1,5 +1,5 @@
 // src/pages/MapPage.tsx
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { cn } from "cn";
 import {
@@ -81,7 +81,7 @@ export default function MapPage() {
     setIsOpen(true);
   };
 
-  const navigationItems: BottomNavigationItem[] = [
+  const navigationItems: BottomNavigationItem[] = useMemo(() => [
     {
       key: "home",
       label: t("tabs.home", "Home"),
@@ -132,7 +132,7 @@ export default function MapPage() {
         openNavigationPanel("business");
       },
     },
-  ];
+  ], []);
 
   useEffect(() => {
     if (!selectedPlace) return;
