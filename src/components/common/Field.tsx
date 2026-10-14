@@ -4,8 +4,10 @@ import {
   type FieldPath,
   type FieldValues,
 } from "react-hook-form";
+import { cn } from "cn";
+import { Check } from "lucide-react";
 
-import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import {
@@ -18,7 +20,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group";
 import { PhoneInput } from "@/components/phone-input";
-import { cn } from "cn";
 
 type FileFieldProps<T extends FieldValues> = {
   name: FieldPath<T>;
@@ -221,32 +222,39 @@ export function MultiSelectField<T extends FieldValues>({
       render={({ field, fieldState }) => {
         const selected: string[] = field.value ?? [];
 
+        const toggleOption = (value: string) => {
+          const next = selected.includes(value)
+            ? selected.filter((item) => item !== value)
+            : [...selected, value];
+
+          field.onChange(next);
+        };
+
         return (
           <Field className="sm:col-span-2">
             <FieldLabel>{label}</FieldLabel>
 
-            <div className="flex flex-wrap gap-4">
-              {options.map((option, index) => (
-                <label
-                  key={index}
-                  className="flex items-center gap-2 text-sm"
-                >
-                  <Checkbox
-                    checked={selected.includes(option.value)}
-                    onCheckedChange={(checked) => {
-                      const next = checked
-                        ? [...selected, option.value]
-                        : selected.filter(
-                          (value) => value !== option.value,
-                        );
+            <div className="flex flex-wrap gap-2">
+              {options.map((option, index) => {
+                const isSelected = selected.includes(option.value);
 
-                      field.onChange(next);
-                    }}
-                  />
-
-                  {option.label}
-                </label>
-              ))}
+                return (
+                  <Button
+                    key={index}
+                    type="button"
+                    variant={isSelected ? "default" : "outline"}
+                    size="sm"
+                    aria-pressed={isSelected}
+                    onClick={() => toggleOption(option.value)}
+                    onBlur={field.onBlur}
+                  >
+                    {isSelected && (
+                      <Check />
+                    )}
+                    {option.label}
+                  </Button>
+                );
+              })}
             </div>
 
             {fieldState.error && (
@@ -260,7 +268,6 @@ export function MultiSelectField<T extends FieldValues>({
     />
   );
 }
-
 export function FileField<T extends FieldValues>({
   name,
   label,
