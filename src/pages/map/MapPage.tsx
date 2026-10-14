@@ -15,7 +15,6 @@ import { Sidebar } from "../../components/Sidebar";
 import { HeaderBar } from "../../components/header/HeaderBar";
 import { getInitialZoom } from "../../utils/mapConfig";
 import { useTranslation } from "react-i18next";
-import { useModalContext } from "@/components/modal-provider";
 import { useNavbarContext } from "@/components/navbar-provider";
 import { usePanelContext } from "@/components/panel-provider";
 import { useStateContext } from "@/components/state-provider";
@@ -68,7 +67,6 @@ export default function MapPage() {
     selectedPlace,
   } = useStateContext();
   const { setPanelContent, isOpen, setIsOpen } = usePanelContext();
-  const { setModalContent, setIsOpen: setModalOpen } = useModalContext();
   const { setNavbarContent } = useNavbarContext();
 
   const openNavigationPanel = (tab: string) => {
@@ -164,8 +162,6 @@ export default function MapPage() {
     selectedPlace,
     setActiveTab,
     setIsOpen,
-    setModalContent,
-    setModalOpen,
     setPanelContent,
   ]);
 

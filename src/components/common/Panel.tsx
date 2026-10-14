@@ -60,7 +60,7 @@ export function Panel({
 
   useEffect(() => {
     if (isOpen && isMobile) {
-      setActiveSnapPoint(0.7);
+      setActiveSnapPoint(0.4);
     }
   }, [isOpen, isMobile]);
 
