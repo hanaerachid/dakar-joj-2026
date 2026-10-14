@@ -3,21 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import { cn } from "cn";
-import { Check, X } from "lucide-react";
+import { CircleCheck, X } from "lucide-react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
-  CardHeader,
   CardTitle
 } from "@/components/ui/card";
 import { HeaderBar } from "../components/header/HeaderBar";
 import { PRICING_PLANS } from "../components/pricing/pricingplans.config";
 import { cancelMySubscription, confirmPayment, createPaymentCheckout, getMySubscription } from "../lib/api/payments";
-import { toast } from "sonner";
 
 export function PricingPage() {
   const { t, i18n } = useTranslation();
@@ -63,7 +61,7 @@ export function PricingPage() {
           label: t("pricing.manage_business", "Manage your businessdashboard"),
           action: () => navigate("/business"),
           disabled: false,
-          variant: "default" as const,
+          variant: "outline" as const,
         };
       }
 
@@ -155,40 +153,56 @@ export function PricingPage() {
                     borderColor: item.color,
                   }}
                 >
-                  <CardHeader>
+                  <CardContent>
                     {item.recommended && (
-                      <Badge
-                        variant="default"
-                        render={
-                          <span className={cn(
-                            "px-2 py-2 text-xs tracking-tight font-medium uppercase",
-                          )}
-                            style={{
-                              background: item.color,
-                            }}
-                          >
-                            {t("pricing.popular", "Popular")}
-                          </span>
-                        }
-                      >
-                      </Badge>
+                      <CardDescription>
+                        <Badge
+                          variant="default"
+                          className="py-3"
+                          render={
+                            <span className={cn(
+                              "px-2 text-[11px] tracking-tight font-medium uppercase",
+                            )}
+                              style={{
+                                background: item.color,
+                              }}
+                            >
+                              {t("pricing.popular", "Popular")}
+                            </span>
+                          }
+                        >
+                        </Badge>
+                      </CardDescription>
                     )}
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <CardDescription className={cn(
-                      "text-[11px] text-muted-foreground tracking-tight uppercase"
-                    )}>
-                      {t(
-                        `businessCreate.plans.${key}`,
-                        item.desc,
-                      )}
-                    </CardDescription>
-                    <CardTitle className="text-lg font-semibold">
+
+                    {item.desc && (
+                      <CardDescription className={cn(
+                        "text-[11px] text-muted-foreground tracking-tight uppercase",
+                        "py-1",
+                      )}>
+                        {t(
+                          `businessCreate.plans.${key}`,
+                          item.desc,
+                        )}
+                      </CardDescription>
+                    )}
+
+                    <CardTitle className="flex items-center gap-2 text-lg font-semibold">
                       {t(
                         `businessCreate.plans.${key}`,
                         item.label,
                       )}
+
+                      {isCurrentPlan && (
+                        <Badge render={
+                          <p className="text-xs text-muted-foreground">
+                            {t("pricing.current_plan", "Current Plan")}
+                          </p>
+                        } />
+                      )}
                     </CardTitle>
+                  </CardContent>
+                  <CardContent>
                     <CardDescription>
                       <div className={cn(
                         "text-3xl font-bold",
@@ -229,7 +243,7 @@ export function PricingPage() {
                       inert={action.disabled}
                       variant={action.variant}
                       className={cn(
-                        "w-full",
+                        "w-full max-w-sm",
                         action.disabled ? "cursor-not-allowed" : "cursor-pointer",
                       )}
                       style={{
@@ -248,9 +262,9 @@ export function PricingPage() {
                           "flex justfiy-start gap-2 py-2 text-sm text-foreground",
                         )}
                       >
-                        <Check className={cn(
+                        <CircleCheck className={cn(
                           "w-4 h-4",
-                          item.recommended ? "text-foreground" : "text-primary"
+                          "text-primary"
                         )} />
                         <span>
                           {element}
@@ -274,13 +288,6 @@ export function PricingPage() {
                       </CardDescription>
                     ))}
                   </CardContent>
-                  <CardFooter className="w-full">
-                    {isCurrentPlan && (
-                      <p className="text-xs text-muted-foreground">
-                        {t("pricing.current_plan", "Current Plan")}
-                      </p>
-                    )}
-                  </CardFooter>
                 </Card>
               );
             },
