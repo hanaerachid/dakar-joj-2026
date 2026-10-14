@@ -21,12 +21,12 @@ export const PRICING_PLANS = {
     label: "Découverte",
     desc: "Pour commencer",
     icon: MapPin,
-    color: "tomato",
+    color: "var(--accent-color-1)",
     recommended: false,
     features: [
       "Fiche d'établissement (nom, catégorie)",
-      "Position géolocalisée",
       "Position sur la carte",
+      "1 photo",
     ],
     limitations: [
     ],
@@ -42,7 +42,7 @@ export const PRICING_PLANS = {
     label: "Starter",
     desc: "Petites entreprises",
     icon: CheckCircle,
-    color: "green",
+    color: "var(--accent-color-2)",
     recommended: false,
     features: [
       "Téléphone, Email et WhatsApp",
@@ -70,7 +70,7 @@ export const PRICING_PLANS = {
     label: "Business",
     desc: "",
     icon: CheckCircle,
-    color: "tomato",
+    color: "var(--accent-color-1)",
     recommended: true,
     features: [
       "5 photos et 1 vidéo",
@@ -103,7 +103,7 @@ export const PRICING_PLANS = {
     label: "Premium",
     desc: "Get the most out of your presence during the Games.",
     icon: Crown,
-    color: "goldenrod",
+    color: "var(--accent-color-3)",
     recommended: false,
     features: [
       "Jusqu'à 5 etablissements",
@@ -136,7 +136,7 @@ export const PRICING_PLANS = {
     label: "Sponsor Officiel",
     desc: "The showcase under the map, seen by everyone.",
     icon: Award,
-    color: "tomato",
+    color: "var(--accent-color-2)",
     recommended: false,
     features: [
       "All Premium features",

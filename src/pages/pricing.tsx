@@ -61,7 +61,7 @@ export function PricingPage() {
           label: t("pricing.manage_business", "Manage your businessdashboard"),
           action: () => navigate("/business"),
           disabled: false,
-          variant: "outline" as const,
+          variant: "default" as const,
         };
       }
 
@@ -78,7 +78,7 @@ export function PricingPage() {
             }
           },
           disabled: false,
-          variant: "ghost" as const,
+          variant: "default" as const,
         };
       }
 
@@ -88,7 +88,7 @@ export function PricingPage() {
         label: t("pricing.add", "Add for free"),
         action: () => navigate("/business"),
         disabled: false,
-        variant: "outline" as const,
+        variant: "default" as const,
       };
     }
 
@@ -104,7 +104,7 @@ export function PricingPage() {
         }
       },
       disabled: false,
-      variant: "outline" as const,
+      variant: "default" as const,
     };
   };
 
@@ -150,7 +150,7 @@ export function PricingPage() {
                   )}
                   style={{
                     borderWidth: "2px",
-                    borderColor: item.color,
+                    borderColor: item.recommended ? item.color : "transparent",
                   }}
                 >
                   <CardContent>
@@ -247,7 +247,7 @@ export function PricingPage() {
                         action.disabled ? "cursor-not-allowed" : "cursor-pointer",
                       )}
                       style={{
-                        background: `color-mix(in srgb, ${item.color} 20%, transparent)`,
+                        background: item.color,
                       }}
                       onClick={action.action}
                     >
