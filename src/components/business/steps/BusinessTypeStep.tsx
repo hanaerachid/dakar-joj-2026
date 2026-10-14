@@ -57,7 +57,7 @@ export function BusinessTypeStep(
                     "text-center",
                     selected === key ? "text-primary font-bold" : ""
                   )}>
-                    {t(`businessCreate.categories.${key}`, category.label)}
+                    {t(`listing_types.${key}`, category.label)}
                   </ItemTitle>
                 </ItemContent>
               </Item>

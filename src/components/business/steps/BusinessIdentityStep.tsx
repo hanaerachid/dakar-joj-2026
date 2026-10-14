@@ -65,16 +65,16 @@ export function BusinessIdentityStep(
           </div>
 
           <div className="relative">
-            <TextField
+            <PhoneField
               type="tel"
               name="wa"
-              disabled={!hasBusinessCapability(plan, "whatsapp")}
-              className={cn(!hasBusinessCapability(plan, "whatsapp") && "opacity-50")}
               label={t(
                 "businessCreate.fields.wa",
                 "WhatsApp",
               )}
-              placeholder="221..."
+              disabled={!hasBusinessCapability(plan, "whatsapp")}
+              className={cn(!hasBusinessCapability(plan, "whatsapp") && "opacity-50")}
+              placeholder="X XX XXX XX XX"
             />
             {!hasBusinessCapability(plan, "whatsapp") && (
               <div className="absolute inset-0 z-10 flex items-center justify-center rounded-md bg-background/60">

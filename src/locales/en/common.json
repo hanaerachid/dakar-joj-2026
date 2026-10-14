@@ -3,6 +3,26 @@
   "description": "Youth Olympic Games",
   "hello": "Hello, {{name}}!",
   "settings": "Settings",
+  "common": {
+    "back": "Back",
+    "continue": "Continue",
+    "submitting": "Submitting…",
+    "delete": "Delete",
+    "deleting": "Deleting…",
+    "save": "Save",
+    "saving": "Saving…",
+    "next": "Next",
+    "previous": "Previous",
+    "loading": "Loading…",
+    "error": "An error occurred.",
+    "retry": "Try again",
+    "submit": "Submit",
+    "success": "Success !",
+    "close": "Close",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "saved": "Saved !"
+  },
   "theme": "Theme",
   "language": "Language",
   "map": "Map",
@@ -132,6 +152,77 @@
     "maximum_visibility": "Maximum visibility",
     "free": "Free",
     "month": "month"
+  },
+  "businessCreate": {
+    "title": "Create a business listing",
+    "step": "Step",
+    "steps": {
+      "type": "Type",
+      "identity": "Identity",
+      "details": "Details",
+      "media": "Media",
+      "review": "Review"
+    },
+    "fields": {
+      "name": "Name",
+      "category": "Category",
+      "desc": "Description",
+      "descPlaceholder": "Describe your business in a few words",
+      "tel": "Phone",
+      "wa": "WhatsApp",
+      "email": "Email",
+      "website": "Website",
+      "social": "Social Media",
+      "open_hours": "Opening Hours"
+    },
+    "details": {
+      "location": "Location",
+      "address": "Address",
+      "longitude": "Longitude",
+      "latitude": "Latitude",
+      "categoryDetails": "Category Details"
+    },
+    "spec": {
+      "chambres": "Number of rooms",
+      "capacity": "Capacity",
+      "pricePerNight": "Price per night",
+      "maxPricePerNight": "Maximum price per night",
+      "equip": "Equipment",
+      "pieces": "Number of rooms",
+      "cuisine": "Cuisine",
+      "averagePrice": "Average price",
+      "service": "Service",
+      "produits": "Products",
+      "expoType": "Exhibition type",
+      "entryFees": "Entry fees",
+      "days": "Opening days"
+    },
+    "media": {
+      "photos": "Photos",
+      "photoLocked": "You must subscribe to a paid plan to add photos.",
+      "video": "Promotional Video",
+      "uploadVideo": "Upload a Video",
+      "videoLocked": "You must subscribe to a paid plan to add a video."
+    },
+    "review": {
+      "business": "Business",
+      "contact": "Contact",
+      "media": "Media"
+    },
+    "submit": "Submit",
+    "success": "Your business listing has been created successfully.",
+    "error": "Failed to submit your business listing. Please try again."
+  },
+  "businessEdit": {
+    "title": "Edit your business listing",
+    "description": "Edit your business listing to keep your information up to date.",
+    "notFound": "No business listing found. Please create a new listing.",
+    "loadError": "Failed to load your business listing. Please try again.",
+    "deleteConirm": "Are you sure you want to delete your business listing? This action is irreversible.",
+    "deleteSuccess": "Your business listing has been deleted successfully.",
+    "deleteError": "Failed to delete your business listing. Please try again.",
+    "success": "Your business listing has been updated successfully.",
+    "error": "Failed to update your business listing. Please try again."
   },
   "pricing": {
     "title": "A single pass for the entire campaign",

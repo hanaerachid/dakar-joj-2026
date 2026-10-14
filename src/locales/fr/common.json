@@ -2,6 +2,26 @@
   "title": "L'Afrique accueille, Dakar célèbre",
   "description": "Dakar Jeux Olympiques de la Jeunesse",
   "hello": "Hello, {{name}}!",
+  "common": {
+    "back": "Retour",
+    "continue": "Continuer",
+    "submitting": "Soumission…",
+    "delete": "Supprimer",
+    "deleting": "Suppression…",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "submit": "Soumettre",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "loading": "Chargement…",
+    "error": "Une erreur est survenue.",
+    "retry": "Réessayer",
+    "success": "Succès !",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "saved": "Enregistré !"
+  },
   "settings": "Paramètres",
   "map": "Carte",
   "theme": "Thème",
@@ -132,6 +152,77 @@
     "maximum_visibility": "Visibilité maximale",
     "free": "Gratuit",
     "month": "mois"
+  },
+  "businessCreate": {
+    "title": "Créer un établissement",
+    "step": "Étape",
+    "steps": {
+      "type": "Type",
+      "identity": "Identité",
+      "details": "Détails",
+      "media": "Média",
+      "review": "Revue"
+    },
+    "fields": {
+      "name": "Nom de l’établissement",
+      "category": "Catégorie",
+      "desc": "Description",
+      "descPlaceholder": "Une description courte et engageante de votre établissement.",
+      "tel": "Téléphone",
+      "wa": "WhatsApp",
+      "email": "E-mail",
+      "website": "Site web",
+      "social": "Réseaux sociaux",
+      "open_hours": "Horaires d’ouverture"
+    },
+    "details": {
+      "location": "Localisation",
+      "address": "Adresse",
+      "longitude": "Longitude",
+      "latitude": "Latitude",
+      "categoryDetails": "Détails de la catégorie"
+    },
+    "spec": {
+      "chambres": "Nombre de chambres",
+      "capacity": "Capacité",
+      "pricePerNight": "Prix par nuit",
+      "maxPricePerNight": "Prix maximum par nuit",
+      "equip": "Équipements",
+      "pieces": "Nombre de chambres",
+      "cuisine": "Cuisine",
+      "averagePrice": "Prix moyen",
+      "service": "Service",
+      "produits": "Produits",
+      "expoType": "Type d’exposition",
+      "entryFees": "Frais d'entrée",
+      "days": "Jours d’ouverture"
+    },
+    "media": {
+      "photos": "Photos",
+      "photoLocked": "Vous devez souscrire à un plan payant pour ajouter des photos.",
+      "video": "Vidéo promotionnelle",
+      "uploadVideo": "Téléverser une vidéo",
+      "videoLocked": "Vous devez souscrire à un plan payant pour ajouter une vidéo."
+    },
+    "review": {
+      "business": "Business",
+      "contact": "Contact",
+      "media": "Média"
+    },
+    "submit": "Soumettre",
+    "success": "Votre établissement a été créé avec succès.",
+    "error": "Impossible de soumettre votre établissement. Veuillez réessayer."
+  },
+  "businessEdit": {
+    "title": "Modifier un établissement",
+    "description": "Modifiez les informations de votre établissement.",
+    "notFound": "Aucun établissement trouvé",
+    "loadError": "Impossible de charger votre établissement. Veuillez réessayer.",
+    "deleteConirm": "Êtes-vous sûr de vouloir supprimer votre établissement ? Cette action est irréversible.",
+    "deleteSuccess": "Votre établissement a été supprimé avec succès.",
+    "deleteError": "Impossible de supprimer votre établissement. Veuillez réessayer.",
+    "success": "Votre établissement a été mis à jour avec succès.",
+    "error": "Impossible de mettre à jour votre établissement. Veuillez réessayer."
   },
   "pricing": {
     "title": "Un pass unique pour toute la campagne",
