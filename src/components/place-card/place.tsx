@@ -9,6 +9,7 @@ import {
   Globe,
   BadgeCheck,
   MapPin,
+  ArrowLeft,
 } from "lucide-react";
 import { toast } from "sonner";
 import { getDomain } from "tldts";
@@ -309,14 +310,14 @@ export function PlaceDetails({ id }: PlaceDetailsProps) {
 
   return (
     <div className="relative flex flex-col gap-2">
-      <div className="absolute top-16 end-3">
+      <div className="absolute top-16 start-3">
         <Button
           size="icon"
           variant="secondary"
-          className="fixed top-16 end-3 z-50"
+          className="fixed top-16 start-3 z-50"
           onClick={handleBack}
         >
-          <X />
+          <ArrowLeft />
           <span className="sr-only">{t("place.details.back", "Back")}</span>
         </Button>
       </div>

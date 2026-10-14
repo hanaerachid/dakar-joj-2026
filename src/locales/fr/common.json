@@ -20,7 +20,8 @@
     "close": "Fermer",
     "cancel": "Annuler",
     "edit": "Modifier",
-    "saved": "Enregistré !"
+    "saved": "Enregistré !",
+    "until": "Jusqu'au"
   },
   "settings": "Paramètres",
   "map": "Carte",
@@ -211,7 +212,17 @@
     },
     "submit": "Soumettre",
     "success": "Votre établissement a été créé avec succès.",
-    "error": "Impossible de soumettre votre établissement. Veuillez réessayer."
+    "error": "Impossible de soumettre votre établissement. Veuillez réessayer.",
+    "plan": {
+      "free": "Gratuit",
+      "custom": "Sur devis"
+    },
+    "plans": {
+      "discover": "Découverte",
+      "starter": "Starter",
+      "premium": "Premium",
+      "sponsor": "Sponsor"
+    }
   },
   "businessEdit": {
     "title": "Modifier un établissement",
@@ -230,8 +241,12 @@
     "manage_business": "Gérer votre business",
     "downgrade_to_discover": "Passer au plan Découverte",
     "start": "Commencer",
+    "add": "Ajouter gratuitement",
+    "choose": "Choisir",
     "contact_us": "Contactez-nous",
+    "become_partner": "Devenir partenaire",
     "recommended": "Recommandé",
+    "popular": "Le plus populaire",
     "current_plan": "Plan actuel"
   },
   "admin": {

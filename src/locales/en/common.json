@@ -21,7 +21,8 @@
     "close": "Close",
     "cancel": "Cancel",
     "edit": "Edit",
-    "saved": "Saved !"
+    "saved": "Saved !",
+    "until": "Until"
   },
   "theme": "Theme",
   "language": "Language",
@@ -211,7 +212,17 @@
     },
     "submit": "Submit",
     "success": "Your business listing has been created successfully.",
-    "error": "Failed to submit your business listing. Please try again."
+    "error": "Failed to submit your business listing. Please try again.",
+    "plan": {
+      "free": "Free",
+      "custom": "Custom pricing"
+    },
+    "plans": {
+      "discover": "Discover",
+      "starter": "Starter",
+      "premium": "Premium",
+      "sponsor": "Sponsor"
+    }
   },
   "businessEdit": {
     "title": "Edit your business listing",
@@ -230,8 +241,12 @@
     "manage_business": "Manage your business",
     "downgrade_to_discover": "Downgrade to Discover",
     "start": "Start",
+    "add": "Add for free",
+    "choose": "Choose",
     "contact_us": "Contact us",
+    "become_partner": "Become a partner",
     "recommended": "Recommended",
+    "popular": "Popular",
     "current_plan": "Current plan"
   },
   "admin": {
