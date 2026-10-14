@@ -8,7 +8,11 @@ export default function BusinessRoute({ children }: { children: JSX.Element }) {
   const { isSignedIn, isLoaded } = useAuth();
   const loc = useLocation();
   const redirectUrl = `${loc.pathname}${loc.search}${loc.hash}`;
-  
+
+    const searchParams = new URLSearchParams({
+      redirect_url: redirectUrl,
+    });
+
   if (!isLoaded)
     return (
       <Card
@@ -24,7 +28,7 @@ export default function BusinessRoute({ children }: { children: JSX.Element }) {
     );
   if (!isSignedIn)
     return (
-      <Navigate to={`/login?redirect=${encodeURIComponent(redirectUrl)}`} replace state={{ from: loc }} />
+      <Navigate to={`/sign-in?${searchParams.toString()}`} replace />
     );
   return children;
 }

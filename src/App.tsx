@@ -15,7 +15,7 @@ import { PlaceDetailsPage } from "./admin/places/PlacesDetails";
 import { TorchPage, AddTorchPage, EditTorchPage } from "./pages/torch/TorchPage";
 import { EventPage, AddEventPage, EditEventPage } from "./pages/events/EventPage";
 import { PricingPage } from "./pages/pricing";
-import { LoginPage } from "./pages/login";
+import { SignInPage, SignUpPage } from "./pages/auth";
 import { BusinessCreate, BusinessPage, BusinessEdit } from "./pages/business";
 import "./App.css";
 import BulkPlacesImport from "./admin/places/BulkPlacesImport";
@@ -71,7 +71,9 @@ export default function App() {
               }
             />
 
-            <Route path="/login" element={<LoginPage />} />
+            <Route path="/sign-in/*" element={<SignInPage/>} />
+            <Route path="/sign-up/*" element={<SignUpPage/>} />
+
             <Route path="/pricing" element={<PricingPage />} />
 
             <Route path="/business" element={
@@ -131,6 +133,10 @@ export default function App() {
         theme: shadcn,
       }}
       publishableKey={clerkPublishableKey}
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+      signInFallbackRedirectUrl="/"
+      signUpFallbackRedirectUrl="/"
       afterSignOutUrl="/"
     >
       <ClerkApiAuthBridge />

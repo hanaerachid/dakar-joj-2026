@@ -149,7 +149,7 @@ export const BusinessContent = () => {
               <h2 className="text-xs text-muted-foreground uppercase">
                 {t("business.already_registred", "Already have a business registered?")}
               </h2>
-              <SignInButton mode="modal">
+              <SignInButton mode="redirect">
                 <Button
                   variant="link"
                 >

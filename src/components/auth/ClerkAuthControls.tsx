@@ -33,7 +33,7 @@ export function ClerkAuthControls() {
       <SignedOut>
         <ButtonGroup>
           {!isMobile && (
-          <SignUpButton mode="modal">
+          <SignUpButton mode="redirect">
             <Button
               size="default"
               variant="default"
@@ -69,7 +69,7 @@ export function ClerkAuthControls() {
             />
             <DropdownMenuContent align="end">
               {isMobile && (
-              <SignUpButton mode="modal">
+              <SignUpButton mode="redirect">
                 <DropdownMenuItem
                   onSelect={(e) => e.preventDefault()}
                 >
@@ -77,7 +77,7 @@ export function ClerkAuthControls() {
                 </DropdownMenuItem>
               </SignUpButton>
               )}
-              <SignInButton mode="modal">
+              <SignInButton mode="redirect">
                 <DropdownMenuItem
                   onSelect={(e) => e.preventDefault()}
                 >
