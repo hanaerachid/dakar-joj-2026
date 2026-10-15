@@ -19,6 +19,7 @@ import { useNavbarContext } from "@/components/navbar-provider";
 import { usePanelContext } from "@/components/panel-provider";
 import { useStateContext } from "@/components/state-provider";
 import { SidePanel } from "@/components/side-panel/core";
+import { Promo } from "@/components/Promo";
 import { Item, ItemContent } from "@/components/ui/item";
 import type { BottomNavigationItem } from "@/components/BottomBar";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -281,6 +282,13 @@ export default function MapPage() {
 
       {/* The mighty map (original) */}
       <div ref={mapContainerRef} className="w-full h-full" />
+
+      {/* Sidebar (original) */}
+      <div className="absolute max-w-md mx-auto bottom-8 left-0 right-0">
+        {!isMobile && (
+          <Promo />
+        )}
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "cn";
 import Autoplay from "embla-carousel-autoplay";
+import Fade from "embla-carousel-fade";
 // import { formatDuration } from "../utils/calendar";
 import { useRelativeTime } from "@/utils/helpers";
 import { getSportIcon } from "@/utils/helpers";
@@ -78,10 +79,10 @@ export const SPORT_OPTIONS_BY_KEY = Object.fromEntries(
 export const Promo = () => {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage || i18n.language || "en";
+  const { getRelativeTime } = useRelativeTime();
   const [events, setEvents] = useState<ApiEventsItem[]>([]);
   const [eventLoading, setEventLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { getRelativeTime } = useRelativeTime();
 
   const plugin = useRef(
     Autoplay({
@@ -122,17 +123,18 @@ export const Promo = () => {
   }, []);
 
   return (
-    <Carousel className="w-full"
-      orientation="vertical"
+    <Carousel
+      className="relative group w-full"
+      orientation="horizontal"
       opts={{
         align: "center",
         loop: true,
       }}
-      plugins={[plugin.current]}
+      plugins={[plugin.current, Fade()]}
       onMouseEnter={plugin.current.stop}
       onMouseLeave={plugin.current.reset}
     >
-      <CarouselContent className="-mt-1 h-42">
+      <CarouselContent className="-mt-1 h-36">
         <CarouselItem className="basis-full pt-1">
           <Card
             size="sm"
@@ -145,16 +147,14 @@ export const Promo = () => {
             <CardHeader>
               <CardTitle>
                 <Countdown targetedDate={new Date("2026-10-31T00:00:00")} />
+                <Badge variant="secondary" className="uppercase text-xs">
+                  31 Oct - 13 Nov 2026
+                </Badge>
               </CardTitle>
               <CardDescription>
                 {t("home.countdown_description", "Days left until the Dakar 2026 Youth Olympic Games!")}
               </CardDescription>
             </CardHeader>
-            <CardFooter>
-              <Badge variant="secondary" className="uppercase text-xs">
-                31 Oct - 13 Nov 2026
-              </Badge>
-            </CardFooter>
           </Card>
         </CarouselItem>
 
@@ -219,8 +219,11 @@ export const Promo = () => {
           </CarouselItem>
         )}
       </CarouselContent>
-      <CarouselPrevious size="icon-sm" variant="secondary" className="-top-4" />
-      <CarouselNext size="icon-sm" variant="secondary" className="-bottom-4" />
+
+      <div className="absolute hidden group-hover:block right-0 -top-4 flex items-center gap-1">
+        <CarouselPrevious size="icon-sm" variant="secondary" className="static translate-x-0 translate-y-0" />
+        <CarouselNext size="icon-sm" variant="secondary" className="static translate-x-0 translate-y-0" />
+      </div>
     </Carousel>
   )
 }

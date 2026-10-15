@@ -46,6 +46,7 @@ import {
 import type { BusinessListing } from "@/shared/contracts";
 import { getItinerary } from "@/lib/api/itinerary";
 import { LocationConsent } from "./LocationConsent";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type LocationStatus =
   | "idle"
@@ -76,6 +77,7 @@ type ListingRoute = {
 export const HomeContent = () => {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage || i18n.language || "en";
+  const isMobile = useIsMobile();
   const [loading, setLoading] = useState(true);
   const [businessListings, setBusinessListings] = useState<BusinessListing[]>([]);
   const [open, setOpen] = useState(false);
@@ -329,7 +331,10 @@ export const HomeContent = () => {
 
   return (
     <div className="space-y-6 pt-4">
+
+      {isMobile && (
       <Promo />
+      )}
 
       <Collapsible
         open={open}
