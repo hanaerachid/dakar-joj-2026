@@ -1,4 +1,4 @@
-import { Award, CheckCircle, Crown, MapPin } from "lucide-react";
+import { Award, BadgeCheck, BarChart3, Building2, ChartNoAxesCombined, CheckCircle, Clock, Crown, FileText, Globe, MapPin, Megaphone, Phone, Star, Store, TrendingUp, Video } from "lucide-react";
 
 export type BusinessCapability =
   | "email"
@@ -21,12 +21,24 @@ export const PRICING_PLANS = {
     label: "Découverte",
     desc: "Pour commencer",
     icon: MapPin,
-    color: "var(--accent-color-1)",
+    color: "var(--accent-color-4)",
     recommended: false,
     features: [
-      "Fiche d'établissement (nom, catégorie)",
-      "Position sur la carte",
-      "1 photo",
+      {
+        title: "Fiche d'établissement",
+        icon: Building2,
+        description: "Nom et catégorie de votre établissement",
+      },
+      {
+        title: "Position sur la carte",
+        icon: MapPin,
+        description: "Localisez votre établissement sur la carte",
+      },
+      {
+        title: "1 photo",
+        icon: Image,
+        description: "Ajoutez une photo à votre fiche",
+      },
     ],
     limitations: [
     ],
@@ -38,17 +50,33 @@ export const PRICING_PLANS = {
     listings: 1,
     capabilities: [] as const satisfies BusinessCapability[],
   },
-  essential: {
+  starter: {
     label: "Starter",
     desc: "Petites entreprises",
     icon: CheckCircle,
     color: "var(--accent-color-2)",
     recommended: false,
     features: [
-      "Téléphone, Email et WhatsApp",
-      "Horaire et itinéraire",
-      "Description de l'établissement",
-      "Jusqu'à 3 photos",
+      {
+        title: "Téléphone, Email et WhatsApp",
+        icon: Phone,
+        description: "Facilitez le contact avec vos clients",
+      },
+      {
+        title: "Horaire et itinéraire",
+        icon: Clock,
+        description: "Affichez vos horaires et indiquez comment vous trouver",
+      },
+      {
+        title: "Description de l'établissement",
+        icon: FileText,
+        description: "Présentez votre activité et vos services",
+      },
+      {
+        title: "Jusqu'à 3 photos",
+        icon: Image,
+        description: "Mettez en valeur votre établissement",
+      },
     ],
     limitations: [
     ],
@@ -73,10 +101,26 @@ export const PRICING_PLANS = {
     color: "var(--accent-color-1)",
     recommended: true,
     features: [
-      "5 photos et 1 vidéo",
-      "Site web et réseaux sociaux",
-      "Priorité dans votre catégorie",
-      "Statistiques de visibilité",
+      {
+        title: "5 photos et 1 vidéo",
+        icon: Video,
+        description: "Enrichissez votre fiche avec du contenu visuel",
+      },
+      {
+        title: "Site web et réseaux sociaux",
+        icon: Globe,
+        description: "Redirigez vos visiteurs vers vos plateformes",
+      },
+      {
+        title: "Priorité dans votre catégorie",
+        icon: Star,
+        description: "Améliorez votre visibilité dans les résultats",
+      },
+      {
+        title: "Statistiques de visibilité",
+        icon: BarChart3,
+        description: "Suivez les performances de votre fiche",
+      },
     ],
     limitations: [
     ],
@@ -106,17 +150,33 @@ export const PRICING_PLANS = {
     color: "var(--accent-color-3)",
     recommended: false,
     features: [
-      "Jusqu'à 5 etablissements",
-      "Photos illimitées* et 2 vidéos",
-      "Mis en avant sur la carte et l'accueil",
-      "Badge Premium et statistiques avancées",
+      {
+        title: "Jusqu'à 5 établissements",
+        icon: Store,
+        description: "Gérez plusieurs établissements depuis un seul compte",
+      },
+      {
+        title: "10 photos et 2 vidéos",
+        icon: Image,
+        description: "Présentez vos établissements en détail",
+      },
+      {
+        title: "Mise en avant sur la carte et l'accueil",
+        icon: TrendingUp,
+        description: "Bénéficiez d'une visibilité renforcée",
+      },
+      {
+        title: "Badge Premium et statistiques avancées",
+        icon: BadgeCheck,
+        description: "Affichez votre statut Premium et analysez vos résultats",
+      },
     ],
     limitations: [
     ],
     price: 10_000,
     old_price: 15_000,
     offer_deadline: "2026-12-31T23:59:59Z",
-    photos: 99,
+    photos: 10,
     videos: 2,
     listings: 5,
     capabilities: [
@@ -139,11 +199,26 @@ export const PRICING_PLANS = {
     color: "var(--accent-color-2)",
     recommended: false,
     features: [
-      "All Premium features",
-      "Banner ad under the map",
-      "Featured on homepage",
-      "Advanced analytics",
-      "Dedicated support",
+      {
+        title: "Bannière sur la carte",
+        icon: MapPin,
+        description: "Mettez votre marque en avant sur la carte",
+      },
+      {
+        title: "Logo en page d'accueil",
+        icon: Building2,
+        description: "Renforcez votre présence dès la page d'accueil",
+      },
+      {
+        title: "Campagne sur mesure",
+        icon: Megaphone,
+        description: "Profitez d'une campagne adaptée à vos objectifs",
+      },
+      {
+        title: "Résultats mesurés",
+        icon: ChartNoAxesCombined,
+        description: "Mesurez l'impact de votre campagne publicitaire",
+      },
     ],
     price: Infinity,
     old_price: Infinity,

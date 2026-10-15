@@ -93,7 +93,7 @@ export const BusinessContent = () => {
                       className="w-4 h-4 text-primary"
                     />
                     <span className="text-foreground text-xs">
-                      {item}
+                      {item.title}
                     </span>
                   </ItemDescription>
                 ))}

@@ -41,7 +41,8 @@ export const businessCreateSchema = z.object({
 
   pack: z.enum([
     "discover",
-    "essential",
+    "starter",
+    "business",
     "premium",
     "sponsor",
   ]),

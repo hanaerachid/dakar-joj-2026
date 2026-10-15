@@ -3,7 +3,7 @@ import { env } from "../../config/env.js";
 import { getMongoDatabase } from "../../mongodb/client.js";
 import { HttpError } from "../../http/errors.js";
 
-const paidPlans = ["essential", "premium"] as const;
+const paidPlans = ["starter", "business", "premium"] as const;
 type PaidPlan = (typeof paidPlans)[number];
 type PaymentDocument = {
   userId: string;
@@ -22,7 +22,8 @@ type SubscriptionDocument = PaymentDocument & {
 };
 const plans = {
   discover: { label: "Découverte", price: 0 },
-  essential: { label: "Essentiel", price: 5_000 },
+  starter: { label: "Starter", price: 2_500 },
+  business: { label: "Business", price: 5_000 },
   premium: { label: "Premium", price: 10_000 },
   sponsor: { label: "Sponsor Officiel", price: Infinity },
 } as const;

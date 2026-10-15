@@ -16,6 +16,7 @@ import {
 import { HeaderBar } from "../components/header/HeaderBar";
 import { PRICING_PLANS } from "../components/pricing/pricingplans.config";
 import { cancelMySubscription, confirmPayment, createPaymentCheckout, getMySubscription } from "../lib/api/payments";
+import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "@/components/ui/item";
 
 export function PricingPage() {
   const { t, i18n } = useTranslation();
@@ -115,7 +116,7 @@ export function PricingPage() {
       ? t("businessCreate.plan.free", "Free")
       : price === Infinity ? t("businessCreate.plan.custom", "Custom")
         : (<>
-          {formatNumber(price, lang)} <span className="text-xs font-medium">FCFA</span>
+          {formatNumber(price, lang)} <span className="text-sm font-medium">FCFA</span>
         </>);
 
   return (
@@ -132,7 +133,9 @@ export function PricingPage() {
             {t("pricing.description", "Pay once: your visibility lasts until the closing of the Games, on November 13, 2026. The earlier you commit, the less you pay.")}
           </p>
         </div>
-        <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 [&>*:last-child]:col-span-full">
+        <div className={cn(
+          "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 [&>*:last-child]:col-span-full"
+        )}>
           {Object.entries(PRICING_PLANS).map(
             ([key, item]) => {
               const planId = key as keyof typeof PRICING_PLANS;
@@ -143,31 +146,37 @@ export function PricingPage() {
                   key={key}
                   size="sm"
                   className={cn(
+                    "group",
                     "flex-col items-start",
                     "overflow-visible relative before:absolute before:top-0 before:left-0 before:right-0 before:bg-[linear-gradient(90deg,#008751_0%,#FCD116_52%,#CE1126_100%)] before:content-['']",
                     // item.recommended ? "before:text-xs before:text-center before:font-bold before:uppercase before:h-6 before:content-['Recommended']" : "before:h-1 before:content-['']",
                     item.recommended ? "shadow-xl" : "shadow-none",
+                    "grid grid-cols-1 last:sm:grid-cols-2 gap-4 content-start",
+                    "sm:last:[&_[data-slot='item-description']]:block",
+                    "sm:last:[&_[data-slot='item']]:bg-background/25",
                   )}
                   style={{
                     borderWidth: "2px",
                     borderColor: item.recommended ? item.color : "transparent",
                   }}
                 >
-                  <CardContent>
+                  <CardContent className={cn(
+                    "space-y-2",
+                  )}>
                     {item.recommended && (
                       <CardDescription>
                         <Badge
                           variant="default"
-                          className="py-3"
+                          className="py-1"
                           render={
                             <span className={cn(
-                              "px-2 text-[11px] tracking-tight font-medium uppercase",
+                              "px-4 text-[11px] tracking-tight font-medium uppercase",
                             )}
                               style={{
                                 background: item.color,
                               }}
                             >
-                              {t("pricing.popular", "Popular")}
+                              {t("pricing.popular", "Most popular")}
                             </span>
                           }
                         >
@@ -179,15 +188,18 @@ export function PricingPage() {
                       <CardDescription className={cn(
                         "text-[11px] text-muted-foreground tracking-tight uppercase",
                         "py-1",
-                      )}>
+                      )}
+                        style={{
+                          color: item.color,
+                        }}
+                      >
                         {t(
-                          `businessCreate.plans.${key}`,
+                          `businessCreate.plan_desc.${key}`,
                           item.desc,
                         )}
                       </CardDescription>
                     )}
-
-                    <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+                    <CardTitle className="flex items-center gap-2 text-xl font-semibold">
                       {t(
                         `businessCreate.plans.${key}`,
                         item.label,
@@ -201,11 +213,9 @@ export function PricingPage() {
                         } />
                       )}
                     </CardTitle>
-                  </CardContent>
-                  <CardContent>
                     <CardDescription>
                       <div className={cn(
-                        "text-3xl font-bold",
+                        "text-4xl font-bold",
                       )}
                         style={{
                           color: item.color,
@@ -220,8 +230,8 @@ export function PricingPage() {
                           {formatPrice(item.old_price)}
                         </span>
                       )}
-                      <span className="text-xs font-normal text-muted-foreground">
-                        {" "}{item.offer_deadline !== "undefined" && (
+                      <span className="text-sm font-normal text-muted-foreground">
+                        {" "}{item.offer_deadline !== undefined && (
                           <>
                             {t("common.until", "Until")} {" "}
                             {item.offer_deadline && new Date(item.offer_deadline).toLocaleDateString(
@@ -235,8 +245,6 @@ export function PricingPage() {
                         }
                       </span>
                     </CardDescription>
-                  </CardContent>
-                  <CardContent className="w-full">
                     <Button
                       type="button"
                       disabled={action.disabled}
@@ -254,38 +262,61 @@ export function PricingPage() {
                       {action.label}
                     </Button>
                   </CardContent>
-                  <CardContent className="flex-1 divide-y divide-solid">
+                  <CardContent className={cn(
+                    "grid grid-cols-1 gap-1 sm:group-last:grid-cols-2",
+                  )}>
                     {item.features.map((element, index) => (
-                      <CardDescription
+                      <Item
                         key={index}
+                        size="xs"
                         className={cn(
-                          "flex justfiy-start gap-2 py-2 text-sm text-foreground",
+                          "px-1 text-sm",
                         )}
                       >
-                        <CircleCheck className={cn(
-                          "w-4 h-4",
-                          "text-primary"
-                        )} />
-                        <span>
-                          {element}
-                        </span>
-                      </CardDescription>
+                        <ItemMedia variant="icon">
+                          <CircleCheck className={cn(
+                            "text-primary"
+                          )} />
+                        </ItemMedia>
+                        <ItemContent>
+                          <ItemTitle>
+                            {(element as any).title}
+                          </ItemTitle>
+
+                          <ItemDescription
+                            className="hidden"
+                          >
+                            {(element as any).description}
+                          </ItemDescription>
+                        </ItemContent>
+                      </Item>
                     ))}
                     {item.limitations.map((element, index) => (
-                      <CardDescription
+                      <Item
                         key={index}
+                        size="xs"
                         className={cn(
-                          "flex justfiy-start gap-2 py-2 text-sm text-muted-foreground",
+                          "px-1 text-sm",
                         )}
                       >
-                        <X className={cn(
-                          "w-4 h-4",
-                          item.recommended ? "text-primary-foreground" : "text-destructive"
-                        )} />
-                        <span>
-                          {element}
-                        </span>
-                      </CardDescription>
+                        <ItemMedia variant="icon">
+                          <X className={cn(
+                            "text-destructive"
+                          )} />
+                        </ItemMedia>
+                        <ItemContent>
+                          <ItemTitle>
+                            {(element as any)?.title}
+                          </ItemTitle>
+
+                          <ItemDescription
+                            className="hidden"
+                          >
+                            {(element as any)?.description}
+                          </ItemDescription>
+                        </ItemContent>
+                      </Item>
+
                     ))}
                   </CardContent>
                 </Card>

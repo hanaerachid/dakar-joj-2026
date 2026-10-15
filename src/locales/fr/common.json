@@ -222,6 +222,13 @@
       "starter": "Starter",
       "premium": "Premium",
       "sponsor": "Sponsor"
+    },
+    "plan_desc": {
+      "discover": "Pour commencer",
+      "starter": "Petite entreprise",
+      "business": "Entreprise",
+      "premium": "Visibilité maximale",
+      "sponsor": "Sponsor officiel"
     }
   },
   "businessEdit": {

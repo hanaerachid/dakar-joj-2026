@@ -395,7 +395,8 @@ export const HomeContent = () => {
                 .filter(
                   (item) =>
                     item.pack !== "discover" &&
-                    item.pack !== "essential"
+                    item.pack !== "starter" &&
+                    item.pack !== "business"
                 )
                 .sort((a, b) => {
                   if (a.pack === "sponsor") return -1;
@@ -488,7 +489,8 @@ export const HomeContent = () => {
               .filter(
                 (item) =>
                   item.pack !== "discover" &&
-                  item.pack !== "essential"
+                  item.pack !== "starter" &&
+                  item.pack !== "business"
               )
               .sort((a, b) => {
                 if (a.pack === "sponsor") return -1;
