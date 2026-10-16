@@ -28,10 +28,9 @@ export function BottomNavigation({
     <nav
       aria-label={t("navigation.label", "Main navigation")}
       className={cn(
-        "fixed inset-x-2 z-175",
-        "bottom-2",
+        "fixed bottom-2 inset-x-2 z-175",
         "rounded-4xl border border-border bg-background/80 backdrop-blur-md shadow-md",
-        "py-1",
+        "px-2 py-2",
       )}
     >
       <ul className="grid grid-flow-col auto-cols-fr">
@@ -40,40 +39,33 @@ export function BottomNavigation({
           const isActive = activeKey === item.key;
 
           return (
-            <li
+            <Button
               key={item.key}
               role="button"
               onClick={item.action}
+              type="button"
+              variant={isActive ? "secondary" : "ghost"}
+              size="lg"
               className={cn(
-                "min-w-0",
-                "flex flex-col items-center justify-center gap-0.25",
+                "text-xs transition-colors",
+                isActive && "text-primary bg-primary/10",
               )}
             >
-              <Button
-                type="button"
-                variant={isActive ? "default" : "ghost"}
-                size="sm"
-                className={cn(
-                  "px-4",
-                  "text-xs transition-colors",
-                )}
-              >
-                <Icon
-                  aria-hidden="true"
-                  strokeWidth={isActive ? 2 : 1}
-                />
-              </Button>
-
+              <Icon
+                aria-hidden="true"
+                strokeWidth={isActive ? 2 : 1}
+              />
               <span
                 className={cn(
+                  "hidden lg:inline-block",
                   "max-w-full truncate",
                   !isActive ? "font-normal text-foreground/70" : "font-bold text-primary",
-                  "text-[10px]/5 tracking-tight text-center uppercase",
+                  "text-[10px]/5 tracking-tight text-center",
                 )}
               >
                 {t(`navigation.${item.key}`, item.label)}
               </span>
-            </li>
+            </Button>
           );
         })}
       </ul>

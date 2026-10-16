@@ -17,12 +17,18 @@ import { HeaderBar } from "../components/header/HeaderBar";
 import { PRICING_PLANS } from "../components/pricing/pricingplans.config";
 import { cancelMySubscription, confirmPayment, createPaymentCheckout, getMySubscription } from "../lib/api/payments";
 import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "@/components/ui/item";
+import { Breadcrumbs, type BreadcrumbConfig } from "@/components/BreadCrumbs";
 
 export function PricingPage() {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage || i18n.language || "en";
   const { isSignedIn } = useAuth();
   const navigate = useNavigate();
+  const breadcrumbConfig: BreadcrumbConfig = {
+    "/pricing": {
+      label: t("business.selectplan", "Pricing"),
+    },
+  }
 
   function formatNumber(
     value: number,
@@ -125,7 +131,10 @@ export function PricingPage() {
       // title={t("title")}
       // description={t("description")}
       />
-      <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-7xl px-4 pt-16 pb-8 space-y-6">
+      <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-16 pb-8 space-y-6">
+        <Breadcrumbs
+          config={breadcrumbConfig}
+        />
         {/* Header */}
         <div className="mb-12 flex-col items-center items-start justify-between gap-3">
           <h2 className="text-xl text-center font-bold tracking-tight">{t("pricing.title", "A single pass for the entire campaign")}</h2>
