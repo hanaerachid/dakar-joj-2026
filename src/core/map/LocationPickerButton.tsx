@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { MapPin } from "lucide-react";
+import { Map } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 type Props = {
@@ -18,8 +18,8 @@ export default function LocationPickerButton({ onClick }: Props) {
       aria-label="Pick on map"
       className="shrink-0 rounded-full"
     >
-      <MapPin />
-      <span>{t("select_from_map", "Pick location")}</span>
+      <Map />
+      <span className="hidden sm:inline-block ml-2">{t("common.select_from_map", "Use Map")}</span>
     </Button>
   );
 }

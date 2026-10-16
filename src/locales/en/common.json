@@ -22,7 +22,8 @@
     "cancel": "Cancel",
     "edit": "Edit",
     "saved": "Saved !",
-    "until": "Until"
+    "until": "Until",
+    "select_from_map": "Use map"
   },
   "theme": "Theme",
   "language": "Language",

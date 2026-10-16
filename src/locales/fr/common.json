@@ -21,7 +21,8 @@
     "cancel": "Annuler",
     "edit": "Modifier",
     "saved": "Enregistré !",
-    "until": "Jusqu'au"
+    "until": "Jusqu'au",
+    "select_from_map": "Sélectionner sur la carte"
   },
   "settings": "Paramètres",
   "map": "Carte",
