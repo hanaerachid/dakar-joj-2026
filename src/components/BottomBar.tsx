@@ -29,7 +29,7 @@ export function BottomNavigation({
       aria-label={t("navigation.label", "Main navigation")}
       className={cn(
         "fixed bottom-2 inset-x-2 z-175",
-        "rounded-4xl border border-border bg-background/80 backdrop-blur-md shadow-md",
+        "rounded-full border border-border bg-background/80 backdrop-blur-md shadow-md",
         "px-2 py-2",
       )}
     >
@@ -57,10 +57,10 @@ export function BottomNavigation({
               />
               <span
                 className={cn(
-                  "hidden lg:inline-block",
-                  "max-w-full truncate",
+                  "max-w-full",
+                  "sr-only",
                   !isActive ? "font-normal text-foreground/70" : "font-bold text-primary",
-                  "text-[10px]/5 tracking-tight text-center",
+                  "text-[10px]/5 truncate tracking-tight text-center",
                 )}
               >
                 {t(`navigation.${item.key}`, item.label)}

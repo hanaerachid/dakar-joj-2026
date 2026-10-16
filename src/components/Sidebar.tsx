@@ -92,15 +92,15 @@ export function Sidebar({
 
         {/* Utility group */}
         {!isMobile && (
-        <>
-        <PlacesList />
+          <>
+            <PlacesList />
 
-        {/* thin divider */}
-        <Separator className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
+            {/* thin divider */}
+            <Separator className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
+          </>
+        )}
 
         <SearchPlaces />
-        </>
-        )}
 
         {/* Zoom */}
         {!isMobile && (

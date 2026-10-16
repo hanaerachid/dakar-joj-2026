@@ -8,7 +8,6 @@ import {
   Newspaper,
   Calendar,
   Briefcase,
-  Search,
 } from "lucide-react";
 import { MapManager } from "../../core/MapManager";
 import { Sidebar } from "../../components/Sidebar";
@@ -95,15 +94,6 @@ export default function MapPage() {
       icon: Compass,
       action: () => {
         setIsSearchOpen(false);
-        openNavigationPanel("explorer");
-      },
-    },
-    {
-      key: "search",
-      label: t("tabs.search", "Search"),
-      icon: Search,
-      action: () => {
-        setIsSearchOpen(true);
         openNavigationPanel("explorer");
       },
     },
