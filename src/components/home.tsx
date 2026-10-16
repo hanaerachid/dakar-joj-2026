@@ -330,7 +330,7 @@ export const HomeContent = () => {
   }, [location]);
 
   return (
-    <div className="space-y-6 pt-4">
+    <div className="space-y-6">
 
       {isMobile && (
       <Promo />

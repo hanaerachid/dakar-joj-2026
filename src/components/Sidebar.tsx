@@ -77,15 +77,7 @@ export function Sidebar({
 
   return (
     // Position: right side; centered on desktop, bottom-right on mobile
-    <div
-      className="
-      pointer-events-none
-      absolute right-3 top-1/2 -translate-y-1/2
-      md:right-4 md:top-1/2 md:-translate-y-1/2
-      sm:bottom-3 sm:top-auto sm:-translate-y-0
-      z-50
-    "
-    >
+    <>
       {/* Glass Dock */}
       <div
         className="
@@ -100,14 +92,14 @@ export function Sidebar({
 
         {/* Utility group */}
         {!isMobile && (
+        <>
         <PlacesList />
-        )}
 
         {/* thin divider */}
         <Separator className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
 
-        {!isMobile && (
         <SearchPlaces />
+        </>
         )}
 
         {/* Zoom */}
@@ -150,6 +142,6 @@ export function Sidebar({
           onClick={handleShare}
         />
       </div>
-    </div>
+    </>
   );
 }

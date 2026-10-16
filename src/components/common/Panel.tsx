@@ -67,7 +67,7 @@ export function Panel({
   // ⛔️ previously: if (!mountedRef.current || !isOpen) return null;
   if (!mounted || !isOpen) return null;
 
-  // const showSwipeHandle = isMobile ? true : false;
+  const showSwipeHandle = isMobile ? true : false;
   const swipeDirection = isMobile ? "down" : "left";
 
   return (
@@ -80,7 +80,7 @@ export function Panel({
           }}
           modal={false}
           disablePointerDismissal
-          // showSwipeHandle={showSwipeHandle}
+          showSwipeHandle={showSwipeHandle}
           swipeDirection={swipeDirection}
           snapPoints={isMobile ? [0.4, 0.7, 0.9] : undefined}
           snapPoint={isMobile ? activeSnapPoint : undefined}

@@ -9,13 +9,14 @@ import { getSportIcon } from "@/utils/helpers";
 import { Icon } from "@iconify/react";
 import { Badge } from "@/components/ui/badge";
 import {
-  Card,
-  CardHeader,
-  CardDescription,
-  CardTitle,
-  CardFooter,
-  CardContent,
-} from "@/components/ui/card";
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemFooter,
+  ItemHeader,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
 import {
   Carousel,
   CarouselContent,
@@ -75,7 +76,6 @@ export const SPORT_OPTIONS_BY_KEY = Object.fromEntries(
   ALL_SPORT_OPTIONS.map((sport) => [sport.key, sport])
 );
 
-
 export const Promo = () => {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage || i18n.language || "en";
@@ -124,7 +124,7 @@ export const Promo = () => {
 
   return (
     <Carousel
-      className="relative group w-full"
+      className="relative group w-full overflow-visible"
       orientation="horizontal"
       opts={{
         align: "center",
@@ -134,40 +134,42 @@ export const Promo = () => {
       onMouseEnter={plugin.current.stop}
       onMouseLeave={plugin.current.reset}
     >
-      <CarouselContent className="-mt-1 h-36">
-        <CarouselItem className="basis-full pt-1">
-          <Card
-            size="sm"
+      <CarouselContent className="h-32">
+        <CarouselItem className="basis-full">
+          <Item
+            size="default"
             className={cn(
               "h-full",
               "backdrop-blur-sm bg-gradient-to-b from-[#f2b705]/10 to-[#f2b705]/5",
               "overflow-hidden relative before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[linear-gradient(90deg,#008751_0%,#FCD116_52%,#CE1126_100%)] before:content-['']"
             )}
           >
-            <CardHeader>
-              <CardTitle>
+            <ItemHeader>
+              <ItemTitle className="flex items-baseline gap-2">
                 <Countdown targetedDate={new Date("2026-10-31T00:00:00")} />
                 <Badge variant="secondary" className="uppercase text-xs">
                   31 Oct - 13 Nov 2026
                 </Badge>
-              </CardTitle>
-              <CardDescription>
+              </ItemTitle>
+            </ItemHeader>
+            <ItemContent>
+              <ItemDescription>
                 {t("home.countdown_description", "Days left until the Dakar 2026 Youth Olympic Games!")}
-              </CardDescription>
-            </CardHeader>
-          </Card>
+              </ItemDescription>
+            </ItemContent>
+          </Item>
         </CarouselItem>
 
         {!error && !eventLoading && (
           <CarouselItem
             // key={index}
-            className="basis-full pt-1"
+            className="basis-full"
           >
             {(events as typeof events).slice(0, 1).map((item, index) => {
               const sport = SPORT_OPTIONS_BY_KEY[item.sport];
 
               return (
-                <Card
+                <Item
                   key={index}
                   size="default"
                   className={cn(
@@ -176,23 +178,13 @@ export const Promo = () => {
                     "backdrop-blur-sm bg-gradient-to-b from-primary/10 to-primary/5",
                   )}
                 >
-                  {sport?.icon && (
-                    <CardHeader
-                      className="absolute top-1/8 end-12 -translate-x-1/8 -translate-y-1/8"
-                    >
-                      <Icon
-                        className="w-12 h-12"
-                        icon={getSportIcon({ sportId: item.sport }) || "mdi:help"}
-                      />
-                    </CardHeader>
-                  )}
-                  <CardContent className="min-w-0 flex-1">
-                    <CardTitle
+                  <ItemContent className="min-w-0 flex-1">
+                    <ItemTitle
                       className="min-w-0 truncate overflow-hidden text-ellipsis whitespace-nowrap"
                     >
                       {item.name}
-                    </CardTitle>
-                    <CardDescription
+                    </ItemTitle>
+                    <ItemDescription
                       className="min-w-0 truncate overflow-hidden text-ellipsis whitespace-nowrap"
                       title={getRelativeTime(new Date(item.startAt))}
                     >
@@ -206,21 +198,31 @@ export const Promo = () => {
                       {" • "}
                       {formatDuration(item.startAt, item.endAt, lang)}
                       */}
-                    </CardDescription>
-                  </CardContent>
-                  <CardFooter className="shrink-0">
-                    <CardDescription className="text-xs">
+                    </ItemDescription>
+                  </ItemContent>
+
+                  {sport?.icon && (
+                    <ItemMedia variant="default">
+                      <Icon
+                        className="w-12 h-12"
+                        icon={getSportIcon({ sportId: item.sport }) || "mdi:help"}
+                      />
+                    </ItemMedia>
+                  )}
+                  <ItemFooter className="shrink-0">
+                    <ItemDescription className="text-xs">
                       {item.venue}
-                    </CardDescription>
-                  </CardFooter>
-                </Card>
+                    </ItemDescription>
+                  </ItemFooter>
+
+                </Item>
               );
             })}
           </CarouselItem>
         )}
       </CarouselContent>
 
-      <div className="absolute hidden group-hover:block right-0 -top-4 flex items-center gap-1">
+      <div className=" z-1000 absolute hidden group-hover:flex right-0 -top-4 items-center gap-1">
         <CarouselPrevious size="icon-sm" variant="secondary" className="static translate-x-0 translate-y-0" />
         <CarouselNext size="icon-sm" variant="secondary" className="static translate-x-0 translate-y-0" />
       </div>

@@ -17,10 +17,12 @@ import { BusinessContent } from "../business";
 import { usePanelContext } from "@/components/panel-provider";
 import { useModalContext } from "@/components/modal-provider";
 import { useStateContext } from "@/components/state-provider";
+import { useIsMobile } from "@/hooks/use-mobile";
 // import { SearchPlacesModal as SearchContent } from "../search/SearchPlacesModal";
 
 export const SidePanel = () => {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   const { activeTab, setActiveTab } = useStateContext();
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
@@ -85,6 +87,7 @@ export const SidePanel = () => {
         onValueChange={setActiveTab}
         className="w-full flex min-h-0 flex-1"
       >
+        {!isMobile && (
         <div className="relative">
           {/* Left scroll button - hidden on mobile */}
           <Button
@@ -197,6 +200,7 @@ export const SidePanel = () => {
             </div>
           </div>
         </div>
+        )}
         <div className="min-h-0 flex-1 overflow-y-auto">
           <TabsContent value="home">
             <HomeContent />

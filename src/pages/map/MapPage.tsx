@@ -271,7 +271,13 @@ export default function MapPage() {
       {/* Top-left: Admin link (only if admin) */}
 
       {/* Sidebar (original) */}
-      <div className="flex justify-center items-center flex-col bg-red-300">
+      <div className={cn(
+        "pointer-events-none",
+        "z-50",
+        "absolute right-3 top-1/2 -translate-y-64",
+        "md:right-4 md:top-1/2 md:-translate-y-1/2",
+        "sm:bottom-3 sm:top-auto sm:-translate-y-0 ",
+      )}>
         <Sidebar
           longitude={longitude}
           latitude={latitude}
@@ -283,8 +289,11 @@ export default function MapPage() {
       {/* The mighty map (original) */}
       <div ref={mapContainerRef} className="w-full h-full" />
 
-      {/* Sidebar (original) */}
-      <div className="absolute max-w-md mx-auto bottom-8 left-0 right-0">
+      <div className={cn(
+        "fixed bottom-8 left-0 right-0 translate-x-1/4",
+        "w-full max-w-lg mx-auto",
+        "rounded-xl border bg-background/80 backdrop-blur-md shadow-lg"
+      )}>
         {!isMobile && (
           <Promo />
         )}
