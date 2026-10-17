@@ -34,6 +34,7 @@ export const zoneSchema = z.object({
   name: z.string(),
   color: z.string(),
   categoryId: z.string(),
+  location: z.any(), // TODO: Define a proper schema for the location (Polygon or MultiPolygon)
   createdAt: z.string().datetime().nullable().optional(),
   updatedAt: z.string().datetime().nullable().optional(),
 });

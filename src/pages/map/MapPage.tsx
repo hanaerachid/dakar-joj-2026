@@ -22,6 +22,9 @@ import { Promo } from "@/components/Promo";
 import { Item, ItemContent } from "@/components/ui/item";
 import type { BottomNavigationItem } from "@/components/BottomBar";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Bookmarks } from "@/components/Bookmarks";
+import { listZones } from "@/lib/api/zones";
+import type { Zone } from "@/shared/contracts";
 
 const Countdown = ({ targetedDate }: { targetedDate: Date }) => {
   const { t } = useTranslation();
@@ -58,6 +61,9 @@ export default function MapPage() {
   const [longitude, setLongitude] = useState(-74.0242);
   const [latitude, setLatitude] = useState(40.6941);
   const [zoom, setZoom] = useState(() => getInitialZoom());
+  const [zones, setZones] = useState<Zone[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const isMobile = useIsMobile();
   const {
     activeTab,
@@ -209,7 +215,41 @@ export default function MapPage() {
     setIsOpen,
   ]);
 
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadZones() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const result = await listZones(
+          {categoryId: "competition"},
+        );
+
+        setZones(result);
+      } catch (err) {
+        if (controller.signal.aborted) return;
+
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Unable to load zones",
+        );
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadZones();
+
+    return () => controller.abort();
+  }, []);
+
   const handleReset = () => mapManager.resetView();
+  const handleZoomTo = (bounds: mapboxgl.LngLatBounds) => mapManager.zoomTo(bounds);
 
   const activeNavigationKey = !isOpen
     ? ""
@@ -260,7 +300,19 @@ export default function MapPage() {
       </HeaderBar>
       {/* Top-left: Admin link (only if admin) */}
 
-      {/* Sidebar (original) */}
+      <div className={cn(
+        "z-50",
+        "absolute top-14 start-2 end-20 md:translate-x-1/4",
+        "w-full max-w-sm mx-auto",
+      )}>
+        <Bookmarks
+          loading={loading}
+          error={error}
+          zones={zones}
+          onZoomTo={handleZoomTo}
+        />
+      </div>
+
       <div className={cn(
         "pointer-events-none",
         "z-50",

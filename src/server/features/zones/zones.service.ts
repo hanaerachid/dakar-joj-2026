@@ -2,10 +2,10 @@ import { getMongoDatabase } from "../../mongodb/client.js";
 import type { Zone } from "../../../shared/contracts.js";
 
 const DEFAULT_COMP_ZONES = [
-  { name: "Dakar", color: "#E91E63" },
-  { name: "Diamniadio", color: "#12B76A" },
-  { name: "Saly", color: "#FF8C00" },
-  { name: "Olympic Village", color: "#ffe100" },
+  { name: "Dakar", color: "#E91E63", location: { type: "Point", coordinates: [-7.58, 14.71] } },
+  { name: "Diamniadio", color: "#12B76A", location: { type: "Point", coordinates: [-7.38, 14.5] } },
+  { name: "Saly", color: "#FF8C00", location: { type: "Point", coordinates: [-16.01, 12.63] } },
+  { name: "Olympic Village", color: "#ffe100", location: { type: "Point", coordinates: [-7.58, 14.71] } },
 ];
 
 function toZone(id: string, data: Record<string, any>): Zone {
@@ -14,6 +14,7 @@ function toZone(id: string, data: Record<string, any>): Zone {
     name: String(data.name ?? "Unnamed Zone"),
     color: String(data.color ?? "#3b82f6"),
     categoryId: String(data.categoryId ?? ""),
+    location: data.location ?? { type: "Point", coordinates: [0, 0] },
     createdAt: data.createdAt instanceof Date ? data.createdAt.toISOString() : data.createdAt ?? null,
     updatedAt: data.updatedAt instanceof Date ? data.updatedAt.toISOString() : data.updatedAt ?? null,
   };
@@ -33,6 +34,7 @@ export async function listZones(categoryId: string) {
         _firestorePath: `zones/${id}`,
         name: zone.name,
         color: zone.color,
+        location: zone.location,
         categoryId,
         createdAt: ts,
         updatedAt: ts,

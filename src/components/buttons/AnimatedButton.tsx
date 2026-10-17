@@ -22,6 +22,7 @@ interface AnimatedButtonProps {
   className?: string;
   iconClassName?: string;
   tooltip?: string; // NEW: hover tooltip label
+  children?: React.ReactNode;
 }
 
 export function AnimatedButton({
@@ -32,8 +33,8 @@ export function AnimatedButton({
   className = "",
   iconClassName,
   tooltip,
+  children,
 }: Readonly<AnimatedButtonProps>) {
-  const ResolvedIcon = icon || "";
   const resolvedTitle = title || "";
   const tip = tooltip || resolvedTitle;
 
@@ -43,27 +44,33 @@ export function AnimatedButton({
         render={
           <MotionButton
             variant={isOpen ? "default" : "secondary"}
-            size="icon-lg"
+            size={children ? "lg" : "icon-lg"}
             whileTap={{ scale: 0.9, rotate: -6 }}
             whileHover={{ y: -1 }}
             transition={{ type: "spring", stiffness: 500, damping: 18, mass: 0.9 }}
-            className={cn(`
-          shadow-lg shadow-black/10
-          outline-none
-          ring-1 ring-black/5
-          focus-visible:ring-2 focus-visible:ring-primary/40
-        `,
-              className)}
+            className={cn("shadow-lg shadow-black/10", className)}
             onClick={onClick}
             title={resolvedTitle}
             aria-label={resolvedTitle}
             type="button"
           >
-            {typeof ResolvedIcon === "string" ? (
-              <Icon icon={ResolvedIcon} className={iconClassName || "block h-5 w-5 md:h-5.5 md:w-5.5"} />
-            ) : (
-              <ResolvedIcon className={iconClassName} />
-            )}
+            {icon &&
+              (typeof icon === "string" ? (
+                <Icon icon={icon} className={iconClassName || "block h-5 w-5 md:h-5.5 md:w-5.5"} />
+              ) : (
+                (() => {
+                  const LucideIconComponent = icon;
+                  return (
+                    <LucideIconComponent
+                      className={
+                        iconClassName ||
+                        "block h-5 w-5 md:h-5.5 md:w-5.5"
+                      }
+                    />
+                  );
+                })()
+              ))}
+            {children && <span>{children}</span>}
           </MotionButton>
         }
       >

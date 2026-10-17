@@ -411,6 +411,17 @@ export class MapManager {
     this.map.flyTo({ center: INITIAL_CENTER, zoom: getInitialZoom() });
   }
 
+  zoomTo(
+    bounds: mapboxgl.LngLatBounds,
+  ): void {
+    if (!this.map) return;
+    this.map.fitBounds(bounds, {
+      padding: 50,
+      maxZoom: 15,
+      duration: 1000,
+    });
+  }
+
   destroyMap() {
     if (this.map) {
       clearTorchOverlay(this.map);
