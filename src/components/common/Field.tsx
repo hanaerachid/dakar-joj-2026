@@ -46,7 +46,9 @@ type TextAreaFieldProps<T extends FieldValues> = {
   name: FieldPath<T>;
   label: string;
   placeholder?: string;
+  className?: string;
   rows?: number;
+  disabled?: boolean;
 };
 
 type TextFieldProps<T extends FieldValues> =

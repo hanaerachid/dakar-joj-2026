@@ -148,6 +148,7 @@
     "add_listing": "Ajouter un établissement",
     "upgrade_plan": "Mettre à niveau",
     "your_listing_appears_here": "Votre établissement apparaît ici.",
+    "listing_limit_reached": "Vous avez atteint la limite d’établissements pour votre plan actuel.",
     "listbusiness": "Référencez votre établissement",
     "business_description": "Hôtels, restaurants, boutiques, concessions automobiles, musées, galeries… Rejoignez la carte officielle des visiteurs des Jeux.",
     "pricing": "Voir les plans",
@@ -160,7 +161,15 @@
     "premium": "Premium",
     "maximum_visibility": "Visibilité maximale",
     "free": "Gratuit",
-    "month": "mois"
+    "month": "mois",
+    "options": {
+      "wifi": "Wi-Fi",
+      "climatisation": "Climatisation",
+      "piscine": "Piscine",
+      "petit_dejeuner": "Petit-déjeuner",
+      "parking": "Parking",
+      "navette": "Navette"
+    }
   },
   "businessCreate": {
     "title": "Créer un établissement",

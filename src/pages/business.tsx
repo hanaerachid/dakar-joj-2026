@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "cn";
-import { ChevronLeft, MoreVertical, Plus, Store } from "lucide-react";
+import { ChevronLeft, MoreVertical, Plus, Sparkle, Store } from "lucide-react";
 import { toast } from "sonner";
 import { uploadFilesToR2 } from "@/lib/api/uploads";
 import { getMySubscription } from "@/lib/api/payments";
@@ -266,7 +266,8 @@ export function BusinessPage() {
                 onClick={() => navigate("/pricing")}
                 className="inline-flex items-center gap-2"
               >
-                <span>{t("business.upgrade", "Upgrade")}</span>
+                <Sparkle />
+                <span>{t("business.upgrade_plan", "Upgrade")}</span>
               </Button>
             )}
               <Button
@@ -467,9 +468,9 @@ export function BusinessPage() {
                 variant="default"
                 onClick={() => navigate("/pricing")}
               >
-                <Plus />
+                <Sparkle />
                 <span>
-                  {t("business.upgrade", "Upgrade your plan")}
+                  {t("business.upgrade_plan", "Upgrade your plan")}
                 </span>
               </Button>
             </EmptyContent>

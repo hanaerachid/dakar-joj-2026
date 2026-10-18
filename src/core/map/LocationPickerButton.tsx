@@ -19,7 +19,25 @@ export default function LocationPickerButton({ onClick }: Props) {
       className="shrink-0 rounded-full"
     >
       <Map />
-      <span className="hidden sm:inline-block ml-2">{t("common.select_from_map", "Use Map")}</span>
+      <span className="hidden sm:inline-block">{t("common.select_from_map", "Use Map")}</span>
+    </Button>
+  );
+}
+
+export function MeLocaliserButton({ onClick }: Props) {
+  const { t } = useTranslation();
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      size="default"
+      onClick={onClick}
+      title="Use my location"
+      aria-label="Use my location"
+      className="shrink-0 rounded-full"
+    >
+      <Map />
+      <span className="hidden sm:inline-block">{t("common.use_my_location", "Use my location")}</span>
     </Button>
   );
 }

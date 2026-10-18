@@ -148,6 +148,7 @@
     "add_listing": "Add a business listing",
     "upgrade_plan": "Upgrade",
     "your_listing_appears_here": "Your listing appears here.",
+    "listing_limit_reached": "You've reached the listing limit for your current plan.",
     "listbusiness": "List your business",
     "business_description": "Hotels, restaurants, shops, car dealerships, museums, galleries — join the official visitor map.",
     "pricing": "See plans",
@@ -160,7 +161,15 @@
     "premium": "Premium",
     "maximum_visibility": "Maximum visibility",
     "free": "Free",
-    "month": "month"
+    "month": "month",
+    "options": {
+      "wifi": "Wi-Fi",
+      "climatisation": "Air conditioning",
+      "piscine": "Swimming pool",
+      "petit_dejeuner": "Breakfast",
+      "parking": "Parking",
+      "navette": "Shuttle"
+    }
   },
   "businessCreate": {
     "title": "Create a business listing",

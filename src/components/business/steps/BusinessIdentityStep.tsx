@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { cn } from "cn";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PhoneField, TextField } from "@/components/common/Field";
+import { PhoneField, TextAreaField, TextField } from "@/components/common/Field";
 import { hasBusinessCapability } from "../business-plan";
 import type { BusinessCreateValues } from "../business-create.schema";
 
@@ -36,6 +36,34 @@ export function BusinessIdentityStep(
               )}
               placeholder="e.g. Teranga Plaza"
             />
+          </div>
+
+          <div className="relative sm:col-span-2">
+            <TextAreaField
+              name="desc"
+              label={t(
+                "businessCreate.fields.desc",
+                "Description",
+              )}
+              placeholder={t(
+                "businessCreate.fields.descPlaceholder",
+                "Describe your business and its main advantages...",
+              )}
+              disabled={!hasBusinessCapability(plan, "desc")}
+              className={cn(!hasBusinessCapability(plan, "desc") && "opacity-50")}
+            />
+            {!hasBusinessCapability(plan, "desc") && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center rounded-md bg-background/60">
+                <Button
+                  type="button"
+                  variant="link"
+                  className="text-xs text-muted-foreground hover:text-foreground"
+                  onClick={() => navigate("/pricing")}
+                >
+                  Upgrade your plan to add a description
+                </Button>
+              </div>
+            )}
           </div>
 
           <div className="relative">
@@ -124,7 +152,7 @@ export function BusinessIdentityStep(
                 "businessCreate.fields.website",
                 "Website",
               )}
-              placeholder="https://..."
+              placeholder="https://www.example.com/"
             />
             {!hasBusinessCapability(plan, "website") && (
               <div className="absolute inset-0 z-10 flex items-center justify-center rounded-md bg-background/60">
@@ -151,7 +179,7 @@ export function BusinessIdentityStep(
                   "businessCreate.fields.social",
                   "Instagram / social media",
                 )}
-                placeholder="@business"
+                placeholder="@example"
               />
               {!hasBusinessCapability(plan, "SNS") && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center rounded-md bg-background/60">

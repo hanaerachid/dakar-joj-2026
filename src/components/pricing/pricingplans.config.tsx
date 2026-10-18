@@ -25,6 +25,7 @@ export type BusinessCapability =
   | "email"
   | "phone"
   | "website"
+  | "desc"
   | "SNS"
   | "whatsapp"
   | "booking"
@@ -110,6 +111,7 @@ export const PRICING_PLANS = {
     capabilities: [
       "phone",
       "whatsapp",
+      "desc",
       "email",
       "verified",
       "priority",
@@ -154,6 +156,7 @@ export const PRICING_PLANS = {
     capabilities: [
       "email",
       "phone",
+      "desc",
       "website",
       "SNS",
       "whatsapp",
@@ -203,6 +206,7 @@ export const PRICING_PLANS = {
     capabilities: [
       "email",
       "phone",
+      "desc",
       "website",
       "SNS",
       "whatsapp",
@@ -250,6 +254,7 @@ export const PRICING_PLANS = {
     capabilities: [
       "email",
       "phone",
+      "desc",
       "website",
       "SNS",
       "whatsapp",
