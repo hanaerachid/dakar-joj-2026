@@ -88,10 +88,10 @@ export const EventsContent = () => {
         className="w-full"
       >
         <ToggleGroupItem value="public" className="flex-1">
-          {t("tabs.events", "Schedule")}
+          {t("common.all_events", "Schedule")}
         </ToggleGroupItem>
         <ToggleGroupItem value="personal" className="flex-1">
-          {t("tabs.calendar", "My Agenda")}
+          {t("common.my_events", "My Agenda")}
         </ToggleGroupItem>
       </ToggleGroup>
 
@@ -182,7 +182,7 @@ export const PublicEvents = () => {
               setIsOpen(false);
             }}
           >
-            {t("cancel", "Cancel")}
+            {t("common.cancel", "Cancel")}
           </Button>
 
           <Button
@@ -204,7 +204,7 @@ export const PublicEvents = () => {
 
               } catch (error) {
                 console.error("Failed to delete event from calendar:", error);
-                setError(t("calendar.remove_error", "Unable to remove this event from your calendar."));
+                setError(t("events.remove_error", "Unable to remove this event from your calendar."));
                 toast.error(
                   t("events.event_deletion_failure", "Failed to remove the event from your calendar.")
                 );
@@ -213,7 +213,7 @@ export const PublicEvents = () => {
               }
             }}
           >
-            {t("confirm", "Confirm")}
+            {t("common.confirm", "Confirm")}
           </Button>
         </>
       )),
@@ -482,7 +482,7 @@ export const PersonalEvents = () => {
         if (!cancelled) setEvents(items);
       })
       .catch(() => {
-        if (!cancelled) setError(t("calendar.load_error", "Unable to load your calendar."));
+        if (!cancelled) setError(t("events.load_error", "Unable to load your calendar."));
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -523,7 +523,7 @@ export const PersonalEvents = () => {
               setIsOpen(false);
             }}
           >
-            {t("cancel", "Cancel")}
+            {t("common.cancel", "Cancel")}
           </Button>
 
           <Button
@@ -538,7 +538,7 @@ export const PersonalEvents = () => {
                 setEvents((current) => current.filter((item) => item._id !== event._id));
               } catch (error) {
                 console.error("Failed to delete event from calendar:", error);
-                setError(t("calendar.remove_error", "Unable to remove this event from your calendar."));
+                setError(t("events.remove_error", "Unable to remove this event from your calendar."));
                 toast.error(
                   t("events.event_deletion_failure", "Failed to remove the event from your calendar.")
                 );
@@ -547,7 +547,7 @@ export const PersonalEvents = () => {
               }
             }}
           >
-            {t("confirm", "Confirm")}
+            {t("common.confirm", "Confirm")}
           </Button>
         </>
       )),
@@ -564,9 +564,9 @@ export const PersonalEvents = () => {
     return (
       <Empty>
         <EmptyHeader>
-          <EmptyTitle>{t("calendar.sign_in_title", "Your calendar")}</EmptyTitle>
+          <EmptyTitle>{t("events.sign_in_title", "Your calendar")}</EmptyTitle>
           <EmptyDescription>
-            {t("calendar.sign_in_description", "Sign in to view and manage events saved to your calendar.")}
+            {t("events.sign_in_description", "Sign in to view and manage events saved to your calendar.")}
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
@@ -593,14 +593,29 @@ export const PersonalEvents = () => {
 
       {!loading && !error && !events.length && (
         <Empty>
-          <EmptyDescription>{t("calendar.empty", "No events saved yet.")}</EmptyDescription>
+          <EmptyDescription>{t("events.no_events", "No events saved yet.")}</EmptyDescription>
         </Empty>
       )}
 
       {!loading && events.length > 0 && (
         <ItemGroup className="gap-2">
-          {events.map((event) => (
-            <Item key={event._id} variant="outline" size="xs">
+          {(events as ApiEventsItem[]).map((event, index) => {
+            // const sport = SPORT_OPTIONS_BY_KEY[event.sport];
+            return (
+            <Item key={index} variant="outline" size="xs">
+                {/*
+                {sport?.icon && (
+                  <ItemMedia
+                    variant="default"
+                    className="w-7 h-7"
+                  >
+                    <Icon
+                      className="w-6 h-6"
+                      icon={getSportIcon({ sportId: event.sport }) || "mdi:help"}
+                    />
+                  </ItemMedia>
+                )}
+                */}
               <ItemContent className="min-w-0">
                 <ItemTitle className="truncate">{event.name}</ItemTitle>
                 <ItemDescription className="truncate">
@@ -619,12 +634,13 @@ export const PersonalEvents = () => {
                 size="icon"
                 disabled={!event._id || removingId === event._id}
                 onClick={() => void removeEvent(event)}
-                aria-label={t("calendar.remove", "Remove from calendar")}
+                aria-label={t("events.remove_event", "Remove from calendar")}
               >
                 <CalendarX />
               </Button>
             </Item>
-          ))}
+            )
+          })}
         </ItemGroup>
       )}
     </div>
