@@ -25,7 +25,7 @@ export function LocateMeButton({ className = "" }: { className?: string }) {
         .addTo(map);
     }
 
-    map.flyTo({ center: [lng, lat], zoom: 14, speed: 1.2 });
+    MapManager.getInstance().flyTo({ center: [lng, lat], zoom: 14, speed: 1.2 });
   };
 
   const handleClick = () => {

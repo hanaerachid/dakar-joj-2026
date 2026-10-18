@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { MapManager } from "@/core/MapManager";
 
 type ModalSize = "sm" | "md" | "lg";
 
@@ -50,13 +51,59 @@ export function Panel({
   const [mounted, setMounted] = useState(false);
   const [activeSnapPoint, setActiveSnapPoint] = useState<string | number | null>(0.7);
 
+  useEffect(() => setMounted(true), [isMobile]);
+
   useEffect(() => {
-    if (isMobile) {
-      setMounted(false);
-    } else {
-      setMounted(true);
+    const manager = MapManager.getInstance();
+    if (!mounted || !isOpen) {
+      manager.setDrawerPadding({});
+      return;
     }
-  }, []);
+
+    const measure = () => {
+      const popup = document.querySelector<HTMLElement>(
+        '[data-slot="drawer-popup"]',
+      );
+      if (!popup) {
+        manager.setDrawerPadding({});
+        return;
+      }
+
+      const rect = popup.getBoundingClientRect();
+      manager.setDrawerPadding(
+        isMobile
+          ? { bottom: Math.max(0, window.innerHeight - rect.top) }
+          : { left: Math.max(0, rect.right) },
+      );
+    };
+
+    let frame = 0;
+    const sample = () => {
+      measure();
+      frame = window.requestAnimationFrame(sample);
+    };
+
+    const popup = document.querySelector<HTMLElement>(
+      '[data-slot="drawer-popup"]',
+    );
+    const resizeObserver = new ResizeObserver(measure);
+    const mutationObserver = new MutationObserver(measure);
+    if (popup) {
+      resizeObserver.observe(popup);
+      mutationObserver.observe(popup, { attributes: true });
+    }
+    window.addEventListener("resize", measure);
+    measure();
+    frame = window.requestAnimationFrame(sample);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+      window.removeEventListener("resize", measure);
+      manager.setDrawerPadding({});
+    };
+  }, [isMobile, isOpen, mounted]);
 
   useEffect(() => {
     if (isOpen && isMobile) {

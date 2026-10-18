@@ -17,7 +17,11 @@ export const ensureNoSource = (map: Map, id: string) => {
   if (map.getSource(id)) map.removeSource(id);
 };
 
-export const fitToLine = (map: Map, line: GeoJSON.LineString, padding = 40) => {
+export const fitToLine = (
+  map: Map,
+  line: GeoJSON.LineString,
+  padding: number | mapboxgl.PaddingOptions = 40,
+) => {
   const coords = line.coordinates as [number, number][];
   if (!coords?.length) return;
   const bounds = coords.reduce(

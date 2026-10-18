@@ -164,7 +164,7 @@ export function LocalPlacesTab({
 
     selectPlace({ id, lng, lat, title });
 
-    map.flyTo({ center: [lng, lat], zoom: 14, speed: 1.2 });
+    mapManager.flyTo({ center: [lng, lat], zoom: 14, speed: 1.2 });
   };
 
   return (

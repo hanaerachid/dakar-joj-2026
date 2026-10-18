@@ -136,7 +136,7 @@ export function GlobalPlacesTab({
 
     const m = map || mgr.getMap();
     if (center && m) {
-      m.flyTo({ center, zoom: 14, speed: 1.2 });
+      mgr.flyTo({ center, zoom: 14, speed: 1.2 });
     }
   };
 

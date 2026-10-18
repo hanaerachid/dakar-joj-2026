@@ -141,7 +141,7 @@ export async function drawRoute(
   });
 
   // Fit to route line
-  fitToLine(map, line, 40);
+  fitToLine(map, line, map.getPadding());
 
   // Parse leg details
   const leg = route.legs?.[0];

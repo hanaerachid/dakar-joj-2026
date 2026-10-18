@@ -63,6 +63,13 @@ const CATEGORY_PREFIX: Record<string, string> = {
   railway: "railway-",
 };
 
+type MapPadding = {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+};
+
 export class MapManager {
   private static instance: MapManager;
   private map: MapboxMap | null = null;
@@ -77,6 +84,50 @@ export class MapManager {
   private torchVisible = false;
   private torchRequestId = 0;
 
+  private drawerPadding: MapPadding = {
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+  };
+
+  private readonly cameraMargin = 40;
+
+    private getCameraPadding(margin = this.cameraMargin): MapPadding {
+      return {
+        top: margin + this.drawerPadding.top,
+        right: margin + this.drawerPadding.right,
+        bottom: margin + this.drawerPadding.bottom,
+        left: margin + this.drawerPadding.left,
+      };
+    }
+
+    setDrawerPadding(padding: Partial<MapPadding>) {
+      const next: MapPadding = {
+        top: Math.max(0, Math.round(padding.top ?? 0)),
+        right: Math.max(0, Math.round(padding.right ?? 0)),
+        bottom: Math.max(0, Math.round(padding.bottom ?? 0)),
+        left: Math.max(0, Math.round(padding.left ?? 0)),
+      };
+      const changed = Object.keys(next).some(
+        (edge) => next[edge as keyof MapPadding] !== this.drawerPadding[edge as keyof MapPadding],
+      );
+      if (!changed) return;
+
+      this.drawerPadding = next;
+      if (this.map) {
+        this.map.setPadding(this.getCameraPadding());
+      }
+    }
+
+    flyTo(options: Parameters<MapboxMap["flyTo"]>[0]) {
+      if (!this.map) return;
+      this.map.flyTo({
+        ...options,
+        padding: this.getCameraPadding(),
+        retainPadding: false,
+      });
+    }
   hasRoute() {
     return !!this.lastRouteEndpoints;
   }
@@ -408,7 +459,12 @@ export class MapManager {
   resetView() {
     if (!this.map) return;
     clearRoute(this.map);
-    this.map.flyTo({ center: INITIAL_CENTER, zoom: getInitialZoom() });
+
+    this.flyTo({
+      center: INITIAL_CENTER,
+      zoom: getInitialZoom(),
+      duration: 1000,
+    });
   }
 
   zoomTo(
@@ -416,7 +472,8 @@ export class MapManager {
   ): void {
     if (!this.map) return;
     this.map.fitBounds(bounds, {
-      padding: 50,
+      padding: this.getCameraPadding(),
+      retainPadding: false,
       maxZoom: 15,
       duration: 1000,
     });

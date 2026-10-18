@@ -386,7 +386,7 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
       };
       if (id) apply(id);
 
-      map.flyTo({
+      mapManager.flyTo({
         center: [lng, lat],
         // > clusterMaxZoom (14) ensures clusters split so symbols are queryable
         zoom: Math.max(15, map.getZoom()),
