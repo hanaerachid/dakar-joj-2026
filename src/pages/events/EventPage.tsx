@@ -71,8 +71,8 @@ export type Event = {
   region?: string | null;
   sport?: string | null;
   status?: string | null;
-  startAt: Date | string;
-  endAt: Date | string;
+  startAt: Date | any;
+  endAt: Date | any;
   venue?: string | null;
   updatedAt?: Date | any;
 };
@@ -338,7 +338,11 @@ export function EventPage() {
         )}
 
         {!loading &&
-          events.map((item, index) => {
+          events
+          .sort((a, b) => {
+              return new Date(a.startAt).getTime() - new Date(b.startAt).getTime();
+            })
+          .map((item, index) => {
             const sport = ALL_SPORT_OPTIONS.find((s) => s.key === item.sport);
             const status = STATUSES.find((s) => s.value === item.status);
 

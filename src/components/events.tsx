@@ -46,9 +46,9 @@ import { toast } from "sonner";
 type ApiEventsItem = {
   _id: string;
   name: string;
-  updatedAt: string;
-  startAt: string;
-  endAt: string;
+  updatedAt: Date | any;
+  startAt: Date | any;
+  endAt: Date | any;
   venue: string;
   sport: string;
 };
@@ -229,7 +229,7 @@ export const PublicEvents = () => {
         setError(null);
 
         const response = await fetch(
-          "/api/v2/events?status=published&limit=20"
+          "/api/v2/events?status=published&limit=90"
         );
 
         if (!response.ok) {
