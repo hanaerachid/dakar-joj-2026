@@ -497,6 +497,7 @@ export function BusinessPage() {
 }
 
 export function BusinessCreate() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -506,7 +507,6 @@ export function BusinessCreate() {
     "/business": {
       label: t("business.businesses", "Businesses"),
     },
-
     "/create": {
       label: t("business.create", "Create Business"),
     },
@@ -592,7 +592,7 @@ export function BusinessCreate() {
       };
 
       // 4. Send the pure JSON payload to your Hono server
-      await createBusinessListing(payload);
+      const createdBusiness = await createBusinessListing(payload);
 
       toast.success(
         t(
@@ -600,9 +600,8 @@ export function BusinessCreate() {
           "Your business has been submitted successfully.",
         ),
       );
-
-      // Replace this with your router navigation or
-      // success screen once your API response is defined.
+      console.log("Created business listing:", createdBusiness);
+      navigate(`/business/listings/${createdBusiness._id}`);
     } catch (error) {
       console.error(error);
 
