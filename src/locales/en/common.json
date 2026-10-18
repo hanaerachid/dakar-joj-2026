@@ -23,7 +23,8 @@
     "edit": "Edit",
     "saved": "Saved !",
     "until": "Until",
-    "select_from_map": "Use map"
+    "select_from_map": "Use map",
+    "use_current_location": "Use current location"
   },
   "theme": "Theme",
   "language": "Language",

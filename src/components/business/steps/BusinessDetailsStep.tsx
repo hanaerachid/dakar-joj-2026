@@ -5,19 +5,18 @@ import { useTranslation } from "react-i18next";
 
 import type { BusinessCreateValues } from "../business-create.schema";
 import { BUSINESS_CATEGORIES } from "../business-create.config";
-import LocationPickerModal from "../../../core/map/LocationPickerModal";
+import LocationPickerModal, { type LocationPickerHandle } from "../../../core/map/LocationPickerModal";
 import LocationPickerButton, { MeLocaliserButton } from "../../../core/map/LocationPickerButton";
 import { useModalContext } from "@/components/modal-provider";
-import { Button } from "@/components/ui/button";
-import type { LocationPickerHandle } from "../../../core/map/LocationPickerModal";
 
+import { Button } from "@/components/ui/button";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import {
   TextField,
   SelectField,
   MultiSelectField,
 } from "@/components/common/Field";
-import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import { LocationConsent } from "@/components/LocationConsent";
 
 type ReverseGeocodeResponse = {

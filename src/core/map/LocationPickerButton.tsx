@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Map } from "lucide-react";
+import { Map, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 type Props = {
@@ -32,12 +32,12 @@ export function MeLocaliserButton({ onClick }: Props) {
       variant="outline"
       size="default"
       onClick={onClick}
-      title="Use my location"
-      aria-label="Use my location"
+      title="Use current location"
+      aria-label="Use current location"
       className="shrink-0 rounded-full"
     >
-      <Map />
-      <span className="hidden sm:inline-block">{t("common.use_my_location", "Use my location")}</span>
+      <MapPin />
+      <span className="hidden sm:inline-block">{t("common.use_current_location", "Use current location")}</span>
     </Button>
   );
 }

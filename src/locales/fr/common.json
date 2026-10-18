@@ -22,7 +22,8 @@
     "edit": "Modifier",
     "saved": "Enregistré !",
     "until": "Jusqu'au",
-    "select_from_map": "Sélectionner sur la carte"
+    "select_from_map": "Sélectionner sur la carte",
+    "use_current_location": "Utiliser la position actuelle"
   },
   "settings": "Paramètres",
   "map": "Carte",
