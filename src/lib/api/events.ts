@@ -47,8 +47,28 @@ export async function deleteEvent(id: string | undefined) {
 }
 
 export async function addEventToCalendar(event: Event) {
-    const response = await apiRequest<{ success: true; data: Event }>(`api/v2/events/${event._id}/calendar`, {
+    const response = await apiRequest<{ success: true; data: { tracked: boolean } }>(`/api/v2/events/${event._id}/calendar`, {
       method: "POST",
     });
     return response.data;
-  }
+}
+
+export async function hasEventInCalendar(eventId: string) {
+  const response = await apiRequest<{ success: true; data: { tracked: boolean } }>(
+    `/api/v2/events/${eventId}/calendar`,
+  );
+  return response.data.tracked;
+}
+
+export async function listCalendarEvents() {
+  const response = await apiRequest<{ success: true; data: Event[] }>("/api/v2/events/calendar");
+  return response.data;
+}
+
+export async function removeEventFromCalendar(eventId: string) {
+  const response = await apiRequest<{ success: true; data: { removed: boolean } }>(
+    `/api/v2/events/${eventId}/calendar`,
+    { method: "DELETE" },
+  );
+  return response.data.removed;
+}

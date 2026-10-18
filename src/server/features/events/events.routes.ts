@@ -2,14 +2,16 @@ import { Hono } from "hono";
 import { ok, fail } from "../../http/response.js";
 import {
   listEvents,
+  listCalendarEvents,
   getEventById,
   createEvent,
   updateEvent,
   deleteEvent,
   trackCalendarAddition,
   hasCalendarAddition,
+  removeCalendarAddition,
 } from "./events.service.js";
-import { requireAdmin } from "../../middleware/auth.js";
+import { requireAdmin, requireAuth } from "../../middleware/auth.js";
 import { eventSchema } from "../../../shared/contracts.js";
 
 export const eventRoutes = new Hono();
@@ -31,6 +33,25 @@ eventRoutes.get("/", async (c) => {
   const events = await listEvents({
     status,
     limit: Number.isFinite(limit) ? Math.max(1, Math.min(limit as number, 250)) : 100,
+  });
+
+  return ok(c, events);
+});
+
+eventRoutes.get("/calendar", async (c) => {
+  const denied = requireAuth(c);
+  if (denied) return denied;
+
+  const user = c.get("user");
+  if (!user) {
+    return c.json(
+      { success: false, error: { code: "UNAUTHORIZED", message: "Authentication required" } },
+      401,
+    );
+  }
+  const events = await listCalendarEvents({
+    userId: user.uid,
+    provider: "google",
   });
 
   return ok(c, events);
@@ -120,4 +141,24 @@ eventRoutes.post("/:id/calendar", async (c) => {
   return ok(c, {
     tracked: true,
   });
+});
+
+eventRoutes.delete("/:id/calendar", async (c) => {
+  const denied = requireAuth(c);
+  if (denied) return denied;
+
+  const user = c.get("user");
+  if (!user) {
+    return c.json(
+      { success: false, error: { code: "UNAUTHORIZED", message: "Authentication required" } },
+      401,
+    );
+  }
+  const removed = await removeCalendarAddition({
+    userId: user.uid,
+    eventId: c.req.param("id"),
+    provider: "google",
+  });
+
+  return ok(c, { removed });
 });

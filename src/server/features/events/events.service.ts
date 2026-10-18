@@ -182,3 +182,43 @@ export async function hasCalendarAddition({
 
   return addition !== null;
 }
+
+export async function listCalendarEvents({
+  userId,
+  provider,
+}: {
+  userId: string;
+  provider: "google";
+}) {
+  const db = await getMongoDatabase();
+  const additions = await db
+    .collection("calendar_additions")
+    .find({ userId, provider })
+    .sort({ createdAt: -1 })
+    .toArray();
+
+  const events = await Promise.all(
+    additions.map((addition) => getEventById(String(addition.eventId))),
+  );
+
+  return events.filter((event): event is NonNullable<typeof event> => event !== null);
+}
+
+export async function removeCalendarAddition({
+  userId,
+  eventId,
+  provider,
+}: {
+  userId: string;
+  eventId: string;
+  provider: "google";
+}) {
+  const db = await getMongoDatabase();
+  const result = await db.collection("calendar_additions").deleteOne({
+    userId,
+    eventId,
+    provider,
+  });
+
+  return result.deletedCount === 1;
+}

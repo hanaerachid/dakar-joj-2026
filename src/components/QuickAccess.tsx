@@ -35,6 +35,7 @@ export const QuickAccess = () => {
     setActiveTab,
     torchVisible,
     setTorchVisible,
+    setEventCategory,
   } = useStateContext();
 
   const handleToggleTorch = async () => {
@@ -53,7 +54,10 @@ export const QuickAccess = () => {
       available: true,
       color: "#00915a",
       icon: Calendars,
-      primaryAction: () => setActiveTab("events"),
+      primaryAction: () => {
+        void setEventCategory("public");
+        setActiveTab("events");
+      },
       secondaryAction: null,
       secondaryActionLabel: null,
       shortcut: false,
@@ -64,7 +68,10 @@ export const QuickAccess = () => {
       icon: Calendar,
       color: "#FFA500",
       active: false,
-      primaryAction: () => setActiveTab("events"),
+      primaryAction: () => {
+        void setEventCategory("personal");
+        setActiveTab("events");
+      },
       secondaryAction: null,
       secondaryActionLabel: null,
       shortcut: true,

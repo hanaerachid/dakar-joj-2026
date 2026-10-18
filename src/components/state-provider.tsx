@@ -39,6 +39,9 @@ type ProviderState = {
 
   selectedPlace: Record<string, unknown> | null
   setSelectedPlace: (place: Record<string, unknown> | null) => void
+
+  eventCategory: string
+  setEventCategory: (event: string) => void
 }
 
 const initialState: ProviderState = {
@@ -63,6 +66,9 @@ const initialState: ProviderState = {
 
   selectedPlace: null,
   setSelectedPlace: () => null,
+
+  eventCategory: "public",
+  setEventCategory: () => null,
 };
 
 export const StateContext = createContext<ProviderState>(initialState);
@@ -85,6 +91,7 @@ export function StateProvider({
   const [activeCatId, setActiveCatId] = useState("competition");
   const [selectedPlace, setSelectedPlace] = useState<Record<string, unknown> | null>(null);
   const [role, setRole] = useState<string | undefined>(undefined);
+  const [eventCategory, setEventCategory] = useState("public");
 
   useEffect(() => {
     initAuth((user, r) => {
@@ -130,6 +137,8 @@ export function StateProvider({
 
     selectedPlace,
     setSelectedPlace,
+    eventCategory,
+    setEventCategory,
   };
 
   return (
