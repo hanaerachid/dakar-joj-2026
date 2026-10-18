@@ -1,4 +1,25 @@
-import { Award, BadgeCheck, BarChart3, Building2, ChartNoAxesCombined, CheckCircle, Clock, Crown, FileText, Globe, MapPin, Megaphone, Phone, Star, Store, TrendingUp, Video } from "lucide-react";
+import {
+  AppWindow,
+  Award,
+  BadgeCheck,
+  BarChart3,
+  Building2,
+  ChartNoAxesCombined,
+  CheckCircle,
+  Clock,
+  Crown,
+  FileText,
+  Globe,
+  Image,
+  MapPin,
+  Megaphone,
+  Phone,
+  Star,
+  Store,
+  Target,
+  TrendingUp,
+  Video
+} from "lucide-react";
 
 export type BusinessCapability =
   | "email"
@@ -194,24 +215,24 @@ export const PRICING_PLANS = {
   },
   sponsor: {
     label: "Sponsor Officiel",
-    desc: "The showcase under the map, seen by everyone.",
+    desc: "Chaque visiteur qui cherche un lieu, un événement ou un itinéraire voit votre marque. Une visibilité locale, ciblée et mesurable.",
     icon: Award,
     color: "var(--accent-color-2)",
     recommended: false,
     features: [
       {
         title: "Bannière sur la carte",
-        icon: MapPin,
+        icon: Megaphone,
         description: "Mettez votre marque en avant sur la carte",
       },
       {
         title: "Logo en page d'accueil",
-        icon: Building2,
+        icon: AppWindow,
         description: "Renforcez votre présence dès la page d'accueil",
       },
       {
         title: "Campagne sur mesure",
-        icon: Megaphone,
+        icon: Target,
         description: "Profitez d'une campagne adaptée à vos objectifs",
       },
       {

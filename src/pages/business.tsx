@@ -95,6 +95,9 @@ export function BusinessPage() {
     "/business": {
       label: t("business.businesses", "Businesses"),
     },
+    "/business/listings": {
+      label: t("business.listings", "Listings"),
+    },
   }
   useEffect(() => {
     if (!isSignedIn) return;
@@ -423,7 +426,7 @@ export function BusinessPage() {
                       <Store className="w-12 h-12 text-muted-foreground" />
                     </EmptyMedia>
                     <EmptyDescription>
-                      {t("business.empty_slot", "Your listing appears here.")}
+                      {t("business.your_listing_appears_here", "Your listing appears here.")}
                     </EmptyDescription>
                   </EmptyHeader>
                   <EmptyContent>

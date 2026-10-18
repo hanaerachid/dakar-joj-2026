@@ -292,7 +292,7 @@ export const BusinessContent = () => {
               >
                 <EmptyHeader>
                   <EmptyDescription>
-                    {t("business.no_listings", "You're business listings appear here.")}
+                    {t("business.no_listings", "Your listings appear here.")}
                   </EmptyDescription>
                 </EmptyHeader>
                 <EmptyContent>

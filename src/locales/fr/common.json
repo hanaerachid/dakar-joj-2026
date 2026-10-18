@@ -1,7 +1,7 @@
 {
   "title": "L'Afrique accueille, Dakar célèbre",
   "description": "Dakar Jeux Olympiques de la Jeunesse",
-  "hello": "Hello, {{name}}!",
+  "hello": "Bonjour, {{name}}!",
   "common": {
     "back": "Retour",
     "continue": "Continuer",
@@ -141,6 +141,13 @@
     "edit": "Modifier un business",
     "new_listing": "Nouvelle établissement",
     "not_found": "Aucun établissement trouvé",
+    "already_registred": "Vous avez déjà un établissement enregistré ?",
+    "manage_business": "Gérer votre business",
+    "your_listings": "Vos établissements",
+    "no_listings": "Vos établissements apparaissent ici.",
+    "add_listing": "Ajouter un établissement",
+    "upgrade_plan": "Mettre à niveau",
+    "your_listing_appears_here": "Votre établissement apparaît ici.",
     "listbusiness": "Référencez votre établissement",
     "business_description": "Hôtels, restaurants, boutiques, concessions automobiles, musées, galeries… Rejoignez la carte officielle des visiteurs des Jeux.",
     "pricing": "Voir les plans",
@@ -255,14 +262,20 @@
     "become_partner": "Devenir partenaire",
     "recommended": "Recommandé",
     "popular": "Le plus populaire",
-    "current_plan": "Plan actuel"
+    "current_plan": "Plan actuel",
+    "single_payment": "Un seul paiement",
+    "no_subscription": "pas d'abonnement",
+    "visible": "Visible",
+    "until_date": "jusqu'au 31 décembre 2026",
+    "launch_offer": "Offre de lancement",
+    "reduced_price": "prix réduits"
   },
   "admin": {
     "admin": "Administration",
     "places": "Lieux",
     "new_place": "Nouveau lieu",
     "import_place": "Importer des lieux",
-    "approve_listing": "Approver",
+    "approve_listing": "Approuver",
     "verified_business": "Vérifié",
     "subscriptions": "Abonnements"
   },

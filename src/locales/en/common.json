@@ -141,6 +141,13 @@
     "edit": "Edit Business",
     "new_listing": "New business listing",
     "not_found": "No business listings found",
+    "already_registred": "You already have a business registered?",
+    "manage_business": "Manage your business",
+    "your_listings": "Your listings",
+    "no_listings": "Your listings appear here.",
+    "add_listing": "Add a business listing",
+    "upgrade_plan": "Upgrade",
+    "your_listing_appears_here": "Your listing appears here.",
     "listbusiness": "List your business",
     "business_description": "Hotels, restaurants, shops, car dealerships, museums, galleries — join the official visitor map.",
     "pricing": "See plans",
@@ -255,7 +262,13 @@
     "become_partner": "Become a partner",
     "recommended": "Recommended",
     "popular": "Popular",
-    "current_plan": "Current plan"
+    "current_plan": "Current plan",
+    "single_payment": "Single Payment",
+    "no_subscription": "No Subscription",
+    "visible": "Visible",
+    "until_date": "Until Date",
+    "launch_offer": "Launch Offer",
+    "reduced_price": "Reduced Price"
   },
   "admin": {
     "admin": "Administration",

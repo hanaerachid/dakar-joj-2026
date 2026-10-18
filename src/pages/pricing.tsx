@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import { cn } from "cn";
-import { CircleCheck, X } from "lucide-react";
+import { Calendar, CircleCheck, CreditCard, Star, X } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -142,6 +142,25 @@ export function PricingPage() {
             {t("pricing.description", "Pay once: your visibility lasts until the closing of the Games, on November 13, 2026. The earlier you commit, the less you pay.")}
           </p>
         </div>
+
+        <div className="flex flex-col items-start justify-start sm:flex-row sm:items-center sm:justify-center gap-4">
+        <div className="flex items-start gap-1">
+          <CreditCard className="w-5 h-5 text-[var(--accent-color-1)]"/>
+          <span className="font-bold text-sm text-foreground">{t("pricing.single_payment", "Un seul paiement")}</span>{" · "}
+          <span className="font-normal text-sm text-muted-foreground">{t("pricing.no_subscription", "pas d'abonnement")}</span>
+        </div>
+        <div className="flex items-start gap-1">
+          <Calendar className="w-5 h-5 text-[var(--accent-color-2)]"/>
+          <span className="font-bold text-sm text-foreground">{t("pricing.visible", "Visible")}</span>{" "}
+          <span className="font-normal text-sm text-muted-foreground">{t("pricing.until_date", "jusqu'au 31 décembre 2026")}</span>
+        </div>
+        <div className="flex items-start gap-1">
+          <Star className="w-5 h-5 text-[var(--accent-color-3)]"/>
+          <span className="font-bold text-sm text-foreground">{t("pricing.launch_offer", "Offre de lancement")}</span>{" · "}
+          <span className="font-normal text-sm text-muted-foreground">{t("pricing.reduced_price", "prix réduits")} </span>
+        </div>
+        </div>
+
         <div className={cn(
           "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 [&>*:last-child]:col-span-full"
         )}>
@@ -161,8 +180,11 @@ export function PricingPage() {
                     // item.recommended ? "before:text-xs before:text-center before:font-bold before:uppercase before:h-6 before:content-['Recommended']" : "before:h-1 before:content-['']",
                     item.recommended ? "shadow-xl" : "shadow-none",
                     "grid grid-cols-1 last:sm:grid-cols-2 gap-4 content-start",
-                    "sm:last:[&_[data-slot='item-description']]:block",
-                    "sm:last:[&_[data-slot='item']]:bg-background/25",
+                    "last:bg-[color-mix(in_srgb,var(--card)_5%,var(--foreground)_95%)]",
+                    "last:text-[color-mix(in_srgb,var(--card)_95%,var(--foreground)_5%)]",
+                    "last:sm:[&_[data-slot='item-description']]:block",
+                    "last:sm:[&_[data-slot='item']]:bg-foreground/50",
+                    "last:sm:[&_[data-slot='item']]:p-4",
                   )}
                   style={{
                     borderWidth: "2px",
@@ -193,21 +215,21 @@ export function PricingPage() {
                       </CardDescription>
                     )}
 
-                    {item.desc && (
-                      <CardDescription className={cn(
+                    <CardDescription
+                      className={cn(
                         "text-[11px] text-muted-foreground tracking-tight uppercase",
                         "py-1",
                       )}
-                        style={{
-                          color: item.color,
-                        }}
-                      >
-                        {t(
-                          `businessCreate.plan_desc.${key}`,
-                          item.desc,
-                        )}
-                      </CardDescription>
-                    )}
+                      style={{
+                        color: item.color,
+                      }}
+                    >
+                      {t(
+                        `businessCreate.plan_desc.${key}`,
+                        item.desc,
+                      )}
+                    </CardDescription>
+
                     <CardTitle className="flex items-center gap-2 text-xl font-semibold">
                       {t(
                         `businessCreate.plans.${key}`,
@@ -254,6 +276,13 @@ export function PricingPage() {
                         }
                       </span>
                     </CardDescription>
+
+                    {item.desc && (
+                    <CardDescription className="sm:group-not-last:hidden text-sm">
+                      {item.desc}
+                    </CardDescription>
+                    )}
+
                     <Button
                       type="button"
                       disabled={action.disabled}
@@ -274,7 +303,9 @@ export function PricingPage() {
                   <CardContent className={cn(
                     "grid grid-cols-1 gap-1 sm:group-last:grid-cols-2",
                   )}>
-                    {item.features.map((element, index) => (
+                    {item.features.map((element, index) => {
+                      const Icon = element.icon ?? CircleCheck;
+                    return (
                       <Item
                         key={index}
                         size="xs"
@@ -282,11 +313,13 @@ export function PricingPage() {
                           "px-1 text-sm",
                         )}
                       >
-                        <ItemMedia variant="icon">
-                          <CircleCheck className={cn(
-                            "text-primary"
-                          )} />
-                        </ItemMedia>
+                        {Icon && (
+                          <ItemMedia variant="icon">
+                            <Icon className="group-last:text-primary group-not-last:hidden" />
+                            <CircleCheck className="group-last:hidden" />
+                          </ItemMedia>
+                        )}
+
                         <ItemContent>
                           <ItemTitle>
                             {(element as any).title}
@@ -299,7 +332,8 @@ export function PricingPage() {
                           </ItemDescription>
                         </ItemContent>
                       </Item>
-                    ))}
+                    )}
+                    )}
                     {item.limitations.map((element, index) => (
                       <Item
                         key={index}
