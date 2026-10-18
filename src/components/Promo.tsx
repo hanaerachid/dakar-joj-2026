@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "cn";
 import Autoplay from "embla-carousel-autoplay";
@@ -8,6 +9,7 @@ import { useRelativeTime } from "@/utils/helpers";
 import { getSportIcon } from "@/utils/helpers";
 import { Icon } from "@iconify/react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Item,
   ItemActions,
@@ -26,8 +28,9 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { ALL_SPORT_OPTIONS } from "../data/sports";
-import { Button } from "./ui/button";
-import { useNavigate } from "react-router-dom";
+import type { BusinessListing } from "@/shared/contracts";
+import { listBusinessListings } from "@/lib/api/listings";
+import { getMediaUrl } from "@/lib/fileConvert";
 
 type ApiEventsItem = {
   _id: string;
@@ -85,7 +88,9 @@ export const Promo = () => {
   const lang = i18n.resolvedLanguage || i18n.language || "en";
   const { getRelativeTime } = useRelativeTime();
   const [events, setEvents] = useState<ApiEventsItem[]>([]);
+  const [businessListings, setBusinessListings] = useState<BusinessListing[]>([]);
   const [eventLoading, setEventLoading] = useState(true);
+  const [listingError, setListingLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const plugin = useRef(
     Autoplay({
@@ -93,6 +98,33 @@ export const Promo = () => {
       stopOnInteraction: true
     })
   )
+
+  async function loadBusinessListings(
+    coordinates?: readonly [number, number],
+  ) {
+    setListingLoading(true);
+    try {
+      let items: BusinessListing[] = [];
+
+      items = (await listBusinessListings({
+        status: "published",
+        verified: true,
+      })) as BusinessListing[];
+
+      if (!coordinates) {
+      items.sort((a: BusinessListing, b: BusinessListing) => {
+        return (a.name || "").localeCompare(b.name || "");
+      });
+      }
+
+      setBusinessListings(items);
+    } finally {
+      setListingLoading(false);
+    }
+  }
+  useEffect(() => {
+    void loadBusinessListings();
+  }, [location]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -255,6 +287,25 @@ export const Promo = () => {
             })}
           </CarouselItem>
         )}
+
+        {!listingError && businessListings
+          .filter(
+            (item) =>
+              item.pack === "sponsor"
+          )
+          .map((item, index) => {
+            return (
+              <CarouselItem
+                key={index}
+                className="basis-full"
+              >
+                <ListingCard
+                  item={item}
+                />
+              </CarouselItem>
+            );
+          })}
+
       </CarouselContent>
 
       <div className=" z-1000 absolute hidden group-hover:flex right-0 -top-4 items-center gap-1">
@@ -264,3 +315,49 @@ export const Promo = () => {
     </Carousel>
   )
 }
+
+const ListingCard = ({
+  item,
+}: {
+  item: BusinessListing;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <Item
+      variant="default"
+      size="default"
+      className={cn(
+        // "h-full",
+        "backdrop-blur-sm",
+      )}
+    >
+      <ItemMedia
+        variant="image"
+        className="aspect-square w-16 sm:w-24 h-full shrink-0"
+      >
+        {item.photos && item.photos.length > 0 ? (
+          <img
+            src={getMediaUrl(item.photos[0])}
+            alt={item.name}
+            className="aspect-square object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <div className="flex items-center z-10 aspect-square w-full justify-center bg-background/50 text-foreground/30">
+            {t("no_image", "No image")}
+          </div>
+        )}
+      </ItemMedia>
+      <ItemContent>
+        <ItemTitle>
+          <span className="text-2xl font-semibold">
+            {item.name}
+          </span>
+        </ItemTitle>
+        <ItemDescription className="text-sm line-clamp-2">
+          {item.desc}
+        </ItemDescription>
+      </ItemContent>
+    </Item>
+  );
+};
