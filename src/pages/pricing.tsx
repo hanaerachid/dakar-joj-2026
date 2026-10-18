@@ -131,7 +131,7 @@ export function PricingPage() {
       // title={t("title")}
       // description={t("description")}
       />
-      <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-16 pb-8 space-y-6">
+      <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-4 md:pt-16 pb-8 space-y-6">
         <Breadcrumbs
           config={breadcrumbConfig}
         />

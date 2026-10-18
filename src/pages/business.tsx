@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm, FormProvider } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useUser } from "@clerk/clerk-react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronLeft, MoreVertical, Pencil, Plus } from "lucide-react";
+import { cn } from "cn";
+import { ChevronLeft, MoreVertical, Plus, Store } from "lucide-react";
 import { toast } from "sonner";
 import { uploadFilesToR2 } from "@/lib/api/uploads";
 import { getMySubscription } from "@/lib/api/payments";
@@ -47,6 +48,7 @@ import {
   EmptyContent,
   EmptyDescription,
   EmptyHeader,
+  EmptyMedia,
 } from "@/components/ui/empty";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
@@ -66,6 +68,7 @@ import {
 } from "@/lib/api/listings";
 import { type BreadcrumbConfig, Breadcrumbs } from "@/components/BreadCrumbs";
 import { useModalContext } from "@/components/modal-provider";
+import { PRICING_PLANS } from "../components/pricing/pricingplans.config";
 
 const STEP_FIELDS: Record<number, (keyof BusinessCreateValues)[]> = {
   0: ["cat"],
@@ -79,6 +82,8 @@ export function BusinessPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user, isLoaded } = useUser();
+  const { isSignedIn } = useAuth();
+  const [subscription, setSubscription] = useState<{ plan: string; status: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [businessListings, setBusinessListings] = useState<BusinessListing[]>([]);
   const { setIsOpen, setModalContent } = useModalContext();
@@ -91,6 +96,13 @@ export function BusinessPage() {
       label: t("business.businesses", "Businesses"),
     },
   }
+  useEffect(() => {
+    if (!isSignedIn) return;
+    const load = async () => {
+      setSubscription(await getMySubscription());
+    };
+    void load().catch((error) => toast.error(error instanceof Error ? error.message : "Unable to load payment status"));
+  }, [isSignedIn]);
 
   async function loadBusinessListings() {
     if (!isLoaded || !user) return;
@@ -171,20 +183,47 @@ export function BusinessPage() {
 
     setIsOpen(true);
   }
+  const currentPlan = subscription?.plan;
+
+  const planId: keyof typeof PRICING_PLANS =
+    typeof currentPlan === "string" && currentPlan in PRICING_PLANS
+      ? (currentPlan as keyof typeof PRICING_PLANS)
+      : "discover";
+  const plan = PRICING_PLANS[planId];
+
+  const { listings } = plan;
+  const MAX_VISIBLE_SLOTS = 6;
+
+  const existingCount = businessListings.length;
+  const isManageable = listings <= 5;
+  // Total slots to display, including existing listings
+  const totalSlots = isManageable
+    ? listings
+    : Math.min(
+      listings,
+      Math.max(MAX_VISIBLE_SLOTS, existingCount + 1)
+    );
+
+  // Only render empty slots for the remaining capacity
+  const emptySlots = Math.max(0, totalSlots - existingCount);
+
+  // Show a notice when the listing limit has been reached or exceeded.
+  const hasReachedListingLimit = existingCount >= listings;
 
   return (
-    <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-16 pb-8 space-y-6">
+    <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-4 md:pt-16 pb-8 space-y-6">
         <Breadcrumbs
           config={breadcrumbConfig}
         />
+
+      <div className="text-2xl/7 font-bold leading-tight text-foreground">
+        {t("hello", "Hello", { name: user?.firstName || user?.fullName || t("business_owner", "Business owner") })}
+      </div>
+
+      {businessListings.length === 0 && (
         <Card>
-          <CardHeader>
-            <Badge variant="secondary">
-            {t("hello", "Hello", { name: user?.firstName || user?.fullName || "User" })}
-            </Badge>
-          </CardHeader>
           <CardContent>
-            <CardTitle className="max-w-xl">
+            <CardTitle className="max-w-xl text-lg leading-wide text-foreground font-semibold">
             {t("business.hero_title", "Manage your business listings and reach more customers.")}
             </CardTitle>
             <CardDescription className="max-w-xl">
@@ -205,6 +244,7 @@ export function BusinessPage() {
             </CardAction>
           </CardFooter>
         </Card>
+      )}
 
         <div className="mb-6">
           <div className="flex flex-wrap items-center justify-between gap-3 md:gap-4">
@@ -217,8 +257,18 @@ export function BusinessPage() {
 
             {/* Actions */}
             <div className="flex items-center gap-2">
+            {["discover", "starter", "business"].includes(planId) && (
+              <Button
+                variant="outline"
+                onClick={() => navigate("/pricing")}
+                className="inline-flex items-center gap-2"
+              >
+                <span>{t("business.upgrade", "Upgrade")}</span>
+              </Button>
+            )}
               <Button
                 variant="link"
+                disabled={hasReachedListingLimit}
                 onClick={() => navigate("/business/create")}
                 className="inline-flex items-center gap-2"
               >
@@ -231,43 +281,7 @@ export function BusinessPage() {
 
         {/* Cards */}
         <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {loading && (
-            <div className="col-span-full grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {[...Array(6)].map((_, i) => (
-                <Skeleton key={i} className="overflow-hidden rounded-3xl" >
-                  <Skeleton className="aspect-video w-full bg-foreground/20" />
-                  <Skeleton className="p-4 space-y-3">
-                    <Skeleton className="h-4 w-1/2 rounded bg-foreground/20" />
-                    <Skeleton className="h-3 w-2/3 rounded bg-foreground/20" />
-                    <Skeleton className="h-8 w-full rounded bg-foreground/20" />
-                  </Skeleton>
-                </Skeleton>
-              ))}
-            </div>
-          )}
-
-          {!loading && businessListings.length === 0 && (
-            <Empty className="col-span-full border border-foreground/30 p-8 text-foreground/50 shadow-sm">
-              <EmptyHeader>
-                <EmptyDescription className="text-center text-sm text-foreground/50">
-                  {t("business.not_found", "No business listings found")}
-                </EmptyDescription>
-              </EmptyHeader>
-              <EmptyContent>
-                <Button
-                  variant="default"
-                  onClick={() => navigate("/business/create")}
-                  className="inline-flex items-center gap-2"
-                >
-                  <Plus />
-                  <span>{t("business.new_listing", "New business listing")}</span>
-                </Button>
-              </EmptyContent>
-            </Empty>
-          )}
-
-          {!loading &&
-            businessListings.map((item, index) => {
+        {!loading &&businessListings.map((item, index) => {
               return (
                 <Card
                   key={index}
@@ -275,7 +289,10 @@ export function BusinessPage() {
                   size="sm"
                 >
                   <Badge
-                    className="absolute start-4 top-4 z-20"
+                    className={cn(
+                      "absolute start-4 top-4 z-20",
+                      "text-[10px] uppercase",
+                    )}
                     variant="secondary"
                   >
                     {getFriendlyCategoryName(item.cat, t)}
@@ -297,12 +314,18 @@ export function BusinessPage() {
 
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem
+                        variant="default"
+                        className="w-full"
+                        onClick={() => navigate(`/business/listings/${item._id}`)}
+                      >
+                        <span>{t("edit", "Edit")}</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
                         variant="destructive"
-                        // disabled
-                        // aria-disabled
+                        className="w-full"
                         onClick={() => handleDelete(item)}
                       >
-                        Delete
+                        <span>{t("delete", "Delete")}</span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -310,67 +333,160 @@ export function BusinessPage() {
                   <CardHeader className="p-0 gap-0">
                     {/* image */}
                     {item.photos && item.photos.length > 0 ? (
-                    <>
-                      <div className="absolute bg-gradient-to-b from-background to-transparent w-full h-1/4 aspect-video object-cover"/>
+                      <>
+                    <div className="absolute bg-gradient-to-b from-background to-transparent w-full h-1/4 aspect-video object-cover" />
                       <img
                         src={getMediaUrl(item.photos[0])}
                         alt={item.name}
                         className="w-full aspect-video object-cover"
                         loading="lazy"
                       />
-                    </>
+                      </>
                     ) : (
                       <div className="flex items-center z-10 aspect-video w-full justify-center bg-background/50 text-foreground/30">
                         {t("no_image", "No image")}
                       </div>
                     )}
-                  <Separator />
+                    <Separator />
                   </CardHeader>
                   {/* body */}
-                  <CardHeader>
-                    <CardTitle className="font-semibold leading-tight text-foreground/90">
+                  <CardContent>
+                    <CardTitle
+                      title={item.name}
+                      className={cn(
+                        "w-full line-clamp-1 overflow-hidden text-ellipsis",
+                        "text-lg leading-wide tracking-normal text-foreground font-heading font-semibold"
+                      )}
+                    >
                       {item.name}
                     </CardTitle>
-                  </CardHeader>
-                  <CardContent>
+
                     {item.desc && (
-                      <CardDescription>
+                      <CardDescription className={cn(
+                        "w-full line-clamp-2 overflow-hidden text-ellipsis",
+                        "text-sm leading-snug tracking-normal text-foreground/90 font-body font-normal"
+                      )}>
                         {item.desc}
                       </CardDescription>
                     )}
+
                     {item.address && (
-                      <CardDescription>
+                      <CardDescription className={cn(
+                        "w-full line-clamp-2 overflow-hidden text-ellipsis",
+                        "text-sm leading-snug tracking-normal text-muted-foreground font-body font-normal"
+                      )}>
                         {item.address}
                       </CardDescription>
                     )}
 
-                    {/* 
+                  
+                  {/* 
                   {item.location && (
                     <p className="text-xs text-foreground/50">
                       {item.location.coordinates[0]?.toFixed?.(5)} •{" "}
                       {item.location.coordinates[1]?.toFixed?.(5)}
                     </p>
-                  )} */}
+                  )}
+                  */}
 
-                  </CardContent>
-                  <CardFooter className="w-full flex-1 items-end">
-                    {/* <div className="text-xs text-foreground/50">
+                  {/*
+                  <div className="text-xs text-foreground/50">
                     {item.updatedAt?.toDate
                       ? new Date(item.updatedAt.toDate()).toLocaleString()
                       : ""}
-                  </div> */}
-                    <Button
-                      className="w-full"
-                      variant="outline"
-                      onClick={() => navigate(`/business/listings/${item._id}`)}
-                    >
-                      <Pencil />
-                      <span>{t("edit", "Edit")}</span>
-                    </Button>
-                  </CardFooter>
+                  </div>
+                  */}
+                  </CardContent>
                 </Card>
               );
             })}
+
+        {[...Array(emptySlots)].map((_, index) => {
+          const isFirstSlot = index === 0
+          return (
+            <Empty
+              key={index}
+              className={cn(
+                "bg-muted/10",
+                // "opacity-50",
+                isFirstSlot && "border border-border",
+                isFirstSlot && "bg-[radial-gradient(var(--card)_1px,transparent_1px)] [background-size:8px_8px]",
+                isFirstSlot && "hover:bg-muted transition-colors duration-300",
+              )}
+            >
+              {isFirstSlot && (
+                <>
+                  <EmptyHeader>
+                    <EmptyMedia
+                      variant="icon"
+                    >
+                      <Store className="w-12 h-12 text-muted-foreground" />
+                    </EmptyMedia>
+                    <EmptyDescription>
+                      {t("business.empty_slot", "Your listing appears here.")}
+                    </EmptyDescription>
+                  </EmptyHeader>
+                  <EmptyContent>
+                    <Button
+                      variant="default"
+                      onClick={() => navigate("/business/create")}
+                    >
+                      <Plus />
+                      <span>{t("business.new_listing", "Add a listing here")}</span>
+                    </Button>
+                  </EmptyContent>
+                </>
+              )}
+            </Empty>
+          )
+        }
+        )}
+
+        {hasReachedListingLimit && (
+          <Empty className={cn(
+            "border border-border bg-muted/10"
+          )}>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Store className="w-12 h-12 text-muted-foreground" />
+              </EmptyMedia>
+
+              <EmptyDescription>
+                {t(
+                  "business.listing_limit_reached",
+                  "You've reached the listing limit for your current plan."
+                )}
+              </EmptyDescription>
+            </EmptyHeader>
+
+            <EmptyContent>
+              <Button
+                variant="default"
+                onClick={() => navigate("/pricing")}
+              >
+                <Plus />
+                <span>
+                  {t("business.upgrade", "Upgrade your plan")}
+                </span>
+              </Button>
+            </EmptyContent>
+          </Empty>
+        )}
+
+        {loading && (
+          <>
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="overflow-hidden rounded-3xl" >
+                <Skeleton className="aspect-video w-full bg-foreground/20" />
+                <Skeleton className="p-4 space-y-3">
+                  <Skeleton className="h-4 w-1/2 rounded bg-foreground/20" />
+                  <Skeleton className="h-3 w-2/3 rounded bg-foreground/20" />
+                  <Skeleton className="h-8 w-full rounded bg-foreground/20" />
+                </Skeleton>
+              </Skeleton>
+            ))}
+          </>
+        )}
         </div>
     </main>
   );
@@ -522,7 +638,7 @@ export function BusinessCreate() {
   };
 
   return (
-    <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-16 pb-8 space-y-6">
+    <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-4 md:pt-16 pb-8 space-y-6">
       <Breadcrumbs
         config={breadcrumbConfig}
       />
@@ -744,7 +860,7 @@ export function BusinessEdit() {
   };
 
   return (
-    <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-16 pb-8 space-y-6">
+    <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-4 md:pt-16 pb-8 space-y-6">
       <Breadcrumbs
         config={breadcrumbConfig}
       />

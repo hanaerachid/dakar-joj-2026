@@ -147,7 +147,7 @@ export function EventPage() {
   }
 
   return (
-    <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-16 pb-8 space-y-6">
+    <main className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-4 md:pt-16 pb-8 space-y-6">
       <Breadcrumbs
         config={breadcrumbConfig}
       />
@@ -568,7 +568,7 @@ export function AddEventPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-16 pb-8">
+    <div className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-4 md:pt-16 pb-8">
       {/* Header */}
       <div className="mb-5 flex items-start justify-between gap-3">
         <div className="space-y-6">
@@ -788,7 +788,7 @@ export function EditEventPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-16 pb-8">
+    <div className="mx-auto max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-6xl px-4 pt-4 md:pt-16 pb-8">
       {/* Top bar */}
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="space-y-6">
