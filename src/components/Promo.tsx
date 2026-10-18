@@ -10,6 +10,7 @@ import { Icon } from "@iconify/react";
 import { Badge } from "@/components/ui/badge";
 import {
   Item,
+  ItemActions,
   ItemContent,
   ItemDescription,
   ItemFooter,
@@ -25,6 +26,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { ALL_SPORT_OPTIONS } from "../data/sports";
+import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
 
 type ApiEventsItem = {
   _id: string;
@@ -77,13 +80,13 @@ export const SPORT_OPTIONS_BY_KEY = Object.fromEntries(
 );
 
 export const Promo = () => {
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage || i18n.language || "en";
   const { getRelativeTime } = useRelativeTime();
   const [events, setEvents] = useState<ApiEventsItem[]>([]);
   const [eventLoading, setEventLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const plugin = useRef(
     Autoplay({
       delay: 6000,
@@ -157,6 +160,38 @@ export const Promo = () => {
                 {t("home.countdown_description", "Days left until the Dakar 2026 Youth Olympic Games!")}
               </ItemDescription>
             </ItemContent>
+          </Item>
+        </CarouselItem>
+
+        <CarouselItem className="basis-full">
+          <Item
+            size="default"
+            className={cn(
+              "h-full",
+              "backdrop-blur-sm",
+            )}
+          >
+            <ItemHeader>
+              <ItemTitle>
+                <span className="text-2xl font-semibold">
+                  {t("pricing.become_partner", "Become a partner")}
+                </span>
+              </ItemTitle>
+            </ItemHeader>
+            <ItemContent>
+              <ItemDescription>
+                {t("pricing.description", "Join us in making the Dakar 2026 Youth Olympic Games a success! Explore partnership opportunities and be part of this exciting event.")}
+              </ItemDescription>
+            </ItemContent>
+            <ItemActions>
+              <Button
+                variant="secondary"
+                size="default"
+                onClick={() => navigate("/pricing")}
+              >
+                {t("pricing.contact_us", "Contact us")}
+              </Button>
+            </ItemActions>
           </Item>
         </CarouselItem>
 
