@@ -9,14 +9,14 @@ import { toast } from "sonner";
 import {
   /*Flame,*/
   House,
-  RouteOff,
+  // RouteOff,
   Share2
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
 // import { useStateContext } from "./state-provider";
 // import { MapManager } from "@/core/MapManager";
-import { clearDirections } from "@/utils/directions";
+// import { clearDirections } from "@/utils/directions";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 type SidebarProps = {
@@ -129,14 +129,18 @@ export function Sidebar({
         {/* thin divider */}
         <Separator className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
         {/* Bottom group */}
+        {/*         
         <AnimatedButton
           icon={RouteOff}
           title={t("actions.clearroute", "Clear Route")}
           tooltip={t("actions.clearroute", "Clear Route")}
           onClick={clearDirections}
         />
+        */}
+
         <AnimatedButton
           icon={Share2}
+          className="hidden"
           title={t("actions.share", "Share Map")}
           tooltip={t("actions.share", "Share Map")}
           onClick={handleShare}
