@@ -15,10 +15,11 @@ import {
 } from "@/components/ui/empty";
 import {
   Item,
+  ItemActions,
   ItemContent,
   ItemDescription,
-  ItemFooter,
   ItemGroup,
+  ItemHeader,
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
@@ -189,7 +190,7 @@ export const PublicEvents = () => {
             variant="default"
             onClick={async () => {
               setEvents((current) =>
-                current.filter((event) => event._id !== event._id)
+                current.filter((item) => item._id !== event._id)
               );
               setIsOpen(false);
               setLoadingEventId(event._id);
@@ -388,26 +389,10 @@ export const PublicEvents = () => {
                       <Item
                         key={index}
                         size="xs"
-                        variant="outline"
+                        variant="muted"
                         className="group hover:bg-accent"
                       >
-                        {sport?.icon && (
-                          <ItemMedia
-                            variant="default"
-                            className="w-7 h-7"
-                          >
-                            <Icon
-                              className="w-6 h-6"
-                              icon={getSportIcon({ sportId: item.sport }) || "mdi:help"}
-                            />
-                          </ItemMedia>
-                        )}
-                        <ItemContent className="min-w-0 flex-1">
-                          <ItemTitle
-                            className="min-w-0 truncate overflow-hidden text-ellipsis whitespace-nowrap"
-                          >
-                            {item.name}
-                          </ItemTitle>
+                        <ItemHeader>
                           <ItemDescription
                             className="min-w-0 truncate overflow-hidden text-ellipsis whitespace-nowrap"
                             title={getRelativeTime(new Date(item.startAt))}
@@ -423,17 +408,34 @@ export const PublicEvents = () => {
                           {formatDuration(item.startAt, item.endAt, lang)}
                           */}
                           </ItemDescription>
-                        </ItemContent>
-                        <ItemContent className="shrink-0">
+                        </ItemHeader>
+                        {sport?.icon && (
+                          <ItemMedia
+                            variant="default"
+                            className="w-7 h-7"
+                          >
+                            <Icon
+                              className="w-6 h-6"
+                              icon={getSportIcon({ sportId: item.sport }) || "mdi:help"}
+                            />
+                          </ItemMedia>
+                        )}
+
+                        <ItemContent className="min-w-0 flex-1">
+                          <ItemTitle
+                            className="min-w-0 truncate overflow-hidden text-ellipsis whitespace-nowrap"
+                          >
+                            {item.name}
+                          </ItemTitle>
                           <ItemDescription className="text-xs">
                             {item.venue}
                           </ItemDescription>
                         </ItemContent>
-                        <ItemFooter
+
+                        <ItemActions
                           className={cn(
                             "shrink-0",
-                            "hidden opacity-0",
-                            "group-hover:flex group-hover:opacity-100 transition-opacity duration-300",
+                            "md:hidden md:opacity-0 md:group-hover:flex md:group-hover:opacity-100 md:transition-opacity md:duration-300",
                             (tracked || isLoading) ? "flex opacity-100" : "",
                           )}
                         >
@@ -443,7 +445,7 @@ export const PublicEvents = () => {
                             handleAddToCalendar={() => handleAddToCalendar(item)}
                             handleRemoveFromCalendar={() => void handleRemoveFromCalendar(item)}
                           />
-                        </ItemFooter>
+                        </ItemActions>
                       </Item>
                     );
                   })}
@@ -530,7 +532,7 @@ export const PersonalEvents = () => {
             variant="default"
             onClick={async () => {
               setEvents((current) =>
-                current.filter((event) => event._id !== event._id)
+                current.filter((item) => item._id !== event._id)
               );
               setIsOpen(false);
               try {
@@ -602,7 +604,12 @@ export const PersonalEvents = () => {
           {(events as ApiEventsItem[]).map((event, index) => {
             // const sport = SPORT_OPTIONS_BY_KEY[event.sport];
             return (
-            <Item key={index} variant="outline" size="xs">
+            <Item
+              key={index}
+              size="xs"
+              variant="muted"
+              className="group hover:bg-accent"
+            >
                 {/*
                 {sport?.icon && (
                   <ItemMedia
@@ -718,11 +725,8 @@ const CalendarButton = ({
     >
       <Button
         variant="default"
-        size="icon"
-        className="w-auto overflow-hidden transition-[padding] duration-200 ease-in-out"
-        style={{
-          paddingInline: isHovered ? "12px" : "8px",
-        }}
+        size="lg"
+        className="min-w-9 overflow-hidden transition-[padding] duration-200 ease-in-out"
         onClick={handleAddToCalendar}
         aria-label={addLabel}
       >
@@ -732,8 +736,8 @@ const CalendarButton = ({
           className={cn(
             "overflow-hidden whitespace-nowrap transition-[max-width,opacity,margin] duration-200 ease-in-out",
             isHovered
-              ? "ml-2 max-w-[200px] opacity-100"
-              : "ml-0 max-w-0 opacity-0",
+              ? "max-w-[200px] opacity-100"
+              : "max-w-0 opacity-0",
           )}
         >
           {addLabel}
