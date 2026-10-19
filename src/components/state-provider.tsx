@@ -55,13 +55,13 @@ const initialState: ProviderState = {
   torchVisible: false,
   setTorchVisible: () => null,
 
-  openMainCategoryIds: ["sports"],
+  openMainCategoryIds: ["sports", "businesses"],
   setOpenMainCategoryIds: () => null,
-  openCatIds: { sports: ["competition"] },
+  openCatIds: { sports: ["competition"], businesses: ["business"] },
   setOpenCatIds: () => null,
-  activeMainCategoryId: "sports",
+  activeMainCategoryId: "businesses",
   setActiveMainCategoryId: () => null,
-  activeCatId: "competition",
+  activeCatId: "business",
   setActiveCatId: () => null,
 
   selectedPlace: null,
@@ -83,12 +83,13 @@ export function StateProvider({
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [torchVisible, setTorchVisible] = useState(false);
-  const [openMainCategoryIds, setOpenMainCategoryIds] = useState(["sports"]);
+  const [openMainCategoryIds, setOpenMainCategoryIds] = useState(["businesses"]);
   const [openCatIds, setOpenCatIds] = useState<Record<string, string[]>>({
     sports: ["competition"],
+    businesses: ["business"],
   });
-  const [activeMainCategoryId, setActiveMainCategoryId] = useState("sports");
-  const [activeCatId, setActiveCatId] = useState("competition");
+  const [activeMainCategoryId, setActiveMainCategoryId] = useState("businesses");
+  const [activeCatId, setActiveCatId] = useState("businesses");
   const [selectedPlace, setSelectedPlace] = useState<Record<string, unknown> | null>(null);
   const [role, setRole] = useState<string | undefined>(undefined);
   const [eventCategory, setEventCategory] = useState("public");

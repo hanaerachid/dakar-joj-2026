@@ -64,6 +64,7 @@ export default function MapPage() {
   const [zones, setZones] = useState<Zone[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [mapReady, setMapReady] = useState(false);
   const isMobile = useIsMobile();
   const {
     activeTab,
@@ -163,10 +164,26 @@ export default function MapPage() {
   ]);
 
   useEffect(() => {
+    if (!mapReady || !selectedPlace) return;
+
+    const longitude = selectedPlace.lng;
+    const latitude = selectedPlace.lat;
+    if (typeof longitude !== "number" || typeof latitude !== "number") return;
+
+    const map = mapManager.getMap();
+    if (!map) return;
+
+    mapManager.flyTo({
+      center: [longitude, latitude],
+      zoom: Math.max(15, map.getZoom()),
+      speed: 1.2,
+    });
+  }, [mapManager, mapReady, selectedPlace]);
+
+  useEffect(() => {
     if (!mapContainerRef.current) return;
 
     let map: mapboxgl.Map;
-
     try {
       map = mapManager.initMap(mapContainerRef.current);
     } catch (error) {
@@ -180,6 +197,8 @@ export default function MapPage() {
 
       throw error;
     }
+
+    setMapReady(true);
 
     const onMove = () => {
       const center = map.getCenter();

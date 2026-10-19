@@ -24,6 +24,7 @@ import { getMediaUrl } from "@/lib/fileConvert";
 import { getFriendlyCategoryName } from "@/utils/key-translations";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader } from "./ui/empty";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
+import { useStateContext } from "./state-provider";
 
 export const BusinessContent = () => {
   const navigate = useNavigate();
@@ -34,6 +35,20 @@ export const BusinessContent = () => {
   const [loading, setLoading] = useState(false);
   const [businessListings, setBusinessListings] = useState<BusinessListing[]>([]);
   const [open, setOpen] = useState(false);
+  const { setActiveTab, setSelectedPlace } = useStateContext();
+
+  const openBusinessListing = (listing: BusinessListing) => {
+    const [lng, lat] = listing.location.coordinates;
+    setSelectedPlace({
+      id: listing._id,
+      lng,
+      lat,
+      title: listing.name,
+      type: "business",
+      listing,
+    });
+    setActiveTab("explorer");
+  };
 
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);
@@ -204,6 +219,7 @@ export const BusinessContent = () => {
                             key={index}
                             size="sm"
                             variant="muted"
+                            onClick={() => openBusinessListing(item)}
                             className={cn(
                               "group relative aspect-square overflow-hidden",
                             )}

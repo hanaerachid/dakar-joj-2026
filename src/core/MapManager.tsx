@@ -32,7 +32,7 @@ const isBasemapId = (value: string | null): value is BasemapId => {
   return value !== null && value in MAPBOX_STYLE_URLS;
 };
 
-const DEFAULT_VISIBLE_CATS = new Set<string>(["competition"]);
+const DEFAULT_VISIBLE_CATS = new Set<string>(["businesses", "competition"]);
 
 const CATEGORY_PREFIX: Record<string, string> = {
   competition: "comp-",
@@ -243,7 +243,9 @@ export class MapManager {
     await addZoneLayers(this.map);
 
     await Promise.all([
-      addBusinessListingsLayer(this.map),
+      addBusinessListingsLayer(this.map, {
+        initiallyVisible: DEFAULT_VISIBLE_CATS.has("businesses"),
+      }),
       addDbCategoryPointsLayer(this.map, "competition", "comp-", {
         initiallyVisible: DEFAULT_VISIBLE_CATS.has("competition"),
       }),

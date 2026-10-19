@@ -29,7 +29,7 @@ import {
 } from "@/lib/businessListings";
 
 type VenueFeature = Feature<Point, GeoJsonProperties>;
-const DEFAULT_VISIBLE_CATS = new Set<string>(["competition"]);
+const DEFAULT_VISIBLE_CATS = new Set<string>(["businesses", "competition"]);
 export interface SiteConfig {
   name: string; // zone name
   file: string; // firestore://<zoneId>

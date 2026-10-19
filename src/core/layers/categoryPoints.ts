@@ -78,7 +78,7 @@ const MAKI_ICON_BY_CATEGORY: Record<string, string> = {
 };
 
 const LOCAL_IMG_BY_CATEGORY: Record<string, string> = {
-  business: "/markers/pin.png",
+  business: "/markers/hotel.png",
   hotels: "/markers/hotel.png",
   hotel: "/markers/hotel.png",
   restaurants: "/markers/restaurants.png",
@@ -107,7 +107,16 @@ const LOCAL_IMG_BY_CATEGORY: Record<string, string> = {
   ferry: "/markers/ferry.png",
   railway: "/markers/railway.png",
   // fallback used when no mapping
-  default: "/markers/pin.png",
+  default: "/markers/hotel.png",
+};
+
+const LOCAL_IMG_BY_BUSINESS_CATEGORY: Record<string, string> = {
+  hotel: "/markers/hotel.png",
+  appart: "/markers/hotel.png",
+  resto: "/markers/restaurants.png",
+  concess: "/markers/transport.png",
+  boutique: "/markers/hotel.png",
+  galerie: "/markers/gallery.png",
 };
 
 // deterministic id from path
@@ -131,6 +140,20 @@ async function ensureRuntimeImage(map: Map, id: string, url: string) {
 function imgPathForCategory(categoryId?: string) {
   const key = (categoryId || "").toLowerCase();
   return LOCAL_IMG_BY_CATEGORY[key] || LOCAL_IMG_BY_CATEGORY.default;
+}
+
+function imgPathForFeature(
+  categoryId: string,
+  properties?: Record<string, unknown> | null,
+) {
+  if (categoryId === "business") {
+    const businessCategory = properties?.businessCategory;
+    if (typeof businessCategory === "string") {
+      return LOCAL_IMG_BY_BUSINESS_CATEGORY[businessCategory] ?? LOCAL_IMG_BY_CATEGORY.business;
+    }
+  }
+
+  return imgPathForCategory(categoryId);
 }
 
 function iconForCategory(categoryId?: string) {
@@ -265,28 +288,19 @@ async function addClusterLayers(
     GeoJSON.Feature<GeoJSON.Point, Record<string, any>>
   >;
 
-  // 1) Register the local category image once
-  const localPath = imgPathForCategory(categoryId);
-  const localId = hashId(localPath);
-  await ensureRuntimeImage(map, localId, localPath);
-
-  // 2) For features with imageUrl, collect & register those too
-  const need: Array<{ id: string; url: string }> = [];
+  // 1) Register the marker image required by each feature.
+  const imagePaths = new globalThis.Map<string, string>();
   for (const f of features) {
-    (f.properties ||= {})["__img"] = localId;
+    const imagePath = imgPathForFeature(categoryId, f.properties);
+    const imageId = hashId(imagePath);
+    imagePaths.set(imageId, imagePath);
+    (f.properties ||= {})["__img"] = imageId;
   }
-  // for (const f of features) {
-  //   const url = (f.properties?.imageUrl as string) || "";
-  //   if (url) {
-  //     const id = hashId(url);
-  //     (f.properties ||= {})["__img"] = id;
-  //     if (!need.find((n) => n.id === id)) need.push({ id, url });
-  //   } else {
-  //     // fallback to the already-registered local category image
-  //     (f.properties ||= {})["__img"] = localId;
-  //   }
-  // }
-  await Promise.all(need.map((n) => ensureRuntimeImage(map, n.id, n.url)));
+  await Promise.all(
+    [...imagePaths].map(([imageId, imagePath]) =>
+      ensureRuntimeImage(map, imageId, imagePath),
+    ),
+  );
 
   // 3) (Re)create the clustered source with __img set
   addOrSetClusterSource(map, clusterSourceId, data);

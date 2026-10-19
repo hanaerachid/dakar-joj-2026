@@ -7,6 +7,7 @@ export type BusinessListingFeature = Feature<Point, {
   id: string;
   title: string;
   categoryId: "business";
+  businessCategory: string;
   businessListing: string;
 }>;
 
@@ -27,6 +28,7 @@ export function businessListingToFeature(
       id: listing._id,
       title: listing.name,
       categoryId: "business",
+      businessCategory: listing.cat,
       businessListing: JSON.stringify(listing),
     },
   };
