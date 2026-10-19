@@ -29,6 +29,7 @@ import { setApiAuthTokenProvider } from "./lib/apiClient";
 import { useTranslation } from "react-i18next";
 import { AdminShell } from "./components/admin/AdminShell";
 import { BusinessShell } from "./components/business/BusinessShell";
+import { TermsOfService } from "./pages/TermsOfService";
 
 const localizations = {
   en: enUS,
@@ -75,6 +76,8 @@ export default function App() {
             <Route path="/sign-up/*" element={<SignUpPage/>} />
 
             <Route path="/pricing" element={<PricingPage />} />
+
+            <Route path="/terms" element={<TermsOfService />} />
 
             <Route path="/business" element={
               <BusinessRoute>
