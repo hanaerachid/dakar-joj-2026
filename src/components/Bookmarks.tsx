@@ -67,6 +67,7 @@ export function Bookmarks({
             defaultValue: "Zoom to {{location}}",
             location: zone.name,
           })}
+          tooltipSide="bottom"
           onClick={() => onZoomTo(getZoneBounds(zone.location))}
         >
           {/* {zone.location.type} */}

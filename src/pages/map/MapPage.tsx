@@ -302,7 +302,7 @@ export default function MapPage() {
 
       <div className={cn(
         "z-50",
-        "absolute top-14 start-2 end-20 md:translate-x-1/4",
+        "absolute top-14 md:top-18 start-2 end-20 md:translate-x-1/4",
         "w-full max-w-sm mx-auto",
       )}>
         <Bookmarks

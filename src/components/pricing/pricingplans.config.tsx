@@ -6,6 +6,7 @@ import {
   Building2,
   ChartNoAxesCombined,
   CheckCircle,
+  CircleCheck,
   Clock,
   Crown,
   FileText,
@@ -80,6 +81,11 @@ export const PRICING_PLANS = {
     recommended: false,
     features: [
       {
+        title: "Tout dans Discover, plus :",
+        icon: CircleCheck,
+        description: "Profitez de toutes les fonctionnalités du plan Discover et plus encore",
+      },
+      {
         title: "Téléphone, Email et WhatsApp",
         icon: Phone,
         description: "Facilitez le contact avec vos clients",
@@ -124,6 +130,16 @@ export const PRICING_PLANS = {
     color: "var(--accent-color-1)",
     recommended: true,
     features: [
+      {
+        title: "Tout dans Starter, plus :",
+        icon: CircleCheck,
+        description: "Profitez de toutes les fonctionnalités du plan Starter et plus encore",
+      },
+      {
+        title: "Jusqu'à 2 établissements",
+        icon: Store,
+        description: "Gérez plusieurs établissements depuis un seul compte",
+      },
       {
         title: "5 photos et 1 vidéo",
         icon: Video,
@@ -174,6 +190,11 @@ export const PRICING_PLANS = {
     color: "var(--accent-color-3)",
     recommended: false,
     features: [
+      {
+        title: "Tout dans Business, plus :",
+        icon: CircleCheck,
+        description: "Profitez de toutes les fonctionnalités du plan Business et plus encore",
+      },
       {
         title: "Jusqu'à 5 établissements",
         icon: Store,

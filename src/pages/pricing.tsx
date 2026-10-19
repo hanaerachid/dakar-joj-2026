@@ -122,7 +122,7 @@ export function PricingPage() {
       ? t("businessCreate.plan.free", "Free")
       : price === Infinity ? t("businessCreate.plan.custom", "Custom")
         : (<>
-          {formatNumber(price, lang)} <span className="text-sm font-medium">FCFA</span>
+          {formatNumber(price, lang)}
         </>);
 
   return (
@@ -215,6 +215,7 @@ export function PricingPage() {
                       </CardDescription>
                     )}
 
+                    {item.desc && (
                     <CardDescription
                       className={cn(
                         "text-[11px] text-muted-foreground tracking-tight uppercase",
@@ -229,6 +230,7 @@ export function PricingPage() {
                         item.desc,
                       )}
                     </CardDescription>
+                      )}
 
                     <CardTitle className="flex items-center gap-2 text-xl font-semibold">
                       {t(
@@ -252,16 +254,16 @@ export function PricingPage() {
                           color: item.color,
                         }}
                       >
-                        {formatPrice(item.price)}
+                        {formatPrice(item.price)} <span className="text-sm font-medium">FCFA</span>
                       </div>
                     </CardDescription>
                     <CardDescription>
                       {item.price > 0 && item.price !== Infinity && (
-                        <span className="line-through">
-                          {formatPrice(item.old_price)}
+                        <span className="text-[13px] line-through">
+                          {formatPrice(item.old_price)} <span>FCFA</span>
                         </span>
                       )}
-                      <span className="text-sm font-normal text-muted-foreground">
+                      <span className="text-[13px] font-normal text-muted-foreground">
                         {" "}{item.offer_deadline !== undefined && (
                           <>
                             {t("common.until", "Until")} {" "}

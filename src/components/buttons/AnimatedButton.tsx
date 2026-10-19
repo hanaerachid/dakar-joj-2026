@@ -21,7 +21,8 @@ interface AnimatedButtonProps {
   title?: string;
   className?: string;
   iconClassName?: string;
-  tooltip?: string; // NEW: hover tooltip label
+  tooltip?: string;
+  tooltipSide?: "top" | "bottom" | "left" | "right";
   children?: React.ReactNode;
 }
 
@@ -33,6 +34,7 @@ export function AnimatedButton({
   className = "",
   iconClassName,
   tooltip,
+  tooltipSide = "right",
   children,
 }: Readonly<AnimatedButtonProps>) {
   const resolvedTitle = title || "";
@@ -48,7 +50,7 @@ export function AnimatedButton({
             whileTap={{ scale: 0.9, rotate: -6 }}
             whileHover={{ y: -1 }}
             transition={{ type: "spring", stiffness: 500, damping: 18, mass: 0.9 }}
-            className={cn("shadow-lg shadow-black/10", className)}
+            className={cn("shadow-lg", className)}
             onClick={onClick}
             title={resolvedTitle}
             aria-label={resolvedTitle}
@@ -78,7 +80,7 @@ export function AnimatedButton({
       {/* Tooltip (desktop only) */}
       <TooltipContent
         className="hidden md:block z-50 pointer-events-none text-xs font-medium shadow-lg backdrop-blur"
-        side="right"
+        side={tooltipSide || "right"}
         sideOffset={12}
         align="center"
       >
