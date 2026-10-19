@@ -592,7 +592,7 @@ export function BusinessCreate() {
       };
 
       // 4. Send the pure JSON payload to your Hono server
-      const createdBusiness = await createBusinessListing(payload);
+      await createBusinessListing(payload);
 
       toast.success(
         t(
@@ -600,8 +600,6 @@ export function BusinessCreate() {
           "Your business has been submitted successfully.",
         ),
       );
-      console.log("Created business listing:", createdBusiness);
-      navigate(`/business/listings/${createdBusiness._id}`);
     } catch (error) {
       console.error(error);
 
@@ -613,6 +611,7 @@ export function BusinessCreate() {
       );
     } finally {
       setSubmitting(false);
+      navigate("/business/listings");
     }
   };
 
