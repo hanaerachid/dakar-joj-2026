@@ -49,7 +49,7 @@ export const SearchPlacesInput = ({
           value={query}
           onChange={(e) => onQueryChange(e.currentTarget.value)}
           placeholder={placeholder}
-          className="w-full bg-transparent outline-none text-sm placeholder:text-muted-foreground"
+          className="w-full bg-transparent outline-none text-md sm:text-sm placeholder:text-muted-foreground"
           onFocus={() => setIsSearchOpen(true)}
           onBlur={() => setIsSearchOpen(false)}
         />

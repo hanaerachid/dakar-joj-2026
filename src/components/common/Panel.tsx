@@ -135,7 +135,7 @@ export function Panel({
         >
           <DrawerContent
             className={cn(
-              "z-150 mt-11 mb-18 md:mt-18 md:mb-8 bg-background/80 backdrop-blur-md shadow-lg",
+              "z-150 mt-11 mb-18 sm:mt-18 sm:mb-8 bg-background/80 backdrop-blur-md shadow-lg",
               SIZE_MAP[size],
             )}
           >

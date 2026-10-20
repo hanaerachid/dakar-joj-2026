@@ -49,7 +49,7 @@ export function Bookmarks({
 }: BookmarksProps) {
   const { t } = useTranslation();
 
-  if (!error) (
+  if (error) (
     <Alert variant="destructive">
       <AlertDescription>
         {error}

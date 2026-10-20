@@ -78,7 +78,7 @@ export const NewsContent = () => {
   }, []);
 
   return (
-    <div className="space-y-4 pt-4">
+    <div className="space-y-4 pt-2">
       <div className="space-y-2">
         <p className="text-xs text-[#f2b705] uppercase">
           {t("news.thegamesjournal", "The Games journal")}

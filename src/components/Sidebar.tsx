@@ -114,7 +114,6 @@ export function Sidebar({
           tooltip={t("actions.resetview", "Reset View")}
           onClick={onReset}
         />
-        {/* thin divider */}
         {/*
         <Separator className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
         <AnimatedButton
@@ -126,8 +125,10 @@ export function Sidebar({
         />
         */}
 
-        {/* thin divider */}
+        {/* 
         <Separator className="h-px w-9 bg-gradient-to-r from-transparent via-black/10 to-transparent my-1" />
+        */}
+
         {/* Bottom group */}
         {/*         
         <AnimatedButton

@@ -228,6 +228,7 @@ const LocationPickerModal = forwardRef<LocationPickerHandle, Props>(function Loc
         <InputGroup>
           <InputGroupInput
                 ref={inputRef}
+                className="text-md sm:text-sm"
             type="search"
             placeholder="Search in Senegal (stadium, address, landmark)…"
             value={query}

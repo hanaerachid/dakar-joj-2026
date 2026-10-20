@@ -60,7 +60,7 @@ const PhoneNumberInput = React.forwardRef<
     type="tel"
     autoComplete="tel"
     className={cn(
-      "flex-1",
+      "flex-1 text-md sm:text-sm",
       className,
     )}
   />

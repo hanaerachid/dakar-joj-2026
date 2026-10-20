@@ -328,6 +328,7 @@ const ListingCard = ({
       size="default"
       className={cn(
         // "h-full",
+        "items-start",
         "backdrop-blur-sm",
       )}
     >
@@ -350,7 +351,7 @@ const ListingCard = ({
       </ItemMedia>
       <ItemContent>
         <ItemTitle>
-          <span className="text-2xl font-semibold">
+          <span className="text-lg font-semibold">
             {item.name}
           </span>
         </ItemTitle>
