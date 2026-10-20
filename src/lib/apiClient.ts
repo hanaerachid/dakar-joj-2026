@@ -23,10 +23,20 @@ function joinUrl(path: string) {
 export async function apiRequest<T>(
   path: string,
   init: RequestInit = {},
+  timeout: number = 20000,
 ): Promise<T> {
   const authToken = authTokenProvider ? await authTokenProvider() : null;
-  const response = await fetch(joinUrl(path), {
+  
+  const controller = new AbortController();
+  const { signal } = controller;
+  
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  let response: Response;
+  try {
+  response = await fetch(joinUrl(path), {
     credentials: "include",
+    signal,
     ...init,
     headers: {
       ...(init.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
@@ -34,6 +44,14 @@ export async function apiRequest<T>(
       ...(init.headers ?? {}),
     },
   });
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      throw new Error(`Request timed out after ${timeout} ms.`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   const text = await response.text();
   let payload: T | ApiErrorPayload | undefined;
