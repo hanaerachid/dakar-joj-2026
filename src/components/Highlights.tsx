@@ -77,8 +77,7 @@ export const SPORT_OPTIONS_BY_KEY = Object.fromEntries(
 );
 
 export const Highlights = () => {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.resolvedLanguage || i18n.language || "en";
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [businessListings, setBusinessListings] = useState<BusinessListing[]>([]);
   const [open, setOpen] = useState(false);
@@ -458,54 +457,12 @@ export const Highlights = () => {
                         key={index}
                         className="basis-2/5 pl-1"
                       >
-                        <Item
-                          size="sm"
-                          variant="muted"
-                          onClick={() => openBusinessListing(item)}
-                          className={cn(
-                            "group relative aspect-square overflow-hidden",
-                          )}
-                        >
-                          <Badge
-                            variant="secondary"
-                            className={cn(
-                              "absolute start-1.5 top-1.5 z-20",
-                              "text-[9px] uppercase"
-                            )}
-                          >
-                            {getFriendlyCategoryName(item.cat, t)}
-                          </Badge>
-                          <ItemMedia variant="default" className="h-full absolute inset-0"
-                            style={{
-                              backgroundImage: `url(${getMediaUrl(item.photos[0])})`,
-                              backgroundSize: "cover",
-                              backgroundPosition: "center",
-                              backgroundRepeat: "no-repeat",
-                            }}
-                          />
-                          <ItemContent className="flex-col justify-end absolute h-1/2 bottom-0 left-0 right-0 bg-gradient-to-t from-background to-transparent p-2">
-                            <ItemTitle
-                              title={item.name}
-                              className={cn(
-                                "w-full line-clamp-1 overflow-hidden text-ellipsis",
-                                "text-xs/3.5 tracking-normal font-heading font-normal"
-                              )}
-                            >
-                              {item.name}
-                            </ItemTitle>
-                            {locationStatus === "granted" && listingRoutes[item._id ?? ""] && (
-                              <ItemDescription className="text-xs/3.5">
-                                {new Intl.NumberFormat(lang).format(
-                                  Math.round(listingRoutes[item._id ?? ""].duration / 60),
-                                )} {t("home.minutes_short", "min")}
-                                {" • "}
-                                {new Intl.NumberFormat(lang, {
-                                  maximumFractionDigits: 1,
-                                }).format(listingRoutes[item._id ?? ""].distance / 1000)} {t("home.kilometers_short", "km")}
-                              </ItemDescription>
-                            )}
-                          </ItemContent>
-                        </Item>
+                        <ListingCard
+                          item={item}
+                          openBusinessListing={openBusinessListing}
+                          listingRoutes={listingRoutes}
+                          locationStatus={locationStatus}
+                        />
                       </CarouselItem>
                     )
                   })}
@@ -552,59 +509,12 @@ export const Highlights = () => {
                   key={index}
                   className="basis-1/2 pl-0 lg:basis-1/3"
                 >
-                  <Item
-                    key={index}
-                    size="sm"
-                    variant="muted"
-                    onClick={() => openBusinessListing(item)}
-                    className={cn(
-                      "group relative aspect-square overflow-hidden",
-                    )}
-                  >
-                    <Badge
-                      variant="secondary"
-                      className={cn(
-                        "absolute start-1.5 top-1.5 z-20",
-                        "text-[9px] uppercase"
-                      )}
-                    >
-                      {getFriendlyCategoryName(item.cat, t)}
-                    </Badge>
-                    <ItemMedia
-                      variant="default"
-                      className="h-full absolute inset-0"
-                      style={{
-                        backgroundImage: `url(${getMediaUrl(item.photos[0])})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        backgroundRepeat: "no-repeat",
-                      }}
-                    />
-                    <ItemContent
-                      className="flex-col justify-end absolute h-1/2 bottom-0 left-0 right-0 bg-gradient-to-t from-background to-transparent p-2"
-                    >
-                      <ItemTitle
-                        title={item.name}
-                        className={cn(
-                          "w-full line-clamp-1 overflow-hidden text-ellipsis",
-                          "text-xs/3.5 tracking-normal font-heading font-normal"
-                        )}
-                      >
-                        {item.name}
-                      </ItemTitle>
-                      {locationStatus === "granted" && listingRoutes[item._id ?? ""] && (
-                        <ItemDescription className="text-xs/3.5">
-                          {new Intl.NumberFormat(lang).format(
-                            Math.round(listingRoutes[item._id ?? ""].duration / 60),
-                          )} {t("home.minutes_short", "min")}
-                          {" • "}
-                          {new Intl.NumberFormat(lang, {
-                            maximumFractionDigits: 1,
-                          }).format(listingRoutes[item._id ?? ""].distance / 1000)} {t("home.kilometers_short", "km")}
-                        </ItemDescription>
-                      )}
-                    </ItemContent>
-                  </Item>
+                  <ListingCard
+                    item={item}
+                    openBusinessListing={openBusinessListing}
+                    listingRoutes={listingRoutes}
+                    locationStatus={locationStatus}
+                  />
                 </div>
               )
             })}
@@ -667,5 +577,75 @@ export const Highlights = () => {
         }
       />
     </Collapsible>
+  )
+}
+
+const ListingCard = ({
+  item,
+  openBusinessListing,
+  listingRoutes,
+  locationStatus,
+}: {
+  item: BusinessListing;
+  openBusinessListing: (listing: BusinessListing) => void;
+  listingRoutes: Record<string, ListingRoute>;
+  locationStatus: LocationStatus;
+}) => {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage || i18n.language || "en";
+
+  return (
+    <Item
+      size="sm"
+      variant="muted"
+      onClick={() => openBusinessListing(item)}
+      className={cn(
+        "group relative aspect-square overflow-hidden",
+      )}
+    >
+      <Badge
+        variant="secondary"
+        className={cn(
+          "absolute start-1.5 top-1.5 z-20",
+          "text-[9px] uppercase"
+        )}
+      >
+        {getFriendlyCategoryName(item.cat, t)}
+      </Badge>
+      <ItemMedia
+        variant="default"
+        className="h-full absolute inset-0"
+        style={{
+          backgroundImage: `url(${getMediaUrl(item.photos[0])})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      />
+      <ItemContent
+        className="flex-col justify-end absolute h-1/2 bottom-0 left-0 right-0 bg-gradient-to-t from-background to-transparent p-2"
+      >
+        <ItemTitle
+          title={item.name}
+          className={cn(
+            "w-full line-clamp-1 overflow-hidden text-ellipsis",
+            "text-xs/3.5 tracking-normal font-heading font-normal"
+          )}
+        >
+          {item.name}
+        </ItemTitle>
+        {locationStatus === "granted" && listingRoutes[item._id ?? ""] && (
+          <ItemDescription className="text-xs/3.5">
+            {new Intl.NumberFormat(lang).format(
+              Math.round(listingRoutes[item._id ?? ""].duration / 60),
+            )} {t("home.minutes_short", "min")}
+            {" • "}
+            {new Intl.NumberFormat(lang, {
+              maximumFractionDigits: 1,
+            }).format(listingRoutes[item._id ?? ""].distance / 1000)} {t("home.kilometers_short", "km")}
+          </ItemDescription>
+        )}
+      </ItemContent>
+    </Item>
   )
 }

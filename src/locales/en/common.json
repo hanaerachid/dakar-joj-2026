@@ -30,6 +30,14 @@
     "select_from_map": "Use map",
     "use_current_location": "Use current location"
   },
+  "onboarding": {
+    "onboarding_title_1": "Start the journey.",
+    "onboarding_description_1": "Navigate and find your way around with ease. By continuing, you agree to our <terms>Terms of Service</terms>.",
+    "onboarding_title_2": "Find events happening around you.",
+    "onboarding_description_2": "Explore competition venues, discover nearby places, and plan your route.",
+    "onboarding_title_3": "That's it!",
+    "onboarding_description_3": "You're all set to explore the world with TerangaMap. Enjoy your journey!"
+  },
   "theme": "Theme",
   "language": "Language",
   "map": "Map",

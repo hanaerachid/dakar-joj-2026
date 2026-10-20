@@ -19,9 +19,11 @@ import { SignInPage, SignUpPage } from "./pages/auth";
 import { BusinessCreate, BusinessPage, BusinessEdit } from "./pages/business";
 import "./App.css";
 import BulkPlacesImport from "./admin/places/BulkPlacesImport";
+import { OnboardingGate } from "@/components/OnboardingGate";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModalProvider } from "@/components/modal-provider";
 import {NavbarProvider } from "@/components/navbar-provider";
+import { OnboardingProvider } from "@/components/onboarding-provider";
 import { PanelProvider } from "@/components/panel-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { StateProvider } from "@/components/state-provider";
@@ -130,6 +132,7 @@ export default function App() {
   }
 
   return (
+    <OnboardingProvider totalSteps={3}>
     <ClerkProvider
       localization={localization}
       appearance={{
@@ -143,7 +146,10 @@ export default function App() {
       afterSignOutUrl="/"
     >
       <ClerkApiAuthBridge />
+      <OnboardingGate>
       {appRoutes}
+      </OnboardingGate>
     </ClerkProvider>
+    </OnboardingProvider>
   );
 }
