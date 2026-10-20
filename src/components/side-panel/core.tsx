@@ -145,7 +145,7 @@ export const SidePanel = () => {
                   className={cn(
                     "px-2",
                     "text-xs/5 tracking-tight text-center uppercase",
-                    "aria-selected:bg-blue-500",
+                    "aria-selected:font-bold",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="home"
@@ -156,7 +156,7 @@ export const SidePanel = () => {
                   className={cn(
                     "px-2",
                     "text-xs/5 tracking-tight text-center uppercase",
-                    "aria-selected:bg-blue-500",
+                    "aria-selected:font-bold",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="explorer"
@@ -167,7 +167,7 @@ export const SidePanel = () => {
                   className={cn(
                     "px-2",
                     "text-xs/5 tracking-tight text-center uppercase",
-                    "aria-selected:bg-blue-500",
+                    "aria-selected:font-bold",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="events"
@@ -178,7 +178,7 @@ export const SidePanel = () => {
                   className={cn(
                     "px-2",
                     "text-xs/5 tracking-tight text-center uppercase",
-                    "aria-selected:bg-blue-500",
+                    "aria-selected:font-bold",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="news"
@@ -189,7 +189,7 @@ export const SidePanel = () => {
                   className={cn(
                     "px-2",
                     "text-xs/5 tracking-tight text-center uppercase",
-                    "aria-selected:bg-blue-500",
+                    "aria-selected:font-bold",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="business"
