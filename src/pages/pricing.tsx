@@ -103,6 +103,15 @@ export function PricingPage() {
       label: planId === "sponsor" ? t("pricing.become_partner", "Become a partner") : t("pricing.choose", "Purchase"),
       action: async () => {
         if (planId === "sponsor") { window.location.href = "mailto:francisehemba2021@gmail.com?subject=Sponsor%20plan"; return; }
+
+        if (!isSignedIn) {
+          const returnTo = "/pricing";
+          const signInUrl = `/sign-in?redirect_url=${encodeURIComponent(returnTo)}`;
+
+          window.location.assign(signInUrl);
+          return;
+        }
+
         try {
           const { checkoutUrl } = await createPaymentCheckout(planId);
           window.location.assign(checkoutUrl);
