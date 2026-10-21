@@ -7,7 +7,7 @@ import {
   useRef,
   useEffect
 } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { initAuth } from "../auth/nitAuth";
 import {
   PLACE_SELECTED_EVENT,
@@ -77,16 +77,13 @@ export const StateContext = createContext<ProviderState>(initialState);
 export function StateProvider({
   children,
 }: ProviderProps) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const activeTab = searchParams.get("tab") || "home";
+  const activeTab = location.pathname.split("/")[1] || "home";
 
   const setActiveTab = (newTab: string) => {
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev);
-      next.set("tab", newTab);
-      return next;
-    });
+    navigate(`/${newTab}`);
   };
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -117,14 +114,16 @@ export function StateProvider({
       const place = (event as CustomEvent<PlaceSelection>).detail;
       if (!place?.id) return;
 
-      setActiveTab("explorer");
       setSelectedPlace(place);
+      navigate(`/explorer?place=${encodeURIComponent(String(place.id))}`);
     };
 
     window.addEventListener(PLACE_SELECTED_EVENT, handlePlaceSelected);
-    return () =>
+
+    return () => {
       window.removeEventListener(PLACE_SELECTED_EVENT, handlePlaceSelected);
-  }, []);
+    };
+  }, [navigate, setSelectedPlace]);
 
   const value = {
     activeTab,

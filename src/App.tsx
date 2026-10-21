@@ -1,6 +1,6 @@
 // src/App.tsx
 import { useEffect } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate, useParams } from "react-router-dom";
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { enUS, frFR, esES } from "@clerk/localizations";
 import { shadcn } from "@clerk/ui/themes";
@@ -66,16 +66,15 @@ export default function App() {
           <Routes>
             <Route
               path="/"
+              element={<Navigate to="/home" replace />}
+            />
+
+            <Route
+              path="/:tab"
               element={
-                <NavbarProvider>
-                <PanelProvider>
-                <OnboardingGate>
-                  <MapPage />
-                </OnboardingGate>
-                </PanelProvider>
-                </NavbarProvider>
+                <MainApp />
               }
-              />
+            />
 
             <Route path="/sign-in/*" element={<SignInPage/>} />
             <Route path="/sign-up/*" element={<SignUpPage/>} />
@@ -154,5 +153,25 @@ export default function App() {
       {appRoutes}
     </ClerkProvider>
     </OnboardingProvider>
+  );
+}
+
+const VALID_TABS = ["home", "explorer", "events", "news", "pro"] as const;
+
+function MainApp() {
+  const { tab } = useParams();
+
+  if (!VALID_TABS.includes(tab as (typeof VALID_TABS)[number])) {
+    return <Navigate to="/home" replace />;
+  }
+
+  return (
+    <NavbarProvider>
+      <PanelProvider>
+        <OnboardingGate>
+          <MapPage />
+        </OnboardingGate>
+      </PanelProvider>
+    </NavbarProvider>
   );
 }

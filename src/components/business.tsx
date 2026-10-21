@@ -356,7 +356,7 @@ export const BusinessContent = () => {
         ) : (
           <>
             <Button
-              variant="default"
+              variant="link"
               className="w-full"
               onClick={() => navigate("/pricing")}
             >

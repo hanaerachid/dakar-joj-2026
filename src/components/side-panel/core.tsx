@@ -194,7 +194,7 @@ export const SidePanel = () => {
                     "data-active:!font-bold", "data-active:!bg-primary/10",
                     "shrink-0 whitespace-nowrap",
                   )}
-                  value="business"
+                  value="pro"
                 >
                   {t("tabs.business", "Business")}
                 </TabsTrigger>
@@ -221,7 +221,7 @@ export const SidePanel = () => {
           <TabsContent value="news">
             <NewsContent />
           </TabsContent>
-          <TabsContent value="business">
+          <TabsContent value="pro">
             <BusinessContent />
           </TabsContent>
         </ScrollArea>
