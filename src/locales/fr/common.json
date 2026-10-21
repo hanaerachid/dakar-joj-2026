@@ -3,6 +3,7 @@
   "description": "Dakar Jeux Olympiques de la Jeunesse",
   "hello": "Bonjour, {{name}}!",
   "settings": "Paramètres",
+  "terms": "Conditions générales d'utilisation",
   "all": "Tout",
   "common": {
     "back": "Retour",

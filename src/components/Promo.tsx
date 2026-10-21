@@ -31,6 +31,7 @@ import { ALL_SPORT_OPTIONS } from "../data/sports";
 import type { BusinessListing } from "@/shared/contracts";
 import { listBusinessListings } from "@/lib/api/listings";
 import { getMediaUrl } from "@/lib/fileConvert";
+import { useStateContext } from "./state-provider";
 
 type ApiEventsItem = {
   _id: string;
@@ -322,6 +323,21 @@ const ListingCard = ({
   item: BusinessListing;
 }) => {
   const { t } = useTranslation();
+  const { setActiveTab, setSelectedPlace } = useStateContext();
+
+const openBusinessListing = (listing: BusinessListing) => {
+    const [lng, lat] = listing.location.coordinates;
+    setSelectedPlace({
+      id: listing._id,
+      lng,
+      lat,
+      title: listing.name,
+      type: "business",
+      listing,
+    });
+    setActiveTab("explorer");
+  };
+
   return (
     <Item
       variant="default"
@@ -359,6 +375,15 @@ const ListingCard = ({
           {item.desc}
         </ItemDescription>
       </ItemContent>
+      <ItemActions className="self-end">
+        <Button
+          variant="secondary"
+          size="default"
+          onClick={() => openBusinessListing(item)}
+        >
+          <span>{t("common.show_details", "Show details")}</span>
+        </Button>
+      </ItemActions>
     </Item>
   );
 };

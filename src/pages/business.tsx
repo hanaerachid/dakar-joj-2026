@@ -68,7 +68,7 @@ import {
 } from "@/lib/api/listings";
 import { type BreadcrumbConfig, Breadcrumbs } from "@/components/BreadCrumbs";
 import { useModalContext } from "@/components/modal-provider";
-import { useStateContext } from "@/components/state-provider";
+// import { useStateContext } from "@/components/state-provider";
 import { PRICING_PLANS } from "../components/pricing/pricingplans.config";
 
 const STEP_FIELDS: Record<number, (keyof BusinessCreateValues)[]> = {
@@ -88,21 +88,21 @@ export function BusinessPage() {
   const [loading, setLoading] = useState(false);
   const [businessListings, setBusinessListings] = useState<BusinessListing[]>([]);
   const { setIsOpen, setModalContent } = useModalContext();
-  const { setActiveTab, setSelectedPlace } = useStateContext();
+  // const { setActiveTab, setSelectedPlace } = useStateContext();
 
-  const openBusinessListing = (listing: BusinessListing) => {
-    const [lng, lat] = listing.location.coordinates;
-    setSelectedPlace({
-      id: listing._id,
-      lng,
-      lat,
-      title: listing.name,
-      type: "business",
-      listing,
-    });
-    setActiveTab("explorer");
-    navigate("/");
-  };
+  // const openBusinessListing = (listing: BusinessListing) => {
+  //   const [lng, lat] = listing.location.coordinates;
+  //   setSelectedPlace({
+  //     id: listing._id,
+  //     lng,
+  //     lat,
+  //     title: listing.name,
+  //     type: "business",
+  //     listing,
+  //   });
+  //   setActiveTab("explorer");
+  //   navigate("/");
+  // };
 
   // const [search, setSearch] = useState("");
   // const [sort, setSort] = useState<"updated" | "name">("updated");
@@ -305,7 +305,7 @@ export function BusinessPage() {
               return (
                 <Card
                   key={index}
-                  onClick={() => openBusinessListing(item)}
+                  // onClick={() => openBusinessListing(item)}
                   className="relative mx-auto w-full max-w-sm pt-0 overflow-hidden"
                   size="sm"
                 >

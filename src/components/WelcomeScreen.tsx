@@ -1,5 +1,5 @@
 import { Trans, useTranslation } from "react-i18next";
-import { ArrowRight, Check, Link } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useOnboarding } from "./onboarding-provider";

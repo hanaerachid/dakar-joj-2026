@@ -5,8 +5,14 @@ import {
   SignUpButton,
   UserButton,
 } from "@clerk/clerk-react";
+import { shadcn } from "@clerk/ui/themes";
 import { useRole } from "../../auth/hooks/useRole";
-import { ChevronDown, UserRoundPlus, UserShield } from "lucide-react";
+import {
+  ChevronDown,
+  Gavel,
+  UserRoundPlus,
+  UserShield
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
@@ -90,7 +96,13 @@ export function ClerkAuthControls() {
       </SignedOut>
 
       <SignedIn>
-        <UserButton afterSignOutUrl="/" >
+        <UserButton
+          // userProfileMode="navigation"
+          // userProfileUrl="/account"
+          appearance={{
+            theme: shadcn,
+          }}
+        >
           <UserButton.MenuItems>
             {!loading && role === "admin" && (
               <UserButton.Link
@@ -99,6 +111,11 @@ export function ClerkAuthControls() {
                 href="/admin"
               />
             )}
+            <UserButton.Link
+              label={t("terms", "Terms of Service")}
+              labelIcon={<Gavel className="w-4 h-4" />}
+              href="/terms"
+            />
           </UserButton.MenuItems>
         </UserButton>
       </SignedIn>

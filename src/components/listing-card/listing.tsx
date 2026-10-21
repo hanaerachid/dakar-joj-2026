@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Clock9, Globe, BadgeCheck, MapPin, ArrowLeft } from "lucide-react";
+import { Clock9, Globe, BadgeCheck, MapPin, ArrowLeft, Phone, MessageCircle, Mail } from "lucide-react";
 import { getDomain } from "tldts";
 import { Button } from "@/components/ui/button";
 import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
@@ -115,6 +115,52 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
               </ItemContent>
             </Item>
 
+            {business.tel && (
+              <Item size="xs" variant="default">
+                <ItemMedia variant="icon">
+                  <Phone />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemDescription className="break-all">
+                    <span className="text-sm font-mono">{business.tel}</span>
+                  </ItemDescription>
+                </ItemContent>
+              </Item>
+            )}
+
+            {business.wa && (
+              <Item size="xs" variant="default">
+                <ItemMedia variant="icon">
+                  <MessageCircle />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemDescription className="break-all">
+                    <span className="text-sm font-mono">{business.wa}</span>
+                  </ItemDescription>
+                </ItemContent>
+              </Item>
+            )}
+
+            {business.email && (
+              <Item size="xs" variant="default">
+                <ItemMedia variant="icon">
+                  <Mail />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemDescription className="break-all">
+                    <a
+                      className="underline"
+                      href={`mailto:${business.email}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {business.email}
+                    </a>
+                  </ItemDescription>
+                </ItemContent>
+              </Item>
+            )}
+
             {business.website && (
               <Item size="xs" variant="default">
                 <ItemMedia variant="icon">
@@ -135,17 +181,6 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
               </Item>
             )}
 
-            {business.openHours && (
-              <Item size="xs" variant="default">
-                <ItemMedia variant="icon">
-                  <Clock9 />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemDescription className="break-words">{business.openHours}</ItemDescription>
-                </ItemContent>
-              </Item>
-            )}
-
             {business.social && (
               <Item size="xs" variant="default">
                 <ItemMedia variant="icon">
@@ -159,22 +194,13 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
               </Item>
             )}
 
-            {business.email && (
+            {business.openHours && (
               <Item size="xs" variant="default">
                 <ItemMedia variant="icon">
-                  <BadgeCheck />
+                  <Clock9 />
                 </ItemMedia>
                 <ItemContent>
-                  <ItemDescription className="break-all">
-                    <a
-                      className="underline"
-                      href={`mailto:${business.email}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {business.email}
-                    </a>
-                  </ItemDescription>
+                  <ItemDescription className="break-words">{business.openHours}</ItemDescription>
                 </ItemContent>
               </Item>
             )}

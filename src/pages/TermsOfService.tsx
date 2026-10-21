@@ -7,7 +7,7 @@ import { HeaderBar } from '@/components/header/HeaderBar';
 export function TermsOfService() {
   const { t } = useTranslation();
   const breadcrumbConfig: BreadcrumbConfig = {
-    "/admin": {
+    "/terms": {
       label: t("terms", "Terms of Service"),
     },
   }

@@ -3,6 +3,7 @@
   "description": "Youth Olympic Games",
   "hello": "Hello, {{name}}!",
   "settings": "Settings",
+  "terms": "Terms of service",
   "all": "All",
   "common": {
     "back": "Back",
