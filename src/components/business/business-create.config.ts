@@ -33,16 +33,16 @@ export const BUSINESS_CATEGORIES: BusinessCategories = {
     icon: Hotel,
     label: "Hotel",
     fields: [
-      { name: "chambres", type: "number", label: "Number of rooms" },
-      { name: "capacity", type: "number", label: "Guest capacity", unit: "person(s) per room" },
-      { name: "pricePerNight", type: "number", label: "Average price per night", unit: "FCFA" },
-      { name: "maxPricePerNight", type: "number", label: "Maximum price per night", unit: "FCFA" },
+      { name: "chambres", type: "number", label: "Nombre de chambres" },
+      { name: "capacity", type: "number", label: "Capacité", unit: "personne(s)" },
+      { name: "pricePerNight", type: "number", label: "Prix moyen par nuit", unit: "FCFA" },
+      { name: "maxPricePerNight", type: "number", label: "Prix maximum par nuit", unit: "FCFA" },
       {
         name: "equip",
         type: "multi",
-        label: "Amenities",
+        label: "Equipements",
         options: [
-          { label: "Wifi", value: "wifi" },
+          { label: "Wi-fi", value: "wifi" },
           { label: "Climatisation", value: "climatisation" },
           { label: "Piscine", value: "piscine" },
           { label: "Petit-déjeuner", value: "petit_dejeuner" },
@@ -58,16 +58,16 @@ export const BUSINESS_CATEGORIES: BusinessCategories = {
     icon: House,
     label: "Furnished apartment",
     fields: [
-      { name: "pieces", type: "number", label: "Number of rooms" },
-      { name: "capacity", type: "number", label: "Sleeping capacity", unit: "person(s) per room" },
-      { name: "pricePerNight", type: "number", label: "Average price per night", unit: "FCFA" },
-      { name: "maxPricePerNight", type: "number", label: "Maximum price per night", unit: "FCFA" },
+      { name: "pieces", type: "number", label: "Nombre de chambres" },
+      { name: "capacity", type: "number", label: "Capacité", unit: "personne(s)" },
+      { name: "pricePerNight", type: "number", label: "Prix moyen par nuit", unit: "FCFA" },
+      { name: "maxPricePerNight", type: "number", label: "Prix maximum par nuit", unit: "FCFA" },
       {
         name: "equip",
         type: "multi",
-        label: "Amenities",
+        label: "Equipements",
         options: [
-          { label: "Wifi", value: "wifi" },
+          { label: "Wi-fi", value: "wifi" },
           { label: "Climatisation", value: "climatisation" },
           { label: "Cuisine équipée", value: "cuisine_equipee" },
           { label: "Machine à laver", value: "machine_a_laver" },
@@ -85,7 +85,7 @@ export const BUSINESS_CATEGORIES: BusinessCategories = {
       {
         name: "cuisine",
         type: "select",
-        label: "Cuisine type",
+        label: "Type de cuisine",
         options: [
           { label: "Sénégalaise", value: "senegalaise" },
           { label: "Africaine", value: "africaine" },
@@ -96,7 +96,7 @@ export const BUSINESS_CATEGORIES: BusinessCategories = {
           { label: "Fast-food", value: "fast_food" }
         ],
       },
-      { name: "averagePrice", type: "number", label: "Average price per cover" },
+      { name: "averagePrice", type: "number", label: "Prix moyen" },
       {
         name: "options",
         type: "multi",
@@ -127,8 +127,7 @@ export const BUSINESS_CATEGORIES: BusinessCategories = {
           { label: "Location & Vente", value: "location_et_vente" },
         ],
       },
-      { name: "brands", type: "text", label: "Brands offered" },
-      { name: "dailyPrice", type: "number", label: "Price per day" },
+      { name: "brands", type: "text", label: "Modèles offerts" },
       {
         name: "options",
         type: "multi",
@@ -147,15 +146,15 @@ export const BUSINESS_CATEGORIES: BusinessCategories = {
     icon: ShoppingBag,
     label: "Shop",
     fields: [
-      { name: "produits", type: "text", label: "Product types" },
+      { name: "produits", type: "text", label: "Types de produits" },
       {
         name: "gamme",
         type: "select",
-        label: "Price range",
+        label: "Gamme de prix",
         options: [
-          { label: "€ Abordable", value: "abordable" },
-          { label: "€€ Milieu de gamme", value: "milieu_de_gamme" },
-          { label: "€€€ Premium", value: "premium" },
+          { label: "Abordable", value: "abordable" },
+          { label: "Milieu de gamme", value: "milieu_de_gamme" },
+          { label: "Premium", value: "premium" },
         ],
       },
       {
@@ -176,9 +175,9 @@ export const BUSINESS_CATEGORIES: BusinessCategories = {
     icon: Palette,
     label: "Gallery / Museum",
     fields: [
-      { name: "expoType", type: "text", label: "Exhibition types" },
-      { name: "entryFees", type: "number", label: "Entry price" },
-      { name: "days", type: "text", label: "Opening days" },
+      { name: "expoType", type: "text", label: "Types d'exposition" },
+      { name: "entryFees", type: "number", label: "Prix d'entrée" },
+      { name: "days", type: "text", label: "Jours d'ouverture" },
     ],
   },
 } as const;
