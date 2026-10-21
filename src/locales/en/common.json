@@ -25,6 +25,9 @@
     "edit": "Edit",
     "saved": "Saved !",
     "until": "Until",
+    "description": "Description",
+    "contact": "Contact",
+    "details": "Details",
     "tos": "Terms of Service",
     "all_events": "All events",
     "my_events": "My events",
@@ -154,6 +157,11 @@
     "cities": "Host Cities",
     "cities_list": "Dakar · Diamniadio · Saly",
     "capacity": "Estimated Capacity"
+  },
+  "place": {
+    "description": "Description",
+    "contact": "Contact",
+    "details": "Details"
   },
   "business": {
     "businesses": "Businesses",

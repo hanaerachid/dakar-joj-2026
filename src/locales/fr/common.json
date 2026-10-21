@@ -155,6 +155,11 @@
     "cities_list": "Dakar · Diamniadio · Saly",
     "capacity": "Capacité d'accueil estimée"
   },
+  "place": {
+    "description": "Description",
+    "contact": "Contact",
+    "details": "Détails"
+  },
   "business": {
     "businesses": "Business",
     "hero_title": "Gérez vos établissements pour les Jeux.",

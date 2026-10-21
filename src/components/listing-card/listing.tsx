@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "cn";
+import Fade from "embla-carousel-fade";
 import {
   Check,
   Clock9,
@@ -15,6 +16,7 @@ import {
   Mail,
 } from "lucide-react";
 import { getDomain } from "tldts";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -24,7 +26,11 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+} from "@/components/ui/empty";
 import {
   Item,
   ItemActions,
@@ -32,13 +38,22 @@ import {
   ItemDescription,
   ItemGroup,
   ItemMedia,
+  ItemTitle,
 } from "@/components/ui/item";
-import { Separator } from "@/components/ui/separator";
-import type { BusinessListing } from "../../shared/contracts";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 import { useStateContext } from "../state-provider";
 import { getFriendlyCategoryName } from "@/utils/key-translations";
 import { getMediaUrl } from "@/lib/fileConvert";
 import { useClipboard } from "use-clipboard-copy";
+import { useImageStatus } from "@/hooks/use-image-status";
+import type { BusinessListing } from "../../shared/contracts";
+import { BUSINESS_CATEGORIES } from "../business/business-create.config";
 
 type RouteStep = {
   instruction: string;
@@ -92,6 +107,7 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
     },
     [api]
   );
+  const category = BUSINESS_CATEGORIES[business.cat as keyof typeof BUSINESS_CATEGORIES];
 
   return (
     <div className="relative flex flex-col gap-2">
@@ -99,7 +115,7 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
         <Button
           size="icon"
           variant="secondary"
-          className="fixed top-16 start-3 z-50"
+          className="fixed max-sm:top-8 top-16 start-3 z-50"
           onClick={() => setSelectedPlace(null)}
         >
           <ArrowLeft />
@@ -110,24 +126,75 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
       <div className="w-full h-full flex flex-col items-stretch justify-center overflow-y-auto">
         <div className="w-full flex flex-col gap-2 py-2">
           <div className="relative w-full rounded-2xl overflow-hidden">
-            {business.photos?.[0] ? (
-              <div className="relative space-y-2">
-                <Carousel className="w-full" setApi={setApi}>
+            {business.photos.length > 0 ? (
+              <div className="relative space-y-1">
+                <Carousel
+                  className="relative w-full"
+                  setApi={setApi}
+                  plugins={[Fade()]}
+                >
                   <CarouselContent>
-                    {business.photos.map((image, index) => (
-                      <CarouselItem key={index}>
-                        <div className="absolute bottom-0 bg-gradient-to-t from-background to-transparent w-full h-1/4 aspect-video object-cover" />
-                        <img
-                          alt={business.name}
-                          className="size-full rounded-2xl aspect-video object-cover"
-                          src={getMediaUrl(image)}
-                        />
-                      </CarouselItem>
-                    ))}
+                    {business.photos.map((image, index) => {
+                      const status = useImageStatus(getMediaUrl(image));
+                      return (
+                        <CarouselItem className="overflow-hidden" key={index}>
+                          {(status === "loading") && (
+                            <Skeleton
+                              className={cn(
+                                "group relative aspect-video overflow-hidden",
+                              )} />
+                          )}
+                          {(status === "loaded") && (
+                            <Item
+                              variant="muted"
+                              className={cn(
+                                "group relative aspect-video overflow-hidden",
+                              )}
+                            >
+                              <ItemMedia
+                                variant="default"
+                                className="size-full absolute inset-0 object-cover"
+                                style={{
+                                  backgroundImage: `url(${getMediaUrl(image)})`,
+                                  backgroundSize: "cover",
+                                  backgroundPosition: "center",
+                                  backgroundRepeat: "no-repeat",
+                                }}
+                              />
+                              <ItemContent
+                                className={cn(
+                                  "flex-col justify-end",
+                                  "absolute h-1/2 bottom-0 left-0 right-0 p-2.5",
+                                  "bg-gradient-to-t from-background to-transparent"
+                                )}
+                              >
+                                <ItemTitle
+                                  title={business.name}
+                                  className={cn(
+                                    "w-full line-clamp-2 overflow-hidden text-ellipsis",
+                                    "text-xl/6 tracking-normal text-foreground font-heading font-extralight"
+                                  )}
+                                >
+                                  {business.name}
+                                </ItemTitle>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-sm/5 font-extralight text-muted-foreground">
+                                    {getFriendlyCategoryName(business.cat, t)}
+                                  </span>
+                                </div>
+                              </ItemContent>
+                            </Item>
+                          )}
+                        </CarouselItem>
+                      )
+                    })}
                   </CarouselContent>
                 </Carousel>
 
-                <Carousel className="w-full">
+                <Carousel
+                  orientation="horizontal"
+                  className="w-full"
+                >
                   <div className="mask-x-from-90%">
                     <CarouselContent className="my-1 flex">
                       {business.photos.map((image, index) => (
@@ -153,94 +220,183 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
                 </Carousel>
               </div>
             ) : (
-              <div className="mt-20" />
+              <Item
+                variant="muted"
+                className={cn(
+                  "group relative aspect-[16/6] overflow-hidden",
+                )}
+              >
+                <ItemContent
+                  className={cn(
+                    "flex-col justify-end",
+                    "absolute h-1/2 bottom-0 left-0 right-0 p-2.5",
+                  )}
+                >
+                  <ItemTitle
+                    title={business.name}
+                    className={cn(
+                      "w-full line-clamp-2 overflow-hidden text-ellipsis",
+                      "text-xl/6 tracking-normal text-foreground font-heading font-extralight"
+                    )}
+                  >
+                    {business.name}
+                  </ItemTitle>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm/5 font-extralight text-muted-foreground">
+                      {getFriendlyCategoryName(business.cat, t)}
+                    </span>
+                  </div>
+                </ItemContent>
+              </Item>
             )}
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-start justify-between gap-2">
-              <h2 className="flex-1 text-xl/6">{business.name}</h2>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-sm/7 font-extralight text-muted-foreground">
-                {getFriendlyCategoryName(business.cat, t)}
-              </span>
-            </div>
+        <div className="space-y-2">
+          <Tabs
+            defaultValue="description"
+            className="w-full"
+          >
+            <TabsList
+              variant="line"
+              className="w-full"
+            >
+              <TabsTrigger value="description" className="w-full">
+                {t("place.description", "Description")}
+              </TabsTrigger>
+              <TabsTrigger value="contact" className="w-full">
+                {t("place.contact", "Contact")}
+              </TabsTrigger>
+              <TabsTrigger value="details" className="w-full">
+                {t("place.details", "Details")}
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="description" className="w-full">
+              {business.desc && (
+                <div className="p-1">
+                  <p className="text-sm/7 text-muted-foreground leading-snug">
+                    {business.desc}
+                  </p>
+                </div>
+              )}
+            </TabsContent>
+            <TabsContent value="details" className="w-full">
+              {business.spec && (
+                <div className="space-y-3">
+                  <div className="flex flex-wrap gap-1">
+                    {category?.fields.map((field) => {
+                      const value = business.spec?.[field.name as keyof typeof business.spec];
 
-            <Separator />
-          </div>
+                      if (!Array.isArray(value) || value.length === 0) return null;
 
-          {business.desc && (
-            <div>
-              <p className="text-sm/7 text-foreground/60 leading-snug">
-                {business.desc}
-              </p>
-            </div>
-          )}
+                      return value.map((item, index) => {
+                        const options = "options" in field ? field.options : undefined;
 
-          <ItemGroup className="flex flex-col !gap-0.5">
-            {business.address && (
-              <ListItem
-                value={business.address}
-                icon={<MapPin />}
-                copiable
-              />
-            )}
+                        const option = options?.find(
+                          (option) => option.value === item
+                        );
 
-            {business.tel && (
-              <ListItem
-                value={business.tel}
-                icon={<Phone />}
-                copiable
-                link={`tel:${business.tel}`}
-              />
-            )}
+                        return (
+                          <Badge
+                            key={`${field.name}-${index}`}
+                            variant="outline"
+                            className="px-3 py-3"
+                          >
+                            {option?.label ?? String(item)}
+                          </Badge>
+                        );
+                      });
+                    })}
+                  </div>
 
-            {business.email && (
-              <ListItem
-                value={business.email}
-                icon={<Mail />}
-                copiable
-                link={`mailto:${business.email}`}
-              />
-            )}
+                  {/* Scalar values as list items */}
+                  {category?.fields.map((field) => {
+                    const value = business.spec?.[field.name as keyof typeof business.spec];
 
-            {business.wa && (
-              <ListItem
-                value={business.wa}
-                icon={<MessageCircle />}
-                copiable
-                link={`https://wa.me/${business.wa}`}
-              />
-            )}
+                    if (value == null || value === "" || Array.isArray(value)) {
+                      return null;
+                    }
 
-            {business.website && (
-              <ListItem
-                value={getDomain(business.website)}
-                icon={<Globe />}
-                copiable
-                external
-                link={business.website}
-              />
-            )}
+                    const options = "options" in field ? field.options : undefined;
+                    const option = options?.find(
+                      (option) => option.value === value
+                    );
 
-            {business.social && (
-              <ListItem
-                value={business.social}
-                icon={<BadgeCheck />}
-                copiable
-              />
-            )}
+                    return (
+                      <ListItem
+                        key={field.name}
+                        label={field.label}
+                        value={`${option?.label ?? String(value)}${field.unit ? ` ${field.unit}` : ""}`}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </TabsContent>
+            <TabsContent value="contact" className="w-full">
+              <ItemGroup className="flex flex-col !gap-0.5">
+                {business.address && (
+                  <ListItem
+                    value={business.address}
+                    icon={<MapPin />}
+                    copiable
+                  />
+                )}
 
-            {business.openHours && (
-              <ListItem
-                value={business.openHours}
-                icon={<Clock9 />}
-              />
-            )}
-          </ItemGroup>
+                {business.tel && (
+                  <ListItem
+                    value={business.tel}
+                    icon={<Phone />}
+                    copiable
+                    link={`tel:${business.tel}`}
+                  />
+                )}
+
+                {business.email && (
+                  <ListItem
+                    value={business.email}
+                    icon={<Mail />}
+                    copiable
+                    link={`mailto:${business.email}`}
+                  />
+                )}
+
+                {business.wa && (
+                  <ListItem
+                    value={business.wa}
+                    icon={<MessageCircle />}
+                    copiable
+                    link={`https://wa.me/${business.wa}`}
+                  />
+                )}
+
+                {business.website && (
+                  <ListItem
+                    value={getDomain(business.website)}
+                    icon={<Globe />}
+                    copiable
+                    external
+                    link={business.website}
+                  />
+                )}
+
+                {business.social && (
+                  <ListItem
+                    value={business.social}
+                    icon={<BadgeCheck />}
+                    copiable
+                  />
+                )}
+
+                {business.openHours && (
+                  <ListItem
+                    value={business.openHours}
+                    icon={<Clock9 />}
+                  />
+                )}
+              </ItemGroup>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
@@ -248,14 +404,16 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
 }
 
 const ListItem = ({
+  label,
   value,
   icon,
   copiable = false,
   external = false,
   link,
 }: {
+  label?: string | null;
   value: string | null;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   copiable?: boolean;
   external?: boolean;
   link?: string;
@@ -277,11 +435,16 @@ const ListItem = ({
     <Item
       size="xs"
       variant="default"
-      className="group items-start"
+      className="group items-start px-1"
     >
       <ItemMedia variant="icon">{icon}</ItemMedia>
 
       <ItemContent>
+        {label && (
+          <ItemTitle className="text-[10px]/4 tracking-tight uppercase">
+            {label}
+          </ItemTitle>
+        )}
         <ItemDescription
           className={cn(
             "break-all",

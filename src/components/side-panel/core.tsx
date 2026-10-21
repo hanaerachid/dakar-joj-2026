@@ -136,8 +136,9 @@ export const SidePanel = () => {
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               <TabsList
-                variant="line"
+                variant="default"
                 className={cn(
+                  "bg-transparent",
                   "sticky top-0 z-10 w-full inline-flex items-center justify-start overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
                 )}
               >
@@ -145,7 +146,7 @@ export const SidePanel = () => {
                   className={cn(
                     "px-2",
                     "text-xs/5 tracking-tight text-center uppercase",
-                    "aria-selected:font-bold",
+                    "data-active:!font-bold", "data-active:!bg-primary/10",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="home"
@@ -156,7 +157,7 @@ export const SidePanel = () => {
                   className={cn(
                     "px-2",
                     "text-xs/5 tracking-tight text-center uppercase",
-                    "aria-selected:font-bold",
+                    "data-active:!font-bold", "data-active:!bg-primary/10",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="explorer"
@@ -167,7 +168,7 @@ export const SidePanel = () => {
                   className={cn(
                     "px-2",
                     "text-xs/5 tracking-tight text-center uppercase",
-                    "aria-selected:font-bold",
+                    "data-active:!font-bold", "data-active:!bg-primary/10",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="events"
@@ -178,7 +179,7 @@ export const SidePanel = () => {
                   className={cn(
                     "px-2",
                     "text-xs/5 tracking-tight text-center uppercase",
-                    "aria-selected:font-bold",
+                    "data-active:!font-bold", "data-active:!bg-primary/10",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="news"
@@ -189,7 +190,7 @@ export const SidePanel = () => {
                   className={cn(
                     "px-2",
                     "text-xs/5 tracking-tight text-center uppercase",
-                    "aria-selected:font-bold",
+                    "data-active:!font-bold", "data-active:!bg-primary/10",
                     "shrink-0 whitespace-nowrap",
                   )}
                   value="business"
