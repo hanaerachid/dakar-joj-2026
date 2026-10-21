@@ -1,7 +1,17 @@
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { cn } from "cn";
 import { Clock9, Globe, BadgeCheck, MapPin, ArrowLeft, Phone, MessageCircle, Mail } from "lucide-react";
 import { getDomain } from "tldts";
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  type CarouselApi,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
 import {
   Item,
@@ -15,7 +25,6 @@ import type { BusinessListing } from "../../shared/contracts";
 import { useStateContext } from "../state-provider";
 import { getFriendlyCategoryName } from "@/utils/key-translations";
 import { getMediaUrl } from "@/lib/fileConvert";
-
 type RouteStep = {
   instruction: string;
   location: [number, number];
@@ -35,6 +44,8 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
   const { t } = useTranslation();
   const business = listing as BusinessListing | null;
   const { setSelectedPlace } = useStateContext();
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
 
   if (!business) {
     return (
@@ -47,6 +58,25 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
       </Empty>
     );
   }
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    setCurrent(api.selectedScrollSnap() + 1);
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap() + 1);
+    });
+  }, [api]);
+
+  const handleThumbClick = useCallback(
+    (index: number) => {
+      api?.scrollTo(index);
+    },
+    [api]
+  );
 
   return (
     <div className="relative flex flex-col gap-2">
@@ -65,16 +95,48 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
       <div className="w-full h-full flex flex-col items-stretch justify-center overflow-y-auto">
         <div className="w-full flex flex-col gap-2 py-2">
           <div className="relative w-full rounded-2xl overflow-hidden">
-            {/* Hero image */}
             {business.photos?.[0] ? (
-              <>
-                <div className="absolute bottom-0 bg-gradient-to-t from-background to-transparent w-full h-1/4 aspect-video object-cover" />
-                <img
-                  src={getMediaUrl(business.photos[0])}
-                  alt={business.name}
-                  className="w-full rounded-2xl aspect-video object-cover"
-                />
-              </>
+              <div className="relative space-y-2">
+                <Carousel className="w-full" setApi={setApi}>
+                  <CarouselContent>
+                    {business.photos.map((image, index) => (
+                      <CarouselItem key={index}>
+                        <div className="absolute bottom-0 bg-gradient-to-t from-background to-transparent w-full h-1/4 aspect-video object-cover" />
+                        <img
+                          alt={business.name}
+                          className="size-full rounded-2xl aspect-video object-cover"
+                          src={getMediaUrl(image)}
+                        />
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                </Carousel>
+
+                <Carousel className="w-full">
+                  <div className="mask-x-from-90%">
+                    <CarouselContent className="my-1 flex">
+                      {business.photos.map((image, index) => (
+                        <CarouselItem
+                          className={cn(
+                            "basis-1/4 cursor-pointer transition-opacity",
+                            current === index + 1 ? "opacity-100" : "opacity-50"
+                          )}
+                          key={index}
+                          onClick={() => handleThumbClick(index)}
+                        >
+                          <img
+                            alt={business.name}
+                            className="size-full rounded-2xl aspect-video object-cover"
+                            src={getMediaUrl(image)}
+                          />
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                  </div>
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </Carousel>
+              </div>
             ) : (
               <div className="mt-20" />
             )}
