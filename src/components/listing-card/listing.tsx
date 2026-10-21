@@ -1,7 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "cn";
-import { Clock9, Globe, BadgeCheck, MapPin, ArrowLeft, Phone, MessageCircle, Mail } from "lucide-react";
+import {
+  Check,
+  Clock9,
+  Copy,
+  ExternalLink,
+  Globe,
+  BadgeCheck,
+  MapPin,
+  ArrowLeft,
+  Phone,
+  MessageCircle,
+  Mail,
+} from "lucide-react";
 import { getDomain } from "tldts";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +27,7 @@ import {
 import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
 import {
   Item,
+  ItemActions,
   ItemContent,
   ItemDescription,
   ItemGroup,
@@ -25,6 +38,8 @@ import type { BusinessListing } from "../../shared/contracts";
 import { useStateContext } from "../state-provider";
 import { getFriendlyCategoryName } from "@/utils/key-translations";
 import { getMediaUrl } from "@/lib/fileConvert";
+import { useClipboard } from "use-clipboard-copy";
+
 type RouteStep = {
   instruction: string;
   location: [number, number];
@@ -166,109 +181,146 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
           )}
 
           <ItemGroup className="flex flex-col !gap-0.5">
-            <Item size="xs" variant="default">
-              <ItemMedia variant="icon">
-                <MapPin />
-              </ItemMedia>
-              <ItemContent>
-                <ItemDescription className="break-words">
-                  {business.address}
-                </ItemDescription>
-              </ItemContent>
-            </Item>
-
-            {business.tel && (
-              <Item size="xs" variant="default">
-                <ItemMedia variant="icon">
-                  <Phone />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemDescription className="break-all">
-                    <span className="text-sm font-mono">{business.tel}</span>
-                  </ItemDescription>
-                </ItemContent>
-              </Item>
+            {business.address && (
+              <ListItem
+                value={business.address}
+                icon={<MapPin />}
+                copiable
+              />
             )}
 
-            {business.wa && (
-              <Item size="xs" variant="default">
-                <ItemMedia variant="icon">
-                  <MessageCircle />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemDescription className="break-all">
-                    <span className="text-sm font-mono">{business.wa}</span>
-                  </ItemDescription>
-                </ItemContent>
-              </Item>
+            {business.tel && (
+              <ListItem
+                value={business.tel}
+                icon={<Phone />}
+                copiable
+                link={`tel:${business.tel}`}
+              />
             )}
 
             {business.email && (
-              <Item size="xs" variant="default">
-                <ItemMedia variant="icon">
-                  <Mail />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemDescription className="break-all">
-                    <a
-                      className="underline"
-                      href={`mailto:${business.email}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {business.email}
-                    </a>
-                  </ItemDescription>
-                </ItemContent>
-              </Item>
+              <ListItem
+                value={business.email}
+                icon={<Mail />}
+                copiable
+                link={`mailto:${business.email}`}
+              />
+            )}
+
+            {business.wa && (
+              <ListItem
+                value={business.wa}
+                icon={<MessageCircle />}
+                copiable
+                link={`https://wa.me/${business.wa}`}
+              />
             )}
 
             {business.website && (
-              <Item size="xs" variant="default">
-                <ItemMedia variant="icon">
-                  <Globe />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemDescription className="break-words">
-                    <a
-                      className="underline"
-                      href={business.website}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {getDomain(business.website)}
-                    </a>
-                  </ItemDescription>
-                </ItemContent>
-              </Item>
+              <ListItem
+                value={getDomain(business.website)}
+                icon={<Globe />}
+                copiable
+                external
+                link={business.website}
+              />
             )}
 
             {business.social && (
-              <Item size="xs" variant="default">
-                <ItemMedia variant="icon">
-                  <BadgeCheck />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemDescription className="break-all">
-                    <span className="text-sm font-mono">{business.social}</span>
-                  </ItemDescription>
-                </ItemContent>
-              </Item>
+              <ListItem
+                value={business.social}
+                icon={<BadgeCheck />}
+                copiable
+              />
             )}
 
             {business.openHours && (
-              <Item size="xs" variant="default">
-                <ItemMedia variant="icon">
-                  <Clock9 />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemDescription className="break-words">{business.openHours}</ItemDescription>
-                </ItemContent>
-              </Item>
+              <ListItem
+                value={business.openHours}
+                icon={<Clock9 />}
+              />
             )}
           </ItemGroup>
         </div>
       </div>
     </div>
+  );
+}
+
+const ListItem = ({
+  value,
+  icon,
+  copiable = false,
+  external = false,
+  link,
+}: {
+  value: string | null;
+  icon: React.ReactNode;
+  copiable?: boolean;
+  external?: boolean;
+  link?: string;
+}) => {
+  const clipboard = useClipboard();
+  const { t } = useTranslation();
+
+  const handleCopy = () => {
+    clipboard.copy(value);
+  };
+
+  const handleNavigate = () => {
+    if (link) {
+      window.open(link, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  return (
+    <Item
+      size="xs"
+      variant="default"
+      className="group items-start"
+    >
+      <ItemMedia variant="icon">{icon}</ItemMedia>
+
+      <ItemContent>
+        <ItemDescription
+          className={cn(
+            "break-all",
+            external && "underline cursor-pointer"
+          )}
+          onClick={external && link ? handleNavigate : undefined}
+        >
+          {value}
+        </ItemDescription>
+      </ItemContent>
+
+      {(copiable || (external && link)) && (
+        <ItemActions>
+          {copiable && (
+            <Button
+              type="button"
+              size="icon-xs"
+              variant="ghost"
+              onClick={handleCopy}
+              className="sm:opacity-0 sm:group-hover:opacity-100 sm:transition-opacity"
+              aria-label={t("common.copy", "Copy")}
+            >
+              {clipboard.copied ? <Check /> : <Copy />}
+            </Button>
+          )}
+
+          {external && link && (
+            <Button
+              type="button"
+              size="icon-xs"
+              variant="ghost"
+              onClick={handleNavigate}
+              aria-label={t("common.navigate", "Navigate")}
+            >
+              <ExternalLink />
+            </Button>
+          )}
+        </ItemActions>
+      )}
+    </Item>
   );
 }
