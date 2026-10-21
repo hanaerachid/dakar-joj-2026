@@ -18,6 +18,7 @@ import { usePanelContext } from "@/components/panel-provider";
 import { useModalContext } from "@/components/modal-provider";
 import { useStateContext } from "@/components/state-provider";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ScrollArea } from "../ui/scroll-area";
 // import { SearchPlacesModal as SearchContent } from "../search/SearchPlacesModal";
 
 export const SidePanel = () => {
@@ -81,7 +82,7 @@ export const SidePanel = () => {
   const closePanel = modalOpen ? setModalOpen : setPanelOpen;
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col px-2 py-2">
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
@@ -200,9 +201,14 @@ export const SidePanel = () => {
               </TabsList>
             </div>
           </div>
-        </div>
+          </div>
         )}
-        <div className="min-h-0 flex-1 overflow-y-auto">
+
+        <ScrollArea
+          className={cn(
+            "overflow-y-auto",
+          )}
+        >
           <TabsContent value="home">
             <HomeContent />
           </TabsContent>
@@ -218,7 +224,7 @@ export const SidePanel = () => {
           <TabsContent value="business">
             <BusinessContent />
           </TabsContent>
-        </div>
+        </ScrollArea>
       </Tabs>
     </div>
   )

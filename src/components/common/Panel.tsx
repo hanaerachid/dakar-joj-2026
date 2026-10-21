@@ -12,7 +12,6 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MapManager } from "@/core/MapManager";
 
@@ -173,14 +172,7 @@ export function Panel({
               </DrawerHeader>
             )}
 
-            <ScrollArea
-              className={cn(
-                "h-full",
-                "px-2 py-2"
-              )}
-            >
-              {children}
-            </ScrollArea>
+            {children}
 
             {showFooter && footer && (
               <DrawerFooter>
