@@ -1,6 +1,6 @@
 // src/App.tsx
 import { useEffect } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { enUS, frFR, esES } from "@clerk/localizations";
 import { shadcn } from "@clerk/ui/themes";
@@ -52,6 +52,7 @@ function ClerkApiAuthBridge() {
 }
 
 export default function App() {
+  const navigate = useNavigate();
   const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
   const { i18n } = useTranslation();
   const language = i18n.language.split("-")[0] as SupportedLanguage;
@@ -144,6 +145,8 @@ export default function App() {
       signInFallbackRedirectUrl="/"
       signUpFallbackRedirectUrl="/"
       afterSignOutUrl="/"
+      routerPush={(to) => navigate(to)}
+      routerReplace={(to) => navigate(to, { replace: true })}
     >
       <ClerkApiAuthBridge />
       <OnboardingGate>
