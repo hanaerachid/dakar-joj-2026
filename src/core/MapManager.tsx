@@ -5,8 +5,8 @@ import { addZoneLayers } from "./layers/zones";
 import { addBusinessListingsLayer, addDbCategoryPointsLayer } from "./layers/categoryPoints"; // ✅ generic DB-driven points
 import {
   MAPBOX_ACCESS_TOKEN,
-  INITIAL_CENTER,
   getInitialZoom,
+  getInitialCenter,
 } from "../utils/mapConfig";
 import type {
   BasemapId,
@@ -203,7 +203,7 @@ export class MapManager {
     this.map = new mapboxgl.Map({
       container,
       style: MAPBOX_STYLE_URLS[initialBasemap],
-      center: INITIAL_CENTER,
+      center: getInitialCenter(),
       zoom: getInitialZoom(),
     });
 
@@ -463,7 +463,7 @@ export class MapManager {
     clearRoute(this.map);
 
     this.flyTo({
-      center: INITIAL_CENTER,
+      center: getInitialCenter(),
       zoom: getInitialZoom(),
       duration: 1000,
     });

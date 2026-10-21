@@ -8,7 +8,7 @@ export function OnboardingGate({
 }) {
   const { isReady, isOpen } = useOnboarding();
 
-  if (!isReady) return <>Hello</>;
+  if (!isReady) return;
 
   if (isOpen) {
     return <WelcomeScreen />;
