@@ -59,7 +59,7 @@ export default function App() {
   const localization = localizations[language] ?? localizations.en;
 
   const appRoutes = (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <TooltipProvider>
       <StateProvider>
         <ModalProvider>
