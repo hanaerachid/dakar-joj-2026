@@ -158,7 +158,6 @@ export default function MapPage() {
   }, [
     isMobile,
     selectedPlace,
-    setActiveTab,
     setIsOpen,
     setPanelContent,
   ]);
@@ -216,8 +215,6 @@ export default function MapPage() {
   }, [mapManager]);
 
   useEffect(() => {
-    setActiveTab("home");
-
     if (!isMobile) {
       setPanelContent({
         title: null,
@@ -229,7 +226,6 @@ export default function MapPage() {
     }
   }, [
     isMobile,
-    setActiveTab,
     setPanelContent,
     setIsOpen,
   ]);

@@ -7,6 +7,7 @@ import {
   useRef,
   useEffect
 } from "react";
+import { useSearchParams } from "react-router-dom";
 import { initAuth } from "../auth/nitAuth";
 import {
   PLACE_SELECTED_EVENT,
@@ -76,8 +77,17 @@ export const StateContext = createContext<ProviderState>(initialState);
 export function StateProvider({
   children,
 }: ProviderProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState("explorer");
+  const activeTab = searchParams.get("tab") || "home";
+
+  const setActiveTab = (newTab: string) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set("tab", newTab);
+      return next;
+    });
+  };
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
