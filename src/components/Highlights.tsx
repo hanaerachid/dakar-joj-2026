@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "cn";
+import { motion } from "framer-motion";
 import {
   Plus,
 } from "lucide-react";
@@ -45,6 +46,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useModalContext } from "@/components/modal-provider";
 import { useStateContext } from "@/components/state-provider";
 import { LocationConsent } from "@/components/LocationConsent";
+const MotionItem = motion(Item)
 
 type LocationStatus =
   | "idle"
@@ -520,13 +522,19 @@ export const Highlights = () => {
             })}
 
           <div className="basis-1/2 pl-0 lg:basis-1/3">
-            <Item
+            <MotionItem
               size="sm"
               variant="muted"
+              whileTap={{ scale: 0.9, rotate: -6 }}
+              whileHover={{ y: -1 }}
+              transition={{ type: "spring", stiffness: 500, damping: 18, mass: 0.9 }}
               className={cn(
                 "group relative aspect-square overflow-hidden",
                 "flex flex-col items-center justify-center gap-2",
-                "hover:bg-primary/10 cursor-pointer"
+                "cursor-pointer",
+                "bg-muted/10 hover:bg-muted transition-colors duration-300",
+                "bg-[radial-gradient(var(--card)_1px,transparent_1px)] [background-size:8px_8px]",
+                "border border-border",
               )}
               onClick={() => {
                 setActiveTab("business");
@@ -559,7 +567,7 @@ export const Highlights = () => {
                   {t("home.add_your_business", "Show your business here")}
                 </ItemTitle>
               </ItemContent>
-            </Item>
+            </MotionItem>
           </div>
         </div>
       </CollapsibleContent>
@@ -595,12 +603,16 @@ const ListingCard = ({
   const lang = i18n.resolvedLanguage || i18n.language || "en";
 
   return (
-    <Item
+    <MotionItem
       size="sm"
       variant="muted"
+      whileTap={{ scale: 0.9, rotate: -6 }}
+      whileHover={{ y: -1 }}
+      transition={{ type: "spring", stiffness: 500, damping: 18, mass: 0.9 }}
       onClick={() => openBusinessListing(item)}
       className={cn(
         "group relative aspect-square overflow-hidden",
+        "cursor-pointer",
       )}
     >
       <Badge
@@ -614,7 +626,10 @@ const ListingCard = ({
       </Badge>
       <ItemMedia
         variant="default"
-        className="h-full absolute inset-0"
+        className={cn(
+          "h-full absolute inset-0",
+          "group-hover:scale-105 transition-transform",
+        )}
         style={{
           backgroundImage: `url(${getMediaUrl(item.photos[0])})`,
           backgroundSize: "cover",
@@ -646,6 +661,6 @@ const ListingCard = ({
           </ItemDescription>
         )}
       </ItemContent>
-    </Item>
+    </MotionItem>
   )
 }

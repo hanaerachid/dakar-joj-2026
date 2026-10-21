@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cn } from "cn";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { SignInButton, useAuth, useUser } from "@clerk/clerk-react";
 import { ChevronDown, ChevronUp, CircleCheck, Settings, XCircle } from "lucide-react";
@@ -165,39 +166,64 @@ export const BusinessContent = () => {
                     )}
                   </div>
                 </ItemHeader>
-                <CollapsibleContent>
-                  <ItemContent>
-                    {features.map((item, index) => (
-                      <ItemDescription
-                        key={index}
-                        className="flex justfiy-start gap-2 py-1.5"
-                      >
-                        <CircleCheck
-                          className="w-4 h-4 text-primary"
-                        />
-                        <span className="text-foreground text-xs">
-                          {item.title}
-                        </span>
-                      </ItemDescription>
-                    ))}
-                    {limitations.map((item, index) => (
-                      <>
-                        <Separator />
-                        <ItemDescription
-                          key={index}
-                          className="flex justfiy-start gap-2 py-1.5"
-                        >
-                          <XCircle
-                            className="w-4 h-4 text-muted-foreground"
-                          />
-                          <span className="text-muted-foreground text-xs text-light">
-                            {item}
-                          </span>
-                        </ItemDescription>
-                      </>
-                    ))}
-                  </ItemContent>
-                </CollapsibleContent>
+                <CollapsibleContent
+                  className={cn(
+                    "overflow-hidden",
+                    "transition-[height,opacity] duration-300 ease-in-out",
+                    "data-[ending-style]:h-0 data-[ending-style]:opacity-0 data-[starting-style]:h-0 data-[starting-style]:opacity-0",
+                  )}
+                  keepMounted render={
+                    <motion.div
+                      initial={false}
+                      animate={{
+                        height: open ? "auto" : 0,
+                        opacity: open ? 1 : 0,
+                      }}
+                      transition={{
+                        height: {
+                          duration: 0.3,
+                          ease: [0.4, 0, 0.2, 1],
+                        },
+                        opacity: { duration: 0.2 },
+                      }}
+                      className="overflow-hidden"
+                      inert={!open}
+                      aria-hidden={!open}
+                    >
+                      <ItemContent>
+                        {features.map((item, index) => (
+                          <ItemDescription
+                            key={index}
+                            className="flex justfiy-start gap-2 py-1.5"
+                          >
+                            <CircleCheck
+                              className="w-4 h-4 text-foreground/80"
+                            />
+                            <span className="text-foreground/80 text-xs">
+                              {item.title}
+                            </span>
+                          </ItemDescription>
+                        ))}
+                        {limitations.map((item, index) => (
+                          <>
+                            <Separator />
+                            <ItemDescription
+                              key={index}
+                              className="flex justfiy-start gap-2 py-1.5"
+                            >
+                              <XCircle
+                                className="w-4 h-4 text-muted-foreground"
+                              />
+                              <span className="text-muted-foreground text-xs text-light">
+                                {item}
+                              </span>
+                            </ItemDescription>
+                          </>
+                        ))}
+                      </ItemContent>
+                    </motion.div>
+                  }
+                />
               </Collapsible>
             </Item>
 
@@ -304,7 +330,11 @@ export const BusinessContent = () => {
                 </div>
               </>
             ) :
-              <Empty className="border border-dashed border-muted-foreground"
+              <Empty
+                className={cn(
+                  "border border-dashed border-border",
+                  "p-6",
+                )}
               >
                 <EmptyHeader>
                   <EmptyDescription>
@@ -313,7 +343,7 @@ export const BusinessContent = () => {
                 </EmptyHeader>
                 <EmptyContent>
                   <Button
-                    variant="ghost"
+                    variant="link"
                     className="w-full"
                     onClick={() => navigate("/business")}
                   >
