@@ -9,7 +9,6 @@ import {
   Item,
   ItemContent,
   ItemDescription,
-  ItemGroup,
   ItemMedia,
   ItemTitle
 } from "@/components/ui/item";
@@ -94,11 +93,17 @@ export const NewsContent = () => {
       </div>
 
       {loading && (
-        <div className="grid grid-cols-2 gap-2">
+        <div className={cn(
+          "columns-2 gap-1",
+        )}>
           {[...Array(4)].map((_, i) => (
             <Skeleton
               key={i}
-              className="aspect-9/16 overflow-hidden rounded-3xl"
+              className={cn(
+                "group inline-block w-full relative overflow-hidden",
+                "odd:aspect-[9/16] even:aspect-[3/4]",
+                "break-inside-avoid",
+              )}
             />
           ))}
         </div>
@@ -113,14 +118,18 @@ export const NewsContent = () => {
 
       {!loading && !error && (
       <div className="flex flex-col gap-4">
-        <ItemGroup className="grid grid-cols-2 gap-2" >
+          <div className={cn(
+            "columns-2 gap-1",
+          )}>
           {news.map((item, index) => (
             <Item
               key={index}
               size="sm"
               variant="outline"
               className={cn(
-                "group relative aspect-9/16 overflow-hidden",
+                "group inline-block w-full relative overflow-hidden",
+                "odd:aspect-[9/16] even:aspect-[3/4]",
+                "break-inside-avoid",
               )}
             >
               <Badge
@@ -165,7 +174,7 @@ export const NewsContent = () => {
               </ItemContent>
             </Item>
           ))}
-        </ItemGroup>
+        </div>
       </div>
       )}
     </div>
