@@ -69,11 +69,13 @@ export default function App() {
               element={
                 <NavbarProvider>
                 <PanelProvider>
+                <OnboardingGate>
                   <MapPage />
+                </OnboardingGate>
                 </PanelProvider>
                 </NavbarProvider>
               }
-            />
+              />
 
             <Route path="/sign-in/*" element={<SignInPage/>} />
             <Route path="/sign-up/*" element={<SignUpPage/>} />
@@ -149,9 +151,7 @@ export default function App() {
       routerReplace={(to) => navigate(to, { replace: true })}
     >
       <ClerkApiAuthBridge />
-      <OnboardingGate>
       {appRoutes}
-      </OnboardingGate>
     </ClerkProvider>
     </OnboardingProvider>
   );
