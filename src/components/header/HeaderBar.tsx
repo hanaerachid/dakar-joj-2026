@@ -68,10 +68,10 @@ export function HeaderBar({
         {children}
 
         {/* right: flags + profile */}
-        <div className="flex items-center gap-1.5 shrink-0 sm:gap-3">
-          <SettingsDialog />
-
+        <div className="flex items-center justify-end gap-1.5 shrink-0 sm:gap-3">
           <InstallButton />
+
+          <SettingsDialog />
 
           {showLogin && (
           <ProfileMenu />

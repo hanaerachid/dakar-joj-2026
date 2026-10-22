@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useInView } from "react-intersection-observer";
 import {
   motion,
   useMotionValue,
@@ -65,7 +66,11 @@ function AnimatedCounter({ value, duration = 1.5, delay = 0 }: {
   return <motion.span>{formatted}</motion.span>;
 }
 
-export const StatsSection = () => {
+export const Stats = () => {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.3,
+  });
   const { t } = useTranslation();
   const stats = [
     {
@@ -101,17 +106,10 @@ export const StatsSection = () => {
   ]
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="space-y-2">
-        <h2 className="text-xs text-[#f2b705] uppercase">
-          {t("stats.gamesinnumers", "The Games in numbers")}
-        </h2>
-        {/*
-        <h2 className="text-xl text-foreground font-bold uppercase">
-          {t("stats.stats", "News")}
-        </h2>
-        */}
-      </div>
+    <div ref={ref} className="space-y-2">
+      <h2 className="text-xs tracking-tight text-muted-foreground font-semibold uppercase">
+        {t("stats.gamesinnumers", "The Games in numbers")}
+      </h2>
       <div className="flex flex-col gap-4">
         <ItemGroup className="grid grid-cols-2 gap-2" >
           {stats.map((item, index) => (
@@ -122,11 +120,13 @@ export const StatsSection = () => {
               className="overflow-hidden flex-col items-start justify-start"
             >
               <ItemContent>
-                <ItemDescription className="flex items-center gap-2">
+                {inView && (
+                  <ItemDescription className="flex items-center gap-2">
                   <span className="text-4xl md:text-5xl">
                     <AnimatedCounter value={item.value} />
                   </span>
                 </ItemDescription>
+                )}
                 <ItemTitle>
                   {item.title}
                 </ItemTitle>

@@ -136,8 +136,8 @@ export const QuickAccess = () => {
   ]
 
   return (
-    <div className="flex flex-col gap-3">
-      <h2 className="text-xs text-muted-foreground uppercase">
+    <div className="space-y-2">
+      <h2 className="text-xs tracking-tight text-muted-foreground font-semibold uppercase">
         {t("home.quick_access", "Quick Access")}
       </h2>
       <ItemGroup className="w-full grid grid-cols-[minmax(0,4fr)_1fr_1fr] !gap-1.5">

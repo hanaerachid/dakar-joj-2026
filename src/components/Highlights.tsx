@@ -332,17 +332,17 @@ export const Highlights = () => {
   }, [location]);
 
   return (
+    <div className="space-y-2">
+
+      <h2 className="text-xs tracking-tight text-muted-foreground font-semibold uppercase">
+        {t("home.around_me", "Around Me")}
+      </h2>
+
     <Collapsible
       open={open}
       onOpenChange={handleOpenChange}
-      className="flex flex-col gap-3"
+      className="flex flex-col gap-2"
     >
-      <div className="flex items-center justify-between gap-1 w-full">
-        <h2 className="text-xs text-muted-foreground uppercase">
-          {t("home.around_me", "Around Me")}
-        </h2>
-      </div>
-
       {!open && !loading && businessListings.length === 0 && (
         <Empty className="p-6">
           <EmptyHeader>
@@ -585,6 +585,7 @@ export const Highlights = () => {
         }
       />
     </Collapsible>
+    </div> 
   )
 }
 
