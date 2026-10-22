@@ -446,6 +446,8 @@
     "other": "Other"
   },
   "auth": {
+    "sign_in": "Sign in",
+    "sign_in_required": "Sign in required",
     "modal": {
       "title": {
         "login": "Welcome back",

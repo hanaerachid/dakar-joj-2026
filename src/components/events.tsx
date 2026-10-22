@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
+import { Toggle } from "@/components/ui/toggle";
 import { Icon } from "@iconify/react";
 import {
   getCalendarUrl,
@@ -39,7 +40,6 @@ import {
 import { ALL_SPORT_OPTIONS } from "../data/sports";
 import { getSportIcon, useRelativeTime } from "@/utils/helpers";
 import type { Event } from "@/shared/contracts";
-import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 import { useStateContext } from "@/components/state-provider";
 import { useModalContext } from "@/components/modal-provider";
 import { toast } from "sonner";
@@ -78,23 +78,24 @@ export const EventsContent = () => {
         </h2>
       </div>
 
-      <ToggleGroup
-        multiple={false}
-        value={[eventCategory]}
-        onValueChange={(value) => {
-          if (value.length > 0) {
-            setEventCategory(value[0]);
+      <div className="flex justify-start gap-2">
+        <Toggle
+          size="sm"
+          variant={eventCategory === "personal" ? "outline" : "outline"}
+          pressed={eventCategory === "personal"}
+          onPressedChange={(pressed) =>
+            setEventCategory(pressed ? "personal" : "public")
           }
-        }}
-        className="w-full"
-      >
-        <ToggleGroupItem value="public" className="flex-1">
-          {t("common.all_events", "Schedule")}
-        </ToggleGroupItem>
-        <ToggleGroupItem value="personal" className="flex-1">
-          {t("common.my_events", "My Agenda")}
-        </ToggleGroupItem>
-      </ToggleGroup>
+          className={cn(
+            eventCategory === "personal" && "!bg-primary text-primary-foreground",
+          )}
+        >
+          {eventCategory === "personal" && (
+            <Check className="h-4 w-4" />
+          )}
+          {t("common.my_events", "Show my events")}
+        </Toggle>
+      </div>
 
       {eventCategory === "personal" ? <PersonalEvents /> : <PublicEvents />}
 

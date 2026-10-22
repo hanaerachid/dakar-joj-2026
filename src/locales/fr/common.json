@@ -443,6 +443,8 @@
     "other": "Autre"
   },
   "auth": {
+    "sign_in": "Se connecter",
+    "sign_in_required": "Connexion requise",
     "modal": {
       "title": {
         "login": "Bon retour",
