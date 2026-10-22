@@ -138,7 +138,8 @@
     "today": "Today",
     "tomorrow": "Tomorrow",
     "later": "Later",
-    "new": "Nouvel événement"
+    "new": "Nouvel événement",
+    "calendar_sign_in_message": "You need to sign in to add events to your calendar. Would you like to sign in now?"
   },
   "calendar": {
     "add_to_calendar": "Add to calendar",

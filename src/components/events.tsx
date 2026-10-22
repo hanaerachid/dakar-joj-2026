@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useUser } from "@clerk/clerk-react";
+import { useAuth, useClerk, useUser } from "@clerk/clerk-react";
 import { cn } from "cn";
 import { AlertCircle, CalendarPlus, CalendarX, Check, ExternalLink } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -117,6 +117,7 @@ export const EventsContent = () => {
 export const PublicEvents = () => {
   const { t, i18n } = useTranslation();
   const { user, isSignedIn } = useUser();
+  const { redirectToSignIn } = useClerk();
   const lang = i18n.resolvedLanguage || i18n.language || "en";
   const [events, setEvents] = useState<ApiEventsItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -164,6 +165,46 @@ export const PublicEvents = () => {
       setLoadingEventId(null);
     }
   }
+
+  const handleRequireSignIn = () => {
+    setModalContent({
+      title: t("auth.sign_in_required", "Sign in required"),
+      size: "md",
+      children: (
+        <p>
+          {t(
+            "events.calendar_sign_in_message",
+            "You need to sign in to add events to your calendar. Would you like to sign in now?",
+          )}
+        </p>
+      ),
+      onClose: () => {
+        setIsOpen(false);
+      },
+      footer: (
+        <>
+          <Button
+            variant="outline"
+            onClick={() => setIsOpen(false)}
+          >
+            {t("common.cancel", "Cancel")}
+          </Button>
+
+          <Button
+            variant="default"
+            onClick={() => {
+              void redirectToSignIn();
+              setIsOpen(false);
+            }}
+          >
+            {t("auth.sign_in", "Sign in")}
+          </Button>
+        </>
+      ),
+    });
+
+    setIsOpen(true);
+  };
 
   const handleRemoveFromCalendar = async (event: ApiEventsItem) => {
     setModalContent({
@@ -442,6 +483,7 @@ export const PublicEvents = () => {
                           <CalendarButton
                             isLoading={isLoading}
                             tracked={tracked}
+                            onRequireSignIn={handleRequireSignIn}
                             handleAddToCalendar={() => handleAddToCalendar(item)}
                             handleRemoveFromCalendar={() => void handleRemoveFromCalendar(item)}
                           />
@@ -460,7 +502,7 @@ export const PublicEvents = () => {
 }
 
 export const PersonalEvents = () => {
-  const navigate = useNavigate();
+  const { redirectToSignIn } = useClerk();
   const { t, i18n } = useTranslation();
   const { user, isLoaded } = useUser();
   const [events, setEvents] = useState<Event[]>([]);
@@ -496,18 +538,11 @@ export const PersonalEvents = () => {
   }, [t, user]);
 
   const openSignIn = () => {
-    navigate(`/sign-in?redirect_url=${encodeURIComponent(window.location.pathname)}`);
+    void redirectToSignIn();
   };
 
   const removeEvent = async (event: Event) => {
     if (!event._id) return;
-    // const confirmed = window.confirm(
-    //   t(
-    //     "calendar.remove_warning",
-    //     "This removes the event from your app calendar only. It does not delete the event from Google Calendar. Continue?",
-    //   ),
-    // );
-    // if (!confirmed) return;
     setModalContent({
       title: t("events.delete_confirmation_title", "Delete this event from your calendar?"),
       size: "md",
@@ -659,16 +694,29 @@ const CalendarButton = ({
   tracked,
   handleAddToCalendar,
   handleRemoveFromCalendar,
+  onRequireSignIn,
 }: {
   isLoading: boolean;
   tracked: boolean;
   handleAddToCalendar: () => void;
   handleRemoveFromCalendar: () => void;
+  onRequireSignIn: () => void;
 }) => {
   const { t } = useTranslation();
+  const { isLoaded, isSignedIn } = useAuth();
   const [isHovered, setIsHovered] = useState(false);
 
   const addLabel = t("calendar.add_to_calendar", "Add to Calendar");
+  const handleAddClick = () => {
+    if (!isLoaded) return;
+
+    if (!isSignedIn) {
+      onRequireSignIn();
+      return;
+    }
+
+    handleAddToCalendar();
+  };
 
   if (isLoading) {
     return (
@@ -727,7 +775,7 @@ const CalendarButton = ({
         variant="default"
         size="lg"
         className="min-w-9 overflow-hidden transition-[padding] duration-200 ease-in-out"
-        onClick={handleAddToCalendar}
+        onClick={handleAddClick}
         aria-label={addLabel}
       >
         <CalendarPlus className="shrink-0" />

@@ -135,7 +135,8 @@
     "today": "Aujourd'hui",
     "tomorrow": "Demain",
     "later": "Plus tard",
-    "new": "Nouvel événement"
+    "new": "Nouvel événement",
+    "calendar_sign_in_message": "Vous devez vous connecter pour ajouter des événements à votre calendrier. Souhaitez-vous vous connecter maintenant ?"
   },
   "calendar": {
     "add_to_calendar": "Ajouter au calendrier",
