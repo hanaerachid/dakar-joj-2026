@@ -6,7 +6,6 @@ import { listPlaces } from "../../lib/api/places";
 import { listBusinessListings } from "../../lib/api/listings";
 import {
   businessListingToFeature,
-  isVerifiedBusinessListing,
   type BusinessListingWithVerification,
 } from "../../lib/businessListings";
 
@@ -129,10 +128,39 @@ function hashId(str: string) {
 // load a local image path and register it once
 async function ensureRuntimeImage(map: Map, id: string, url: string) {
   if (map.hasImage(id)) return id;
-  const res = await fetch(url, { mode: "cors" });
-  const blob = await res.blob();
-  const bmp = await createImageBitmap(blob);
-  map.addImage(id, bmp, { pixelRatio: 2 }); // 2x for crisp result
+  let image: ImageBitmap | ImageData;
+
+  try {
+    const res = await fetch(url, { mode: "cors" });
+    const blob = await res.blob();
+    image = await createImageBitmap(blob);
+  } catch {
+    const canvas = document.createElement("canvas");
+    canvas.width = 32;
+    canvas.height = 40;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error(`Unable to create fallback marker for ${url}`);
+
+    context.fillStyle = "#0f766e";
+    context.beginPath();
+    context.arc(16, 14, 10, 0, Math.PI * 2);
+    context.lineTo(16, 38);
+    context.lineTo(6, 20);
+    context.closePath();
+    context.fill();
+    image = context.getImageData(0, 0, canvas.width, canvas.height);
+  }
+
+  // Multiple category layers can load the same marker concurrently.
+  if (map.hasImage(id)) return id;
+
+  try {
+    map.addImage(id, image, { pixelRatio: 2 }); // 2x for crisp result
+  } catch (error) {
+    // Another concurrent loader may have registered it between the check and add.
+    if (!map.hasImage(id)) throw error;
+  }
+
   return id;
 }
 
@@ -295,6 +323,7 @@ async function addClusterLayers(
     const imageId = hashId(imagePath);
     imagePaths.set(imageId, imagePath);
     (f.properties ||= {})["__img"] = imageId;
+    console.log("feature properties:", f.properties, "imagePath:", imagePath, "imageId:", imageId);
   }
   await Promise.all(
     [...imagePaths].map(([imageId, imagePath]) =>
@@ -563,9 +592,11 @@ export async function addBusinessListingsLayer(
   map: Map,
   opts: CategoryLayerOptions = {},
 ) {
-  const listings = (await listBusinessListings()) as BusinessListingWithVerification[];
+  const listings = (await listBusinessListings({
+    status: "published",
+    verified: true,
+  })) as BusinessListingWithVerification[];
   const features = listings
-    .filter(isVerifiedBusinessListing)
     .map(businessListingToFeature)
     .filter((feature): feature is NonNullable<typeof feature> => feature !== null);
 
@@ -582,7 +613,17 @@ export async function addBusinessListingsLayer(
 
 // PUT THIS NEAR THE BOTTOM OF categoryPoints.ts (export it):
 function getSymbolHaloIds(map: Map) {
-  const style = map.getStyle();
+  if (!map.isStyleLoaded()) {
+    return { symbols: [] as string[], halos: [] as string[] };
+  }
+
+  let style: ReturnType<Map["getStyle"]>;
+  try {
+    style = map.getStyle();
+  } catch {
+    return { symbols: [] as string[], halos: [] as string[] };
+  }
+
   if (!style?.layers) return { symbols: [] as string[], halos: [] as string[] };
 
   // match the layers we create in addClusterLayers()

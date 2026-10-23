@@ -24,12 +24,11 @@ import { useStateContext } from "@/components/state-provider";
 import { listBusinessListings } from "@/lib/api/listings";
 import {
   businessListingToFeature,
-  isVerifiedBusinessListing,
   type BusinessListingWithVerification,
 } from "@/lib/businessListings";
 
 type VenueFeature = Feature<Point, GeoJsonProperties>;
-const DEFAULT_VISIBLE_CATS = new Set<string>(["businesses", "competition"]);
+const DEFAULT_VISIBLE_CATS = new Set<string>(["business", "competition"]);
 export interface SiteConfig {
   name: string; // zone name
   file: string; // firestore://<zoneId>
@@ -181,8 +180,10 @@ export const PlacesListContent = ({ setPanelOpen }: any) => {
           ? {
               fc: {
                 type: "FeatureCollection" as const,
-                features: ((await listBusinessListings()) as BusinessListingWithVerification[])
-                  .filter(isVerifiedBusinessListing)
+                features: ((await listBusinessListings({
+                  status: "published",
+                  verified: true,
+                })) as BusinessListingWithVerification[])
                   .map(businessListingToFeature)
                   .filter((feature): feature is NonNullable<typeof feature> => feature !== null),
               },
