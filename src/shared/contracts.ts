@@ -41,9 +41,17 @@ export const zoneSchema = z.object({
 
 export type Zone = z.infer<typeof zoneSchema>;
 
+export const locationSchema = z.object({
+  type: z.literal("Point").optional(),
+  coordinates: z.tuple([
+    z.number().min(-180).max(180),
+    z.number().min(-90).max(90),
+  ]),
+});
+
 export const geoPointSchema = z.object({
-  latitude: z.number(),
-  longitude: z.number(),
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
 });
 
 export const mainCategoryIdSchema = z.enum([
@@ -103,7 +111,7 @@ export const placeInputSchema = z
     location: z
       .union([
         geoPointSchema,
-        z.object({ lat: z.number(), lng: z.number() }),
+        locationSchema,
       ])
       .optional(),
     address: z.string().nullable().optional(),
@@ -158,11 +166,6 @@ export const newsSchema = z
   })
   .passthrough();
 
-export const geoJsonPointSchema = z.object({
-  type: z.literal("Point").optional(),
-  coordinates: z.tuple([z.number(), z.number()]), // [longitude, latitude]
-});
-
 export const eventSchema = z
   .object({
     _id: z.string().optional(),
@@ -174,7 +177,7 @@ export const eventSchema = z
     sport: z.string().nullable().optional(),
     status: z.string().nullable().optional(),
     venue: z.string().nullable().optional(),
-    location: geoJsonPointSchema.optional(),
+    location: locationSchema.optional(),
     createdAt: z.string().datetime().nullable().optional(),
     updatedAt: z.string().datetime().nullable().optional(),
   });
@@ -191,7 +194,7 @@ export const torchStopSchema = z.object({
   _id: z.string().optional(),
   name: z.string(),
   region: z.string(),
-  location: geoJsonPointSchema,
+  location: locationSchema,
   tourDate: z.string().datetime(), // Serialized as ISO string for API consumers
   metadata: torchStopMetadataSchema.optional(),
 });
@@ -236,9 +239,7 @@ export const businessListingSchema = z.object({
   website: z.string().url().or(z.literal("")).optional(),
   social: z.string().optional(),
   address: z.string(),
-  location: z.object({
-    coordinates: z.tuple([z.number(), z.number()]),
-  }),
+  location: locationSchema,
   desc: z.string(),
   openHours: z.string(),
   spec: z.object({

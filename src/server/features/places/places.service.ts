@@ -13,25 +13,36 @@ function toIso(value: Date | string | undefined | null) {
 
 function normalizeLocation(location: any) {
   if (!location) return null;
-  if (typeof location.latitude === "number" && typeof location.longitude === "number") {
-    return { latitude: location.latitude, longitude: location.longitude };
+
+  if ((location.type === undefined || location.type === "Point") &&
+    Array.isArray(location.coordinates) &&
+    typeof location.coordinates[0] === "number" &&
+    typeof location.coordinates[1] === "number"
+  ) {
+    return { type: "Point", coordinates: [location.coordinates[0], location.coordinates[1]] };
   }
-  if (typeof location.lat === "number" && typeof location.lng === "number") {
-    return { latitude: location.lat, longitude: location.lng };
-  }
-  if (typeof location._lat === "number" && typeof location._long === "number") {
-    return { latitude: location._lat, longitude: location._long };
+
+  const latitude = location.latitude ?? location._lat ?? location.lat;
+  const longitude = location.longitude ?? location._long ?? location.lng;
+  if (typeof latitude === "number" && typeof longitude === "number") {
+    return { type: "Point", coordinates: [longitude, latitude] };
   }
   return null;
 }
 
 function serializePlace(id: string, data: PlaceDocument, zoneId?: string | null): Place {
+  const location = normalizeLocation(data.location ?? data.location);
   return {
     id,
     name: String(data.name ?? "Untitled"),
     name_fr: data.name_fr ?? data.nameFr ?? null,
     nameFr: data.nameFr ?? null,
-    location: normalizeLocation(data.location) ?? undefined,
+    location: location
+      ? {
+          latitude: location.coordinates[1],
+          longitude: location.coordinates[0],
+        }
+      : undefined,
     address: data.address ?? null,
     info: data.info ?? null,
     info_fr: data.info_fr ?? data.infoFr ?? null,
@@ -71,7 +82,8 @@ function buildPayload(input: any, zoneId?: string | null, includeCreatedAt = tru
     name: input.name,
     name_fr: input.name_fr ?? input.nameFr ?? null,
     nameFr: input.nameFr ?? null,
-    location: input.location ?? null,
+    location:
+      normalizeLocation(input.location ?? input.location) ?? null,
     address: input.address ?? null,
     info: input.info ?? null,
     info_fr: input.info_fr ?? input.infoFr ?? null,
@@ -178,7 +190,10 @@ export async function updatePlace(id: string, input: any, zoneId?: string | null
   ];
   const changed = Object.fromEntries(
     fields
-      .filter((field) => Object.prototype.hasOwnProperty.call(input, field))
+      .filter((field) =>
+        Object.prototype.hasOwnProperty.call(input, field) ||
+        (field === "location" && Object.prototype.hasOwnProperty.call(input, "location")),
+      )
       .map((field) => [field, payload[field]]),
   );
   await db.collection<PlaceDocument>("places").updateOne(filter, {
