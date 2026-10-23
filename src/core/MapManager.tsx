@@ -206,6 +206,7 @@ export class MapManager {
       style: MAPBOX_STYLE_URLS[initialBasemap],
       center: getInitialCenter(),
       zoom: getInitialZoom(),
+      customAttribution: "<a href='https://terangamap.com/terms' target='_blank' rel='noopener noreferrer'>Terms/CGUs</a>",
     });
 
     // 🔎 Geocoder
