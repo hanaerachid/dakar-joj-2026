@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
-import { Toggle } from "@/components/ui/toggle";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Icon } from "@iconify/react";
 import {
   getCalendarUrl,
@@ -78,24 +78,29 @@ export const EventsContent = () => {
         </h2>
       </div>
 
-      <div className="flex justify-start gap-2">
-        <Toggle
-          size="sm"
-          variant={eventCategory === "personal" ? "outline" : "outline"}
-          pressed={eventCategory === "personal"}
-          onPressedChange={(pressed) =>
-            setEventCategory(pressed ? "personal" : "public")
+      <ToggleGroup
+        multiple={false}
+        value={[eventCategory]}
+        onValueChange={(value) => {
+          if (value.length > 0) {
+            setEventCategory(value[0]);
           }
-          className={cn(
-            eventCategory === "personal" && "!bg-primary text-primary-foreground",
+        }}
+      >
+        <ToggleGroupItem size="sm" value="public">
+          {eventCategory === "public" && (
+            <Check className="h-4 w-4" />
           )}
-        >
+          {t("common.all_events", "Schedule")}
+        </ToggleGroupItem>
+
+        <ToggleGroupItem size="sm" value="personal">
           {eventCategory === "personal" && (
             <Check className="h-4 w-4" />
           )}
-          {t("common.my_events", "Show my events")}
-        </Toggle>
-      </div>
+          {t("common.my_events", "My Agenda")}
+        </ToggleGroupItem>
+      </ToggleGroup>
 
       {eventCategory === "personal" ? <PersonalEvents /> : <PublicEvents />}
 
