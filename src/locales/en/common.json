@@ -162,7 +162,8 @@
   "place": {
     "description": "Description",
     "contact": "Contact",
-    "details": "Details"
+    "details": "Details",
+    "contact_sign_in_message": "You need to sign in to view contact information. Would you like to sign in now?"
   },
   "business": {
     "businesses": "Businesses",
@@ -448,6 +449,10 @@
   "auth": {
     "sign_in": "Sign in",
     "sign_in_required": "Sign in required",
+    "unlock": "Unlock",
+    "sign_in_to_reveal_website": "Sign in to view website",
+    "sign_in_to_reveal_number": "Sign in to view number",
+    "sign_in_to_reveal_email": "Sign in to view email",
     "modal": {
       "title": {
         "login": "Welcome back",

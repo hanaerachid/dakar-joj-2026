@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "cn";
+import { useUser, useClerk } from "@clerk/clerk-react";
 import Fade from "embla-carousel-fade";
 import {
   Check,
@@ -14,6 +15,7 @@ import {
   Phone,
   MessageCircle,
   Mail,
+  Unlock,
 } from "lucide-react";
 import { getDomain } from "tldts";
 import { Badge } from "@/components/ui/badge";
@@ -54,6 +56,7 @@ import { useClipboard } from "use-clipboard-copy";
 import { useImageStatus } from "@/hooks/use-image-status";
 import type { BusinessListing } from "../../shared/contracts";
 import { BUSINESS_CATEGORIES } from "../business/business-create.config";
+import { useModalContext } from "../modal-provider";
 
 type RouteStep = {
   instruction: string;
@@ -72,10 +75,53 @@ export type RouteSummary = {
 
 export function BusinessDetails({ listing }: { listing: unknown }) {
   const { t } = useTranslation();
+  const { isLoaded, isSignedIn } = useUser();
+  const { redirectToSignIn } = useClerk();
   const business = listing as BusinessListing | null;
   const { setSelectedPlace } = useStateContext();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
+  const { setIsOpen, setModalContent } = useModalContext();
+
+  const handleRequireSignIn = () => {
+    setModalContent({
+      title: t("auth.sign_in_required", "Sign in required"),
+      size: "md",
+      children: (
+        <p>
+          {t(
+            "place.contact_sign_in_message",
+            "You need to sign in to view this business's contact information. Would you like to sign in now?"
+          )}
+        </p>
+      ),
+      onClose: () => {
+        setIsOpen(false);
+      },
+      footer: (
+        <>
+          <Button
+            variant="outline"
+            onClick={() => setIsOpen(false)}
+          >
+            {t("common.cancel", "Cancel")}
+          </Button>
+
+          <Button
+            variant="default"
+            onClick={() => {
+              void redirectToSignIn();
+              setIsOpen(false);
+            }}
+          >
+            {t("auth.sign_in", "Sign in")}
+          </Button>
+        </>
+      ),
+    });
+
+    setIsOpen(true);
+  };
 
   if (!business) {
     return (
@@ -345,6 +391,8 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
 
                 {business.tel && (
                   <ListItem
+                    isAuthGuarded={!isLoaded || !isSignedIn}
+                    onRequireSignIn={handleRequireSignIn}
                     value={business.tel}
                     icon={<Phone />}
                     copiable
@@ -354,6 +402,8 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
 
                 {business.email && (
                   <ListItem
+                    isAuthGuarded={!isLoaded || !isSignedIn}
+                    onRequireSignIn={handleRequireSignIn}
                     value={business.email}
                     icon={<Mail />}
                     copiable
@@ -363,6 +413,8 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
 
                 {business.wa && (
                   <ListItem
+                    isAuthGuarded={!isLoaded || !isSignedIn}
+                    onRequireSignIn={handleRequireSignIn}
                     value={business.wa}
                     icon={<MessageCircle />}
                     copiable
@@ -372,6 +424,8 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
 
                 {business.website && (
                   <ListItem
+                    isAuthGuarded={!isLoaded || !isSignedIn}
+                    onRequireSignIn={handleRequireSignIn}
                     value={getDomain(business.website)}
                     icon={<Globe />}
                     copiable
@@ -404,6 +458,8 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
 }
 
 const ListItem = ({
+  isAuthGuarded = false,
+  onRequireSignIn,
   label,
   value,
   icon,
@@ -411,6 +467,8 @@ const ListItem = ({
   external = false,
   link,
 }: {
+  isAuthGuarded?: boolean;
+  onRequireSignIn?: () => void;
   label?: string | null;
   value: string | null;
   icon?: React.ReactNode;
@@ -421,15 +479,59 @@ const ListItem = ({
   const clipboard = useClipboard();
   const { t } = useTranslation();
 
+  const requireSignIn = () => {
+    if (isAuthGuarded) {
+      onRequireSignIn?.();
+      return true;
+    }
+
+    return false;
+  };
+
   const handleCopy = () => {
+    if (requireSignIn() || !value) return;
     clipboard.copy(value);
   };
 
   const handleNavigate = () => {
-    if (link) {
-      window.open(link, "_blank", "noopener,noreferrer");
+    if (requireSignIn() || !link) return;
+
+    if (link.startsWith("tel:") || link.startsWith("mailto:")) {
+      window.location.href = link;
+      return;
     }
+
+    window.open(link, "_blank", "noopener,noreferrer");
   };
+
+  const maskedValue = (() => {
+    if (!value) return "";
+
+    if (external) return t("auth.sign_in_to_reveal_website", "Sign in to view website");
+
+    if (link?.startsWith("mailto:")) {
+      const [name, domain] = value.split("@");
+      return domain
+        ? `${name.slice(0, 1)}***@${domain}`
+        : t("auth.sign_in_to_reveal_email", "Sign in to view email");
+    }
+
+    if (
+      link?.startsWith("tel:") ||
+      link?.startsWith("https://wa.me/")
+    ) {
+      const digits = value.replace(/\D/g, "");
+      const local = digits.startsWith("221")
+        ? digits.slice(3)
+        : digits;
+
+      return local.length === 9
+        ? `+221 ${local.slice(0, 2)} *** ** ${local.slice(-2)}`
+        : t("auth.sign_in_to_reveal_number", "Sign in to view number");
+    }
+
+    return value;
+  })();
 
   return (
     <Item
@@ -445,14 +547,34 @@ const ListItem = ({
             {label}
           </ItemTitle>
         )}
-        <ItemDescription
-          className={cn(
-            "break-all",
-            external && "underline cursor-pointer"
+        <ItemDescription className="break-all">
+          {isAuthGuarded ? (
+            <>
+              <span>
+                {maskedValue}{" "}
+              </span>
+              <Button
+                type="button"
+                variant="outline"
+                size="xs"
+                onClick={onRequireSignIn}
+              >
+                  <Unlock />
+                <span>{t("auth.unlock", "Unlock")}</span>
+              </Button>
+            </>
+          ) : external ? (
+            <Button
+              type="button"
+              variant="link"
+              className="underline"
+              onClick={handleNavigate}
+            >
+              {value}
+            </Button>
+          ) : (
+            value
           )}
-          onClick={external && link ? handleNavigate : undefined}
-        >
-          {value}
         </ItemDescription>
       </ItemContent>
 
@@ -463,6 +585,7 @@ const ListItem = ({
               type="button"
               size="icon-xs"
               variant="ghost"
+              disabled={!value}
               onClick={handleCopy}
               className="sm:opacity-0 sm:group-hover:opacity-100 sm:transition-opacity"
               aria-label={t("common.copy", "Copy")}

@@ -159,7 +159,8 @@
   "place": {
     "description": "Description",
     "contact": "Contact",
-    "details": "Détails"
+    "details": "Détails",
+    "contact_sign_in_message": "Vous devez vous connecter pour voir les informations de contact. Souhaitez-vous vous connecter maintenant ?"
   },
   "business": {
     "businesses": "Business",
@@ -445,6 +446,10 @@
   "auth": {
     "sign_in": "Se connecter",
     "sign_in_required": "Connexion requise",
+    "unlock": "Débloquer",
+    "sign_in_to_reveal_website": "Se connecter pour voir le site web",
+    "sign_in_to_reveal_number": "Se connecter pour voir le numéro",
+    "sign_in_to_reveal_email": "Se connecter pour voir l'email",
     "modal": {
       "title": {
         "login": "Bon retour",
