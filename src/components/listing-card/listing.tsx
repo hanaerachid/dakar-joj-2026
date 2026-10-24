@@ -73,13 +73,16 @@ export type RouteSummary = {
   steps: RouteStep[];
 } | null;
 
-function BusinessPhoto({
+function PlaceMedia({
   image,
-  businessName,
+  placeName,
+  category,
 }: {
   image: BusinessListing["photos"][number];
-  businessName: string;
+  placeName: string;
+  category: string;
 }) {
+  const { t } = useTranslation();
   const imageUrl = getMediaUrl(image);
   const status = useImageStatus(imageUrl);
 
@@ -96,7 +99,10 @@ function BusinessPhoto({
     >
       <ItemMedia
         variant="default"
-        className="size-full absolute inset-0 object-cover"
+        className={cn(
+          "size-full absolute inset-0 object-cover",
+          "[mask-image:linear-gradient(to_top,transparent,#000_50%)]",
+        )}
         style={{
           backgroundImage: `url(${imageUrl})`,
           backgroundSize: "cover",
@@ -108,18 +114,23 @@ function BusinessPhoto({
         className={cn(
           "flex-col justify-end",
           "absolute h-1/2 bottom-0 left-0 right-0 p-2.5",
-          "bg-gradient-to-t from-background to-transparent",
         )}
       >
         <ItemTitle
-          title={businessName}
+          title={placeName}
           className={cn(
-            "w-full line-clamp-2 overflow-hidden text-ellipsis",
+            "w-full overflow-hidden text-ellipsis",
             "text-xl/6 tracking-normal text-foreground font-heading font-extralight",
           )}
         >
-          {businessName}
+          {placeName}
         </ItemTitle>
+
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm/5 font-extralight text-muted-foreground">
+            {getFriendlyCategoryName(category, t)}
+          </span>
+        </div>
       </ItemContent>
     </Item>
   );
@@ -235,7 +246,11 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
                     {business.photos.map((image, index) => {
                       return (
                         <CarouselItem className="overflow-hidden" key={index}>
-                          <BusinessPhoto image={image} businessName={business.name} />
+                          <PlaceMedia
+                            image={image}
+                            placeName={business.name}
+                            category={business.cat}
+                          />
                         </CarouselItem>
                       )
                     })}
@@ -564,7 +579,7 @@ const ListItem = ({
                 size="xs"
                 onClick={onRequireSignIn}
               >
-                  <Unlock />
+                <Unlock />
                 <span>{t("auth.unlock", "Unlock")}</span>
               </Button>
             </>

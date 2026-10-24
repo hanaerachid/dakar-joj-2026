@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-// import { cn } from "cn";
+import { cn } from "cn";
 import {
   Clock9,
   CircleDot,
@@ -35,12 +35,14 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
-import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import type { Place } from "../../shared/contracts";
 import { useStateContext } from "../state-provider";
 import { ManeuverIcon } from "../maneuverIcons";
 import { getPlace } from "@/lib/api/places";
+import { useImageStatus } from "@/hooks/use-image-status";
+import { getMediaUrl } from "@/lib/fileConvert";
 import { getMainCategoryColor, getMainCategoryIcon } from "../place-list/place-list-utils";
 import { getDirections, clearDirections } from "../../utils/directions";
 import { getLocalizedCategory } from "../place-list/categoryTranslations";
@@ -314,7 +316,7 @@ export function PlaceDetails({ id }: PlaceDetailsProps) {
         <Button
           size="icon"
           variant="secondary"
-          className="fixed top-16 start-3 z-50"
+          className="fixed max-sm:top-8 top-16 start-3 z-50"
           onClick={handleBack}
         >
           <ArrowLeft />
@@ -352,6 +354,97 @@ export function PlaceDetails({ id }: PlaceDetailsProps) {
   );
 }
 
+function PlaceMedia({
+  image,
+  placeName,
+  locationLabel,
+  mainCategoryId,
+  category,
+}: {
+  image: any;
+  placeName: string;
+  locationLabel?: string | null;
+  mainCategoryId: string | null | undefined;
+  category: string | null | undefined;
+}) {
+  const { t } = useTranslation();
+  const mainCategory = mainCategoryId as string | undefined;
+  const CatIcon = getMainCategoryIcon(mainCategory);
+  const color = getMainCategoryColor(mainCategory);
+
+  const imageUrl = getMediaUrl(image);
+  const status = useImageStatus(imageUrl);
+
+  if (status === "loading") {
+    return <Skeleton className="group relative aspect-video overflow-hidden" />;
+  }
+
+  if (status !== "loaded") return null;
+
+  return (
+    <Item
+      variant="muted"
+      className="group relative aspect-video overflow-hidden"
+    >
+      <ItemMedia
+        variant="default"
+        className={cn(
+          "size-full absolute inset-0 object-cover",
+          "[mask-image:linear-gradient(to_top,transparent,#000_50%)]",
+        )}
+        style={{
+          backgroundImage: `url(${imageUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      />
+      <ItemContent
+        className={cn(
+          "flex-col justify-end",
+          "absolute h-1/2 bottom-0 left-0 right-0 p-2.5",
+        )}
+      >
+        <ItemTitle
+          title={placeName}
+          className={cn(
+            "w-full line-clamp-2 overflow-hidden text-ellipsis",
+            "text-xl/6 tracking-normal text-foreground font-heading font-extralight",
+          )}
+        >
+          {placeName}
+        </ItemTitle>
+
+        <div className="flex items-start justify-between gap-2">
+          <ItemDescription>
+            <div className="flex items-center gap-1.5">
+              <CatIcon
+                className="w-3.75 h-3.75"
+                style={{ color: color }}
+              />
+              <span className="text-sm/7 font-extralight text-muted-foreground">
+                {getLocalizedCategory(category as string, t)}
+              </span>
+            </div>
+          </ItemDescription>
+          {locationLabel && (
+            <Badge
+              variant="secondary"
+              className="flex items-center justify-center gap-0.5 text-muted-foreground"
+            >
+              <CircleDot />
+
+              <span className="text-[11px] tracking-tight leading-tight font-mono uppercase">
+                {locationLabel}
+              </span>
+            </Badge>
+          )}
+        </div>
+      </ItemContent>
+    </Item>
+  );
+}
+
 function PlaceContent({ place, route, onGetDirections }: PlaceContentProps) {
   const {
     name,
@@ -386,18 +479,64 @@ function PlaceContent({ place, route, onGetDirections }: PlaceContentProps) {
     <div className="w-full flex flex-col gap-2 py-2">
       <div className="relative w-full rounded-2xl overflow-hidden">
         {/* Hero image */}
-        {imageUrl ? (
-          <>
-            <div className="absolute bottom-0 bg-gradient-to-t from-background to-transparent w-full h-1/4 aspect-video object-cover" />
-            <img
-              src={imageUrl}
-              alt={nameText}
-              loading="lazy"
-              className="w-full rounded-2xl aspect-video object-cover"
-            />
-          </>
-        ) : <div className="mt-20" />}
+        {!imageUrl ? (
+          <PlaceMedia
+            image={imageUrl}
+            placeName={nameText}
+            category={categoryId}
+            mainCategoryId={mainCategoryId}
+            locationLabel={locationLabel}
+          />
+        ) : (
+          <Item
+            variant="muted"
+            className={cn(
+              "group relative aspect-[16/6] overflow-hidden",
+            )}
+          >
+            <ItemContent
+              className={cn(
+                "flex-col justify-end",
+                "absolute h-1/2 bottom-0 left-0 right-0 p-2.5",
+              )}
+            >
+              <ItemTitle
+                title={nameText}
+                className={cn(
+                  "w-full overflow-hidden text-ellipsis",
+                  "text-xl/6 tracking-normal text-foreground font-heading font-extralight"
+                )}
+              >
+                {nameText}
+              </ItemTitle>
+              <div className="flex items-start justify-between gap-2">
+                <ItemDescription>
+                  <div className="flex items-center gap-1.5">
+                    <CatIcon
+                      className="w-3.75 h-3.75"
+                      style={{ color: color }}
+                    />
+                    <span className="text-sm/7 font-extralight text-muted-foreground">
+                      {getLocalizedCategory(categoryId as string, t)}
+                    </span>
+                  </div>
+                </ItemDescription>
+                {locationLabel && (
+                  <Badge
+                    variant="secondary"
+                    className="flex items-center justify-center gap-0.5 text-muted-foreground"
+                  >
+                    <CircleDot />
 
+                    <span className="text-[11px] tracking-tight leading-tight font-mono uppercase">
+                      {locationLabel}
+                    </span>
+                  </Badge>
+                )}
+              </div>
+            </ItemContent>
+          </Item>
+        )}
         {/*
         <div className={cn(
           "absolute start-2 bottom-2 flex items-center justify-between",
@@ -417,40 +556,6 @@ function PlaceContent({ place, route, onGetDirections }: PlaceContentProps) {
       </div>
 
       <div className="space-y-4">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-start justify-between gap-2">
-            <h2 className="flex-1 text-xl/6">
-              {nameText}
-            </h2>
-
-            {locationLabel && (
-              <Badge
-                variant="secondary"
-                className="flex items-center justify-center gap-0.5 text-muted-foreground"
-              >
-                <CircleDot />
-
-                <span className="text-[11px] tracking-tight leading-tight font-mono uppercase">
-                  {locationLabel}
-                </span>
-              </Badge>
-            )}
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <CatIcon
-              className="w-3.75 h-3.75"
-              style={{ color: color }}
-            />
-
-            {/* {getCategoryIcon(categoryId)} */}
-            <span className="text-sm/7 font-extralight text-muted-foreground">
-              {getLocalizedCategory(categoryId as string, t)}
-            </span>
-          </div>
-          <Separator />
-        </div>
-
         {location && (
           <Itinerary
             route={route}
