@@ -132,8 +132,6 @@ export default function MapPage() {
 
   useEffect(() => {
     if (!selectedPlace) return;
-
-    setActiveTab("explorer");
     if (isMobile) {
       setPanelContent({
         title: null,

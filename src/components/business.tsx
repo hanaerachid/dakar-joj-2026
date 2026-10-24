@@ -36,7 +36,7 @@ export const BusinessContent = () => {
   const [loading, setLoading] = useState(false);
   const [businessListings, setBusinessListings] = useState<BusinessListing[]>([]);
   const [open, setOpen] = useState(false);
-  const { setActiveTab, setSelectedPlace } = useStateContext();
+  const { setSelectedPlace } = useStateContext();
 
   const openBusinessListing = (listing: BusinessListing) => {
     const [lng, lat] = listing.location.coordinates;
@@ -48,7 +48,6 @@ export const BusinessContent = () => {
       type: "business",
       listing,
     });
-    setActiveTab("explorer");
   };
 
   const handleOpenChange = (nextOpen: boolean) => {

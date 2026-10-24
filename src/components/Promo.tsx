@@ -323,7 +323,7 @@ const ListingCard = ({
   item: BusinessListing;
 }) => {
   const { t } = useTranslation();
-  const { setActiveTab, setSelectedPlace } = useStateContext();
+  const { setSelectedPlace } = useStateContext();
 
 const openBusinessListing = (listing: BusinessListing) => {
     const [lng, lat] = listing.location.coordinates;
@@ -335,7 +335,6 @@ const openBusinessListing = (listing: BusinessListing) => {
       type: "business",
       listing,
     });
-    setActiveTab("explorer");
   };
 
   return (

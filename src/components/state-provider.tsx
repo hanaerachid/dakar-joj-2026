@@ -3,12 +3,15 @@
 import {
   createContext,
   useContext,
+  useCallback,
   useState,
   useRef,
   useEffect
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { initAuth } from "../auth/nitAuth";
+import { getBusinessListing } from "../lib/api/listings";
+import { getPlace } from "../lib/api/places";
 import {
   PLACE_SELECTED_EVENT,
   type PlaceSelection,
@@ -97,7 +100,22 @@ export function StateProvider({
   });
   const [activeMainCategoryId, setActiveMainCategoryId] = useState("businesses");
   const [activeCatId, setActiveCatId] = useState("businesses");
-  const [selectedPlace, setSelectedPlace] = useState<Record<string, unknown> | null>(null);
+  const [selectedPlace, setSelectedPlaceState] = useState<Record<string, unknown> | null>(null);
+  const setSelectedPlace = useCallback(
+    (place: Record<string, unknown> | null) => {
+      const pathname = location.pathname.replace(/\/$/, "");
+      const isExplorerPath = pathname === "/explorer" || pathname.startsWith("/explorer/");
+
+      if (place?.id != null) {
+        navigate(`/explorer?place=${encodeURIComponent(String(place.id))}`);
+      } else if (isExplorerPath) {
+        navigate("/explorer", { replace: true });
+      }
+
+      setSelectedPlaceState(place);
+    },
+    [location.pathname, navigate],
+  );
   const [role, setRole] = useState<string | undefined>(undefined);
   const [eventCategory, setEventCategory] = useState("public");
 
@@ -115,7 +133,6 @@ export function StateProvider({
       if (!place?.id) return;
 
       setSelectedPlace(place);
-      navigate(`/explorer?place=${encodeURIComponent(String(place.id))}`);
     };
 
     window.addEventListener(PLACE_SELECTED_EVENT, handlePlaceSelected);
@@ -124,6 +141,66 @@ export function StateProvider({
       window.removeEventListener(PLACE_SELECTED_EVENT, handlePlaceSelected);
     };
   }, [navigate, setSelectedPlace]);
+
+  useEffect(() => {
+    const pathname = location.pathname.replace(/\/$/, "");
+    const isExplorerPath = pathname === "/explorer" || pathname.startsWith("/explorer/");
+    const pathPlaceId = pathname.startsWith("/explorer/")
+      ? decodeURIComponent(pathname.slice("/explorer/".length))
+      : null;
+    const searchParams = new URLSearchParams(location.search);
+    const placeId = searchParams.get("place")
+      ?? searchParams.get("placeId")
+      ?? (pathPlaceId?.startsWith("placeId=")
+        ? pathPlaceId.slice("placeId=".length)
+        : pathPlaceId);
+
+    if (!isExplorerPath || !placeId) {
+      setSelectedPlaceState(null);
+      return;
+    }
+
+    const selectedId = placeId;
+
+    let cancelled = false;
+
+    async function loadSelection() {
+      try {
+        const listing = await getBusinessListing(selectedId);
+        if (cancelled) return;
+
+        const [lng, lat] = listing.location.coordinates;
+        setSelectedPlaceState({
+          id: selectedId,
+          lng,
+          lat,
+          title: listing.name,
+          type: "business",
+          listing,
+        });
+        return;
+      } catch {
+        const place = await getPlace(selectedId);
+        if (cancelled) return;
+
+        setSelectedPlaceState({
+          id: place.id,
+          lng: place.location?.longitude,
+          lat: place.location?.latitude,
+          title: place.name,
+          type: "place",
+        });
+      }
+    }
+
+    void loadSelection().catch(() => {
+      if (!cancelled) setSelectedPlaceState(null);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [location.pathname, location.search]);
 
   const value = {
     activeTab,

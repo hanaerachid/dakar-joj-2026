@@ -32,10 +32,9 @@ const isBasemapId = (value: string | null): value is BasemapId => {
   return value !== null && value in MAPBOX_STYLE_URLS;
 };
 
-const DEFAULT_VISIBLE_CATS = new Set<string>(["business", "competition"]);
+const DEFAULT_VISIBLE_CATS = new Set<string>(["businesses", "competition"]);
 
 const CATEGORY_PREFIX: Record<string, string> = {
-  business: "business-",
   competition: "comp-",
   hotels: "hotel-",
   restaurants: "rest-",
@@ -206,7 +205,6 @@ export class MapManager {
       style: MAPBOX_STYLE_URLS[initialBasemap],
       center: getInitialCenter(),
       zoom: getInitialZoom(),
-      customAttribution: "<a href='https://terangamap.com/terms' target='_blank' rel='noopener noreferrer'>Terms/CGUs</a>",
     });
 
     // 🔎 Geocoder
@@ -246,7 +244,7 @@ export class MapManager {
 
     await Promise.all([
       addBusinessListingsLayer(this.map, {
-        initiallyVisible: DEFAULT_VISIBLE_CATS.has("business"),
+        initiallyVisible: DEFAULT_VISIBLE_CATS.has("businesses"),
       }),
       addDbCategoryPointsLayer(this.map, "competition", "comp-", {
         initiallyVisible: DEFAULT_VISIBLE_CATS.has("competition"),

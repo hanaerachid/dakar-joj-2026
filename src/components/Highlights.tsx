@@ -94,6 +94,8 @@ export const Highlights = () => {
   const [canScrollNext, setCanScrollNext] = useState(false)
 
   const openBusinessListing = (listing: BusinessListing) => {
+    if (!listing._id) return;
+
     const [lng, lat] = listing.location.coordinates;
     setSelectedPlace({
       id: listing._id,
@@ -103,7 +105,6 @@ export const Highlights = () => {
       type: "business",
       listing,
     });
-    setActiveTab("explorer");
   };
 
   const getLocation = (): Promise<LocationResult> =>
@@ -355,7 +356,7 @@ export const Highlights = () => {
               variant="secondary"
               size="sm"
               onClick={() => {
-                setActiveTab("business");
+                setActiveTab("pro");
               }}
             >
               {t("home.add_your_business", "Show your business here")}
@@ -537,7 +538,7 @@ export const Highlights = () => {
                 "border border-border",
               )}
               onClick={() => {
-                setActiveTab("business");
+                setActiveTab("pro");
               }}
             >
               <ItemMedia

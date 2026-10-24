@@ -73,6 +73,58 @@ export type RouteSummary = {
   steps: RouteStep[];
 } | null;
 
+function BusinessPhoto({
+  image,
+  businessName,
+}: {
+  image: BusinessListing["photos"][number];
+  businessName: string;
+}) {
+  const imageUrl = getMediaUrl(image);
+  const status = useImageStatus(imageUrl);
+
+  if (status === "loading") {
+    return <Skeleton className="group relative aspect-video overflow-hidden" />;
+  }
+
+  if (status !== "loaded") return null;
+
+  return (
+    <Item
+      variant="muted"
+      className="group relative aspect-video overflow-hidden"
+    >
+      <ItemMedia
+        variant="default"
+        className="size-full absolute inset-0 object-cover"
+        style={{
+          backgroundImage: `url(${imageUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      />
+      <ItemContent
+        className={cn(
+          "flex-col justify-end",
+          "absolute h-1/2 bottom-0 left-0 right-0 p-2.5",
+          "bg-gradient-to-t from-background to-transparent",
+        )}
+      >
+        <ItemTitle
+          title={businessName}
+          className={cn(
+            "w-full line-clamp-2 overflow-hidden text-ellipsis",
+            "text-xl/6 tracking-normal text-foreground font-heading font-extralight",
+          )}
+        >
+          {businessName}
+        </ItemTitle>
+      </ItemContent>
+    </Item>
+  );
+}
+
 export function BusinessDetails({ listing }: { listing: unknown }) {
   const { t } = useTranslation();
   const { isLoaded, isSignedIn } = useUser();
@@ -123,18 +175,6 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
     setIsOpen(true);
   };
 
-  if (!business) {
-    return (
-      <Empty>
-        <EmptyContent>
-          <EmptyDescription>
-            {t("place.details.not_found", "Business not found.")}
-          </EmptyDescription>
-        </EmptyContent>
-      </Empty>
-    );
-  }
-
   useEffect(() => {
     if (!api) {
       return;
@@ -146,6 +186,18 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
       setCurrent(api.selectedScrollSnap() + 1);
     });
   }, [api]);
+
+  if (!business) {
+    return (
+      <Empty>
+        <EmptyContent>
+          <EmptyDescription>
+            {t("place.details.not_found", "Business not found.")}
+          </EmptyDescription>
+        </EmptyContent>
+      </Empty>
+    );
+  }
 
   const handleThumbClick = useCallback(
     (index: number) => {
@@ -181,56 +233,9 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
                 >
                   <CarouselContent>
                     {business.photos.map((image, index) => {
-                      const status = useImageStatus(getMediaUrl(image));
                       return (
                         <CarouselItem className="overflow-hidden" key={index}>
-                          {(status === "loading") && (
-                            <Skeleton
-                              className={cn(
-                                "group relative aspect-video overflow-hidden",
-                              )} />
-                          )}
-                          {(status === "loaded") && (
-                            <Item
-                              variant="muted"
-                              className={cn(
-                                "group relative aspect-video overflow-hidden",
-                              )}
-                            >
-                              <ItemMedia
-                                variant="default"
-                                className="size-full absolute inset-0 object-cover"
-                                style={{
-                                  backgroundImage: `url(${getMediaUrl(image)})`,
-                                  backgroundSize: "cover",
-                                  backgroundPosition: "center",
-                                  backgroundRepeat: "no-repeat",
-                                }}
-                              />
-                              <ItemContent
-                                className={cn(
-                                  "flex-col justify-end",
-                                  "absolute h-1/2 bottom-0 left-0 right-0 p-2.5",
-                                  "bg-gradient-to-t from-background to-transparent"
-                                )}
-                              >
-                                <ItemTitle
-                                  title={business.name}
-                                  className={cn(
-                                    "w-full line-clamp-2 overflow-hidden text-ellipsis",
-                                    "text-xl/6 tracking-normal text-foreground font-heading font-extralight"
-                                  )}
-                                >
-                                  {business.name}
-                                </ItemTitle>
-                                <div className="flex items-center gap-1.5">
-                                  <span className="text-sm/5 font-extralight text-muted-foreground">
-                                    {getFriendlyCategoryName(business.cat, t)}
-                                  </span>
-                                </div>
-                              </ItemContent>
-                            </Item>
-                          )}
+                          <BusinessPhoto image={image} businessName={business.name} />
                         </CarouselItem>
                       )
                     })}
