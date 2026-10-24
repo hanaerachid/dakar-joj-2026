@@ -68,7 +68,7 @@ import {
 } from "@/lib/api/listings";
 import { type BreadcrumbConfig, Breadcrumbs } from "@/components/BreadCrumbs";
 import { useModalContext } from "@/components/modal-provider";
-// import { useStateContext } from "@/components/state-provider";
+import { useStateContext } from "@/components/state-provider";
 import { PRICING_PLANS } from "../components/pricing/pricingplans.config";
 
 const STEP_FIELDS: Record<number, (keyof BusinessCreateValues)[]> = {
@@ -88,21 +88,19 @@ export function BusinessPage() {
   const [loading, setLoading] = useState(false);
   const [businessListings, setBusinessListings] = useState<BusinessListing[]>([]);
   const { setIsOpen, setModalContent } = useModalContext();
-  // const { setActiveTab, setSelectedPlace } = useStateContext();
+  const { setSelectedPlace } = useStateContext();
 
-  // const openBusinessListing = (listing: BusinessListing) => {
-  //   const [lng, lat] = listing.location.coordinates;
-  //   setSelectedPlace({
-  //     id: listing._id,
-  //     lng,
-  //     lat,
-  //     title: listing.name,
-  //     type: "business",
-  //     listing,
-  //   });
-  //   setActiveTab("explorer");
-  //   navigate("/");
-  // };
+  const openBusinessListing = (listing: BusinessListing) => {
+    const [lng, lat] = listing.location.coordinates;
+    setSelectedPlace({
+      id: listing._id,
+      lng,
+      lat,
+      title: listing.name,
+      type: "business",
+      listing,
+    });
+  };
 
   // const [search, setSearch] = useState("");
   // const [sort, setSort] = useState<"updated" | "name">("updated");
@@ -305,7 +303,6 @@ export function BusinessPage() {
               return (
                 <Card
                   key={index}
-                  // onClick={() => openBusinessListing(item)}
                   className="relative mx-auto w-full max-w-sm pt-0 overflow-hidden"
                   size="sm"
                 >
@@ -318,9 +315,17 @@ export function BusinessPage() {
                   >
                     {getFriendlyCategoryName(item.cat, t)}
                   </Badge>
+                  <div className="absolute end-4 top-4 z-20 inline-flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => openBusinessListing(item)}
+                    >
+                      {t("common.view_in_map", "View on map")}
+                    </Button>
+
                   <DropdownMenu>
                     <DropdownMenuTrigger
-                      className="absolute end-4 top-4 z-20"
                       render={
                         <Button
                           variant="ghost" size="icon-sm"
@@ -350,7 +355,7 @@ export function BusinessPage() {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-
+                  </div>
                   <CardHeader className="p-0 gap-0">
                     {/* image */}
                     {item.photos && item.photos.length > 0 ? (
