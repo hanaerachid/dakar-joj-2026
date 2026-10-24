@@ -121,11 +121,11 @@ export default function MapPage() {
       },
     },
     {
-      key: "business",
+      key: "pro",
       label: t("tabs.business", "Business"),
       icon: Briefcase,
       action: () => {
-        openNavigationPanel("business");
+        openNavigationPanel("pro");
       },
     },
   ], []);
@@ -290,6 +290,7 @@ export default function MapPage() {
       <HeaderBar
       // title={t("title")}
       // description={t("description")}
+        showBasemapSwitcher={true}
         onReset={handleReset}
       >
         <Item

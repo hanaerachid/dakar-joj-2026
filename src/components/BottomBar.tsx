@@ -53,7 +53,7 @@ export function BottomNavigation({
             >
               <Icon
                 aria-hidden="true"
-                strokeWidth={isActive ? 2 : 1}
+                strokeWidth={isActive ? 2 : 1.5}
               />
               <span
                 className={cn(

@@ -14,7 +14,13 @@ import { BasemapSwitcher } from "@/components/header/BasemapSwitcher"
 import { LanguageSwitcher } from "@/components/header/LanguageSwitcher"
 import { ThemeSwitcher } from "@/components/header/ThemeSwitcher"
 
-export function SettingsDialog() {
+interface SettingsDialogProps {
+  basemapSwitcher: boolean;
+}
+
+export function SettingsDialog({
+  basemapSwitcher = false,
+}: SettingsDialogProps) {
   const { t } = useTranslation()
 
   return (
@@ -56,6 +62,8 @@ export function SettingsDialog() {
           </div>
 
           {/* Basemap */}
+          {basemapSwitcher &&
+          <>
           <div className="space-y-3">
             <h3 className="text-xs text-muted-foreground font-medium uppercase">
               {t("common.basemaps", "Basemap")}
@@ -63,6 +71,8 @@ export function SettingsDialog() {
 
             <BasemapSwitcher />
           </div>
+          </>
+          }
           <div className="space-y-3">
             <h3 className="text-xs text-muted-foreground font-medium uppercase">
               {t("common.useful_links", "Useful Links")}

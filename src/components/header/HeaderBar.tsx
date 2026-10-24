@@ -10,6 +10,7 @@ type Props = {
   onReset?: () => void;
   children?: React.ReactNode;
   showLogo?: boolean;
+  showBasemapSwitcher?: boolean;
   backButton?: React.ReactNode;
   showLogin?: boolean;
 };
@@ -17,6 +18,7 @@ type Props = {
 export function HeaderBar({
   showLogo = true,
   showLogin = true,
+  showBasemapSwitcher = false,
   backButton,
   title,
   description,
@@ -71,7 +73,9 @@ export function HeaderBar({
         <div className="flex items-center justify-end gap-1.5 shrink-0 sm:gap-3">
           <InstallButton />
 
-          <SettingsDialog />
+          <SettingsDialog
+            basemapSwitcher={showBasemapSwitcher}
+          />
 
           {showLogin && (
           <ProfileMenu />
