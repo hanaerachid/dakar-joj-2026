@@ -479,7 +479,7 @@ function PlaceContent({ place, route, onGetDirections }: PlaceContentProps) {
     <div className="w-full flex flex-col gap-2 py-2">
       <div className="relative w-full rounded-2xl overflow-hidden">
         {/* Hero image */}
-        {!imageUrl ? (
+        {imageUrl ? (
           <PlaceMedia
             image={imageUrl}
             placeName={nameText}
