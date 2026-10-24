@@ -17,6 +17,7 @@
     "next": "Suivant",
     "previous": "Précédent",
     "loading": "Chargement…",
+    "skip_intro": "Passer l’introduction",
     "error": "Une erreur est survenue.",
     "retry": "Réessayer",
     "success": "Succès !",
@@ -33,12 +34,15 @@
     "use_current_location": "Utiliser la position actuelle"
   },
   "onboarding": {
-    "onboarding_title_1": "Commencez le voyage.",
-    "onboarding_description_1": "Naviguez et trouvez votre chemin facilement. En continuant, vous acceptez nos <terms>Conditions générales d'utilisation</terms>.",
-    "onboarding_title_2": "Trouver les événements qui se déroulent autour de vous.",
-    "onboarding_description_2": "Explorez les lieux de compétition, découvrez les endroits à proximité et planifiez votre itinéraire.",
-    "onboarding_title_3": "C'est tout !",
-    "onboarding_description_3": "Vous êtes prêts à explorer le monde avec TerangaMap. Profitez de votre voyage !"
+    "onboarding_eyebrow_1": "VIVEZ LES ÉVÉNEMENTS",
+    "onboarding_title_1": "Tous les événements en direct.",
+    "onboarding_description_1": "Sport, culture, festivals autour de vous. En continuant, vous acceptez nos <terms>Conditions générales d'utilisation</terms>.",
+    "onboarding_eyebrow_2": "EXPLOREZ LES PÉPITES LOCALES",
+    "onboarding_title_2": "Découvrez bien plus qu'un événement.",
+    "onboarding_description_2": "Sites touristiques, hébergements, restaurants, transports.",
+    "onboarding_eyebrow_3": "TROUVEZ VOTRE CHEMIN",
+    "onboarding_title_3": "Votre destination à portée de main.",
+    "onboarding_description_3": "Itinéraire, lieux, services en toute simplicité."
   },
   "map": "Carte",
   "theme": "Thème",

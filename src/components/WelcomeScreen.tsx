@@ -18,7 +18,7 @@ export function WelcomeScreen() {
 
   const slides = [
     {
-      eyebrow: t("welcome_message", "WELCOME TO TERANGAMAP"),
+      eyebrow: t("onboarding.onboarding_eyebrow_1", "WELCOME TO TERANGAMAP"),
       title: t("onboarding.onboarding_title_1", "Start the journey."),
       description: (
         <span>
@@ -42,21 +42,21 @@ export function WelcomeScreen() {
       color: "var(--accent-color-1)",
     },
     {
-      eyebrow: t("explore_events", "EXPLORE & DISCOVER"),
+      eyebrow: t("onboarding.onboarding_eyebrow_2", "EXPLORE THE LOCAL HIGHLIGHTS"),
       title: t("onboarding.onboarding_title_2", "Find events happening around you."),
       description: t(
         "onboarding.onboarding_description_2",
-        "Explore competition venues, discover nearby places, and plan your route."
+        "Discover the best of what your area has to offer."
       ),
       illustration: "/illustrations/onboarding-2.svg",
       color: "var(--accent-color-2)",
     },
     {
-      eyebrow: t("navigate_with_ease", "Let's get started!"),
-      title: t("onboarding.onboarding_title_3", "That's it!"),
+      eyebrow: t("onboarding.onboarding_eyebrow_3", "FIND YOUR WAY"),
+      title: t("onboarding.onboarding_title_3", "Your destination within reach."),
       description: t(
         "onboarding.onboarding_description_3",
-        "You're all set to explore the world with TerangaMap. Enjoy your journey!"
+        "Itinerary, places, services in complete simplicity."
       ),
       illustration: "/illustrations/onboarding-3.svg",
       color: "var(--accent-color-3)",
@@ -80,18 +80,18 @@ export function WelcomeScreen() {
       <section
         key={currentStep}
         aria-live="polite"
-        className="flex flex-1 flex-col items-center justify-center px-6 py-10 text-center animate-in fade-in duration-300 overflow-y-auto"
+        className="flex flex-1 flex-col items-center justify-center px-6 py-8 text-center animate-in fade-in duration-300 overflow-y-auto"
       >
         {/* Illustration */}
         <div
-          className={`my-10 size-44 sm:size-56 flex items-center justify-center`}
+          className={`my-10 size-64 sm:size-64 flex items-center justify-center`}
           aria-hidden="true"
         >
-            <img src={illustration} alt="Illustration" className="size-40 sm:size-28" />
+            <img src={illustration} alt="Illustration" className="size-64 sm:size-64" />
         </div>
 
         {/* Text */}
-        <div className="flex-1 space-y-3 max-w-xl">
+        <div className="flex-1 space-y-2 max-w-xl">
           <p
             className={`text-xs/7 font-bold tracking-tight uppercase`}
             style={{ color: slides[currentStep].color }}
@@ -109,9 +109,9 @@ export function WelcomeScreen() {
         </div>
 
         {/* Progress indicators */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           {!isLastStep && (
-            <Button variant="ghost" size="sm" onClick={skip}>
+            <Button variant="outline" size="sm" onClick={skip}>
               {t("common.skip_intro", "Skip intro")}
             </Button>
           )}

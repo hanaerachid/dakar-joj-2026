@@ -64,12 +64,12 @@ export function SettingsDialog() {
             <BasemapSwitcher />
           </div>
           <div className="space-y-3">
-            <h3 className="text-sm text-muted-foreground font-medium uppercase">
+            <h3 className="text-xs text-muted-foreground font-medium uppercase">
               {t("common.useful_links", "Useful Links")}
             </h3>
 
             <a href='https://terangamap.com/terms' target='_blank' rel='noopener noreferrer'>
-              <span className="inline-flex items-center gap-1 text-xs text-foreground/70 hover:underline">
+              <span className="inline-flex items-center gap-1 text-sm text-foreground/70 hover:underline">
                 <span>
                   {t("common.tos", "Terms of Use")}
                 </span>

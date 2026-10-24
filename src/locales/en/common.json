@@ -17,6 +17,7 @@
     "next": "Next",
     "previous": "Previous",
     "loading": "Loading…",
+    "skip_intro": "Skip intro",
     "error": "An error occurred.",
     "retry": "Try again",
     "success": "Success !",
@@ -36,12 +37,15 @@
     "use_current_location": "Use current location"
   },
   "onboarding": {
-    "onboarding_title_1": "Start the journey.",
-    "onboarding_description_1": "Navigate and find your way around with ease. By continuing, you agree to our <terms>Terms of Service</terms>.",
-    "onboarding_title_2": "Find events happening around you.",
-    "onboarding_description_2": "Explore competition venues, discover nearby places, and plan your route.",
-    "onboarding_title_3": "That's it!",
-    "onboarding_description_3": "You're all set to explore the world with TerangaMap. Enjoy your journey!"
+    "onboarding_eyebrow_1": "LIVE THE EVENTS",
+    "onboarding_title_1": "All events live.",
+    "onboarding_description_1": "Sport, culture, festivals around you. By continuing, you agree to our <terms>Terms of Service</terms>.",
+    "onboarding_eyebrow_2": "EXPLORE THE LOCAL HIGHLIGHTS",
+    "onboarding_title_2": "Discover much more than an event.",
+    "onboarding_description_2": "Tourist sites, accommodations, restaurants, transportation.",
+    "onboarding_eyebrow_3": "FIND YOUR WAY",
+    "onboarding_title_3": "Your destination within reach.",
+    "onboarding_description_3": "Itinerary, places, services in complete simplicity."
   },
   "theme": "Theme",
   "language": "Language",
