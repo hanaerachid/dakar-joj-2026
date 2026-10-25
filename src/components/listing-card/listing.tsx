@@ -257,6 +257,7 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
                   </CarouselContent>
                 </Carousel>
 
+                {business.photos.length > 1 && (
                 <Carousel
                   orientation="horizontal"
                   className="w-full"
@@ -284,6 +285,7 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
                   <CarouselPrevious />
                   <CarouselNext />
                 </Carousel>
+                )}
               </div>
             ) : (
               <Item

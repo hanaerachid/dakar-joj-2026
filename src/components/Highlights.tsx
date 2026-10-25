@@ -443,17 +443,18 @@ export const Highlights = () => {
             {!loading && businessListings.length > 0 && (
               <CarouselContent className="-ml-1 select-none">
                 {!loading && businessListings
-                  .filter(
-                    (item) =>
-                      item.pack !== "discover" &&
-                      item.pack !== "starter" &&
-                      item.pack !== "business"
-                  )
-                  .sort((a, b) => {
-                    if (a.pack === "sponsor") return -1;
-                    if (b.pack === "sponsor") return 1;
-                    return 0;
-                  }).map((item, index) => {
+                    .filter((item) => item.pack !== "discover")
+                    .sort((a, b) => {
+                      const order: Record<string, number> = {
+                        sponsor: 0,
+                        premium: 1,
+                        business: 2,
+                        starter: 3,
+                      };
+
+                      return (order[a.pack] ?? Infinity) - (order[b.pack] ?? Infinity);
+                    })
+                    .map((item, index) => {
 
                     return (
                       <CarouselItem
@@ -495,17 +496,17 @@ export const Highlights = () => {
       <CollapsibleContent>
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-1">
           {!loading && businessListings
-            .filter(
-              (item) =>
-                item.pack !== "discover" &&
-                item.pack !== "starter" &&
-                item.pack !== "business"
-            )
-            .sort((a, b) => {
-              if (a.pack === "sponsor") return -1;
-              if (b.pack === "sponsor") return 1;
-              return 0;
-            })
+              .filter((item) => item.pack !== "discover")
+              .sort((a, b) => {
+                const order: Record<string, number> = {
+                  sponsor: 0,
+                  premium: 1,
+                  business: 2,
+                  starter: 3,
+                };
+
+                return (order[a.pack] ?? Infinity) - (order[b.pack] ?? Infinity);
+              })
             .map((item, index) => {
               return (
                 <div
@@ -615,6 +616,10 @@ const ListingCard = ({
       className={cn(
         "group relative aspect-square overflow-hidden",
         "cursor-pointer",
+        "ring ring-border/10 hover:ring-border/20 transition-colors duration-300",
+        // "before:absolute before:transitiona-all before:duration-1000 before:opacity-70 before:-inset-px before:bg-gradient-to-r before:from-[#44BCFF] before:via-[#FF44EC] before:to-[#FF675E] before:blur-lg before:group-hover:opacity-100 before:group-hover:-inset-1 before:group-hover:duration-200 before:animate-tilt",
+        // Add glow to premium and sponsor listings
+        // (item.pack === "sponsor") && "border border-[var(--accent-color-3)]",
       )}
     >
       <Badge
@@ -629,8 +634,9 @@ const ListingCard = ({
       <ItemMedia
         variant="default"
         className={cn(
-          "h-full absolute inset-0",
+          "size-full absolute inset-0 object-cover",
           "group-hover:scale-105 transition-transform",
+          "[mask-image:linear-gradient(to_top,transparent,#000_50%)]",
         )}
         style={{
           backgroundImage: `url(${getMediaUrl(item.photos[0])})`,
@@ -640,8 +646,18 @@ const ListingCard = ({
         }}
       />
       <ItemContent
-        className="flex-col justify-end absolute h-1/2 bottom-0 left-0 right-0 bg-gradient-to-t from-background to-transparent p-2"
+        className="flex-col justify-end absolute h-1/2 bottom-0 left-0 right-0 p-2"
       >
+        {item.pack === "sponsor" && (
+          <Badge
+            variant="secondary"
+            className={cn(
+              "text-[9px]/3.5 tracking-normal text-[var(--accent-color-3)] font-heading font-normal uppercase"
+            )}
+          >
+            {t("plans.sponsor", "Sponsor")}
+          </Badge>
+        )}
         <ItemTitle
           title={item.name}
           className={cn(

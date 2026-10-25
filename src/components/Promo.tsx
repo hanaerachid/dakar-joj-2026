@@ -365,10 +365,20 @@ const openBusinessListing = (listing: BusinessListing) => {
         )}
       </ItemMedia>
       <ItemContent>
-        <ItemTitle>
+        <ItemTitle className="inline">
           <span className="text-lg font-semibold">
             {item.name}
           </span>
+          {" "}
+          <Badge
+            render={
+              <span>
+                {item.pack}
+              </span>
+            }
+            variant="secondary"
+            className="uppercase text-xs"
+          />
         </ItemTitle>
         <ItemDescription className="text-sm line-clamp-2">
           {item.desc}
@@ -376,11 +386,11 @@ const openBusinessListing = (listing: BusinessListing) => {
       </ItemContent>
       <ItemActions className="self-end">
         <Button
-          variant="secondary"
+          variant="outline"
           size="default"
           onClick={() => openBusinessListing(item)}
         >
-          <span>{t("common.show_details", "Show details")}</span>
+          <span>{t("common.show_more", "Show more")}</span>
         </Button>
       </ItemActions>
     </Item>
