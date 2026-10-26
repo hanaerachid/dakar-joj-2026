@@ -68,9 +68,9 @@ export function WelcomeScreen() {
   const illustration = slide.illustration;
 
   return (
-    <main className="fixed inset-0 z-[9999] flex h-full flex-col bg-background text-foreground">
+    <main className="fixed inset-0 z-[200] flex h-full flex-col bg-background">
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-5 sm:px-10">
+      <header className="sticky top-0 flex items-center justify-between px-6 py-4 sm:px-10">
         <div className="flex items-center gap-2 font-semibold tracking-tight">
           <LogoBrand logoSrc="/logo.svg" />
         </div>
@@ -80,18 +80,18 @@ export function WelcomeScreen() {
       <section
         key={currentStep}
         aria-live="polite"
-        className="flex flex-1 flex-col items-center justify-center px-6 py-8 text-center animate-in fade-in duration-300 overflow-y-auto"
+        className="flex-1 h-full flex flex-col gap-2 items-center justify-center px-6 py-2 text-center animate-in fade-in duration-300 overflow-y-auto"
       >
         {/* Illustration */}
         <div
-          className={`my-10 size-64 sm:size-64 flex items-center justify-center`}
+          className={`my-4 size-64 sm:size-64 flex items-center justify-center`}
           aria-hidden="true"
         >
             <img src={illustration} alt="Illustration" className="size-64 sm:size-64" />
         </div>
 
         {/* Text */}
-        <div className="flex-1 space-y-2 max-w-xl">
+        <div className="flex-1 space-y-2 max-w-sm">
           <p
             className={`text-xs/7 font-bold tracking-tight uppercase`}
             style={{ color: slides[currentStep].color }}
@@ -109,7 +109,7 @@ export function WelcomeScreen() {
         </div>
 
         {/* Progress indicators */}
-        <div className="space-y-2">
+        <div className="space-y-2 shrink-0">
           {!isLastStep && (
             <Button variant="outline" size="sm" onClick={skip}>
               {t("common.skip_intro", "Skip intro")}
@@ -134,13 +134,14 @@ export function WelcomeScreen() {
             ))}
           </div>
           <div className="text-xs text-muted-foreground">
-            {currentStep + 1} of {totalSteps}
+            {currentStep + 1} {t("common.of", "of")} {totalSteps}
           </div>
 
         </div>
       </section>
 
       {/* Footer */}
+      <div className="sticky bottom-0">
       <Separator />
       <footer className="w-full flex items-center justify-end gap-4 px-6 py-5 sm:px-10">
         {currentStep > 0 && (
@@ -161,6 +162,7 @@ export function WelcomeScreen() {
           )}
         </Button>
       </footer>
+      </div>
     </main>
   );
 }
