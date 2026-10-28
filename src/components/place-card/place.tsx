@@ -9,6 +9,7 @@ import {
   Globe,
   BadgeCheck,
   MapPin,
+  Share2,
   ArrowLeft,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -48,6 +49,7 @@ import { getDirections, clearDirections } from "../../utils/directions";
 import { getLocalizedCategory } from "../place-list/categoryTranslations";
 import { useModalContext } from "../modal-provider";
 import { LocationConsent } from "../LocationConsent";
+import { sharePlace } from "@/utils/share";
 
 type RouteStep = {
   instruction: string;
@@ -145,6 +147,15 @@ export function PlaceDetails({ id }: PlaceDetailsProps) {
     clearDirections();
     setRoute(null);
     setSelectedPlace(null);
+  };
+
+  const handleShare = () => {
+    if (!place) return;
+
+    void sharePlace({
+      id: place.id,
+      title: place.name,
+    });
   };
 
   /*
@@ -312,7 +323,7 @@ export function PlaceDetails({ id }: PlaceDetailsProps) {
 
   return (
     <div className="relative flex flex-col gap-2">
-      <div className="absolute top-16 start-3">
+      <div className="absolute top-16 start-3 flex gap-1">
         <Button
           size="icon"
           variant="secondary"
@@ -321,6 +332,16 @@ export function PlaceDetails({ id }: PlaceDetailsProps) {
         >
           <ArrowLeft />
           <span className="sr-only">{t("place.details.back", "Back")}</span>
+        </Button>
+        <Button
+          size="icon"
+          variant="secondary"
+          className="fixed max-sm:top-8 top-16 end-3 z-50"
+          onClick={handleShare}
+          disabled={!place}
+        >
+          <Share2 />
+          <span className="sr-only">{t("actions.share", "Share")}</span>
         </Button>
       </div>
       <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto">

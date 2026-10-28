@@ -15,6 +15,7 @@ import {
   Phone,
   MessageCircle,
   Mail,
+  Share2,
   Unlock,
 } from "lucide-react";
 import { getDomain } from "tldts";
@@ -57,6 +58,11 @@ import { useImageStatus } from "@/hooks/use-image-status";
 import type { BusinessListing } from "../../shared/contracts";
 import { BUSINESS_CATEGORIES } from "../business/business-create.config";
 import { useModalContext } from "../modal-provider";
+import { LocationConsent } from "../LocationConsent";
+import { Itinerary } from "../place-card/place";
+import { toast } from "sonner";
+import { getDirections } from "@/utils/directions";
+import { sharePlace } from "@/utils/share";
 
 type RouteStep = {
   instruction: string;
@@ -72,6 +78,22 @@ export type RouteSummary = {
   duration: number;
   steps: RouteStep[];
 } | null;
+
+type LocationStatus = "idle" | "requesting" | "granted" | "denied" | "error";
+
+type Coordinates = {
+  latitude: number;
+  longitude: number;
+};
+
+type LocationResult =
+  | {
+    status: "granted";
+    coords: Coordinates;
+  }
+  | {
+    status: "denied" | "error";
+  };
 
 function PlaceMedia({
   image,
@@ -145,6 +167,9 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const { setIsOpen, setModalContent } = useModalContext();
+  const [route, setRoute] = useState<RouteSummary>(null);
+  const [location, setLocation] = useState<Coordinates | null>(null);
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>("idle");
 
   const handleRequireSignIn = () => {
     setModalContent({
@@ -186,6 +211,178 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
     setIsOpen(true);
   };
 
+  const handleShare = () => {
+    if (!business?._id) return;
+
+    void sharePlace({
+      id: business._id,
+      title: business.name,
+    });
+  };
+
+  /*
+   * Get browser location
+   */
+  const getLocation = (): Promise<LocationResult> =>
+    new Promise((resolve) => {
+      if (!("geolocation" in navigator)) {
+        setLocationStatus("error");
+
+        resolve({
+          status: "error",
+        });
+
+        return;
+      }
+
+      setLocationStatus("requesting");
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const coords: Coordinates = {
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          };
+
+          setLocation(coords);
+          setLocationStatus("granted");
+
+          resolve({
+            status: "granted",
+            coords,
+          });
+        },
+        (err) => {
+          console.warn(
+            "Geolocation error:",
+            err
+          );
+
+          const status =
+            err.code ===
+              GeolocationPositionError.PERMISSION_DENIED
+              ? "denied"
+              : "error";
+
+          setLocationStatus(status);
+
+          resolve({
+            status,
+          });
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 8000,
+          maximumAge: 30000,
+        }
+      );
+    });
+
+  /*
+   * Calculate route
+   */
+  const calculateDirections = async (
+    origin: Coordinates,
+    destination: [number, number]
+  ) => {
+    setRoute(null);
+
+    try {
+      /*
+       * IMPORTANT:
+       *
+       * destination is [longitude, latitude].
+       *
+       * This assumes your directions utility also expects
+       * [longitude, latitude].
+       */
+      const itinerary = await getDirections(
+        [
+          origin.longitude,
+          origin.latitude,
+        ],
+        destination
+      );
+
+      setRoute(itinerary);
+    } catch (error) {
+      console.error(
+        "Directions failed:",
+        error
+      );
+
+      toast.error(
+        t(
+          "place.details.directions.error",
+          "Failed to calculate directions."
+        )
+      );
+    }
+  };
+
+  /*
+   * Get directions
+   */
+  const handleGetDirections = async (
+    destination: [number, number]
+  ) => {
+    setRoute(null);
+
+    /*
+     * We already have the user's location.
+     * No permission modal is necessary.
+     */
+    if (
+      locationStatus === "granted" &&
+      location
+    ) {
+      await calculateDirections(
+        location,
+        destination
+      );
+
+      return;
+    }
+
+    /*
+     * Ask for location.
+     */
+    setModalContent({
+      title: t(
+        "location.title",
+        "Use your location?"
+      ),
+
+      size: "md",
+
+      children: (
+        <LocationConsent
+          requestLocation={getLocation}
+          initialStatus={locationStatus}
+          onClose={() =>
+            setIsOpen(false)
+          }
+          onContinue={async (coords) => {
+            setIsOpen(false);
+
+            await calculateDirections(
+              coords,
+              destination
+            );
+          }}
+        />
+      ),
+
+      onClose: () => {
+        setIsOpen(false);
+      },
+
+      footer: null,
+    });
+
+    setIsOpen(true);
+  };
+
   useEffect(() => {
     if (!api) {
       return;
@@ -220,7 +417,7 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
 
   return (
     <div className="relative flex flex-col gap-2">
-      <div className="absolute top-16 start-3">
+      <div className="absolute top-16 start-3 flex gap-1">
         <Button
           size="icon"
           variant="secondary"
@@ -229,6 +426,16 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
         >
           <ArrowLeft />
           <span className="sr-only">{t("place.details.back", "Back")}</span>
+        </Button>
+        <Button
+          size="icon"
+          variant="secondary"
+          className="fixed max-sm:top-8 top-16 end-3 z-50"
+          onClick={handleShare}
+          disabled={!business?._id}
+        >
+          <Share2 />
+          <span className="sr-only">{t("actions.share", "Share")}</span>
         </Button>
       </div>
 
@@ -321,6 +528,14 @@ export function BusinessDetails({ listing }: { listing: unknown }) {
         </div>
 
         <div className="space-y-2">
+          {business.location && (
+            <Itinerary
+              route={route}
+              onGetDirections={handleGetDirections}
+              destination={business.location.coordinates}
+            />
+          )}
+          
           <Tabs
             defaultValue="description"
             className="w-full"
