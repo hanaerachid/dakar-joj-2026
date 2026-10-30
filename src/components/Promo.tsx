@@ -171,6 +171,7 @@ export const Promo = () => {
       onMouseLeave={plugin.current.reset}
     >
       <CarouselContent className="h-32">
+        {new Date() < new Date("2026-10-31T00:00:00") && (
         <CarouselItem className="basis-full">
           <Item
             size="default"
@@ -195,6 +196,7 @@ export const Promo = () => {
             </ItemContent>
           </Item>
         </CarouselItem>
+        )}
 
         <CarouselItem className="basis-full">
           <Item

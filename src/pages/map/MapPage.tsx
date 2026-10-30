@@ -293,24 +293,13 @@ export default function MapPage() {
         showBasemapSwitcher={true}
         onReset={handleReset}
       >
-        <Item
-          size="xs"
-          variant="outline"
-          className={cn(
-            "flex items-center py-1.25",
-            "w-fit bg-gradient-to-b from-[#f2b705]/10 to-[#f2b705]/5",
-          )}
-        >
-          <ItemContent>
-            <Countdown targetedDate={new Date("2026-10-31T00:00:00")} />
-          </ItemContent>
 
-          <ItemContent className="hidden sm:flex">
-            <span className="uppercase text-muted-foreground text-xs">
-              31 Oct - 13 Nov
-            </span>
-          </ItemContent>
-        </Item>
+        {new Date() < new Date("2026-10-30T00:00:00") ? (
+        <Counter />
+        ) : (
+        <AddBusinessButton />
+        )}
+
       </HeaderBar>
       {/* Top-left: Admin link (only if admin) */}
 
@@ -357,3 +346,56 @@ export default function MapPage() {
     </div>
   );
 }
+
+const AddBusinessButton = () => {
+  const { t } = useTranslation();
+  const { setActiveTab } = useStateContext();
+
+  return (
+    <Item
+      size="xs"
+      variant="outline"
+      className={cn(
+        "flex items-center py-1.25",
+        "w-fit bg-gradient-to-b from-[var(--accent-color-2)]/10 to-[var(--accent-color-2)]/5",
+        "cursor-pointer hover:bg-gradient-to-b hover:from-[var(--accent-color-2)]/20 hover:to-[var(--accent-color-2)]/10"
+      )}
+      onClick={() => {
+        setActiveTab("pro");
+      }}
+    >
+      <ItemContent>
+        <Briefcase className="w-4 h-4" />
+      </ItemContent>
+      <ItemContent className="hidden sm:flex">
+        <span className="text-foreground text-sm">
+          {t("home.add_business", "Add your business")}
+        </span>
+      </ItemContent>
+    </Item>
+  );
+}
+
+const Counter = () => {
+  return (
+    <Item
+      size="xs"
+      variant="outline"
+      className={cn(
+        "flex items-center py-1.25",
+        "w-fit bg-gradient-to-b from-[#f2b705]/10 to-[#f2b705]/5"
+      )}
+    >
+      <ItemContent>
+        <Countdown targetedDate={new Date("2026-10-31T00:00:00")} />
+      </ItemContent>
+
+      <ItemContent className="hidden sm:flex">
+        <span className="uppercase text-muted-foreground text-xs">
+          31 Oct - 13 Nov
+        </span>
+      </ItemContent>
+    </Item>
+  );
+}
+
