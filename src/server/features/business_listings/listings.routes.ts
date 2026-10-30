@@ -7,9 +7,11 @@ import {
   createBusinessListing,
   updateBusinessListing,
   deleteBusinessListing,
-  setListingVerified
+  setListingVerified,
+  getAutoApprovalEnabled,
+  setAutoApprovalEnabled,
 } from "./listings.service.js";
-import { requireAuth } from "../../middleware/auth.js";
+import { requireAdmin, requireAuth } from "../../middleware/auth.js";
 import { businessListingSchema } from "../../../shared/contracts.js";
 
 export const listingRoutes = new Hono();
@@ -66,6 +68,25 @@ listingRoutes.get("/", async (c) => {
   return ok(c, listings);
 });
 
+listingRoutes.get("/settings/auto-approval", async (c) => {
+  const denied = requireAdmin(c);
+  if (denied) return denied;
+
+  return ok(c, { enabled: await getAutoApprovalEnabled() });
+});
+
+listingRoutes.patch("/settings/auto-approval", async (c) => {
+  const denied = requireAdmin(c);
+  if (denied) return denied;
+
+  const body = await c.req.json<{ enabled?: boolean }>();
+  if (typeof body.enabled !== "boolean") {
+    return fail(c, 400, "BAD_REQUEST", "enabled must be a boolean");
+  }
+
+  return ok(c, { enabled: await setAutoApprovalEnabled(body.enabled) });
+});
+
 listingRoutes.get("/:id", async (c) => {
   const user = c.get("user");
   const id = c.req.param("id");
@@ -120,7 +141,7 @@ listingRoutes.delete("/:id", async (c) => {
 });
 
 listingRoutes.patch("/:id/verify", async (c) => {
-  const denied = requireAuth(c);
+  const denied = requireAdmin(c);
   if (denied) return denied;
 
   const listingId = c.req.param("id");

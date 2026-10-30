@@ -11,6 +11,8 @@ const clerk = createClerkClient({
 
 type BusinessListingDocument = { _id: string | ObjectId;[key: string]: any };
 type BusinessListingPayload = Record<string, any>;
+type AppSettingDocument = { _id: string; value?: unknown; updatedAt?: Date };
+const AUTO_APPROVAL_SETTING_KEY = "business_listings.auto_approval";
 
 function idFilter(id: string) {
   if (ObjectId.isValid(id)) {
@@ -312,12 +314,39 @@ function buildListingListFilterForSingleListing(
 
 export async function createBusinessListing(input: any, actor: ListingActor) {
   const db = await getMongoDatabase();
+  const autoApproval = await getAutoApprovalEnabled();
   const document = {
     ...buildCreateDocument(input),
     ownerId: actor.uid,
+    verified: autoApproval,
   };
   await db.collection<BusinessListingDocument>("listings").insertOne(document);
   return getBusinessListingById(String(document._id), actor);
+}
+
+export async function getAutoApprovalEnabled() {
+  const db = await getMongoDatabase();
+  const setting = await db.collection<AppSettingDocument>("app_settings").findOne({
+    _id: AUTO_APPROVAL_SETTING_KEY,
+  });
+
+  return setting?.value !== false;
+}
+
+export async function setAutoApprovalEnabled(enabled: boolean) {
+  const db = await getMongoDatabase();
+  await db.collection<AppSettingDocument>("app_settings").updateOne(
+    { _id: AUTO_APPROVAL_SETTING_KEY },
+    {
+      $set: {
+        value: enabled,
+        updatedAt: new Date(),
+      },
+    },
+    { upsert: true },
+  );
+
+  return enabled;
 }
 
 export async function updateBusinessListing(

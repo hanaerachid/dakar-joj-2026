@@ -3,6 +3,7 @@ import type { BusinessListing } from "@/shared/contracts";
 
 type ListingResponse = { success: true; data: BusinessListing };
 type ListingListResponse = { success: true; data: BusinessListing[] };
+type AutoApprovalResponse = { success: true; data: { enabled: boolean } };
 
 export type BusinessListingQueryParams = {
   location?: string | readonly [number, number];
@@ -98,4 +99,22 @@ export async function setListingVerified(
     body: JSON.stringify({ verified }),
   });
   return response.data;
+}
+
+export async function getAutoApprovalEnabled() {
+  const response = await apiRequest<AutoApprovalResponse>(
+    `/api/v2/business/listings/settings/auto-approval`,
+  );
+  return response.data.enabled;
+}
+
+export async function setAutoApprovalEnabled(enabled: boolean) {
+  const response = await apiRequest<AutoApprovalResponse>(
+    `/api/v2/business/listings/settings/auto-approval`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ enabled }),
+    },
+  );
+  return response.data.enabled;
 }

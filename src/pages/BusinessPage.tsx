@@ -36,10 +36,13 @@ import {
   listBusinessListings,
   deleteBusinessListing,
   setListingVerified,
+  getAutoApprovalEnabled,
+  setAutoApprovalEnabled,
 } from "@/lib/api/listings";
 import { type BreadcrumbConfig, Breadcrumbs } from "@/components/BreadCrumbs";
 import { DataTable } from "@/components/DataTable";
 import { useModalContext } from "@/components/modal-provider";
+import { Switch } from "@/components/ui/switch";
 
 type BusinessListingWithOwner = BusinessListing & {
   _id?: string;
@@ -59,6 +62,8 @@ export function BusinessPage4Admin() {
   // const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [businessListings, setBusinessListings] = useState<BusinessListingWithOwner[]>([]);
+  const [autoApproval, setAutoApproval] = useState(true);
+  const [updatingAutoApproval, setUpdatingAutoApproval] = useState(false);
   const { setIsOpen, setModalContent } = useModalContext();
 
   const breadcrumbConfig: BreadcrumbConfig = {
@@ -95,8 +100,26 @@ export function BusinessPage4Admin() {
 
   useEffect(() => {
     void loadBusinessListings();
+    void getAutoApprovalEnabled().then(setAutoApproval).catch((error) => {
+      console.error("Failed to load auto approval setting:", error);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  async function handleAutoApprovalChange(enabled: boolean) {
+    const previousValue = autoApproval;
+    setAutoApproval(enabled);
+    setUpdatingAutoApproval(true);
+    try {
+      setAutoApproval(await setAutoApprovalEnabled(enabled));
+    } catch (error) {
+      console.error("Failed to update auto approval setting:", error);
+      setAutoApproval(previousValue);
+      toast.error(t("auto_approval_update_failure", "Failed to update auto approval."));
+    } finally {
+      setUpdatingAutoApproval(false);
+    }
+  }
 
   async function handleDelete(item: BusinessListing) {
     setModalContent({
@@ -359,6 +382,20 @@ export function BusinessPage4Admin() {
               <span className="truncate">{t("business.listings", "Business listings")}</span>
             </h2>
           </div>
+        </div>
+        <div className="mt-4 flex items-center justify-between gap-4 rounded-md border p-4">
+          <div>
+            <p className="font-medium">{t("auto_approval", "Automatic approval")}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("auto_approval_description", "Approve new business listings automatically")}
+            </p>
+          </div>
+          <Switch
+            checked={autoApproval}
+            disabled={updatingAutoApproval}
+            onCheckedChange={handleAutoApprovalChange}
+            aria-label={t("admin.auto_approval", "Automatic approval")}
+          />
         </div>
       </div>
 

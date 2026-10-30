@@ -369,7 +369,7 @@ const AddBusinessButton = () => {
       </ItemContent>
       <ItemContent className="hidden sm:flex">
         <span className="text-foreground text-sm">
-          {t("home.add_business", "Add your business")}
+          {t("home.add_your_business", "Add your business")}
         </span>
       </ItemContent>
     </Item>
