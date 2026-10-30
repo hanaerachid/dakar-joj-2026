@@ -257,6 +257,7 @@ export function PlacesCategoryList(props: Props) {
                 {!loading && !loadError && !!mainVenues.length && (
                   <div className="flex flex-col gap-2">
                     {/* Zone filters */}
+                    {Object.entries(mainGrouped).length > 1 && (
                     <Carousel
                       setApi={setApi}
                       className="w-full whitespace-nowrap"
@@ -335,6 +336,7 @@ export function PlacesCategoryList(props: Props) {
                         )}
                       />
                     </Carousel>
+                    )}
 
                     {children.map((category) => {
                       const categoryVenues = Object.entries(mainGrouped)
