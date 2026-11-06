@@ -20,6 +20,7 @@ import { uploadRoutes } from "./features/uploads/upload.routes.js";
 import { itineraryRoutes } from "./features/itinerary/itinerary.routes.js";
 import { eventRoutes } from "./features/events/events.routes.js";
 import { paymentsRoutes } from "./features/payments/payments.routes.js";
+import { offersRoutes } from "./features/offers/offers.routes.js";
 import { attachSessionUser } from "./middleware/auth.js";
 import { fail } from "./http/response.js";
 import { HttpError } from "./http/errors.js";
@@ -33,6 +34,8 @@ import {
   sessionUserSchema,
   zoneSchema,
   businessListingSchema,
+  offerSchema,
+  offerInputSchema,
 } from "../shared/contracts.js";
 
 const app = new OpenAPIHono();
@@ -73,6 +76,7 @@ v2Routes.route("/metadata", metadataRoutes);
 v2Routes.route("/news", newsRoutes);
 v2Routes.route("/uploads", uploadRoutes);
 v2Routes.route("/payments", paymentsRoutes);
+v2Routes.route("/offers", offersRoutes);
 
 const itineraryCoordinateSchema = z
   .tuple([z.number(), z.number()])
@@ -1227,6 +1231,98 @@ app.openAPIRegistry.registerPath({
     401: {
       description: "Authentication required",
       content: { "application/json": { schema: apiErrorSchema } },
+    },
+  },
+});
+
+app.openAPIRegistry.registerPath({
+  method: "get",
+  path: "/api/v2/offers",
+  summary: "List published offers",
+  security: [],
+  responses: {
+    200: {
+      description: "Published offers",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(z.array(offerSchema)),
+        },
+      },
+    },
+  },
+});
+
+app.openAPIRegistry.registerPath({
+  method: "get",
+  path: "/api/v2/offers/{id}",
+  summary: "Get an offer",
+  security: [],
+  request: { params: z.object({ id: z.string() }) },
+  responses: {
+    200: {
+      description: "Offer",
+      content: { "application/json": { schema: apiSuccessSchema(offerSchema) } },
+    },
+    404: {
+      description: "Offer not found",
+      content: { "application/json": { schema: apiErrorSchema } },
+    },
+  },
+});
+
+app.openAPIRegistry.registerPath({
+  method: "post",
+  path: "/api/v2/offers",
+  summary: "Create an offer",
+  security: [{ apiKeyAuth: [] }],
+  request: {
+    body: {
+      required: true,
+      content: { "application/json": { schema: offerInputSchema } },
+    },
+  },
+  responses: {
+    201: {
+      description: "Created offer",
+      content: { "application/json": { schema: apiSuccessSchema(offerSchema) } },
+    },
+  },
+});
+
+app.openAPIRegistry.registerPath({
+  method: "patch",
+  path: "/api/v2/offers/{id}",
+  summary: "Update an offer",
+  security: [{ apiKeyAuth: [] }],
+  request: {
+    params: z.object({ id: z.string() }),
+    body: {
+      required: true,
+      content: { "application/json": { schema: offerInputSchema.partial() } },
+    },
+  },
+  responses: {
+    200: {
+      description: "Updated offer",
+      content: { "application/json": { schema: apiSuccessSchema(offerSchema) } },
+    },
+  },
+});
+
+app.openAPIRegistry.registerPath({
+  method: "delete",
+  path: "/api/v2/offers/{id}",
+  summary: "Delete an offer",
+  security: [{ apiKeyAuth: [] }],
+  request: { params: z.object({ id: z.string() }) },
+  responses: {
+    200: {
+      description: "Deleted offer",
+      content: {
+        "application/json": {
+          schema: apiSuccessSchema(z.object({ deleted: z.literal(true) })),
+        },
+      },
     },
   },
 });

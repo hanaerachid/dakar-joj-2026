@@ -36,6 +36,7 @@ export const QuickAccess = () => {
     torchVisible,
     setTorchVisible,
     setEventCategory,
+    requestOfferDiscovery,
   } = useStateContext();
 
   const handleToggleTorch = async () => {
@@ -93,7 +94,10 @@ export const QuickAccess = () => {
       available: true,
       color: "#b98703",
       icon: Star,
-      primaryAction: () => setActiveTab("explorer"),
+      primaryAction: () => {
+        requestOfferDiscovery();
+        setActiveTab("explorer");
+      },
       secondaryAction: null,
       secondaryActionLabel: null,
       shortcut: false,

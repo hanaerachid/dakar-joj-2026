@@ -274,3 +274,62 @@ export const uploadResponseSchema = z.object({
 });
 
 export type UploadResponse = z.infer<typeof uploadResponseSchema>;
+
+const offerCoordinateSchema = z.tuple([
+  z.number().min(-180).max(180),
+  z.number().min(-90).max(90),
+]);
+
+export const offerGeometrySchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("Point"),
+    coordinates: offerCoordinateSchema,
+  }),
+  z.object({
+    type: z.literal("MultiPoint"),
+    coordinates: z.array(offerCoordinateSchema).min(1),
+  }),
+]);
+
+export const offerLocationSchema = z.object({
+  geometry: offerGeometrySchema,
+  label: z.string().trim().max(200).nullable().optional(),
+  images: z.array(z.string().url()).default([]),
+});
+
+const offerFeatureSchema = z.object({
+  type: z.literal("Feature"),
+  geometry: offerGeometrySchema,
+  properties: z.record(z.unknown()).optional(),
+}).passthrough();
+
+export const offerLocationInputSchema = z.union([
+  offerLocationSchema,
+  offerFeatureSchema,
+]);
+
+export const offerSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  category: z.string(),
+  tags: z.array(z.string()).default([]),
+  description: z.string(),
+  services: z.array(z.string()).default([]),
+  price: z.string().nullable().optional(),
+  whatsapp: z.string().nullable().optional(),
+  images: z.array(z.string().url()).default([]),
+  locations: z.array(offerLocationSchema).default([]),
+  published: z.boolean().default(true),
+  createdAt: z.string().datetime().nullable().optional(),
+  updatedAt: z.string().datetime().nullable().optional(),
+});
+
+export const offerInputSchema = offerSchema
+  .omit({ id: true, createdAt: true, updatedAt: true })
+  .extend({
+    locations: z.array(offerLocationInputSchema).default([]),
+    published: z.boolean().optional().default(true),
+  });
+
+export type Offer = z.infer<typeof offerSchema>;
+export type OfferInput = z.input<typeof offerInputSchema>;

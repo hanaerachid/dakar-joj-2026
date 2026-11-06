@@ -46,6 +46,10 @@ type ProviderState = {
 
   eventCategory: string
   setEventCategory: (event: string) => void
+
+  discoverOffersRequested: boolean
+  requestOfferDiscovery: () => void
+  clearOfferDiscoveryRequest: () => void
 }
 
 const initialState: ProviderState = {
@@ -73,6 +77,9 @@ const initialState: ProviderState = {
 
   eventCategory: "public",
   setEventCategory: () => null,
+  discoverOffersRequested: false,
+  requestOfferDiscovery: () => null,
+  clearOfferDiscoveryRequest: () => null,
 };
 
 export const StateContext = createContext<ProviderState>(initialState);
@@ -118,6 +125,7 @@ export function StateProvider({
   );
   const [role, setRole] = useState<string | undefined>(undefined);
   const [eventCategory, setEventCategory] = useState("public");
+  const [discoverOffersRequested, setDiscoverOffersRequested] = useState(false);
 
   useEffect(() => {
     initAuth((user, r) => {
@@ -226,6 +234,9 @@ export function StateProvider({
     setSelectedPlace,
     eventCategory,
     setEventCategory,
+    discoverOffersRequested,
+    requestOfferDiscovery: () => setDiscoverOffersRequested(true),
+    clearOfferDiscoveryRequest: () => setDiscoverOffersRequested(false),
   };
 
   return (
