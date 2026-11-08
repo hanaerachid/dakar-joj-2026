@@ -36,7 +36,10 @@ import {
   businessListingSchema,
   offerSchema,
   offerInputSchema,
+  mapProductSchema,
+  mapProductInputSchema,
 } from "../shared/contracts.js";
+import { mapsRoutes } from "./features/maps/maps.routes.js";
 
 const app = new OpenAPIHono();
 
@@ -77,6 +80,7 @@ v2Routes.route("/news", newsRoutes);
 v2Routes.route("/uploads", uploadRoutes);
 v2Routes.route("/payments", paymentsRoutes);
 v2Routes.route("/offers", offersRoutes);
+v2Routes.route("/maps", mapsRoutes);
 
 const itineraryCoordinateSchema = z
   .tuple([z.number(), z.number()])
@@ -1324,6 +1328,67 @@ app.openAPIRegistry.registerPath({
         },
       },
     },
+  },
+});
+
+app.openAPIRegistry.registerPath({
+  method: "get",
+  path: "/api/v2/maps",
+  summary: "List published map products",
+  security: [],
+  responses: {
+    200: {
+      description: "Available maps to order",
+      content: { "application/json": { schema: apiSuccessSchema(z.array(mapProductSchema)) } },
+    },
+  },
+});
+
+app.openAPIRegistry.registerPath({
+  method: "get",
+  path: "/api/v2/maps/{id}",
+  summary: "Get a map product",
+  security: [],
+  request: { params: z.object({ id: z.string() }) },
+  responses: {
+    200: { description: "Map product", content: { "application/json": { schema: apiSuccessSchema(mapProductSchema) } } },
+    404: { description: "Map product not found", content: { "application/json": { schema: apiErrorSchema } } },
+  },
+});
+
+app.openAPIRegistry.registerPath({
+  method: "post",
+  path: "/api/v2/maps",
+  summary: "Create a map product",
+  security: [{ apiKeyAuth: [] }],
+  request: { body: { required: true, content: { "application/json": { schema: mapProductInputSchema } } } },
+  responses: {
+    201: { description: "Created map product", content: { "application/json": { schema: apiSuccessSchema(mapProductSchema) } } },
+  },
+});
+
+app.openAPIRegistry.registerPath({
+  method: "patch",
+  path: "/api/v2/maps/{id}",
+  summary: "Update a map product",
+  security: [{ apiKeyAuth: [] }],
+  request: {
+    params: z.object({ id: z.string() }),
+    body: { required: true, content: { "application/json": { schema: mapProductInputSchema.partial() } } },
+  },
+  responses: {
+    200: { description: "Updated map product", content: { "application/json": { schema: apiSuccessSchema(mapProductSchema) } } },
+  },
+});
+
+app.openAPIRegistry.registerPath({
+  method: "delete",
+  path: "/api/v2/maps/{id}",
+  summary: "Delete a map product",
+  security: [{ apiKeyAuth: [] }],
+  request: { params: z.object({ id: z.string() }) },
+  responses: {
+    200: { description: "Deleted map product", content: { "application/json": { schema: apiSuccessSchema(z.object({ deleted: z.literal(true) })) } } },
   },
 });
 

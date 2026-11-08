@@ -96,6 +96,7 @@
     "explorer": "Explorer",
     "search": "Search",
     "events": "Schedule",
+    "maps": "Maps",
     "news": "News",
     "stats": "Stats",
     "business": "Business"
@@ -120,6 +121,14 @@
     "maps": "Maps",
     "torch": "Torch",
     "news": "News"
+  },
+  "maps": {
+    "title": "Maps to order",
+    "description": "Keep a beautiful paper guide close while you explore Senegal.",
+    "images": "images",
+    "order": "Order this map",
+    "empty": "Maps will appear here soon.",
+    "load_error": "Unable to load maps."
   },
   "news": {
     "news": "News",

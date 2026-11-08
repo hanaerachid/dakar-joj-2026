@@ -8,6 +8,7 @@ import {
   Newspaper,
   Calendar,
   Briefcase,
+  Map,
 } from "lucide-react";
 import { MapManager } from "../../core/MapManager";
 import { Sidebar } from "../../components/Sidebar";
@@ -111,6 +112,12 @@ export default function MapPage() {
       action: () => {
         openNavigationPanel("events");
       },
+    },
+    {
+      key: "maps",
+      label: t("tabs.maps", "Maps"),
+      icon: Map,
+      action: () => openNavigationPanel("maps"),
     },
     {
       key: "news",

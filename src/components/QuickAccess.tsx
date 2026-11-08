@@ -79,11 +79,11 @@ export const QuickAccess = () => {
     },
     {
       title: t("home.maps", "Maps"),
-      available: false,
+      available: true,
       icon: Map,
       color: "#FFA500",
       active: false,
-      primaryAction: () => null,
+      primaryAction: () => setActiveTab("maps"),
       secondaryAction: null,
       secondaryActionLabel: null,
       shortcut: true,

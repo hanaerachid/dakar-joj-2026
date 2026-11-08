@@ -333,3 +333,27 @@ export const offerInputSchema = offerSchema
 
 export type Offer = z.infer<typeof offerSchema>;
 export type OfferInput = z.input<typeof offerInputSchema>;
+
+export const mapProductSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  format: z.string(),
+  price: z.string().nullable().optional(),
+  contact: z.string().url().nullable().optional(),
+  images: z.array(z.string().url()).default([]),
+  published: z.boolean().default(true),
+  createdAt: z.string().datetime().nullable().optional(),
+  updatedAt: z.string().datetime().nullable().optional(),
+});
+
+export const mapProductInputSchema = mapProductSchema
+  .omit({ id: true, createdAt: true, updatedAt: true })
+  .extend({
+    contact: z.string().url().nullable().optional(),
+    images: z.array(z.string().url()).min(1),
+    published: z.boolean().optional().default(true),
+  });
+
+export type MapProduct = z.infer<typeof mapProductSchema>;
+export type MapProductInput = z.input<typeof mapProductInputSchema>;

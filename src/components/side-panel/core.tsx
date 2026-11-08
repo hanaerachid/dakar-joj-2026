@@ -13,6 +13,7 @@ import { HomeContent } from "../home";
 import { ExplorerContent } from "../explorer";
 import { NewsContent } from "../news";
 import { EventsContent } from "../events";
+import { MapsContent } from "../maps";
 import { BusinessContent } from "../business";
 import { usePanelContext } from "@/components/panel-provider";
 import { useModalContext } from "@/components/modal-provider";
@@ -183,6 +184,17 @@ export const SidePanel = () => {
                     "data-active:!font-bold", "data-active:!bg-primary/10",
                     "shrink-0 whitespace-nowrap",
                   )}
+                  value="maps"
+                >
+                  {t("tabs.maps", "Maps")}
+                </TabsTrigger>
+                <TabsTrigger
+                  className={cn(
+                    "px-2",
+                    "text-xs/5 tracking-tight text-center uppercase",
+                    "data-active:!font-bold", "data-active:!bg-primary/10",
+                    "shrink-0 whitespace-nowrap",
+                  )}
                   value="news"
                 >
                   {t("tabs.news", "News")}
@@ -217,6 +229,9 @@ export const SidePanel = () => {
           </TabsContent>
           <TabsContent value="events">
             <EventsContent />
+          </TabsContent>
+          <TabsContent value="maps">
+            <MapsContent />
           </TabsContent>
           <TabsContent value="news">
             <NewsContent />

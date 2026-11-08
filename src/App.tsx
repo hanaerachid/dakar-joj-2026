@@ -156,7 +156,7 @@ export default function App() {
   );
 }
 
-const VALID_TABS = ["home", "explorer", "events", "news", "pro"] as const;
+const VALID_TABS = ["home", "explorer", "events", "maps", "news", "pro"] as const;
 
 function MainApp() {
   const { tab } = useParams();

@@ -96,6 +96,7 @@
     "explorer": "Explorer",
     "search": "Rechercher",
     "events": "Programme",
+    "maps": "Cartes",
     "news": "Actu",
     "stats": "Chiffres",
     "business": "Business"
@@ -120,6 +121,14 @@
     "maps": "Cartes",
     "torch": "Flamme",
     "news": "Actualités"
+  },
+  "maps": {
+    "title": "Cartes à commander",
+    "description": "Gardez un guide papier élégant à portée de main pendant votre découverte du Sénégal.",
+    "images": "images",
+    "order": "Commander cette carte",
+    "empty": "Les cartes apparaîtront bientôt ici.",
+    "load_error": "Impossible de charger les cartes."
   },
   "news": {
     "news": "Actualités",
